@@ -1,53 +1,74 @@
-import NextAuth from 'next-auth';
+import connectDB from '@/config/database';
+import User from '@/models/User';
+import NextAuth from 'next-auth/next';
+import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
 
 export const authOptions = {
   providers: [
+    GoogleProvider({
+      id: 'google',
+      name: 'Google',
+      type: 'oauth',
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        },
+      },
+    }),
     CredentialsProvider({
+      id: 'custom-backend',
       name: 'Credentials',
+      type:'custom',
       credentials: {
         email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         try {
-          // Send credentials to your backend for authentication
           const response = await axios.post('http://localhost:8080/auth/login', {
             email: credentials.email,
             password: credentials.password,
           });
 
           if (response.status === 200) {
-            // If authentication is successful, return user details
-            console.log("response data", response.data);
             const user = response.data;
-
-            // Optionally save user to database if needed
-            // await User.create({ email: user.email, ... });
-
-            return user; // Return user object if authentication is successful
+            return user;
           }
 
-          return null; // Return null if authentication fails
+          return null;
         } catch (error) {
           console.error('Error during authorization:', error);
-          return null; // Return null if there's an error
+          return null;
         }
       },
     }),
   ],
+
   callbacks: {
-    // Modify the session object
+    async signIn({ profile }) {
+      await connectDB();
+      const userExists = await User.findOne({ email: profile.email });
+      if (!userExists) {
+        const username = profile.name.slice(0, 20);
+        await User.create({
+          email: profile.email,
+          username,
+          image: profile.picture,
+        });
+      }
+      return true;
+    },
     async session({ session, token }) {
-      // Optionally enrich the session with additional data
-      session.user.id = token.id;
-      session.user.email = token.email;
-      session.user.name = token.name;
-      session.user.image = token.image;
+      const user = await User.findOne({ email: session.user.email });
+      session.user.id = user._id.toString();
       return session;
     },
-    // Token callback to include additional user information
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -59,8 +80,11 @@ export const authOptions = {
     },
   },
   pages: {
-    signIn: '/auth/signin', // Customize the sign-in page if you have one
-  },
+    signIn: '/auth/login',
+    error: '/auth/error',
+  }, 
 };
+
+console.log("Providers; ", authOptions.providers);
 
 export default NextAuth(authOptions);

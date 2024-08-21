@@ -1,7 +1,7 @@
 import cloudinary from '@/config/cloudinary';
 import connectDB from '@/config/database';
 import Property from '@/models/Property';
-import { getSessionUser } from '@/utils/getSessionUser';
+import { getSessionUser } from '@/utils/getSessionUser_new';
 
 // GET /api/properties
 export const GET = async (request) => {

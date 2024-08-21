@@ -1,19 +1,64 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { signIn } from 'next-auth/react';
 
 const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
 
-    const handleRegisterClick = (event) => {
-        event.preventDefault();
-        console.log("reg button clicked");
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword((prevState) => !prevState);
+  };
+
+  const handleChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log("Submit button triggered");
+    try {
+      // Call the NextAuth signIn function
+      console.log('formData', formData);
+      const result = await signIn('custom-backend', {
+        redirect: false, // Don't redirect after sign-in
+        email: formData.email,
+        password: formData.password,  
+      });
+
+      if (result.error) {
+        // Handle error (e.g., show error message)
+        console.error(result.error);
+      } else {
+        // Redirect or show success message
+        console.log('Sign-in successful');
         onCloseLogin();
-        onOpenRegistration();
-    };
+        // You may redirect to another page or update the UI accordingly
+      }
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+    }
+  };
+
+  const handleRegisterClick = (event) => {
+    event.preventDefault();
+    onCloseLogin();
+    onOpenRegistration();
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-lg">
         <h2 className="text-2xl font-bold text-center text-gray-700">Login to Your Account</h2>
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email address
@@ -24,21 +69,34 @@ const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
               type="email"
               autoComplete="email"
               required
-              className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              value={formData.email}
+              onChange={handleChange}
+              className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
             />
           </div>
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
+              />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="absolute inset-y-0 right-0 flex items-center px-3"
+              >
+                {showPassword ? <EyeSlashIcon className="w-5 h-5 text-gray-700" /> : <EyeIcon className="w-5 h-5 text-gray-700" />}
+              </button>
+            </div>
           </div>
           <div>
             <button
@@ -56,6 +114,7 @@ const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
         </div>
         <div>
           <button
+            onClick={() => signIn('google')}
             type="button"
             className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
@@ -69,13 +128,13 @@ const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
         </div>
         <div className="text-sm text-center text-gray-500">
           Don't have an account?{' '}
-        <a
+          <a
             href="#"
             className="font-medium text-primary-500 hover:text-primary-400"
             onClick={handleRegisterClick}
-        >
+          >
             Register here
-        </a>
+          </a>
         </div>
       </div>
     </div>

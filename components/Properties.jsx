@@ -4,6 +4,7 @@ import Pagination from '@/components/Pagination';
 import PropertyCard from '@/components/PropertyCard';
 import Spinner from '@/components/Spinner';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
@@ -15,8 +16,9 @@ const Properties = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const res = await fetch(`/api/properties?page=${page}&pageSize=${pageSize}`);
+        const res = await axios.get('http://localhost:8080/propertyListing/fetchPropertyListing', { withCredentials: true });
 
+        console.log("response: ", res);
         if (!res.ok) {
           throw new Error('Failed to fetch data');
         }
