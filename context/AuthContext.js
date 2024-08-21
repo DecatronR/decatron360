@@ -1,17 +1,44 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { signInApi } from '@/utils/signInApi';
 import { signOutApi } from '@/utils/signOutApi';
+import { userDataApi } from '@/utils/getUserDataApi';
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
+  const [userId, setUserId] = useState(null);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
+
+  useEffect(() => {
+    const getUserData = async () => {
+      if (userId) {
+        try {
+          const userData = await userDataApi(userId);
+          setUser(userData);
+        } catch (error) {
+          console.error('Get user failed', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    getUserData();
+  }, [userId]);
 
   const signIn = async (email, password) => {
     try {
-      const userData = await signInApi(email, password);
-      sessionStorage.setItem('userKey', userData.key);
-      setUser(userData);  
+      const userId = await signInApi(email, password);
+      sessionStorage.setItem('userId', userId);
+      setUserId(userId);
     } catch (error) {
       console.error('Sign in failed', error);
     }
@@ -20,22 +47,16 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       await signOutApi();
-      sessionStorage.removeItem('userKey');
+      sessionStorage.removeItem('userId');
       setUser(null);
+      setUserId(null);
     } catch (error) {
       console.error('Sign out failed', error);
     }
   };
 
-  useEffect(() => {
-    const storedUserKey = sessionStorage.getItem('userKey');
-    if (storedUserKey) {
-      setUser({ key: storedUserKey }); 
-    }
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, userId, signIn, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );
