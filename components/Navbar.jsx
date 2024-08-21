@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSession, signOut } from 'next-auth/react';
 import logo from '@/assets/images/logo-white.png';
 import profileDefault from '@/assets/images/profile.png';
 import { usePathname } from 'next/navigation';
 import UnreadMessageCount from './UnreadMessageCount';
+import { useAuth  } from '@/context/AuthContext';
 
 const Navbar = ({ onOpenLogin }) => {
-  const { data: session } = useSession();
-  const profileImage = session?.user?.image;
+  const { user, signOut } = useAuth();
+  const profileImage = user?.image;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -68,7 +68,7 @@ const Navbar = ({ onOpenLogin }) => {
                 >
                   Properties
                 </Link>
-                {session && (
+                {user && (
                   <Link
                     href='/properties/add'
                     className={`${
@@ -83,7 +83,7 @@ const Navbar = ({ onOpenLogin }) => {
           </div>
 
           {/* Right side menu (Login button when not authenticated) */}
-          {!session && (
+          {!user && (
             <div className='hidden md:block md:ml-6'>
               <button
                 onClick={onOpenLogin}
@@ -95,7 +95,7 @@ const Navbar = ({ onOpenLogin }) => {
           )}
 
           {/* Right side menu (Profile and logout when authenticated) */}
-          {session && (
+          {user && (
             <div className='absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0'>
               <Link href='/messages' className='relative group'>
                 <button
@@ -118,7 +118,7 @@ const Navbar = ({ onOpenLogin }) => {
                     />
                   </svg>
                 </button>
-                <UnreadMessageCount session={session} />
+                <UnreadMessageCount user={user} />
               </Link>
               <div className='relative ml-3'>
                 <button
@@ -204,7 +204,7 @@ const Navbar = ({ onOpenLogin }) => {
             >
               Properties
             </Link>
-            {session && (
+            {user && (
               <Link
                 href='/properties/add'
                 className={`${
@@ -214,7 +214,7 @@ const Navbar = ({ onOpenLogin }) => {
                 Add Property
               </Link>
             )}
-            {!session && (
+            {!user && (
               <button
                 onClick={onOpenLogin}
                 className='text-white block rounded-md px-3 py-2 text-base font-medium'

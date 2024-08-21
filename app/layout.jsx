@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import '@/assets/styles/globals.css';
-import AuthProvider from '@/components/AuthProvider';
+import { AuthProvider } from '@/context/AuthContext';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { GlobalProvider } from '@/context/GlobalContext';

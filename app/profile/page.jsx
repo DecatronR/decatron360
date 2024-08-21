@@ -2,17 +2,17 @@
 
 import profileDefault from '@/assets/images/profile.png';
 import Spinner from '@/components/Spinner';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 const ProfilePage = () => {
-  const { data: session } = useSession();
-  const profileImage = session?.user?.image;
-  const profileName = session?.user?.name;
-  const profileEmail = session?.user?.email;
+  const { user } = useAuth();
+  const profileImage = user?.image;
+  const profileName = user?.name;
+  const profileEmail = user?.email;
 
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,11 +37,11 @@ const ProfilePage = () => {
       }
     };
 
-    // Fetch user properties when session is available
-    if (session?.user?.id) {
-      fetchUserProperties(session.user.id);
+    // Fetch user properties when user session is available
+    if (user?.id) {
+      fetchUserProperties(user.id);
     }
-  }, [session]);
+  }, [user]);
 
   const handleDeleteProperty = async (propertyId) => {
     const confirmed = window.confirm('Are you sure you want to delete this property?');

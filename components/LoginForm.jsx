@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
-import { signIn } from 'next-auth/react';
+import { useAuth } from '@/context/AuthContext';
 
 const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
+  const { signIn } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -25,27 +26,13 @@ const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("Submit button triggered");
-    try {
-      // Call the NextAuth signIn function
-      console.log('formData', formData);
-      const result = await signIn('custom-backend', {
-        redirect: false, // Don't redirect after sign-in
-        email: formData.email,
-        password: formData.password,  
-      });
-
-      if (result.error) {
-        // Handle error (e.g., show error message)
-        console.error(result.error);
-      } else {
-        // Redirect or show success message
-        console.log('Sign-in successful');
-        onCloseLogin();
-        // You may redirect to another page or update the UI accordingly
-      }
-    } catch (error) {
-      console.error('Error during sign-in:', error);
-    }
+   try {
+    await signIn(formData.email, formData.password);
+    console.log("Sign in successful");
+    onCloseLogin();
+   } catch(error) {
+    console.error("Issues with login", error);
+   }
   };
 
   const handleRegisterClick = (event) => {
@@ -101,6 +88,7 @@ const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
           <div>
             <button
               type="submit"
+              onClick={handleSubmit}
               className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400"
             >
               Sign in
@@ -114,7 +102,6 @@ const LoginForm = ({ onOpenRegistration, onCloseLogin }) => {
         </div>
         <div>
           <button
-            onClick={() => signIn('google')}
             type="button"
             className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
