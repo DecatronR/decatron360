@@ -430,53 +430,24 @@ const SaleForm = () => {
           </div>
         </div>
 
-        <div className='mb-4 bg-blue-50 p-4'>
-          <label className='block text-gray-700 font-bold mb-2'>Rates (Leave blank if not applicable)</label>
-          <div className='flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4'>
-            <div className='flex items-center'>
-              <label htmlFor='daily_rate' className='mr-2'>
-                24Hours
-              </label>
-              <input
-                type='number'
-                id='daily_rate'
-                name='rates.daily'
-                className='border rounded w-full py-2 px-3'
-                value={fields.rates.daily}
-                onChange={handleChange}
-              />
-            </div>
-            <div className='flex items-center'>
-              <label htmlFor='monthly_rate' className='mr-2'>
-                Monthly
-              </label>
-              <input
-                type='number'
-                id='monthly_rate'
-                name='rates.monthly'
-                className='border rounded w-full py-2 px-3'
-                value={fields.rates.monthly}
-                onChange={handleChange}
-              />
-            </div>
-            <div className='flex items-center'>
-              <label htmlFor='annual_rate' className='mr-2'>
-                Annualy
-              </label>
-              <input
-                type='number'
-                id='annual_rate'
-                name='rates.annual'
-                className='border rounded w-full py-2 px-3'
-                value={fields.rates.annually}
-                onChange={handleChange}
-              />
-            </div>
+        <div className='mb-4'>
+            <label htmlFor='price' className='block text-gray-700 font-bold mb-2'>
+              Price
+            </label>
+            <input
+              type='number'
+              id='price'
+              name='price'
+              placeholder=''
+              className='border rounded w-full py-2 px-3'
+              required
+              value={fields.price}
+              onChange={handleChange}
+            />
           </div>
-        </div>
 
         <div className='mb-4'>
-          <label htmlFor='seller_name' className='block text-gray-700 font-bold mb-2'>
+          <label htmlFor='virtual_tour' className='block text-gray-700 font-bold mb-2'>
             Virtual Tour
           </label>
           <input
