@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-const PropertyAddForm = () => {
+const RentForm = () => {
   const [mounted, setMounted] = useState(false);
   const [fields, setFields] = useState({
     type: '',
@@ -16,18 +16,16 @@ const PropertyAddForm = () => {
     },
     beds: '',
     baths: '',
-    square_feet: '',
+    size: '',
     amenities: [],
     rates: {
-      weekly: '',
+      daily: '',
       monthly: '',
-      nightly: '',
+      weekly: '',
+      annually: '',
     },
-    seller_info: {
-      name: '',
-      email: '',
-      phone: '',
-    },
+    virtualTour: '',
+    video: '',
     images: [],
   });
 
@@ -103,7 +101,7 @@ const PropertyAddForm = () => {
   return (
     mounted && (
       <form action='/api/properties' method='POST' encType='multipart/form-data'>
-        <h2 className='text-3xl text-center font-semibold mb-6'>Add Property</h2>
+        <h2 className='text-3xl text-center font-semibold mb-6'>Add Property For Rent and Shortlet</h2>
 
         <div className='mb-4'>
           <label htmlFor='type' className='block text-gray-700 font-bold mb-2'>
@@ -165,26 +163,30 @@ const PropertyAddForm = () => {
             value={fields.location.street}
             onChange={handleChange}
           />
-          <input
-            type='text'
+           <select
             id='city'
-            name='location.city'
+            name='city'
             className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='City'
             required
-            value={fields.location.city}
+            value={fields.city}
             onChange={handleChange}
-          />
-          <input
-            type='text'
-            id='state'
-            name='location.state'
-            className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='State'
-            required
-            value={fields.location.state}
-            onChange={handleChange}
-          />
+          >
+            <option value='gwarinpa'>Gwarinpa</option>
+            <option value='maitama'>Maitama</option>
+            <option value='wuye'>Wuye</option>
+            </select>
+            <select
+              id='state'
+              name='state'
+              className='border rounded w-full py-2 px-3 mb-2'
+              required
+              value={fields.city}
+              onChange={handleChange}
+            >
+              <option value='abuja'>Abuja</option>
+              <option value='lagos'>Lagos</option>
+              <option value='portharcourt'>Port-Harcourt</option>
+            </select>
           <input
             type='text'
             id='zipcode'
@@ -226,16 +228,17 @@ const PropertyAddForm = () => {
             />
           </div>
           <div className='w-full sm:w-1/3 pl-2'>
-            <label htmlFor='square_feet' className='block text-gray-700 font-bold mb-2'>
-              Square Feet
+            <label htmlFor='size' className='block text-gray-700 font-bold mb-2'>
+              Size
             </label>
             <input
               type='number'
-              id='square_feet'
-              name='square_feet'
+              id='size'
+              name='size'
+              placeholder='Square Meter (Sqm)'
               className='border rounded w-full py-2 px-3'
               required
-              value={fields.square_feet}
+              value={fields.size}
               onChange={handleChange}
             />
           </div>
@@ -431,15 +434,15 @@ const PropertyAddForm = () => {
           <label className='block text-gray-700 font-bold mb-2'>Rates (Leave blank if not applicable)</label>
           <div className='flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4'>
             <div className='flex items-center'>
-              <label htmlFor='weekly_rate' className='mr-2'>
-                Weekly
+              <label htmlFor='daily_rate' className='mr-2'>
+                24Hours
               </label>
               <input
                 type='number'
-                id='weekly_rate'
-                name='rates.weekly'
+                id='daily_rate'
+                name='rates.daily'
                 className='border rounded w-full py-2 px-3'
-                value={fields.rates.weekly}
+                value={fields.rates.daily}
                 onChange={handleChange}
               />
             </div>
@@ -457,15 +460,15 @@ const PropertyAddForm = () => {
               />
             </div>
             <div className='flex items-center'>
-              <label htmlFor='nightly_rate' className='mr-2'>
-                Nightly
+              <label htmlFor='annual_rate' className='mr-2'>
+                Annualy
               </label>
               <input
                 type='number'
-                id='nightly_rate'
-                name='rates.nightly'
+                id='annual_rate'
+                name='rates.annual'
                 className='border rounded w-full py-2 px-3'
-                value={fields.rates.nightly}
+                value={fields.rates.annually}
                 onChange={handleChange}
               />
             </div>
@@ -474,48 +477,33 @@ const PropertyAddForm = () => {
 
         <div className='mb-4'>
           <label htmlFor='seller_name' className='block text-gray-700 font-bold mb-2'>
-            Seller Name
+            Virtual Tour
           </label>
           <input
             type='text'
-            id='seller_name'
-            name='seller_info.name'
+            id='virtual_tour'
+            name='virtual_tour'
             className='border rounded w-full py-2 px-3'
-            placeholder='Name'
-            value={fields.seller_info.name}
+            placeholder='https://my.matterport.com/show/?m=virtual-tour-id'
+            value={fields.virtualTour}
             onChange={handleChange}
           />
         </div>
         <div className='mb-4'>
           <label htmlFor='seller_email' className='block text-gray-700 font-bold mb-2'>
-            Seller Email
+            Video
           </label>
           <input
-            type='email'
-            id='seller_email'
-            name='seller_info.email'
+            type='text'
+            id='video'
+            name='video'
             className='border rounded w-full py-2 px-3'
-            placeholder='Email address'
+            placeholder='https://www.youtube.com/watch?v=video-id'
             required
-            value={fields.seller_info.email}
+            value={fields.video}
             onChange={handleChange}
           />
         </div>
-        <div className='mb-4'>
-          <label htmlFor='seller_phone' className='block text-gray-700 font-bold mb-2'>
-            Seller Phone
-          </label>
-          <input
-            type='tel'
-            id='seller_phone'
-            name='seller_info.phone'
-            className='border rounded w-full py-2 px-3'
-            placeholder='Phone'
-            value={fields.seller_info.phone}
-            onChange={handleChange}
-          />
-        </div>
-
         <div className='mb-4'>
           <label htmlFor='images' className='block text-gray-700 font-bold mb-2'>
             Images (Select up to 4 images)
@@ -545,4 +533,4 @@ const PropertyAddForm = () => {
   );
 };
 
-export default PropertyAddForm;
+export default RentForm;

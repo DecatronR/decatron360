@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const userId = await signInApi(email, password);
       console.log('User ID: ', userId);
-      document.cookie = `sessionId=${userId}; path=/`;
+      // document.cookie = `sessionId=${userId}; path=/`;
 
       sessionStorage.setItem('userId', userId);
 
@@ -38,26 +38,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // useEffect(() => {
-  //   const getUserData = async () => {
-  //       const userId = sessionStorage.getItem('userId');
-  //       console.log('User ID inside the get user fucntion: ', userId);
-  //     if (userId) {
-  //       console.log('User ID inside the get user fucntion: ', userId);
-  //       try {
-  //         const userData = await userDataApi(userId);
-  //         setUser(userData);
-  //         console.log('User data: ', userData);
-  //       } catch (error) {
-  //         console.error('Get user failed', error);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    const getUserData = async () => {
+        const userId = sessionStorage.getItem('userId');
+        console.log('User ID inside the get user fucntion: ', userId);
+      if (userId) {
+        console.log('User ID inside the get user fucntion: ', userId);
+        try {
+          const userData = await userDataApi(userId);
+          setUser(userData);
+          console.log('User data: ', userData);
+        } catch (error) {
+          console.error('Get user failed', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
 
-  //   getUserData();
-  // }, []);
+    getUserData();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, signIn, signOut, loading }}>

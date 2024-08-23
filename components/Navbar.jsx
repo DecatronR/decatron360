@@ -15,7 +15,7 @@ const Navbar = ({ onOpenLogin }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const pathname = usePathname();
-  
+
 
   return (
     <nav className='bg-primary-400 border-b border-primary-400'>
@@ -70,9 +70,9 @@ const Navbar = ({ onOpenLogin }) => {
                 </Link>
                 {user && (
                   <Link
-                    href='/properties/add'
+                    href='/properties/select-listing-type'
                     className={`${
-                      pathname === '/properties/add' ? 'bg-black' : ''
+                      pathname === '/properties/select-listing-type' ? 'bg-black' : ''
                     } text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2`}
                   >
                     Add Property
@@ -206,9 +206,9 @@ const Navbar = ({ onOpenLogin }) => {
             </Link>
             {user && (
               <Link
-                href='/properties/add'
+                href='/properties/select-listing-type'
                 className={`${
-                  pathname === '/properties/add' ? 'bg-black' : ''
+                  pathname === '/properties/select-listing-type' ? 'bg-black' : ''
                 } text-white block rounded-md px-3 py-2 text-base font-medium`}
               >
                 Add Property
