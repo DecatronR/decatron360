@@ -1,6 +1,6 @@
 import InfoBox from './InfoBox';
 
-const SelectListingType = () => {
+const SelectListingType = ({}) => {
   return (
     <section>
       <div className='container-xl lg:container m-auto'>
