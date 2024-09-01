@@ -8,27 +8,29 @@ const RentForm = () => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [states, setStates] = useState([]);
   const [lga, setLga] = useState([]);
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
 
   const [fields, setFields] = useState({
-    listingType: "rent ",
-    type: "",
-    name: "",
-    description: "",
-    location: {
-      street: "",
-      city: "",
-      state: "",
-      zipcode: "",
-    },
-    beds: "",
-    baths: "",
+    title: "",
+    listingType: "rent",
+    usageType: "dummyData",
+    propertyType: "",
+    propertySubType: "dummyData",
+    propertyCondition: "dummyData",
+    state: "",
+    lga: "",
+    neighbourhood: "",
     size: "",
-    amenities: [],
-    rates: "",
+    propertyDetails: "",
+    NoOfLivingRooms: "1",
+    NoOfBedRooms: "",
+    NoOfKitchens: "",
+    NoOfParkingSpace: "2",
+    Price: "",
     virtualTour: "",
     video: "",
-    images: [],
+    photo: [],
   });
 
   useEffect(() => {
@@ -82,31 +84,41 @@ const RentForm = () => {
     }));
   };
 
-  // const handleImageChange = (e) => {
-  //   const { files } = e.target;
-
-  //   // Clone images array
-  //   const updatedImages = [...fields.images];
-
-  //   // Add new files to the array
-  //   for (const file of files) {
-  //     updatedImages.push(file);
-  //   }
-
-  //   // Update state with array of images
-  //   setFields((prevFields) => ({
-  //     ...prevFields,
-  //     images: updatedImages,
-  //   }));
-  // };
-
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
+    const newImages = [];
+    const newPreviewUrls = [];
 
-    // Convert file objects to URLs
-    const imagePreviews = files.map((file) => URL.createObjectURL(file));
+    for (
+      let i = 0;
+      i < files.length && uploadedImages.length + newImages.length < 7;
+      i++
+    ) {
+      newImages.push(files[i]);
+      newPreviewUrls.push(URL.createObjectURL(files[i]));
+    }
 
-    setSelectedImages(imagePreviews);
+    setUploadedImages([...uploadedImages, ...newImages]);
+    setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+    const newPhotos = [
+      ...fields.photo,
+      ...newImages.map((file) => ({ path: URL.createObjectURL(file) })),
+    ];
+    setFields((prevFields) => ({ ...prevFields, photo: newPhotos }));
+  };
+
+  const removeImage = (index) => {
+    const newPreviewUrls = [...previewUrls];
+    newPreviewUrls.splice(index, 1);
+    setPreviewUrls(newPreviewUrls);
+
+    const newUploadedImages = [...uploadedImages];
+    newUploadedImages.splice(index, 1);
+    setUploadedImages(newUploadedImages);
+
+    const newPhotos = [...fields.photo];
+    newPhotos.splice(index, 1);
+    setFields((prevFields) => ({ ...prevFields, photo: newPhotos }));
   };
 
   const formatPrice = (price) => {
@@ -143,13 +155,30 @@ const RentForm = () => {
     fetchAllData();
   }, [fetchData]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const createListingConfig = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://localhost:8080/propertyListing/createPropertyListing",
+      headers: {},
+      data: fields,
+      withCredentials: true,
+    };
+
+    console.log("Creating new property listing with data: ", fields);
+    try {
+      const res = await axios(createListingConfig);
+      console.log("Successfully created listing type: ", res);
+    } catch (error) {
+      console.log("Issue with creating new property listing: ", error);
+    }
+  };
+
   return (
     mounted && (
-      <form
-        action="/api/properties"
-        method="POST"
-        encType="multipart/form-data"
-      >
+      <form onSubmit={handleSubmit}>
         <h2 className="text-3xl text-center font-semibold mb-6">
           Add Property For Rent and Shortlet
         </h2>
@@ -180,34 +209,34 @@ const RentForm = () => {
           </select>
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label htmlFor="title" className="block text-gray-700 font-bold mb-2">
             Listing Name
           </label>
           <input
             type="text"
-            id="name"
-            name="name"
+            id="title"
+            name="title"
             className="border rounded w-full py-2 px-3 mb-2"
             placeholder="eg. Beautiful Apartment In Miami"
             required
-            value={fields.name}
+            value={fields.title}
             onChange={handleChange}
           />
         </div>
         <div className="mb-4">
           <label
-            htmlFor="description"
+            htmlFor="property_details"
             className="block text-gray-700 font-bold mb-2"
           >
             Description
           </label>
           <textarea
-            id="description"
-            name="description"
+            id="propertyDetails"
+            name="propertyDetails"
             className="border rounded w-full py-2 px-3"
             rows="4"
             placeholder="Add an optional description of your property"
-            value={fields.description}
+            value={fields.propertyDetails}
             onChange={handleChange}
           ></textarea>
         </div>
@@ -251,28 +280,10 @@ const RentForm = () => {
           <input
             type="text"
             id="neighbourhood"
-            name="location.neighbourhood"
+            name="neighbourhood"
             className="border rounded w-full py-2 px-3 mb-2"
             placeholder="Neighbourhood"
-            value={fields.location.neighbourhood}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            id="street"
-            name="location.street"
-            className="border rounded w-full py-2 px-3 mb-2"
-            placeholder="Street"
-            value={fields.location.street}
-            onChange={handleChange}
-          />
-          <input
-            type="text"
-            id="zipcode"
-            name="location.zipcode"
-            className="border rounded w-full py-2 px-3 mb-2"
-            placeholder="Zipcode"
-            value={fields.location.zipcode}
+            value={fields.neighbourhood}
             onChange={handleChange}
           />
         </div>
@@ -287,11 +298,11 @@ const RentForm = () => {
             </label>
             <input
               type="number"
-              id="beds"
-              name="beds"
+              id="NoOfBedRooms"
+              name="NoOfBedRooms"
               className="border rounded w-full py-2 px-3"
               required
-              value={fields.beds}
+              value={fields.NoOfBedRooms}
               onChange={handleChange}
             />
           </div>
@@ -302,13 +313,14 @@ const RentForm = () => {
             >
               Baths
             </label>
+            {/* I am temporarily trying to use the NoOfKitchen field for the baths */}
             <input
               type="number"
-              id="baths"
-              name="baths"
+              id="NoOfKitchens"
+              name="NoOfKitchens"
               className="border rounded w-full py-2 px-3"
               required
-              value={fields.baths}
+              value={fields.NoOfKitchens}
               onChange={handleChange}
             />
           </div>
@@ -331,198 +343,6 @@ const RentForm = () => {
             />
           </div>
         </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
-            Amenities
-          </label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_wifi"
-                name="amenities"
-                value="Wifi"
-                className="mr-2"
-                checked={fields.amenities.includes("Wifi")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_wifi">Wifi</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_kitchen"
-                name="amenities"
-                value="Full Kitchen"
-                className="mr-2"
-                checked={fields.amenities.includes("Full Kitchen")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_kitchen">Full kitchen</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_washer_dryer"
-                name="amenities"
-                value="Washer & Dryer"
-                className="mr-2"
-                checked={fields.amenities.includes("Washer & Dryer")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_washer_dryer">Washer & Dryer</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_free_parking"
-                name="amenities"
-                value="Free Parking"
-                className="mr-2"
-                checked={fields.amenities.includes("Free Parking")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_free_parking">Free Parking</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_pool"
-                name="amenities"
-                value="Swimming Pool"
-                className="mr-2"
-                checked={fields.amenities.includes("Swimming Pool")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_pool">Swimming Pool</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_hot_tub"
-                name="amenities"
-                value="Hot Tub"
-                className="mr-2"
-                checked={fields.amenities.includes("Hot Tub")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_hot_tub">Hot Tub</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_24_7_security"
-                name="amenities"
-                value="24/7 Security"
-                className="mr-2"
-                checked={fields.amenities.includes("24/7 Security")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_24_7_security">24/7 Security</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_wheelchair_accessible"
-                name="amenities"
-                value="Wheelchair Accessible"
-                className="mr-2"
-                checked={fields.amenities.includes("Wheelchair Accessible")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_wheelchair_accessible">
-                Wheelchair Accessible
-              </label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_elevator_access"
-                name="amenities"
-                value="Elevator Access"
-                className="mr-2"
-                checked={fields.amenities.includes("Elevator Access")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_elevator_access">Elevator Access</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_dishwasher"
-                name="amenities"
-                value="Dishwasher"
-                className="mr-2"
-                checked={fields.amenities.includes("Dishwasher")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_dishwasher">Dishwasher</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_gym_fitness_center"
-                name="amenities"
-                value="Gym/Fitness Center"
-                className="mr-2"
-                checked={fields.amenities.includes("Gym/Fitness Center")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_gym_fitness_center">
-                Gym/Fitness Center
-              </label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_air_conditioning"
-                name="amenities"
-                value="Air Conditioning"
-                className="mr-2"
-                checked={fields.amenities.includes("Air Conditioning")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_air_conditioning">Air Conditioning</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_balcony_patio"
-                name="amenities"
-                value="Balcony/Patio"
-                className="mr-2"
-                checked={fields.amenities.includes("Balcony/Patio")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_balcony_patio">Balcony/Patio</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_smart_tv"
-                name="amenities"
-                value="Smart TV"
-                className="mr-2"
-                checked={fields.amenities.includes("Smart TV")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_smart_tv">Smart TV</label>
-            </div>
-            <div>
-              <input
-                type="checkbox"
-                id="amenity_coffee_maker"
-                name="amenities"
-                value="Coffee Maker"
-                className="mr-2"
-                checked={fields.amenities.includes("Coffee Maker")}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor="amenity_coffee_maker">Coffee Maker</label>
-            </div>
-          </div>
-        </div>
         <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
           <div className="mb-4">
             <label
@@ -533,18 +353,18 @@ const RentForm = () => {
             </label>
             <input
               type="text"
-              id="price"
-              name="price"
+              id="Price"
+              name="Price"
               placeholder="NGN 0.00"
               className="border rounded w-full py-2 px-3"
               required
-              value={fields.price}
+              value={fields.Price}
               onChange={handleChange}
               onBlur={(e) => {
-                const formattedPrice = formatPrice(fields.price);
+                const formattedPrice = formatPrice(fields.Price);
                 setFields((prevFields) => ({
                   ...prevFields,
-                  price: formattedPrice,
+                  Price: formattedPrice,
                 }));
               }}
             />
@@ -553,15 +373,15 @@ const RentForm = () => {
 
         <div className="mb-4">
           <label
-            htmlFor="seller_name"
+            htmlFor="virtual_tour"
             className="block text-gray-700 font-bold mb-2"
           >
             Virtual Tour
           </label>
           <input
             type="text"
-            id="virtual_tour"
-            name="virtual_tour"
+            id="virtualTour"
+            name="virtualTour"
             className="border rounded w-full py-2 px-3"
             placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
             value={fields.virtualTour}
@@ -569,10 +389,7 @@ const RentForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label
-            htmlFor="seller_email"
-            className="block text-gray-700 font-bold mb-2"
-          >
+          <label htmlFor="video" className="block text-gray-700 font-bold mb-2">
             Video
           </label>
           <input
@@ -589,15 +406,15 @@ const RentForm = () => {
         <div>
           <div className="mb-4">
             <label
-              htmlFor="images"
+              htmlFor="photo"
               className="block text-gray-700 font-bold mb-2"
             >
-              Images (Select up to 4 images)
+              Images (Select up to 7 images)
             </label>
             <input
               type="file"
-              id="images"
-              name="images"
+              id="photo"
+              name="photo"
               className="border rounded w-full py-2 px-3"
               accept="image/*"
               multiple
@@ -606,15 +423,22 @@ const RentForm = () => {
             />
           </div>
 
-          {selectedImages.length > 0 && (
+          {previewUrls.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
-              {selectedImages.map((image, index) => (
-                <img
-                  key={index}
-                  src={image}
-                  alt={`Preview ${index + 1}`}
-                  className="w-16 h-16 object-cover rounded"
-                />
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute top-0 right-0 text-white bg-red-500 hover:bg-red-700 rounded-full w-5 h-5 flex items-center justify-center"
+                  >
+                    &times;
+                  </button>
+                </div>
               ))}
             </div>
           )}
