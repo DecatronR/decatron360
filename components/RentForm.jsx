@@ -248,7 +248,7 @@ const RentForm = () => {
             name="state"
             className="border rounded w-full py-2 px-3 mb-2"
             required
-            value={fields.city}
+            value={fields.state}
             onChange={handleChange}
           >
             <option disabled value="">
