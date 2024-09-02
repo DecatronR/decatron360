@@ -22,12 +22,9 @@ const Properties = () => {
         );
 
         console.log("response: ", res);
-        // if (!res.ok) {
-        //   throw new Error("Failed to fetch data");
-        // }
 
         setProperties(res.data);
-        // setTotalItems(data.total);
+        setTotalItems(res.data.length);
       } catch (error) {
         console.log(error);
       } finally {
