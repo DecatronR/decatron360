@@ -9,6 +9,7 @@ import ShareButtons from "@/components/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { fetchProperty } from "@/utils/requests";
 import Link from "next/link";
+import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
@@ -23,8 +24,13 @@ const PropertyPage = () => {
     const fetchPropertyData = async () => {
       if (!id) return;
       try {
-        const property = await fetchProperty(id);
-        setProperty(property);
+        const property = await axios.post(
+          "http://localhost:8080/propertyListing/editPropertyListing",
+          { id: id },
+          { withCredentials: true }
+        );
+        console.log("Property fetched:", property);
+        setProperty(property.data);
       } catch (error) {
         console.error("Error fetching property:", error);
       } finally {
@@ -50,7 +56,7 @@ const PropertyPage = () => {
       {loading && <Spinner loading={loading} />}
       {!loading && property && (
         <>
-          <PropertyHeaderImage image={property.images[0]} />
+          <PropertyHeaderImage image={property.photos[0].path} />
           <section>
             <div className="container m-auto py-6 px-6">
               <Link
@@ -74,7 +80,7 @@ const PropertyPage = () => {
               </div>
             </div>
           </section>
-          <PropertyImages images={property.images} />
+          <PropertyImages images={property.photos} />
         </>
       )}
     </>

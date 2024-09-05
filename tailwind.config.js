@@ -15,12 +15,14 @@ module.exports = {
       },
       colors: {
         primary: {
-          100: '#ffebeb', // very light tint
-          200: '#ffd7d7', // light tint
-          300: '#ffc5c5', // primary light
-          400: '#fb4747', // primary
-          500: '#c91313', // primary dark
-          600: '#7f0000', // very dark shade
+          100: '#eceaff', // very light tint
+          200: '#c9c4ff', // light tint
+          300: '#a59eff', // primary light
+          400: '#8177ff', // lighter primary
+          500: '#5a47fb', // primary (your original color)
+          600: '#432cde', // primary dark
+          700: '#3019b8', // darker shade
+          800: '#1e0892', // very dark shade
         },
         success: '#10b981',
         error: '#f04438',
