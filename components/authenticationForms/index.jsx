@@ -7,6 +7,7 @@ import OtpForm from "./OtpForm";
 const AuthenticationForms = ({ isLoginOpen, onOpenLogin, onCloseLogin }) => {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isOtpFormOpen, setisOtpFormOpen] = useState(false);
 
   const handleOpenRegistration = () => {
@@ -17,8 +18,9 @@ const AuthenticationForms = ({ isLoginOpen, onOpenLogin, onCloseLogin }) => {
     setIsRegisterOpen(false);
   };
 
-  const handleOpeneOtp = (userEmail) => {
+  const handleOpenOtp = (userEmail, userPassword) => {
     setEmail(userEmail);
+    setPassword(userPassword);
     setisOtpFormOpen(true);
   };
 
@@ -32,7 +34,7 @@ const AuthenticationForms = ({ isLoginOpen, onOpenLogin, onCloseLogin }) => {
         <LoginForm
           onOpenRegistration={handleOpenRegistration}
           onCloseLogin={onCloseLogin}
-          onOpenOtp={handleOpeneOtp}
+          onOpenOtp={handleOpenOtp}
         />
       </Dialog>
 
@@ -40,11 +42,15 @@ const AuthenticationForms = ({ isLoginOpen, onOpenLogin, onCloseLogin }) => {
         <RegistrationForm
           onOpenLogin={onOpenLogin}
           onCloseRegistration={handleCloseRegistration}
-          onOpenOtp={handleOpeneOtp}
+          onOpenOtp={handleOpenOtp}
         />
       </Dialog>
       <Dialog isOpen={isOtpFormOpen} onClose={handleCloseOtp}>
-        <OtpForm email={email} onCloseOtp={handleCloseOtp} />
+        <OtpForm
+          email={email}
+          password={password}
+          onCloseOtp={handleCloseOtp}
+        />
       </Dialog>
     </>
   );

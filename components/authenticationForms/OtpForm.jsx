@@ -1,9 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
-const OtpForm = ({ email, onCloseOtp }) => {
+const OtpForm = ({ email, password, onCloseOtp }) => {
+  const { signIn } = useAuth();
   const [otp, setOtp] = useState("");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const handleChange = (event) => {
     setOtp(event.target.value);
@@ -18,8 +22,7 @@ const OtpForm = ({ email, onCloseOtp }) => {
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const onConfirmOtp = async () => {
     if (otp.length === 6) {
       try {
         const res = await axios.post(
@@ -31,9 +34,31 @@ const OtpForm = ({ email, onCloseOtp }) => {
       } catch (error) {
         console.log("Error confirming OTP", error);
       }
-      onCloseOtp();
     } else {
       console.error("OTP should be 6 digits long");
+    }
+  };
+
+  const onLogin = async () => {
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      // Clear previous error messages
+      setError(null);
+      setSuccess(null);
+
+      await onConfirmOtp();
+      await onLogin();
+      onCloseOtp();
+    } catch (error) {
+      console.log("Error during OTP confirmation", error);
     }
   };
 
@@ -79,7 +104,7 @@ const OtpForm = ({ email, onCloseOtp }) => {
           Didn't receive the code?{" "}
           <button
             type="button"
-            onClick={onResendOtp}
+            onClick={handleResendOtp}
             className="font-medium text-primary-500 hover:text-primary-400"
           >
             Resend OTP
