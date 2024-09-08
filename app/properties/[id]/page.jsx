@@ -1,24 +1,28 @@
 "use client";
-
-import BookmarkButton from "@/components/BookmarkButton";
-import PropertyContactForm from "@/components/PropertyContactForm";
-import PropertyDetails from "@/components/PropertyDetails";
-import PropertyHeaderImage from "@/components/PropertyHeaderImage";
-import PropertyImages from "@/components/PropertyImages";
-import ShareButtons from "@/components/ShareButtons";
-import Spinner from "@/components/Spinner";
-import { fetchProperty } from "@/utils/requests";
-import Link from "next/link";
 import axios from "axios";
+import BookmarkButton from "@/components/singleProperty/BookmarkButton";
+import PropertyDetails from "@/components/singleProperty/PropertyDetails";
+import PropertyImages from "@/components/singleProperty/PropertyImages";
+import ShareButtons from "@/components/singleProperty/ShareButtons";
+import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
+import ProfileCard from "@/components/agentProfile/ProfileCard";
+import ScheduleInspectionForm from "@/components/singleProperty/ScheduleInspectionForm";
 
 const PropertyPage = () => {
   const { id } = useParams();
-
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const agent = {
+    photo: "/path/to/agent-photo.jpg",
+    name: "John Doe",
+    rank: "Top Agent",
+    reviews: 123,
+    ratings: 456,
+    joinDate: "2020-01-15",
+  };
 
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -26,10 +30,9 @@ const PropertyPage = () => {
       try {
         const property = await axios.post(
           "http://localhost:8080/propertyListing/editPropertyListing",
-          { id: id },
+          { id },
           { withCredentials: true }
         );
-        console.log("Property fetched:", property);
         setProperty(property.data);
       } catch (error) {
         console.error("Error fetching property:", error);
@@ -38,7 +41,7 @@ const PropertyPage = () => {
       }
     };
 
-    if (property === null) {
+    if (!property) {
       fetchPropertyData();
     }
   }, [id, property]);
@@ -53,34 +56,34 @@ const PropertyPage = () => {
 
   return (
     <>
-      {loading && <Spinner loading={loading} />}
+      {loading && <Spinner />}
       {!loading && property && (
         <>
-          <PropertyHeaderImage image={property.photos[0].path} />
-          <section>
-            <div className="container m-auto py-6 px-6">
-              <Link
-                href="/properties"
-                className="text-blue-500 hover:text-blue-600 flex items-center"
-              >
-                <FaArrowLeft className="mr-2" /> Back to Properties
-              </Link>
-            </div>
-          </section>
+          {/* Header with image carousel */}
+          <PropertyImages images={property.photos} />
 
-          <section className="bg-blue-50">
-            <div className="container m-auto py-10 px-6">
-              <div className="grid grid-cols-1 md:grid-cols-70/30 w-full gap-6">
-                <PropertyDetails property={property} />
-                <aside className="space-y-4">
+          {/* Main content: property details and sticky sidebar */}
+          <div className="container mx-auto py-6 px-6">
+            <div className="flex flex-col md:flex-row space-y-6 md:space-y-0">
+              <div className="flex-1 bg-white p-6 rounded-lg ">
+                {/* Property details */}
+                <PropertyDetails property={property.data} />
+              </div>
+
+              {/* Sidebar */}
+              <aside className="w-full md:w-1/3 sticky top-4 space-y-6">
+                <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
+                  <ProfileCard agent={agent} />
                   <BookmarkButton property={property} />
                   <ShareButtons property={property} />
-                  <PropertyContactForm property={property} />
-                </aside>
-              </div>
+                </div>
+
+                <div>
+                  <ScheduleInspectionForm />
+                </div>
+              </aside>
             </div>
-          </section>
-          <PropertyImages images={property.photos} />
+          </div>
         </>
       )}
     </>

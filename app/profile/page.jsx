@@ -65,6 +65,8 @@ const ProfilePage = () => {
           (property) => property._id !== propertyId
         );
 
+        console.log("updatedProperties", updatedProperties);
+
         setProperties(updatedProperties);
 
         toast.success("Property Deleted");
