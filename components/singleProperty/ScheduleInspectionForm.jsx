@@ -2,8 +2,10 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
 
 const ScheduleInspectionForm = () => {
+  const { user, signIn } = useAuth();
   const [date, setDate] = useState(null);
   const [time, setTime] = useState("");
   const [name, setName] = useState("");
@@ -21,6 +23,14 @@ const ScheduleInspectionForm = () => {
   const times = [];
   for (let hour = 9; hour < 17; hour++) {
     times.push(`${hour}:00`, `${hour}:30`);
+  }
+
+  const handleBookInspection = async () => {
+    if (!user) {
+      //route to login page, if the user does not have an account at this point they know click the registration page.
+    } else {
+      // Show the details form
+    }
   }
 
   return (

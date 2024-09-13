@@ -5,16 +5,21 @@ import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import UnreadMessageCount from "./UnreadMessageCount";
 import { useAuth } from "@/context/AuthContext";
 
-const Navbar = ({ onOpenLogin }) => {
+const Navbar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { user, signOut } = useAuth();
   const profileImage = user?.image;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const pathname = usePathname();
+
+  const handleLogin = () => {
+    router.replace("/auth/login");
+  };
 
   return (
     <nav className="bg-primary-500 border-b border-primary-500">
@@ -91,7 +96,7 @@ const Navbar = ({ onOpenLogin }) => {
           {!user && (
             <div className="hidden md:block md:ml-6">
               <button
-                onClick={onOpenLogin}
+                onClick={handleLogin}
                 className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
               >
                 <span>Login</span>
@@ -223,7 +228,7 @@ const Navbar = ({ onOpenLogin }) => {
             )}
             {!user && (
               <button
-                onClick={onOpenLogin}
+                onClick={handleLogin}
                 className="text-white block rounded-md px-3 py-2 text-base font-medium"
               >
                 Login

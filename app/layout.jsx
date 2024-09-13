@@ -9,12 +9,7 @@ import { GlobalProvider } from "@/context/GlobalContext";
 import "photoswipe/dist/photoswipe.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { appMetadata } from "./appMetadata";
-import Dialog from "@/ui/Dialog";
 import AuthenticationForms from "@/components/authenticationForms";
-import LoginForm from "@/components/authenticationForms/LoginForm";
-import RegistrationForm from "@/components/authenticationForms/RegistrationForm";
-import axios from "axios";
 
 const MainLayout = ({ children }) => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -33,7 +28,7 @@ const MainLayout = ({ children }) => {
       <AuthProvider>
         <html lang="en">
           <body>
-            <Navbar onOpenLogin={handleOpenLogin} />
+            <Navbar />
             <main>{children}</main>
             <AuthenticationForms
               isLoginOpen={isLoginOpen}
