@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
@@ -7,11 +7,12 @@ import { useAuth } from "@/context/AuthContext";
 const Otp = () => {
   const router = useRouter();
   const { signIn } = useAuth();
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(new Array(6).fill(""));
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const inputRefs = useRef([]);
 
   useEffect(() => {
     const email = sessionStorage.getItem("email");
@@ -23,8 +24,26 @@ const Otp = () => {
     }
   }, []);
 
-  const handleChange = (event) => {
-    setOtp(event.target.value);
+  const handleChange = (element, index) => {
+    const value = element.value.replace(/[^0-9]/g, ""); // only allow digits
+    if (value) {
+      setOtp((prevOtp) => {
+        const newOtp = [...prevOtp];
+        newOtp[index] = value;
+        return newOtp;
+      });
+
+      // Move to next input if available
+      if (inputRefs.current[index + 1]) {
+        inputRefs.current[index + 1].focus();
+      }
+    } else {
+      setOtp((prevOtp) => {
+        const newOtp = [...prevOtp];
+        newOtp[index] = "";
+        return newOtp;
+      });
+    }
   };
 
   const handleResendOtp = async () => {
@@ -37,11 +56,12 @@ const Otp = () => {
   };
 
   const onConfirmOtp = async () => {
-    if (otp.length === 6) {
+    const otpValue = otp.join("");
+    if (otpValue.length === 6) {
       try {
         const res = await axios.post(
           "http://localhost:8080/auth/confirmOTP",
-          { email: email, otp: otp },
+          { email: email, otp: otpValue },
           { withCredentials: true }
         );
         console.log("OTP confirmed", res.data);
@@ -70,7 +90,7 @@ const Otp = () => {
 
       await onConfirmOtp();
       await onLogin();
-      onCloseOtp();
+      router.replace("/");
     } catch (error) {
       console.log("Error during OTP confirmation", error);
     }
@@ -86,24 +106,27 @@ const Otp = () => {
           We've sent an OTP to your email.
         </p>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="otp"
-              className="block text-sm font-medium text-gray-700"
-            >
-              OTP Code
-            </label>
-            <input
-              id="otp"
-              name="otp"
-              type="text"
-              maxLength={6}
-              autoComplete="one-time-code"
-              required
-              value={otp}
-              onChange={handleChange}
-              className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
-            />
+          <div className="flex justify-center space-x-2">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                type="text"
+                maxLength="1"
+                value={digit}
+                onChange={(e) => handleChange(e.target, index)}
+                ref={(el) => (inputRefs.current[index] = el)}
+                className="w-10 h-12 text-center border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-primary-400 focus:border-primary-400"
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "Backspace" &&
+                    !digit &&
+                    inputRefs.current[index - 1]
+                  ) {
+                    inputRefs.current[index - 1].focus();
+                  }
+                }}
+              />
+            ))}
           </div>
           <div>
             <button

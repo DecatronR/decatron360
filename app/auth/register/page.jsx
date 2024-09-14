@@ -66,8 +66,8 @@ const Registration = () => {
     // Clear previous error messages
     setError(null);
     setSuccess(null);
-    sessionStorage.setItem("email", values.email);
-    sessionStorage.setItem("password", values.password);
+    sessionStorage.setItem("email", formData.email);
+    sessionStorage.setItem("password", formData.password);
     onRegistration();
     router.replace("/auth/otp");
   };

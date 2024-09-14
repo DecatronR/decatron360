@@ -12,17 +12,6 @@ import "react-toastify/dist/ReactToastify.css";
 import AuthenticationForms from "@/components/authenticationForms";
 
 const MainLayout = ({ children }) => {
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-
-  const handleOpenLogin = () => {
-    console.log("open login dialog triggered");
-    setIsLoginOpen(true);
-  };
-
-  const handleCloseLogin = () => {
-    setIsLoginOpen(false);
-  };
-
   return (
     <GlobalProvider>
       <AuthProvider>
