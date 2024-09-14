@@ -2,10 +2,8 @@ import FeaturedProperties from "@/components/FeaturedProperties";
 import Hero from "@/components/Hero";
 import HomeProperties from "@/components/HomeProperties";
 import InfoBoxes from "@/components/InfoBoxes";
-import Dialog from "@/ui/Dialog";
-import LoginForm from "@/components/authenticationForms/LoginForm";
 
-const HomePage = ({ isLoginOpen, handleCloseLogin }) => {
+const HomePage = () => {
   return (
     <>
       <Hero />
