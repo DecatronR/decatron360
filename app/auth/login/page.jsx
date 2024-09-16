@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
@@ -13,6 +13,7 @@ const Login = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [inspectionData, setInspectionData] = useState(null);
 
   const toggleShowPassword = () => {
     setShowPassword((prevState) => !prevState);
@@ -23,6 +24,9 @@ const Login = () => {
       ...formData,
       [event.target.name]: event.target.value,
     });
+    if (inspectionData && event.target.value) {
+      setInspectionData(null);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -41,6 +45,18 @@ const Login = () => {
     event.preventDefault();
     router.replace("/auth/register");
   };
+
+  useEffect(() => {
+    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
+    console.log("Fetched inspection data:", data);
+    if (data) {
+      setInspectionData(data);
+      setFormData((prevState) => ({
+        email: prevState.email || data.email || "",
+        password: prevState.password || "",
+      }));
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

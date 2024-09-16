@@ -22,6 +22,9 @@ const FeaturedPropertyCard = ({ property }) => {
   //     return `${rates.nightly.toLocaleString()}/night`;
   //   }
   // };
+  useEffect(() => {
+    console.log("property photo", property.photos[0].path);
+  }, []);
 
   return (
     <div className="rounded-xl shadow-md relative">

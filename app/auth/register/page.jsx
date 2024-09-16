@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
@@ -20,6 +20,7 @@ const Registration = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [inspectionData, setInspectionData] = useState(null);
 
   // Handle changes in form fields
   const handleChange = (event) => {
@@ -77,6 +78,20 @@ const Registration = () => {
     console.log("reg button clicked");
     router.replace("/auth/login");
   };
+
+  useEffect(() => {
+    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
+    console.log("inspection data", data);
+    setInspectionData(data);
+    setFormData((prevState) => ({
+      name: prevState.name || data.name || "",
+      email: prevState.email || data.email || "",
+      role: prevState.role || data.role || "",
+      phone: prevState.phone || data.phone || "08063247818",
+      password: prevState.password || "",
+      confirmpassword: prevState.confirmpassword || "",
+    }));
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
