@@ -33,25 +33,25 @@ const UserListings = ({ photos }) => {
         {/* Carousel Navigation Buttons */}
         <button
           onClick={handlePrev}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md"
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10"
         >
           <FontAwesomeIcon icon={faChevronLeft} />
         </button>
         <button
           onClick={handleNext}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md"
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10"
         >
           <FontAwesomeIcon icon={faChevronRight} />
         </button>
 
         {/* Display Visible Photos */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {visiblePhotos.map((photo, index) => (
             <img
               key={index}
               src={photo}
               alt={`Listing ${currentIndex + index + 1}`}
-              className="rounded-lg"
+              className="rounded-lg w-full h-auto object-cover"
             />
           ))}
         </div>

@@ -21,8 +21,8 @@ const UserProfileCard = ({ agent }) => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-      <div className="flex items-center">
-        <div className="w-16 h-16 rounded-full overflow-hidden mr-4 cursor-pointer">
+      <div className="flex flex-col sm:flex-row items-center">
+        <div className="w-20 h-20 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 cursor-pointer">
           <Image
             src={photo}
             alt={`${name}'s photo`}

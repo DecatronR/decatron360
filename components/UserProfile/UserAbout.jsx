@@ -33,17 +33,18 @@ const UserAbout = ({ name, initialDescription }) => {
         </button>
       </div>
       {isEditing ? (
-        <div className="flex items-center">
+        <div className="flex flex-col md:flex-row items-center">
           <input
             type="text"
             value={description}
             onChange={handleChange}
-            className="border border-gray-300 rounded p-2 w-full"
+            className="border border-gray-300 rounded p-2 w-full mb-2 md:mb-0 md:mr-2"
             onBlur={handleEditToggle}
+            placeholder="Edit your description..."
           />
           <button
             onClick={handleSave}
-            className="ml-2 bg-primary-500 text-white rounded px-4 py-2"
+            className="bg-primary-500 text-white rounded px-4 py-2"
           >
             Save
           </button>

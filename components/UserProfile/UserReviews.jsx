@@ -34,7 +34,7 @@ const UserReviews = ({ reviews }) => {
       </div>
 
       <div className="relative">
-        <div className="flex space-x-4">
+        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           {currentReviews.map((review, index) => (
             <div key={index} className="border rounded-lg p-4 shadow-md flex-1">
               <p className="text-gray-600">“{review.text}”</p>
