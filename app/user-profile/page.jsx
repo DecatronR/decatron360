@@ -15,12 +15,10 @@ const UserProfilePage = () => {
     joinDate: "2020-01-15",
   };
 
-  // Example verification statuses
   const isEmailVerified = false;
   const isPhoneVerified = false;
   const isIdentityVerified = true;
 
-  // Example data for listings and reviews
   const photos = [
     "https://via.placeholder.com/150",
     "https://via.placeholder.com/150",
@@ -41,34 +39,27 @@ const UserProfilePage = () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8">
-      <div className="flex max-w-6xl mx-auto">
+    <div className="bg-gray-100 min-h-screen py-4 md:py-8">
+      <div className="flex flex-col md:flex-row max-w-6xl mx-auto">
         {/* Left Column: Profile Info */}
-        <div className="w-1/3">
-          {/* Make the left column sticky so it stays in place */}
-          <div className="sticky top-8">
-            <UserProfileCard agent={agent} />
-
-            {/* Verification Status */}
-            <div className="mt-6">
-              <UserVerificationStatus
-                isEmailVerified={isEmailVerified}
-                isPhoneVerified={isPhoneVerified}
-                isIdentityVerified={isIdentityVerified}
-              />
-            </div>
+        <div className="w-full md:w-1/3 md:sticky md:top-8 mb-4 md:mb-0">
+          <UserProfileCard agent={agent} />
+          <div className="mt-6">
+            <UserVerificationStatus
+              isEmailVerified={isEmailVerified}
+              isPhoneVerified={isPhoneVerified}
+              isIdentityVerified={isIdentityVerified}
+            />
           </div>
         </div>
 
         {/* Right Column: Scrollable Details */}
-        <div className="w-2/3 ml-8 h-[calc(100vh-4rem)] overflow-y-scroll">
+        <div className="w-full md:w-2/3 md:ml-8 h-auto md:h-[calc(100vh-4rem)] overflow-y-scroll">
           <UserAbout
             name={agent.name}
             description="Hi, I’m John! I love hosting guests from all over the world. My space is a cozy spot in the heart of the city, ideal for travelers who want to explore and feel at home."
           />
-
           <UserListings photos={photos} />
-
           <UserReviews reviews={reviews} />
         </div>
       </div>

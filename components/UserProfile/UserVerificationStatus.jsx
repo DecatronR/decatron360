@@ -14,7 +14,7 @@ const UserVerificationStatus = ({
         {isEmailVerified ? (
           <FaCheckCircle className="text-green-500" />
         ) : (
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <button className="bg-primary-500 text-white px-4 py-2 rounded-md">
             Verify Email
           </button>
         )}
@@ -26,7 +26,7 @@ const UserVerificationStatus = ({
         {isPhoneVerified ? (
           <FaCheckCircle className="text-green-500" />
         ) : (
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <button className="bg-primary-500 text-white px-4 py-2 rounded-md">
             Verify Phone
           </button>
         )}
@@ -38,7 +38,7 @@ const UserVerificationStatus = ({
         {isIdentityVerified ? (
           <FaCheckCircle className="text-green-500" />
         ) : (
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          <button className="bg-primary-500 text-white px-4 py-2 rounded-md">
             Verify Identity
           </button>
         )}

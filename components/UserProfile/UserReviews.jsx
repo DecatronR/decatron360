@@ -30,7 +30,7 @@ const UserReviews = ({ reviews }) => {
     <div className="bg-white p-6 rounded-lg shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Reviews</h2>
-        <button className="text-blue-500 font-medium">See More</button>
+        <button className="text-primary-500 font-medium">See More</button>
       </div>
 
       <div className="relative">

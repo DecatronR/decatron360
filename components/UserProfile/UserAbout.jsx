@@ -27,7 +27,7 @@ const UserAbout = ({ name, initialDescription }) => {
         <h2 className="text-xl font-semibold">About {name}</h2>
         <button
           onClick={handleEditToggle}
-          className="text-gray-500 hover:text-blue-500"
+          className="text-gray-500 hover:text-primary-500"
         >
           <FontAwesomeIcon icon={faPen} />
         </button>
@@ -43,7 +43,7 @@ const UserAbout = ({ name, initialDescription }) => {
           />
           <button
             onClick={handleSave}
-            className="ml-2 bg-blue-500 text-white rounded px-4 py-2"
+            className="ml-2 bg-primary-500 text-white rounded px-4 py-2"
           >
             Save
           </button>
