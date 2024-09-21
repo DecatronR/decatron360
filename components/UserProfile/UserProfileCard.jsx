@@ -3,10 +3,12 @@ import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
-const UserProfileCard = ({ agent }) => {
-  const { name, rank, reviews, ratings, joinDate } = agent;
-  const [photo, setPhoto] = useState(agent.photo);
+const UserProfileCard = ({ dummyUser }) => {
+  const { user } = useAuth();
+  const { name, rank, reviews, ratings, joinDate } = dummyUser;
+  const [photo, setPhoto] = useState(dummyUser.photo);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -40,7 +42,9 @@ const UserProfileCard = ({ agent }) => {
           />
         </div>
         <div>
-          <p className="text-lg font-semibold text-gray-800">{name}</p>
+          <p className="text-lg font-semibold text-gray-800">
+            {user?.data.name}
+          </p>
           <p className="text-gray-600">{rank}</p>
           <div className="flex items-center text-yellow-500">
             <FaStar className="text-yellow-500" />

@@ -1,14 +1,15 @@
 "use client";
 import axios from "axios";
-import BookmarkButton from "@/components/singleProperty/BookmarkButton";
-import PropertyDetails from "@/components/singleProperty/PropertyDetails";
-import PropertyImages from "@/components/singleProperty/PropertyImages";
-import ShareButtons from "@/components/singleProperty/ShareButtons";
+import BookmarkButton from "@/components/SingleProperty/BookmarkButton";
+import PropertyDetails from "@/components/SingleProperty/PropertyDetails";
+import PropertyImages from "@/components/SingleProperty/PropertyImages";
+import ShareButtons from "@/components/SingleProperty/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import ProfileCard from "@/components/agentProfile/AgentProfileCard";
-import ScheduleInspectionForm from "@/components/singleProperty/ScheduleInspectionForm";
+import Link from "next/link";
+import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
+import ScheduleInspectionForm from "@/components/SingleProperty/ScheduleInspectionForm";
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -54,6 +55,8 @@ const PropertyPage = () => {
     );
   }
 
+  useEffect(() => {}, []);
+
   return (
     <>
       {loading && <Spinner />}
@@ -73,7 +76,13 @@ const PropertyPage = () => {
               {/* Sidebar */}
               <aside className="w-full md:w-1/3 sticky top-4 space-y-6">
                 <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
-                  <ProfileCard agent={agent} />
+                  <Link
+                    href={`/agents/${agent.name
+                      .replace(/\s+/g, "-")
+                      .toLowerCase()}`}
+                  >
+                    <AgentProfileCard agent={agent} />
+                  </Link>
                   <BookmarkButton property={property} />
                   <ShareButtons property={property} />
                 </div>
