@@ -1,158 +1,78 @@
-"use client";
-
-import profileDefault from "@/assets/images/profile.png";
-import Spinner from "@/components/Spinner";
-import { useAuth } from "@/context/AuthContext";
-import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import axios from "axios";
+import React from "react";
+import UserProfileCard from "@/components/UserProfile/UserProfileCard";
+import UserVerificationStatus from "@/components/UserProfile/UserVerificationStatus";
+import UserAbout from "@/components/UserProfile/UserAbout";
+import UserListings from "@/components/UserProfile/UserListings";
+import UserReviews from "@/components/UserProfile/UserReviews";
 
 const ProfilePage = () => {
-  const { user } = useAuth();
-  const profileImage = user?.image;
-  const profileName = user?.name;
-  const profileEmail = user?.email;
-
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUserProperties = async (userId) => {
-      if (!userId) {
-        return;
-      }
-
-      try {
-        const res = await axios.get(
-          "http://localhost:8080/propertyListing/fetchPropertyListing",
-          { withCredentials: true }
-        );
-        console.log("response: ", res);
-
-        if (res.status === 200) {
-          setProperties(res.data);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Fetch user properties when user session is available
-    if (user?.id) {
-      fetchUserProperties(user.id);
-    }
-  }, [user]);
-
-  const handleDeleteProperty = async (propertyId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this property?"
-    );
-
-    if (!confirmed) return;
-
-    try {
-      const res = await fetch(`/api/properties/${propertyId}`, {
-        method: "DELETE",
-      });
-
-      if (res.status === 200) {
-        // Remove the property from state
-        const updatedProperties = properties.filter(
-          (property) => property._id !== propertyId
-        );
-
-        console.log("updatedProperties", updatedProperties);
-
-        setProperties(updatedProperties);
-
-        toast.success("Property Deleted");
-      } else {
-        toast.error("Failed to delete property");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to delete property");
-    }
+  const agent = {
+    photo: "/path/to/agent-photo.jpg",
+    name: "John Doe",
+    rank: "Top Agent",
+    reviews: 123,
+    ratings: 456,
+    joinDate: "2020-01-15",
   };
 
-  return (
-    <section className="bg-blue-50">
-      <div className="container m-auto py-24">
-        <div className="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
-          <h1 className="text-3xl font-bold mb-4">Your Profile</h1>
-          <div className="flex flex-col md:flex-row">
-            <div className="md:w-1/4 mx-20 mt-10">
-              <div className="mb-4">
-                <Image
-                  className="h-32 w-32 md:h-48 md:w-48 rounded-full mx-auto md:mx-0"
-                  src={profileImage || profileDefault}
-                  width={200}
-                  height={200}
-                  alt="User"
-                />
-              </div>
-              <h2 className="text-2xl mb-4">
-                <span className="font-bold block">Name: </span> {profileName}
-              </h2>
-              <h2 className="text-2xl">
-                <span className="font-bold block">Email: </span> {profileEmail}
-              </h2>
-            </div>
+  // Example verification statuses
+  const isEmailVerified = false;
+  const isPhoneVerified = false;
+  const isIdentityVerified = true;
 
-            <div className="md:w-3/4 md:pl-4">
-              <h2 className="text-xl font-semibold mb-4">Your Listings</h2>
-              {!loading && properties.length === 0 && (
-                <p>You have no property listings</p>
-              )}
-              {loading ? (
-                <Spinner loading={loading} />
-              ) : (
-                properties.map((property) => (
-                  <div key={property._id} className="mb-10">
-                    <Link href={`/properties/${property._id}`}>
-                      <Image
-                        className="h-32 w-full rounded-md object-cover"
-                        src={property.images[0]}
-                        alt=""
-                        width={500}
-                        height={100}
-                        priority={true}
-                      />
-                    </Link>
-                    <div className="mt-2">
-                      <p className="text-lg font-semibold">{property.name}</p>
-                      <p className="text-gray-600">
-                        Address: {property.location.street}{" "}
-                        {property.location.city} {property.location.state}
-                      </p>
-                    </div>
-                    <div className="mt-2">
-                      <Link
-                        href={`/properties/${property._id}/edit`}
-                        className="bg-blue-500 text-white px-3 py-3 rounded-md mr-2 hover:bg-blue-600"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDeleteProperty(property._id)}
-                        className="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600"
-                        type="button"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
+  // Example data for listings and reviews
+  const photos = [
+    "https://via.placeholder.com/150",
+    "https://via.placeholder.com/150",
+    "https://via.placeholder.com/150",
+  ];
+
+  const reviews = [
+    {
+      text: "Great host! The space was exactly as described, and John was very helpful throughout our stay.",
+      author: "Alice",
+      date: "February 2023",
+    },
+    {
+      text: "Very clean, convenient location, and the host was super responsive!",
+      author: "Michael",
+      date: "March 2023",
+    },
+  ];
+
+  return (
+    <div className="bg-gray-100 min-h-screen py-8">
+      <div className="flex max-w-6xl mx-auto">
+        {/* Left Column: Profile Info */}
+        <div className="w-1/3">
+          {/* Make the left column sticky so it stays in place */}
+          <div className="sticky top-8">
+            <UserProfileCard agent={agent} />
+
+            {/* Verification Status */}
+            <div className="mt-6">
+              <UserVerificationStatus
+                isEmailVerified={isEmailVerified}
+                isPhoneVerified={isPhoneVerified}
+                isIdentityVerified={isIdentityVerified}
+              />
             </div>
           </div>
         </div>
+
+        {/* Right Column: Scrollable Details */}
+        <div className="w-2/3 ml-8 h-[calc(100vh-4rem)] overflow-y-scroll">
+          <UserAbout
+            name={agent.name}
+            description="Hi, I’m John! I love hosting guests from all over the world. My space is a cozy spot in the heart of the city, ideal for travelers who want to explore and feel at home."
+          />
+
+          <UserListings photos={photos} />
+
+          <UserReviews reviews={reviews} />
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

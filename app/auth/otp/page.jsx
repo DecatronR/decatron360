@@ -90,7 +90,11 @@ const Otp = () => {
 
       await onConfirmOtp();
       await onLogin();
-      router.replace("/");
+      const queryParams = new URLSearchParams(window.location.search);
+      const redirectPath = queryParams.get("redirect") || "/";
+
+      // Redirect to the path specified in the query parameter or default to home
+      router.replace(redirectPath);
     } catch (error) {
       console.log("Error during OTP confirmation", error);
     }

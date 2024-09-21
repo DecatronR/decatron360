@@ -2,12 +2,11 @@ import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 
-const ProfileCard = ({ agent }) => {
+const UserProfileCard = ({ agent }) => {
   const { photo, name, rank, reviews, ratings, joinDate } = agent;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-      <h4 className="text-xl font-bold text-gray-900">Meet Your Agent</h4>
       <div className="flex items-center">
         <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
           <Image
@@ -36,4 +35,4 @@ const ProfileCard = ({ agent }) => {
   );
 };
 
-export default ProfileCard;
+export default UserProfileCard;

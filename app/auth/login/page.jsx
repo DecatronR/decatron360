@@ -35,7 +35,12 @@ const Login = () => {
     try {
       const res = await signIn(formData.email, formData.password);
       console.log("login response", res);
-      router.replace("/");
+      // Extract redirect path from query parameters
+      const queryParams = new URLSearchParams(window.location.search);
+      const redirectPath = queryParams.get("redirect") || "/";
+
+      // Redirect to the path specified in the query parameter or default to home
+      router.replace(redirectPath);
     } catch (error) {
       console.error("Issues with login", error);
     }

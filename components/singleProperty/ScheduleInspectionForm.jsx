@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 
-const ScheduleInspectionForm = () => {
+const ScheduleInspectionForm = ({ propertyId }) => {
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -55,10 +55,19 @@ const ScheduleInspectionForm = () => {
     };
 
     sessionStorage.setItem("inspectionData", JSON.stringify(data));
+    // sessionStorage.setItem("redirectPath", "/inspection/details");
+    const queryParams = `id=${encodeURIComponent(propertyId)}`;
+
+    console.log("query property id: ", queryParams);
+
     if (!user) {
-      router.push("/auth/login");
+      router.push(
+        `/auth/login?redirect=${encodeURIComponent(
+          `/inspection/details?${queryParams}`
+        )}`
+      );
     } else {
-      router.push("/inspection/details");
+      router.push(`/inspection/details?${queryParams}`);
     }
   };
 

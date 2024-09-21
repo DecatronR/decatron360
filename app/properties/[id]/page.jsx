@@ -7,7 +7,7 @@ import ShareButtons from "@/components/singleProperty/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import ProfileCard from "@/components/agentProfile/ProfileCard";
+import ProfileCard from "@/components/agentProfile/AgentProfileCard";
 import ScheduleInspectionForm from "@/components/singleProperty/ScheduleInspectionForm";
 
 const PropertyPage = () => {
@@ -79,7 +79,7 @@ const PropertyPage = () => {
                 </div>
 
                 <div>
-                  <ScheduleInspectionForm />
+                  <ScheduleInspectionForm propertyId={id} />
                 </div>
               </aside>
             </div>
