@@ -5,7 +5,7 @@ import UserAbout from "@/components/UserProfile/UserAbout";
 import UserListings from "@/components/UserProfile/UserListings";
 import UserReviews from "@/components/UserProfile/UserReviews";
 
-const ProfilePage = () => {
+const UserProfilePage = () => {
   const agent = {
     photo: "/path/to/agent-photo.jpg",
     name: "John Doe",
@@ -76,4 +76,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default UserProfilePage;

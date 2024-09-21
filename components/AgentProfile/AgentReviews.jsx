@@ -6,7 +6,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const UserReviews = ({ reviews }) => {
+const AgentReviews = ({ reviews }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3; // Number of reviews to display at a time
 
@@ -69,4 +69,4 @@ const UserReviews = ({ reviews }) => {
   );
 };
 
-export default UserReviews;
+export default AgentReviews;

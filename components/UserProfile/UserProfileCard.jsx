@@ -1,20 +1,42 @@
+"use client";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 
 const UserProfileCard = ({ agent }) => {
-  const { photo, name, rank, reviews, ratings, joinDate } = agent;
+  const { name, rank, reviews, ratings, joinDate } = agent;
+  const [photo, setPhoto] = useState(agent.photo);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhoto(reader.result); // Update the profile image with the new file
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
       <div className="flex items-center">
-        <div className="w-16 h-16 rounded-full overflow-hidden mr-4">
+        <div className="w-16 h-16 rounded-full overflow-hidden mr-4 cursor-pointer">
           <Image
             src={photo}
             alt={`${name}'s photo`}
             width={64}
             height={64}
             className="object-cover"
+            onClick={() => document.getElementById("fileInput").click()} // Trigger file input on image click
+          />
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageChange}
           />
         </div>
         <div>
