@@ -2,8 +2,10 @@
 
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 
 const RentForm = () => {
+  const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [states, setStates] = useState([]);
@@ -12,6 +14,7 @@ const RentForm = () => {
   const [previewUrls, setPreviewUrls] = useState([]);
 
   const [fields, setFields] = useState({
+    userID: user?.data.id,
     title: "",
     listingType: "rent",
     usageType: "dummyData",
@@ -34,7 +37,9 @@ const RentForm = () => {
   });
 
   useEffect(() => {
-    setMounted(true);
+    if (user) {
+      setMounted(true);
+    }
   }, []);
 
   const handleChange = (e) => {

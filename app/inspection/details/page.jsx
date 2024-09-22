@@ -9,8 +9,8 @@ import { PaystackButton } from "react-paystack";
 import { useAuth } from "@/context/AuthContext";
 
 const InspectionDetails = () => {
-  const publicKey = process.env.PAYSTACK_PUBLIC_KEY;
-  const { user, loading: userLoading } = useAuth(); // `loading` from context for user data
+  const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+  const { user, loading: userLoading } = useAuth();
   const name = user?.data?.name || "";
   const email = user?.data?.email || "";
   const phone = user?.data?.phone || "";
@@ -26,6 +26,7 @@ const InspectionDetails = () => {
   const [editedTime, setEditedTime] = useState("");
 
   const id = searchParams.get("id");
+  console.log("public key: ", publicKey);
 
   useEffect(() => {
     const fetchPropertyData = async () => {
@@ -121,15 +122,17 @@ const InspectionDetails = () => {
 
   const componentProps = {
     email,
-    amount: total,
+    amount: total * 100,
     metadata: {
       name,
       phone,
     },
     publicKey,
     text: "Confirm and Pay",
-    onSuccess: () =>
-      alert("Thanks, your inspection has been successfully booked!!"),
+    onSuccess: () => {
+      alert("Thanks, your inspection has been successfully booked!!");
+      router.push("/inspection/booking-successful");
+    },
     onClose: () =>
       alert("You cancelled your inspection booking, is there an issue?"),
   };

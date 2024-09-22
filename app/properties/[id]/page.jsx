@@ -88,7 +88,10 @@ const PropertyPage = () => {
                 </div>
 
                 <div>
-                  <ScheduleInspectionForm propertyId={id} />
+                  <ScheduleInspectionForm
+                    propertyId={id}
+                    propertyData={property.data}
+                  />
                 </div>
               </aside>
             </div>

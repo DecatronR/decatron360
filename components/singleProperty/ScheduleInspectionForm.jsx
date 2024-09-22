@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
+import getCoordinates from "@/utils/getCoordinates";
 
-const ScheduleInspectionForm = ({ propertyId }) => {
+const ScheduleInspectionForm = ({ propertyId, propertyData }) => {
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -16,6 +17,20 @@ const ScheduleInspectionForm = ({ propertyId }) => {
     date: null,
     time: "",
   });
+  const propertyLocation = `${propertyData.neighbourhood} ${propertyData.lga} ${propertyData.state}`;
+  const [propertyCoordinates, setPropertyCoordinates] = useState("");
+
+  useEffect(() => {
+    const fetchPropertyCoordinates = async () => {
+      if (propertyLocation) {
+        const coordinates = await getCoordinates(propertyLocation);
+        setPropertyCoordinates(coordinates);
+      }
+    };
+    fetchPropertyCoordinates();
+  }, []);
+
+  console.log("property data: ", propertyData);
 
   // Generate time options from 9am to 5pm in 30-minute increments
   const times = [];
@@ -52,6 +67,8 @@ const ScheduleInspectionForm = ({ propertyId }) => {
       message: formData.message,
       date: formattedDate,
       time: formattedTime,
+      latitude: propertyCoordinates.latitude,
+      longitude: propertyCoordinates.longitude,
     };
 
     sessionStorage.setItem("inspectionData", JSON.stringify(data));
