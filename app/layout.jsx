@@ -10,18 +10,16 @@ import "react-toastify/dist/ReactToastify.css";
 
 const MainLayout = ({ children }) => {
   return (
-    <GlobalProvider>
-      <AuthProvider>
-        <html lang="en">
-          <body>
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
-            <ToastContainer />
-          </body>
-        </html>
-      </AuthProvider>
-    </GlobalProvider>
+    <AuthProvider>
+      <html lang="en">
+        <body>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+          <ToastContainer />
+        </body>
+      </html>
+    </AuthProvider>
   );
 };
 

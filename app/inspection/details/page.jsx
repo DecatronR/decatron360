@@ -5,8 +5,15 @@ import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatTime } from "@/utils/formatTime";
+import { PaystackButton } from "react-paystack";
+import { useAuth } from "@/context/AuthContext";
 
 const InspectionDetails = () => {
+  const publicKey = process.env.PAYSTACK_PUBLIC_KEY;
+  const { user, loading: userLoading } = useAuth(); // `loading` from context for user data
+  const name = user?.data?.name || "";
+  const email = user?.data?.email || "";
+  const phone = user?.data?.phone || "";
   const router = useRouter();
   const searchParams = useSearchParams();
   const [property, setProperty] = useState(null);
@@ -31,7 +38,6 @@ const InspectionDetails = () => {
           { withCredentials: true }
         );
         setProperty(response.data);
-        console.log("response: ", response);
       } catch (error) {
         console.error("Error fetching property:", error);
       } finally {
@@ -43,14 +49,6 @@ const InspectionDetails = () => {
       fetchPropertyData();
     }
   }, [id]);
-
-  useEffect(() => {
-    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
-    console.log("Fetched inspection data:", data);
-    if (data) {
-      setInspectionData(data);
-    }
-  }, []);
 
   useEffect(() => {
     const data = JSON.parse(sessionStorage.getItem("inspectionData"));
@@ -121,35 +119,45 @@ const InspectionDetails = () => {
   // Calculate total
   const total = inspectionFee + serviceCharge;
 
-  const handleConfirmPayment = () => {
-    if (isInspectionConfirmed && isTermsAccepted) {
-      // Redirect to payment gateway
-      window.location.href = "https://your-payment-gateway-url.com";
-    } else {
-      alert(
-        "Please confirm the inspection details and accept the terms and conditions."
-      );
-    }
+  const componentProps = {
+    email,
+    amount: total,
+    metadata: {
+      name,
+      phone,
+    },
+    publicKey,
+    text: "Confirm and Pay",
+    onSuccess: () =>
+      alert("Thanks, your inspection has been successfully booked!!"),
+    onClose: () =>
+      alert("You cancelled your inspection booking, is there an issue?"),
   };
+
+  console.log("Payement props: ", componentProps);
+
+  // Make sure all data is loaded before rendering
+  const isDataReady =
+    !userLoading && !loading && property && inspectionData && user;
+
+  if (!isDataReady) {
+    return <p>Loading...</p>; // Show loading state until all data is ready
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
       <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-2xl font-semibold mb-4">Booking Summary</h1>
+
         <div className="mb-6">
           <h6 className="text-xl font-semibold mb-2">
             {property?.data.title || "Loading..."}
           </h6>
           <p className="text-gray-600">
-            Location: {property?.data.neighbourhood}, {property?.data.lga},{" "}
-            {property?.data.state}
+            Location: {neighbourhood}, {lga}, {state}
           </p>
-          <p className="text-gray-600">
-            Inspection Date: {inspectionDetails.inspectionDate}
-          </p>
-          <p className="text-gray-600">
-            Inspection Time: {inspectionDetails.inspectionTime}
-          </p>
+          <p className="text-gray-600">Inspection Date: {inspectionDate}</p>
+          <p className="text-gray-600">Inspection Time: {inspectionTime}</p>
           {isEditing ? (
             <button onClick={handleSave} className="text-blue-500">
               Save
@@ -200,13 +208,11 @@ const InspectionDetails = () => {
           </label>
         </div>
 
-        {/* Confirm Button */}
-        <button
-          className="bg-primary-500 text-white rounded px-4 py-2 w-full"
-          onClick={handleConfirmPayment}
-        >
-          Confirm and Pay
-        </button>
+        {/* Payment Button */}
+        <PaystackButton
+          {...componentProps}
+          disabled={!isDataReady || !isInspectionConfirmed || !isTermsAccepted}
+        />
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import Link from "next/link";
 import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
-import UnreadMessageCount from "./UnreadMessageCount";
+// import UnreadMessageCount from "./UnreadMessageCount";
 import { useAuth } from "@/context/AuthContext";
 
 const Navbar = () => {
@@ -128,7 +128,7 @@ const Navbar = () => {
                     />
                   </svg>
                 </button>
-                <UnreadMessageCount user={user} />
+                {/* <UnreadMessageCount user={user} /> */}
               </Link>
               <div className="relative ml-3">
                 <button
