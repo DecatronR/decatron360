@@ -32,7 +32,7 @@ const PropertyMap = ({ property }) => {
       try {
         const res = await fromAddress(
           //add  zipcode later
-          `${property.neighbourhood} ${property.lga} ${property.state}`
+          `${property.neighbourhood} ${property.lgs} ${property.state}`
         );
 
         //  Check for results
