@@ -12,9 +12,10 @@ const SaleForm = () => {
   const [lga, setLga] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   const [fields, setFields] = useState({
-    userID: user?.data.id,
+    userID: userId,
     title: "",
     listingType: "rent",
     usageType: "dummyData",
@@ -38,6 +39,12 @@ const SaleForm = () => {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem("userId");
+    console.log("userId: ", userId);
+    setUserId(userId);
   }, []);
 
   const handleChange = (e) => {
@@ -183,7 +190,7 @@ const SaleForm = () => {
     mounted && (
       <form onSubmit={handleSubmit}>
         <h2 className="text-3xl text-center font-semibold mb-6">
-          Add Property For Rent
+          Add Property For Sale
         </h2>
 
         <div className="mb-4">
