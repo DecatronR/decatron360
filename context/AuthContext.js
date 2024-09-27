@@ -44,9 +44,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const getUserData = async () => {
       const userId = sessionStorage.getItem("userId");
-      console.log("User ID inside the get user fucntion: ", userId);
+      console.log("User ID inside the get user function: ", userId);
       if (userId) {
-        console.log("User ID inside the get user fucntion: ", userId);
+        console.log("User ID inside the get user function: ", userId);
         try {
           const userData = await userDataApi(userId);
           setUser(userData);

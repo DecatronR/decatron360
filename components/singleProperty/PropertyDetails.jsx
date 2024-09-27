@@ -19,14 +19,7 @@ const PropertyDetails = ({ property }) => {
       </div>
 
       {/* Property Rating */}
-      <div className="flex items-center space-x-2 mb-6">
-        <span className="text-yellow-500 text-xl">
-          ⭐ {property.rating || "4.5"}
-        </span>
-        <span className="text-gray-600">
-          {property.reviews?.length || 10} reviews
-        </span>
-      </div>
+      <div className="flex items-center space-x-2 mb-6"></div>
 
       {/* Property Info and Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

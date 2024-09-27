@@ -34,6 +34,7 @@ const PropertyPage = () => {
           { id },
           { withCredentials: true }
         );
+        console.log("property agent id: ", property);
         setProperty(property.data);
       } catch (error) {
         console.error("Error fetching property:", error);
@@ -76,11 +77,7 @@ const PropertyPage = () => {
               {/* Sidebar */}
               <aside className="w-full md:w-1/3 sticky top-4 space-y-6">
                 <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
-                  <Link
-                    href={`/agents/${agent.name
-                      .replace(/\s+/g, "-")
-                      .toLowerCase()}`}
-                  >
+                  <Link href={`/agent-profile/${property.data.userID}`}>
                     <AgentProfileCard agent={agent} />
                   </Link>
                   <BookmarkButton property={property} />

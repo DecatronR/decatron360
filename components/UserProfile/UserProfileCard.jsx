@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
-import { FaStar } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import StarRatings from "react-star-ratings"; // Import the library
 
-const UserProfileCard = ({ dummyUser }) => {
+const UserProfileCard = ({ dummyUser, rating }) => {
   const { user } = useAuth();
   const { name, rank, reviews, ratings, joinDate } = dummyUser;
   const [photo, setPhoto] = useState(dummyUser.photo);
@@ -46,10 +46,19 @@ const UserProfileCard = ({ dummyUser }) => {
             {user?.data.name}
           </p>
           <p className="text-gray-600">{rank}</p>
-          <div className="flex items-center text-yellow-500">
-            <FaStar className="text-yellow-500" />
-            <span className="ml-2">{ratings}</span>
+
+          {/* Use StarRatings for the rating display */}
+          <div className="flex items-center">
+            <StarRatings
+              rating={3} // we need to fetch the ratings average from the backend and not an array
+              starRatedColor="gold"
+              numberOfStars={5}
+              starDimension="20px"
+              starSpacing="2px"
+              name="rating"
+            />
           </div>
+
           <p className="text-gray-600">{reviews} reviews</p>
           <p className="text-gray-500 text-sm">
             Joined{" "}
