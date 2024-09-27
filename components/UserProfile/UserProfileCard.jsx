@@ -7,8 +7,6 @@ import StarRatings from "react-star-ratings"; // Import the library
 
 const UserProfileCard = ({ dummyUser, rating }) => {
   const { user } = useAuth();
-  const { name, rank, reviews, ratings, joinDate } = dummyUser;
-  const [photo, setPhoto] = useState(dummyUser.photo);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -26,7 +24,7 @@ const UserProfileCard = ({ dummyUser, rating }) => {
       <div className="flex flex-col sm:flex-row items-center">
         <div className="w-20 h-20 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 cursor-pointer">
           <Image
-            src={photo}
+            src={""}
             alt={`${name}'s photo`}
             width={64}
             height={64}
@@ -45,7 +43,6 @@ const UserProfileCard = ({ dummyUser, rating }) => {
           <p className="text-lg font-semibold text-gray-800">
             {user?.data.name}
           </p>
-          <p className="text-gray-600">{rank}</p>
 
           {/* Use StarRatings for the rating display */}
           <div className="flex items-center">
@@ -58,12 +55,10 @@ const UserProfileCard = ({ dummyUser, rating }) => {
               name="rating"
             />
           </div>
-
-          <p className="text-gray-600">{reviews} reviews</p>
-          <p className="text-gray-500 text-sm">
+          {/* <p className="text-gray-500 text-sm">
             Joined{" "}
             {formatDistanceToNow(new Date(joinDate), { addSuffix: true })}
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

@@ -9,11 +9,11 @@ import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 
 const UserProfilePage = () => {
-  const { user } = useAuth();
   const [userId, setUserId] = useState("");
   const [myProperties, setMyProperties] = useState([]);
   // const [reviews, setReviews] = useState useState([]);
   const [rating, setRating] = useState([]);
+  const [userData, setUserData] = useState(null);
 
   const dummyUser = {
     photo: "/path/to/agent-photo.jpg",
@@ -30,15 +30,42 @@ const UserProfilePage = () => {
   }, []);
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      if (userId) {
+        try {
+          const res = await axios.post(
+            "http://localhost:8080/users/editUsers",
+            { id: id },
+            { withCredentials: true }
+          );
+          console.log("user data: ", res.data);
+          setUserData(res.data);
+        } catch (error) {
+          console.log("Issues fetching user data: ", error);
+        }
+      } else {
+        console.log("Could not fetch user data, user id not found");
+      }
+    };
+    fetchUserData();
+  }, [userId]);
+
+  useEffect(() => {
     const fetchMyProperties = async () => {
       if (userId) {
-        const response = await axios.post(
-          "http://localhost:8080/propertyListing/myProperty",
-          { userID: userId },
-          { withCredentials: true }
-        );
-        console.log("my properties: ", myProperties);
-        setMyProperties(response.data);
+        try {
+          const response = await axios.post(
+            "http://localhost:8080/propertyListing/myProperty",
+            { userID: userId },
+            { withCredentials: true }
+          );
+          console.log("my properties: ", myProperties);
+          setMyProperties(response.data);
+        } catch (error) {
+          console.log("Issue fetching user properties");
+        }
+      } else {
+        console.log("Could not fetch user properties, user id not found");
       }
     };
     fetchMyProperties();
@@ -48,13 +75,19 @@ const UserProfilePage = () => {
   // useEffect(() => {
   //   const fetchMyReviews = async () => {
   //     if (userId) {
-  //       const response = await axios.post(
-  //         "http://localhost:8080/review/getReview",
-  //         { userID: userId },
-  //         { withCredentials: true }
-  //       );
-  //       console.log("my reviews: ", myProperties);
-  //       setReviews(response.data);
+  //       try {
+  //         const response = await axios.post(
+  //           "http://localhost:8080/review/getReview",
+  //           { userID: userId },
+  //           { withCredentials: true }
+  //         );
+  //         console.log("my reviews: ", myProperties);
+  //         setReviews(response.data);
+  //       } catch (error) {
+  //         console.log("Issue fetching user reviews");
+  //       }
+  //     } else {
+  //       console.log("Could not fetch user reviews, user id not found");
   //     }
   //   };
   //   fetchMyReviews();
@@ -63,13 +96,19 @@ const UserProfilePage = () => {
   useEffect(() => {
     const fetchRating = async () => {
       if (userId) {
-        const response = await axios.post(
-          "http://localhost:8080/users/fetchUserRating",
-          { userID: userId },
-          { withCredentials: true }
-        );
-        console.log("my rating: ", rating);
-        setRating(response.data);
+        try {
+          const response = await axios.post(
+            "http://localhost:8080/users/fetchUserRating",
+            { userID: userId },
+            { withCredentials: true }
+          );
+          console.log("my rating: ", rating);
+          setRating(response.data);
+        } catch (error) {
+          console.log("Issue fetching user rating");
+        }
+      } else {
+        console.log("Could not fetch rating, user id not found");
       }
     };
     fetchRating();
@@ -103,7 +142,7 @@ const UserProfilePage = () => {
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto">
         {/* Left Column: Profile Info */}
         <div className="w-full md:w-1/3 md:sticky md:top-8 mb-4 md:mb-0">
-          <UserProfileCard dummyUser={dummyUser} rating={rating} />
+          <UserProfileCard userData={userData} rating={rating} />
           <div className="mt-6">
             <UserVerificationStatus
               isEmailVerified={isEmailVerified}
@@ -115,11 +154,8 @@ const UserProfilePage = () => {
 
         {/* Right Column: Scrollable Details */}
         <div className="w-full md:w-2/3 md:ml-8 h-auto md:h-[calc(100vh-4rem)] overflow-y-scroll">
-          <UserAbout
-            name={user?.data.name}
-            description="Hi, I’m John! I love hosting guests from all over the world. My space is a cozy spot in the heart of the city, ideal for travelers who want to explore and feel at home."
-          />
-          <UserProperties photos={photos} myProperties={myProperties} />
+          <UserAbout userData={userData} />
+          <UserProperties myProperties={myProperties} />
           <UserReviews reviews={reviews} />
         </div>
       </div>
