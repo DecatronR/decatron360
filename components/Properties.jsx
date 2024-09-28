@@ -5,6 +5,7 @@ import PropertyCard from "@/components/PropertyCard";
 import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
@@ -14,17 +15,11 @@ const Properties = () => {
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    const fetchProperties = async () => {
+    const handleFetchProperties = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:8080/propertyListing/fetchPropertyListing",
-          { withCredentials: true }
-        );
-
-        console.log("response: ", res);
-
-        setProperties(res.data);
-        setTotalItems(res.data.length);
+        const res = await fetchProperties();
+        setProperties(res);
+        setTotalItems(res.length);
       } catch (error) {
         console.log(error);
       } finally {
@@ -32,7 +27,7 @@ const Properties = () => {
       }
     };
 
-    fetchProperties();
+    handleFetchProperties();
   }, [page, pageSize]);
 
   const handlePageChange = (newPage) => {

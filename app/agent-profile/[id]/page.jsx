@@ -7,6 +7,10 @@ import AgentProperties from "@/components/AgentProfile/AgentProperties";
 import AgentReviews from "@/components/AgentProfile/AgentReviews";
 import { useParams } from "next/navigation";
 import axios from "axios";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
+import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
+import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
+import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
 
 const AgentProfilePage = () => {
   const { id } = useParams();
@@ -49,16 +53,12 @@ const AgentProfilePage = () => {
   ];
 
   useEffect(() => {
-    const fetchAgentData = async () => {
+    const handleFetchAgentData = async () => {
       if (id) {
         try {
-          const res = await axios.post(
-            "http://localhost:8080/users/editUsers",
-            { id: id },
-            { withCredentials: true }
-          );
-          console.log("agent data: ", res.data);
-          setAgentData(res.data.data);
+          const res = await fetchUserData(id);
+          console.log("agent data: ", res);
+          setAgentData(res);
         } catch (error) {
           console.log("Issues fetching agent details: ", error);
         }
@@ -66,20 +66,16 @@ const AgentProfilePage = () => {
         console.log("Could not fetch agent details, user id not found");
       }
     };
-    fetchAgentData();
+    handleFetchAgentData();
   }, [id]);
 
   useEffect(() => {
-    const fetchAgentProperties = async () => {
+    const handleFetchAgentProperties = async () => {
       if (id) {
         try {
-          const response = await axios.post(
-            "http://localhost:8080/propertyListing/myProperty",
-            { userID: id },
-            { withCredentials: true }
-          );
-          console.log("agent properties: ", response);
-          setAgentProperties(response.data);
+          const res = await fetchUserProperties(id);
+          console.log("agent properties: ", res);
+          setAgentProperties(res);
         } catch (error) {
           console.log("Issue with fetching agent properties: ", error);
         }
@@ -87,21 +83,17 @@ const AgentProfilePage = () => {
         console.log("Could not fetch agent properties, user id not found");
       }
     };
-    fetchAgentProperties();
+    handleFetchAgentProperties();
   }, [id]);
 
   //reviews need to my tilted towards the user not the property
   useEffect(() => {
-    const fetchAgentReviews = async () => {
+    const handleFetchAgentReviews = async () => {
       if (id) {
         try {
-          const response = await axios.post(
-            "http://localhost:8080/review/getReview",
-            { userID: id },
-            { withCredentials: true }
-          );
-          console.log("my reviews: ", myProperties);
-          setAgentReviews(response.data);
+          const res = await fetchUserReviews(id);
+          console.log("agent reviews: ", res);
+          setAgentReviews(res);
         } catch (error) {
           console.log("Issues fetching agent reviews: ", error);
         }
@@ -109,22 +101,18 @@ const AgentProfilePage = () => {
         console.log("Could not fetch agent reviews, user id not found");
       }
     };
-    fetchAgentReviews();
+    handleFetchAgentReviews();
   }, [id]);
 
   useEffect(() => {
-    const fetchAgentRating = async () => {
+    const handleFetchAgentRating = async () => {
       if (id) {
-        const response = await axios.post(
-          "http://localhost:8080/users/fetchUserRating",
-          { userID: id },
-          { withCredentials: true }
-        );
-        console.log("my rating: ", response);
-        setAgentRating(response.data);
+        const res = await fetchUserRating(id);
+        console.log("my rating: ", res);
+        setAgentRating(res);
       }
     };
-    fetchAgentRating();
+    handleFetchAgentRating();
   }, [id]);
 
   return (

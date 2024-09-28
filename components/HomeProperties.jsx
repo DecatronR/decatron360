@@ -1,21 +1,18 @@
 "use client";
 import PropertyCard from "@/components/PropertyCard";
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
 import Link from "next/link";
 import FeaturedPropertyCard from "./FeaturedPropertyCard";
+import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 
 const HomeProperties = async () => {
   const [properties, setProperties] = useState([]);
 
-  const fetchProperties = useCallback(async () => {
+  const handleFetchProperties = useCallback(async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:8080/propertyListing/fetchPropertyListing",
-        { withCredentials: true }
-      );
-      console.log("Properties fetched:", res.data);
-      setProperties(res.data);
+      const res = await fetchProperties();
+      console.log("Properties fetched:", res);
+      setProperties(res);
     } catch (error) {
       console.error("Error fetching properties:", error);
     }
@@ -23,7 +20,7 @@ const HomeProperties = async () => {
 
   useEffect(
     () => {
-      fetchProperties();
+      handleFetchProperties();
     },
     [],
     [properties]

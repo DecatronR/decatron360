@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { signInApi } from "@/utils/signInApi";
-import { signOutApi } from "@/utils/signOutApi";
-import { userDataApi } from "@/utils/getUserDataApi";
+import { signInApi } from "@/utils/api/auth/signInApi";
+import { signOutApi } from "@/utils/api/auth/signOutApi";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import axios from "axios";
 
 const AuthContext = createContext(undefined);
@@ -48,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       if (userId) {
         console.log("User ID inside the get user function: ", userId);
         try {
-          const userData = await userDataApi(userId);
+          const userData = await fetchUserData(userId);
           setUser(userData);
           console.log("User data: ", userData);
         } catch (error) {

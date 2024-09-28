@@ -5,8 +5,11 @@ import UserVerificationStatus from "@/components/UserProfile/UserVerificationSta
 import UserAbout from "@/components/UserProfile/UserAbout";
 import UserProperties from "@/components/UserProfile/UserProperties";
 import UserReviews from "@/components/UserProfile/UserReviews";
-import { useAuth } from "@/context/AuthContext";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
+import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
+import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
 import axios from "axios";
+import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
 
 const UserProfilePage = () => {
   const [userId, setUserId] = useState("");
@@ -30,16 +33,12 @@ const UserProfilePage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const handleFetchUserData = async () => {
       if (userId) {
         try {
-          const res = await axios.post(
-            "http://localhost:8080/users/editUsers",
-            { id: userId },
-            { withCredentials: true }
-          );
-          console.log("user data: ", res.data);
-          setUserData(res.data.data);
+          const res = await fetchUserData(userId);
+          console.log("user data: ", res);
+          setUserData(res);
         } catch (error) {
           console.log("Issues fetching user data: ", error);
         }
@@ -47,42 +46,34 @@ const UserProfilePage = () => {
         console.log("Could not fetch user data, user id not found");
       }
     };
-    fetchUserData();
+    handleFetchUserData();
   }, [userId]);
 
   useEffect(() => {
-    const fetchUserProperties = async () => {
+    const handleFetchUserProperties = async () => {
       if (userId) {
         try {
-          const response = await axios.post(
-            "http://localhost:8080/propertyListing/myProperty",
-            { userID: userId },
-            { withCredentials: true }
-          );
-          console.log("my properties: ", response);
-          setUserProperties(response.data);
+          const res = await fetchUserProperties(userId);
+          console.log("my properties: ", res);
+          setUserProperties(res);
         } catch (error) {
-          console.log("Issue fetching user properties");
+          console.log("Issue fetching user properties: ", error);
         }
       } else {
         console.log("Could not fetch user properties, user id not found");
       }
     };
-    fetchUserProperties();
+    handleFetchUserProperties();
   }, [userId]);
 
   //reviews need to my tilted towards the user not the property
   useEffect(() => {
-    const fetchUserReviews = async () => {
+    const handleFetchUserReviews = async () => {
       if (userId) {
         try {
-          const response = await axios.post(
-            "http://localhost:8080/review/getReview",
-            { userID: userId },
-            { withCredentials: true }
-          );
-          console.log("user reviews: ", response);
-          setUserReviews(response.data);
+          const res = await fetchUserReviews(userId);
+          console.log("user reviews: ", res);
+          setUserReviews(res);
         } catch (error) {
           console.log("Issue fetching user reviews");
         }
@@ -90,20 +81,16 @@ const UserProfilePage = () => {
         console.log("Could not fetch user reviews, user id not found");
       }
     };
-    fetchUserReviews();
+    handleFetchUserReviews();
   }, [userId]);
 
   useEffect(() => {
-    const fetchUserRating = async () => {
+    const handleFetchUserRating = async () => {
       if (userId) {
         try {
-          const response = await axios.post(
-            "http://localhost:8080/users/fetchUserRating",
-            { userID: userId },
-            { withCredentials: true }
-          );
-          console.log("my rating: ", response);
-          setUserRating(response.data);
+          const res = await fetchUserRating(userId);
+          console.log("my rating: ", res);
+          setUserRating(res);
         } catch (error) {
           console.log("Issue fetching user rating");
         }
@@ -111,7 +98,7 @@ const UserProfilePage = () => {
         console.log("Could not fetch rating, user id not found");
       }
     };
-    fetchUserRating();
+    handleFetchUserRating();
   }, [userId]);
 
   const isEmailVerified = false;

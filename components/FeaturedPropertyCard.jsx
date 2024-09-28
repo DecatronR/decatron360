@@ -79,7 +79,7 @@ const FeaturedPropertyCard = ({ property }) => {
             <FaMapMarker className="text-orange-700 mt-1" />
             <span className="text-orange-700">
               {" "}
-              {property.neigbourhood} {property.state}{" "}
+              {property.neighbourhood} {property.state}{" "}
             </span>
           </div>
           <Link
