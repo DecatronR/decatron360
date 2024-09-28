@@ -3,14 +3,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { formatTime } from "@/utils/formatTime";
+import { formatCurrency } from "@/utils/helpers/formatCurrency";
+import { formatTime } from "@/utils/helpers/formatTime";
 import { PaystackButton } from "react-paystack";
 import { useAuth } from "@/context/AuthContext";
+import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 
 const InspectionDetails = () => {
   const publicKey = process.env.PAYSTACK_PUBLIC_KEY;
-  const { user, loading: userLoading } = useAuth(); // `loading` from context for user data
+  const { user, loading: userLoading } = useAuth();
   const name = user?.data?.name || "";
   const email = user?.data?.email || "";
   const phone = user?.data?.phone || "";
@@ -28,16 +29,12 @@ const InspectionDetails = () => {
   const id = searchParams.get("id");
 
   useEffect(() => {
-    const fetchPropertyData = async () => {
+    const handleFetchPropertyData = async () => {
       if (!id) return;
 
       try {
-        const response = await axios.post(
-          "http://localhost:8080/propertyListing/editPropertyListing",
-          { id },
-          { withCredentials: true }
-        );
-        setProperty(response.data);
+        const res = await fetchPropertyData(id);
+        setProperty(res);
       } catch (error) {
         console.error("Error fetching property:", error);
       } finally {
@@ -46,7 +43,7 @@ const InspectionDetails = () => {
     };
 
     if (id) {
-      fetchPropertyData();
+      handleFetchPropertyData();
     }
   }, [id]);
 
@@ -134,7 +131,7 @@ const InspectionDetails = () => {
       alert("You cancelled your inspection booking, is there an issue?"),
   };
 
-  console.log("Payement props: ", componentProps);
+  console.log("Payment props: ", componentProps);
 
   // Make sure all data is loaded before rendering
   const isDataReady =

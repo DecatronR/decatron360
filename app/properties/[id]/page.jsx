@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
 import ScheduleInspectionForm from "@/components/SingleProperty/ScheduleInspectionForm";
+import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -26,16 +27,12 @@ const PropertyPage = () => {
   };
 
   useEffect(() => {
-    const fetchPropertyData = async () => {
+    const handleFetchPropertyData = async () => {
       if (!id) return;
       try {
-        const property = await axios.post(
-          "http://localhost:8080/propertyListing/editPropertyListing",
-          { id },
-          { withCredentials: true }
-        );
-        console.log("property agent id: ", property);
-        setProperty(property.data);
+        const res = await fetchPropertyData(id);
+        console.log("property agent id: ", res);
+        setProperty(res);
       } catch (error) {
         console.error("Error fetching property:", error);
       } finally {
@@ -44,7 +41,7 @@ const PropertyPage = () => {
     };
 
     if (!property) {
-      fetchPropertyData();
+      handleFetchPropertyData();
     }
   }, [id, property]);
 
@@ -55,8 +52,6 @@ const PropertyPage = () => {
       </h1>
     );
   }
-
-  useEffect(() => {}, []);
 
   return (
     <>
