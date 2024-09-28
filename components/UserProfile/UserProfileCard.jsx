@@ -5,9 +5,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import StarRatings from "react-star-ratings"; // Import the library
 
-const UserProfileCard = ({ userData, rating }) => {
-  const { user } = useAuth();
-
+const UserProfileCard = ({ userData, userRating }) => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -41,7 +39,7 @@ const UserProfileCard = ({ userData, rating }) => {
         </div>
         <div>
           <p className="text-lg font-semibold text-gray-800">
-            {userData?.data.name}
+            {userData?.name}
           </p>
 
           {/* Use StarRatings for the rating display */}

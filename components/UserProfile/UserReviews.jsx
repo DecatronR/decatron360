@@ -6,12 +6,12 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const UserReviews = ({ reviews }) => {
+const UserReviews = ({ userReviews }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3; // Number of reviews to display at a time
 
   const handleNext = () => {
-    if (currentIndex < Math.ceil(reviews.length / reviewsPerPage) - 1) {
+    if (currentIndex < Math.ceil(userReviews.length / reviewsPerPage) - 1) {
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -24,7 +24,10 @@ const UserReviews = ({ reviews }) => {
 
   // Calculate the start and end index for slicing the reviews
   const startIndex = currentIndex * reviewsPerPage;
-  const currentReviews = reviews.slice(startIndex, startIndex + reviewsPerPage);
+  const currentReviews = userReviews.slice(
+    startIndex,
+    startIndex + reviewsPerPage
+  );
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -57,7 +60,8 @@ const UserReviews = ({ reviews }) => {
           <button
             onClick={handleNext}
             disabled={
-              currentIndex === Math.ceil(reviews.length / reviewsPerPage) - 1
+              currentIndex ===
+              Math.ceil(userReviews.length / reviewsPerPage) - 1
             }
             className="bg-gray-300 text-gray-700 rounded-full p-2 disabled:opacity-50"
           >

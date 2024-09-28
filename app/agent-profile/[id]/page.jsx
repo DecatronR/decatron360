@@ -57,8 +57,8 @@ const AgentProfilePage = () => {
             { id: id },
             { withCredentials: true }
           );
-          console.log("user data: ", res.data);
-          setAgentData(res.data);
+          console.log("agent data: ", res.data);
+          setAgentData(res.data.data);
         } catch (error) {
           console.log("Issues fetching agent details: ", error);
         }

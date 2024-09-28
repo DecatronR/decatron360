@@ -6,25 +6,26 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const UserProperties = ({ myProperties }) => {
+const UserProperties = ({ userProperties }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 
   const handlePrev = () => {
     setCurrentIndex(
       (prevIndex) =>
-        (prevIndex - itemsPerPage + myProperties.length) % myProperties.length
+        (prevIndex - itemsPerPage + userProperties.length) %
+        userProperties.length
     );
   };
 
   const handleNext = () => {
     setCurrentIndex(
-      (prevIndex) => (prevIndex + itemsPerPage) % myProperties.length
+      (prevIndex) => (prevIndex + itemsPerPage) % userProperties.length
     );
   };
 
   // Handle cases where there are no properties or no photos
-  const visibleProperties = myProperties.slice(
+  const visibleProperties = userProperties.slice(
     currentIndex,
     currentIndex + itemsPerPage
   );
@@ -36,7 +37,7 @@ const UserProperties = ({ myProperties }) => {
         <button className="text-primary-500 font-medium">See More</button>
       </div>
 
-      {myProperties.length > 0 ? (
+      {userProperties.length > 0 ? (
         <div className="relative">
           {/* Carousel Navigation Buttons */}
           <button

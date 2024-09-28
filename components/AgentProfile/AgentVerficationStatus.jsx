@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const AgentVerificationStatus = ({
   isEmailVerified,
@@ -14,9 +14,7 @@ const AgentVerificationStatus = ({
         {isEmailVerified ? (
           <FaCheckCircle className="text-green-500" />
         ) : (
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md">
-            Verify Email
-          </button>
+          <FaTimesCircle className="text-red-500" />
         )}
       </div>
 
@@ -26,9 +24,7 @@ const AgentVerificationStatus = ({
         {isPhoneVerified ? (
           <FaCheckCircle className="text-green-500" />
         ) : (
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md">
-            Verify Phone
-          </button>
+          <FaTimesCircle className="text-red-500" />
         )}
       </div>
 
@@ -38,9 +34,7 @@ const AgentVerificationStatus = ({
         {isIdentityVerified ? (
           <FaCheckCircle className="text-green-500" />
         ) : (
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md">
-            Verify Identity
-          </button>
+          <FaTimesCircle className="text-red-500" />
         )}
       </div>
     </div>

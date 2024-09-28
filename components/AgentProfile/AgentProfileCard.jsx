@@ -43,7 +43,7 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
         </div>
         <div>
           <p className="text-lg font-semibold text-gray-800">
-            {agentData?.data.name}
+            {agentData?.name}
           </p>
 
           {/* Use StarRatings for the rating display */}

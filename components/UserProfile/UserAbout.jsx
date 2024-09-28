@@ -3,16 +3,16 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen } from "@fortawesome/free-solid-svg-icons";
 
-const UserAbout = ({ name, initialDescription }) => {
+const UserAbout = ({ userData }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [description, setDescription] = useState(initialDescription);
+  const [userBio, setUserBio] = useState("");
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
   const handleChange = (e) => {
-    setDescription(e.target.value);
+    setUserBio(e.target.value);
   };
 
   const handleSave = () => {
@@ -24,7 +24,7 @@ const UserAbout = ({ name, initialDescription }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">About {name}</h2>
+        <h2 className="text-xl font-semibold">About {userData?.name}</h2>
         <button
           onClick={handleEditToggle}
           className="text-gray-500 hover:text-primary-500"
@@ -50,7 +50,7 @@ const UserAbout = ({ name, initialDescription }) => {
           </button>
         </div>
       ) : (
-        <p className="text-gray-700">{description}</p>
+        <p className="text-gray-700">{userData?.bio}</p>
       )}
     </div>
   );
