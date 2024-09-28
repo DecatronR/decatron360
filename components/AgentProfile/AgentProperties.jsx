@@ -5,6 +5,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 const AgentProperties = ({ agentProperties }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,18 +58,20 @@ const AgentProperties = ({ agentProperties }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {visibleProperties.map((property, index) => (
               <div key={index} className="rounded-lg overflow-hidden">
-                {/* Display property image or a placeholder */}
-                {property.photo && property.photo.length > 0 ? (
-                  <img
-                    src={property.photo[0]} // Display the first photo
-                    alt={`Property ${currentIndex + index + 1}`}
-                    className="rounded-lg w-full h-auto object-cover"
-                  />
-                ) : (
-                  <div className="bg-gray-200 w-full h-64 flex items-center justify-center">
-                    <span>No Image Available</span>
-                  </div>
-                )}
+                <Link href={`/properties/${property?._id}`}>
+                  {/* Display property image or a placeholder */}
+                  {property.photo && property.photo.length > 0 ? (
+                    <img
+                      src={property.photo[0]} // Display the first photo
+                      alt={`Property ${currentIndex + index + 1}`}
+                      className="rounded-lg w-full h-auto object-cover"
+                    />
+                  ) : (
+                    <div className="bg-gray-200 w-full h-64 flex items-center justify-center">
+                      <span>No Image Available</span>
+                    </div>
+                  )}
+                </Link>
                 <div className="p-2">
                   <h3 className="font-semibold">{property.title}</h3>
                   <p className="text-sm text-gray-500">

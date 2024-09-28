@@ -17,7 +17,7 @@ const UserAbout = ({ userData }) => {
 
   const handleSave = () => {
     // Logic to save the new description goes here
-    console.log("Saved:", description);
+    console.log("Saved:", userBio);
     setIsEditing(false);
   };
 
@@ -36,7 +36,7 @@ const UserAbout = ({ userData }) => {
         <div className="flex flex-col md:flex-row items-center">
           <input
             type="text"
-            value={description}
+            value={userBio}
             onChange={handleChange}
             className="border border-gray-300 rounded p-2 w-full mb-2 md:mb-0 md:mr-2"
             onBlur={handleEditToggle}
