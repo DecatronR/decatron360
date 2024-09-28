@@ -120,7 +120,7 @@ const AgentProfilePage = () => {
           { userID: id },
           { withCredentials: true }
         );
-        console.log("my rating: ", rating);
+        console.log("my rating: ", response);
         setAgentRating(response.data);
       }
     };

@@ -35,7 +35,7 @@ const UserProfilePage = () => {
         try {
           const res = await axios.post(
             "http://localhost:8080/users/editUsers",
-            { id: id },
+            { id: userId },
             { withCredentials: true }
           );
           console.log("user data: ", res.data);
