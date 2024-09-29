@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const userId = await signInApi(email, password);
+      const { userId, token } = await signInApi(email, password);
       console.log("User ID: ", userId);
-      // document.cookie = `sessionId=${userId}; path=/`;
+      document.cookie = `auth_jwt=${token}; path=/`;
 
       sessionStorage.setItem("userId", userId);
 
