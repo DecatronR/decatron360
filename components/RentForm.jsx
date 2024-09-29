@@ -10,10 +10,9 @@ const RentForm = () => {
   const [lga, setLga] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [userId, setUserId] = useState(null);
 
   const [fields, setFields] = useState({
-    userID: userId,
+    userID: "",
     title: "",
     listingType: "rent",
     usageType: "dummyData",
@@ -36,13 +35,15 @@ const RentForm = () => {
   });
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const userId = sessionStorage.getItem("userId");
-    console.log("userId: ", userId);
-    setUserId(userId);
+    const id = sessionStorage.getItem("userId");
+    console.log("userId sale: ", id);
+    if (id) {
+      setFields((prevFields) => ({
+        ...prevFields,
+        userID: id,
+      }));
+      setMounted(true);
+    }
   }, []);
 
   const handleChange = (e) => {
