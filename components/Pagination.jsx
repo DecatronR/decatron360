@@ -8,19 +8,29 @@ const Pagination = ({ page, pageSize, totalItems, onPageChange }) => {
   };
 
   return (
-    <section className='container mx-auto flex justify-center items-center my-8'>
+    <section className="container mx-auto flex justify-center items-center my-8">
       <button
-        className='mr-2 px-2 py-1 border border-gray-300 rounded'
+        className={`px-4 py-2 border border-gray-300 rounded-lg transition-colors duration-300 ease-in-out ${
+          page === 1
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-blue-600 hover:bg-blue-600 hover:text-white"
+        }`}
         disabled={page === 1}
         onClick={() => handlePageChange(page - 1)}
       >
         Previous
       </button>
-      <span className='mx-2'>
+
+      <span className="mx-4 text-gray-600">
         Page {page} of {totalPages}
       </span>
+
       <button
-        className='ml-2 px-2 py-1 border border-gray-300 rounded'
+        className={`px-4 py-2 border border-gray-300 rounded-lg transition-colors duration-300 ease-in-out ${
+          page === totalPages
+            ? "text-gray-400 cursor-not-allowed"
+            : "text-blue-600 hover:bg-blue-600 hover:text-white"
+        }`}
         disabled={page === totalPages}
         onClick={() => handlePageChange(page + 1)}
       >
