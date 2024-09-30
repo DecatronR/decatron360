@@ -9,7 +9,7 @@ import {
 
 const PropertyDetails = ({ property }) => {
   return (
-    <section className="bg-white rounded-lg shadow-md p-6 space-y-6">
+    <section className="bg-white rounded-lg p-6 space-y-6">
       {/* Property Title and Location */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">{property.title}</h1>
@@ -19,11 +19,13 @@ const PropertyDetails = ({ property }) => {
       </div>
 
       {/* Property Rating */}
-      <div className="flex items-center space-x-2 mb-6"></div>
+      <div className="flex items-center space-x-2 mb-6">
+        {/* You can add rating stars here if needed */}
+      </div>
 
       {/* Property Info and Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+        <div className="bg-gray-50 p-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Property Information
           </h2>
@@ -45,36 +47,36 @@ const PropertyDetails = ({ property }) => {
           </p>
         </div>
 
-        <div>
+        <div className="bg-gray-50 p-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Features</h2>
           <ul className="list-none space-y-2">
             <li className="flex items-center">
               <FontAwesomeIcon
                 icon={faCouch}
                 className="text-indigo-600 mr-2"
-              />{" "}
+              />
               Living Rooms: {property.NoOfLivingRooms}
             </li>
             <li className="flex items-center">
-              <FontAwesomeIcon icon={faBed} className="text-indigo-600 mr-2" />{" "}
+              <FontAwesomeIcon icon={faBed} className="text-indigo-600 mr-2" />
               Bedrooms: {property.NoOfBedRooms}
             </li>
             <li className="flex items-center">
               <FontAwesomeIcon
                 icon={faUtensils}
                 className="text-indigo-600 mr-2"
-              />{" "}
+              />
               Kitchens: {property.NoOfKitchens}
             </li>
             <li className="flex items-center">
-              <FontAwesomeIcon icon={faCar} className="text-indigo-600 mr-2" />{" "}
+              <FontAwesomeIcon icon={faCar} className="text-indigo-600 mr-2" />
               Parking Spaces: {property.NoOfParkingSpace}
             </li>
             <li className="flex items-center">
               <FontAwesomeIcon
                 icon={faRuler}
                 className="text-indigo-600 mr-2"
-              />{" "}
+              />
               Size: {property.size} sqm.
             </li>
           </ul>
@@ -82,7 +84,7 @@ const PropertyDetails = ({ property }) => {
       </div>
 
       {/* Property Description */}
-      <div className="mt-8">
+      <div className="bg-gray-50 p-4">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Description
         </h2>
@@ -90,26 +92,25 @@ const PropertyDetails = ({ property }) => {
       </div>
 
       {/* Virtual Tour and Video */}
-      <div className="mt-8">
+      <div className="bg-gray-50 p-4">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Virtual Tour & Video
+          Virtual Tour
         </h2>
         <div className="space-y-4">
           {property.virtualTour && (
-            <p>
-              <strong>Virtual Tour:</strong>{" "}
-              <a
-                href={property.virtualTour}
-                className="text-indigo-500 hover:underline"
-              >
-                View Tour
-              </a>
-            </p>
-          )}
-          {property.video && (
-            <div className="rounded-md overflow-hidden shadow-lg">
-              <video controls className="w-full h-auto">
+            <div className="rounded-md overflow-hidden">
+              <video controls className="w-full h-auto rounded-lg">
                 <source src={property.video} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Video</h2>
+          {property.video && (
+            <div className="rounded-md overflow-hidden">
+              <video controls className="w-full h-auto rounded-lg">
+                <source src={property.video} type="video/mp4" />
+                Your browser does not support the video tag.
               </video>
             </div>
           )}

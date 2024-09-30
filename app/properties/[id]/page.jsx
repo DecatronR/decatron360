@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import BookmarkButton from "@/components/SingleProperty/BookmarkButton";
+import FavoriteButton from "@/components/SingleProperty/BookmarkButton";
 import PropertyDetails from "@/components/SingleProperty/PropertyDetails";
 import PropertyImages from "@/components/SingleProperty/PropertyImages";
 import ShareButtons from "@/components/SingleProperty/ShareButtons";
@@ -62,26 +63,23 @@ const PropertyPage = () => {
           <PropertyImages images={property.photos} />
 
           {/* Main content: property details and sticky sidebar */}
-          <div className="container mx-auto py-6 px-6">
-            <div className="flex flex-col md:flex-row space-y-6 md:space-y-0">
-              <div className="flex-1 bg-white p-6 rounded-lg ">
-                {/* Property details */}
+          <div className="container mx-auto py-8 px-4 md:px-4">
+            <div className="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0">
+              {/* Property details */}
+              <div className="flex-1 bg-white shadow-lg rounded-lg p-0 md:p-6">
                 <PropertyDetails property={property.data} />
               </div>
 
               {/* Sidebar */}
               <aside className="w-full md:w-1/3 sticky top-4 space-y-6">
-                <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
-                  <Link href={`/agent-profile/${property.data.userID}`}>
-                    <AgentProfileCard agent={agent} />
-                  </Link>
-                  <BookmarkButton property={property} />
+                <Link href={`/agent-profile/${property.data.userID}`}>
+                  <AgentProfileCard agent={agent} />
+                </Link>
+                <div className="space-y-4">
+                  <FavoriteButton property={property} />
                   <ShareButtons property={property} />
                 </div>
-
-                <div>
-                  <ScheduleInspectionForm propertyId={id} />
-                </div>
+                <ScheduleInspectionForm propertyId={id} />
               </aside>
             </div>
           </div>

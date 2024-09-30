@@ -7,8 +7,7 @@ import StarRatings from "react-star-ratings"; // Import the library
 
 const AgentProfileCard = ({ agentData, agentRating }) => {
   const { user } = useAuth();
-  // const { name, rank, reviews, ratings, joinDate } = dummyUser;
-  // const [photo, setPhoto] = useState(dummyUser.photo);
+  const [photo, setPhoto] = useState(agentData?.photo || "/default-avatar.png"); // Default avatar image
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -22,14 +21,14 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+    <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 transition duration-300 hover:shadow-xl">
       <div className="flex flex-col sm:flex-row items-center">
-        <div className="w-20 h-20 sm:w-16 sm:h-16 rounded-full overflow-hidden mr-4 cursor-pointer">
+        <div className="w-24 h-24 sm:w-20 sm:h-20 rounded-full overflow-hidden mr-4 cursor-pointer shadow-lg transition-transform duration-200 transform hover:scale-105">
           <Image
-            src={""}
-            alt={`${name}'s photo`}
-            width={64}
-            height={64}
+            src={photo}
+            alt={`${agentData?.name}'s photo`}
+            width={80}
+            height={80}
             className="object-cover"
             onClick={() => document.getElementById("fileInput").click()} // Trigger file input on image click
           />
@@ -42,26 +41,25 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
           />
         </div>
         <div>
-          <p className="text-lg font-semibold text-gray-800">
+          <p className="text-xl font-semibold text-gray-800">
             {agentData?.name}
           </p>
-
-          {/* Use StarRatings for the rating display */}
           <div className="flex items-center">
             <StarRatings
-              rating={3} // we need to fetch the ratings average from the backend and not an array
+              rating={agentRating || 0} // Using prop for dynamic ratings
               starRatedColor="gold"
               numberOfStars={5}
               starDimension="20px"
               starSpacing="2px"
               name="rating"
             />
+            <span className="ml-2 text-gray-600">{agentRating}</span>
           </div>
-
-          {/* <p className="text-gray-600">{reviews} reviews</p> */}
           {/* <p className="text-gray-500 text-sm">
             Joined{" "}
-            {formatDistanceToNow(new Date(joinDate), { addSuffix: true })}
+            {formatDistanceToNow(new Date(agentData?.joinDate), {
+              addSuffix: true,
+            })}
           </p> */}
         </div>
       </div>

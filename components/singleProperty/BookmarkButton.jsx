@@ -2,13 +2,13 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
-import { FaBookmark } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 
-const BookmarkButton = ({ property }) => {
+const FavoriteButton = ({ property }) => {
   const { user } = useAuth();
   const userId = user?.id;
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,9 +17,9 @@ const BookmarkButton = ({ property }) => {
       return;
     }
 
-    const checkBookmarkStatus = async () => {
+    const checkFavoriteStatus = async () => {
       try {
-        const res = await fetch("/api/bookmarks/check", {
+        const res = await fetch("/api/favorites/check", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -31,26 +31,26 @@ const BookmarkButton = ({ property }) => {
 
         if (res.status === 200) {
           const data = await res.json();
-          setIsBookmarked(data.isBookmarked);
+          setIsFavorited(data.isFavorited);
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error checking favorite status:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    checkBookmarkStatus();
+    checkFavoriteStatus();
   }, [property._id, userId]);
 
   const handleClick = async () => {
     if (!userId) {
-      toast.error("You need to sign in to bookmark a property");
+      toast.error("You need to sign in to add a property to favorites");
       return;
     }
 
     try {
-      const res = await fetch("/api/bookmarks", {
+      const res = await fetch("/api/favorites", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -63,31 +63,31 @@ const BookmarkButton = ({ property }) => {
       if (res.status === 200) {
         const data = await res.json();
         toast.success(data.message);
-        setIsBookmarked(data.isBookmarked);
+        setIsFavorited(data.isFavorited);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error updating favorite:", error);
       toast.error("Something went wrong");
     }
   };
 
   if (loading) return <p className="text-center">Loading...</p>;
 
-  return isBookmarked ? (
+  return (
     <button
       onClick={handleClick}
-      className="bg-red-500 hover:bg-red-600 text-white font-bold w-full py-2 px-4 rounded-full flex items-center justify-center"
+      className={`transition duration-300 w-full py-2 px-4 rounded-lg flex items-center justify-center text-white font-semibold shadow-md ${
+        isFavorited
+          ? "bg-pink-500 hover:bg-pink-600"
+          : "bg-gray-500 hover:bg-gray-600"
+      }`}
     >
-      <FaBookmark className="mr-2" /> Remove Bookmark
-    </button>
-  ) : (
-    <button
-      onClick={handleClick}
-      className="bg-blue-500 hover:bg-blue-600 text-white font-bold w-full py-2 px-4 rounded-md flex items-center justify-center"
-    >
-      <FaBookmark className="mr-2" /> Bookmark Property
+      <FaHeart
+        className={`mr-2 ${isFavorited ? "text-white" : "text-white"}`}
+      />
+      {isFavorited ? "Remove from Favorites" : "Add to Favorites"}
     </button>
   );
 };
 
-export default BookmarkButton;
+export default FavoriteButton;
