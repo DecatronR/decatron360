@@ -11,6 +11,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const profileImage = user?.image;
+  const userId = user?.id;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
@@ -179,6 +180,15 @@ const Navbar = () => {
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
                       Saved Properties
+                    </Link>
+                    <Link
+                      href={`/agent-scheduler/${user.id}`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      role="menuitem"
+                      tabIndex="-1"
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      Scheduler
                     </Link>
                     <button
                       onClick={() => {

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useParams } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -7,6 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import "@fullcalendar/common/main.css";
 
 const AgentScheduler = () => {
+  const { id } = useParams(); // Fetch specific data for this user
   const [bookedDates, setBookedDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
@@ -74,11 +76,11 @@ const AgentScheduler = () => {
 
   const eventColor = (dateStr) => {
     if (bookedDates[dateStr]) {
-      return "#ff5733";
+      return "#ff5733"; // Red for booked
     } else if (availableTimes[dateStr]) {
-      return "#28a745";
+      return "#28a745"; // Green for available
     }
-    return "#ffff";
+    return "#e2e2e2"; // Light gray for unavailable
   };
 
   const handleSelectAllTimeSlots = () => {
@@ -91,11 +93,9 @@ const AgentScheduler = () => {
   };
 
   return (
-    <section className="px-4 py-6 bg-gray-100">
+    <section className="px-4 py-6 bg-gray-50">
       <div className="container max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        {" "}
-        {/* Increased max width and padding */}
-        <h2 className="text-3xl font-bold text-primary-500 mb-4 text-center">
+        <h2 className="text-3xl font-bold text-primary-600 mb-4 text-center">
           Agent Inspection Scheduler
         </h2>
         <p className="text-center text-gray-600 mb-6">
@@ -117,7 +117,7 @@ const AgentScheduler = () => {
         </div>
         <div className="flex flex-col lg:flex-row">
           <div className="lg:w-2/3">
-            <div className="w-full rounded-lg border border-gray-300 shadow overflow-hidden">
+            <div className="w-full rounded-lg border border-gray-300 shadow-lg overflow-hidden">
               <div className="h-[69vh] overflow-y-auto">
                 <FullCalendar
                   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -143,8 +143,10 @@ const AgentScheduler = () => {
           </div>
           <div className="lg:w-1/3 lg:pl-4 mt-4 lg:mt-0">
             {selectedDate && (
-              <div className="bg-white rounded-lg shadow p-4">
-                <h4 className="font-semibold text-lg mb-2">{selectedDate}</h4>
+              <div className="bg-white rounded-lg shadow-lg p-4">
+                <h4 className="font-semibold text-lg mb-2 text-primary-600">
+                  {selectedDate}
+                </h4>
                 <div className="h-[60vh] overflow-y-auto">
                   <div className="flex flex-col mb-3">
                     <button
@@ -175,7 +177,7 @@ const AgentScheduler = () => {
         <div className="text-center mt-5">
           <button
             onClick={handleSaveChanges}
-            className="bg-primary-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition duration-200"
+            className="bg-primary-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-primary-500 transition duration-200 shadow-md hover:shadow-lg"
           >
             Save Changes
           </button>
