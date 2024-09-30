@@ -1,22 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { formatCurrency } from "@/utils/helpers/formatCurrency";
 import { formatTime } from "@/utils/helpers/formatTime";
 import { PaystackButton } from "react-paystack";
-import { useAuth } from "@/context/AuthContext";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 
 const InspectionDetails = () => {
-  const publicKey = process.env.PAYSTACK_PUBLIC_KEY;
-  const { user, loading: userLoading } = useAuth();
-  const name = user?.data?.name || "";
-  const email = user?.data?.email || "";
-  const phone = user?.data?.phone || "";
+  const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [user, setUser] = useState();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [inspectionData, setInspectionData] = useState(null);
@@ -26,14 +22,34 @@ const InspectionDetails = () => {
   const [editedDate, setEditedDate] = useState("");
   const [editedTime, setEditedTime] = useState("");
 
-  const id = searchParams.get("id");
+  const propertyId = searchParams.get("id");
+  let userId;
+
+  useEffect(() => {
+    const handleFetchUserData = async () => {
+      userId = sessionStorage.getItem("userId");
+      if (!userId) {
+        console.log("Please make sure you are logged in first: ");
+        return;
+      }
+
+      try {
+        const res = await fetchUserData(userId);
+        console.log("user data in payment page: ", res);
+        setUser(res);
+      } catch (error) {
+        console.log("Issue with fetching user data: ", error);
+      }
+    };
+    handleFetchUserData();
+  }, []);
 
   useEffect(() => {
     const handleFetchPropertyData = async () => {
-      if (!id) return;
+      if (!propertyId) return;
 
       try {
-        const res = await fetchPropertyData(id);
+        const res = await fetchPropertyData(propertyId);
         setProperty(res);
       } catch (error) {
         console.error("Error fetching property:", error);
@@ -42,10 +58,10 @@ const InspectionDetails = () => {
       }
     };
 
-    if (id) {
+    if (propertyId) {
       handleFetchPropertyData();
     }
-  }, [id]);
+  }, [propertyId]);
 
   useEffect(() => {
     const data = JSON.parse(sessionStorage.getItem("inspectionData"));
@@ -117,11 +133,11 @@ const InspectionDetails = () => {
   const total = inspectionFee + serviceCharge;
 
   const componentProps = {
-    email,
-    amount: total,
+    email: user?.email,
+    amount: total * 100,
     metadata: {
-      name,
-      phone,
+      name: user?.name,
+      phone: user?.phone,
     },
     publicKey,
     text: "Confirm and Pay",
@@ -134,8 +150,7 @@ const InspectionDetails = () => {
   console.log("Payment props: ", componentProps);
 
   // Make sure all data is loaded before rendering
-  const isDataReady =
-    !userLoading && !loading && property && inspectionData && user;
+  const isDataReady = !loading && property && inspectionData && user;
 
   if (!isDataReady) {
     return <p>Loading...</p>; // Show loading state until all data is ready
