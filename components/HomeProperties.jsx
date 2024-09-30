@@ -5,7 +5,7 @@ import Link from "next/link";
 import FeaturedPropertyCard from "./FeaturedPropertyCard";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 
-const HomeProperties = async () => {
+const HomeProperties = () => {
   const [properties, setProperties] = useState([]);
 
   const handleFetchProperties = useCallback(async () => {
@@ -18,13 +18,9 @@ const HomeProperties = async () => {
     }
   }, []);
 
-  useEffect(
-    () => {
-      handleFetchProperties();
-    },
-    [],
-    [properties]
-  );
+  useEffect(() => {
+    handleFetchProperties();
+  }, []);
 
   const recentProperties = properties
     ?.sort(() => Math.random() - Math.random())
@@ -37,8 +33,9 @@ const HomeProperties = async () => {
           <h2 className="text-3xl font-bold text-primary-500 mb-6 text-center">
             Recent Properties
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recentProperties === 0 ? (
+          {/* Adjust grid for 4 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recentProperties.length === 0 ? (
               <p>No Properties Found</p>
             ) : (
               recentProperties?.map((property) => (
@@ -52,7 +49,7 @@ const HomeProperties = async () => {
       <section className="m-auto max-w-lg my-10 px-6">
         <Link
           href="/properties"
-          className="block bg-black text-white text-center py-4 px-6 rounded-xl hover:bg-gray-700"
+          className="block bg-primary-500 text-white text-center py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:bg-primary-600"
         >
           View All Properties
         </Link>
@@ -63,8 +60,9 @@ const HomeProperties = async () => {
           <h2 className="text-3xl font-bold text-primary-500 mb-6 text-center">
             Featured Properties
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recentProperties === 0 ? (
+          {/* Adjust grid for 4 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recentProperties.length === 0 ? (
               <p>No Properties Found</p>
             ) : (
               recentProperties?.map((property) => (

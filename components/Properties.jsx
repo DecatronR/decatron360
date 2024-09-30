@@ -4,7 +4,6 @@ import Pagination from "@/components/Pagination";
 import PropertyCard from "@/components/PropertyCard";
 import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 
 const Properties = () => {
@@ -42,7 +41,7 @@ const Properties = () => {
         {properties.length === 0 ? (
           <p>No properties found</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {properties.map((property) => (
               <PropertyCard key={property._id} property={property} />
             ))}
