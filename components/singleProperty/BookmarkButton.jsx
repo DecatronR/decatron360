@@ -3,7 +3,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { FaBookmark } from "react-icons/fa";
-import { toast } from "react-toastify";
 
 const BookmarkButton = ({ property }) => {
   const { user } = useAuth();

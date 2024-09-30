@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import UserProfileCard from "@/components/UserProfile/UserProfileCard";
+import UserProfilePhoto from "@/components/UserProfile/UserProfilePhoto";
 import UserVerificationStatus from "@/components/UserProfile/UserVerificationStatus";
 import UserAbout from "@/components/UserProfile/UserAbout";
 import UserProperties from "@/components/UserProfile/UserProperties";
 import UserReviews from "@/components/UserProfile/UserReviews";
+import UserRating from "@/components/UserProfile/UserRating";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
@@ -129,7 +131,9 @@ const UserProfilePage = () => {
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto">
         {/* Left Column: Profile Info */}
         <div className="w-full md:w-1/3 md:sticky md:top-8 mb-4 md:mb-0">
-          <UserProfileCard userData={userData} userRating={userRating} />
+          {/* <UserProfileCard userData={userData} userRating={userRating} /> */}
+          <UserProfilePhoto />
+          <UserRating userRating={userRating} />
           <div className="mt-6">
             <UserVerificationStatus
               isEmailVerified={isEmailVerified}

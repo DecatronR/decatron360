@@ -7,41 +7,55 @@ const UserVerificationStatus = ({
   isIdentityVerified,
 }) => {
   return (
-    <div className="space-y-4 mt-4">
-      {/* Email Verification */}
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <span className="text-gray-700 text-sm md:text-base">Email</span>
-        {isEmailVerified ? (
-          <FaCheckCircle className="text-green-500 text-lg" />
-        ) : (
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md mt-2 md:mt-0">
-            Verify Email
-          </button>
-        )}
-      </div>
+    <div className="bg-white p-6 rounded-lg shadow-md mt-4">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        Verification Status
+      </h2>
+      <div className="space-y-4">
+        {/* Email Verification */}
+        <div className="flex items-center justify-between border-b pb-2">
+          <span className="text-gray-700 text-base">Email</span>
+          {isEmailVerified ? (
+            <div className="flex items-center">
+              <FaCheckCircle className="text-green-500 text-lg mr-2" />
+              <span className="text-green-600 text-sm">Verified</span>
+            </div>
+          ) : (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+              Verify Email
+            </button>
+          )}
+        </div>
 
-      {/* Phone Verification */}
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <span className="text-gray-700 text-sm md:text-base">Phone Number</span>
-        {isPhoneVerified ? (
-          <FaCheckCircle className="text-green-500 text-lg" />
-        ) : (
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md mt-2 md:mt-0">
-            Verify Phone
-          </button>
-        )}
-      </div>
+        {/* Phone Verification */}
+        <div className="flex items-center justify-between border-b pb-2">
+          <span className="text-gray-700 text-base">Phone Number</span>
+          {isPhoneVerified ? (
+            <div className="flex items-center">
+              <FaCheckCircle className="text-green-500 text-lg mr-2" />
+              <span className="text-green-600 text-sm">Verified</span>
+            </div>
+          ) : (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+              Verify Phone
+            </button>
+          )}
+        </div>
 
-      {/* Identity Verification */}
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <span className="text-gray-700 text-sm md:text-base">Identity</span>
-        {isIdentityVerified ? (
-          <FaCheckCircle className="text-green-500 text-lg" />
-        ) : (
-          <button className="bg-primary-500 text-white px-4 py-2 rounded-md mt-2 md:mt-0">
-            Verify Identity
-          </button>
-        )}
+        {/* Identity Verification */}
+        <div className="flex items-center justify-between">
+          <span className="text-gray-700 text-base">Identity</span>
+          {isIdentityVerified ? (
+            <div className="flex items-center">
+              <FaCheckCircle className="text-green-500 text-lg mr-2" />
+              <span className="text-green-600 text-sm">Verified</span>
+            </div>
+          ) : (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+              Verify Identity
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

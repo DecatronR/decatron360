@@ -30,19 +30,22 @@ const UserReviews = ({ userReviews }) => {
   );
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm">
+    <div className="bg-white p-6 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Reviews</h2>
-        <button className="text-primary-500 font-medium">See More</button>
+        <h2 className="text-2xl font-bold text-gray-800">Reviews</h2>
       </div>
 
       <div className="relative">
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           {currentReviews.map((review, index) => (
-            <div key={index} className="border rounded-lg p-4 shadow-md flex-1">
-              <p className="text-gray-600">“{review.text}”</p>
-              <p className="text-sm text-gray-500">
-                — {review.author}, {review.date}
+            <div
+              key={index}
+              className="border rounded-lg p-4 shadow-sm flex-1 bg-gray-50 transition duration-300 hover:shadow-lg"
+            >
+              <p className="text-gray-700 text-lg italic">“{review.text}”</p>
+              <p className="text-sm text-gray-500 mt-2">
+                — {review.author},{" "}
+                <span className="font-medium">{review.date}</span>
               </p>
             </div>
           ))}
@@ -53,7 +56,7 @@ const UserReviews = ({ userReviews }) => {
           <button
             onClick={handlePrevious}
             disabled={currentIndex === 0}
-            className="bg-gray-300 text-gray-700 rounded-full p-2 disabled:opacity-50"
+            className={`bg-gray-300 text-gray-700 rounded-full p-2 transition duration-300 hover:bg-gray-400 disabled:opacity-50`}
           >
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
@@ -63,11 +66,18 @@ const UserReviews = ({ userReviews }) => {
               currentIndex ===
               Math.ceil(userReviews.length / reviewsPerPage) - 1
             }
-            className="bg-gray-300 text-gray-700 rounded-full p-2 disabled:opacity-50"
+            className={`bg-gray-300 text-gray-700 rounded-full p-2 transition duration-300 hover:bg-gray-400 disabled:opacity-50`}
           >
             <FontAwesomeIcon icon={faChevronRight} />
           </button>
         </div>
+      </div>
+
+      {/* See More Button */}
+      <div className="mt-4 text-right">
+        <button className="text-primary-500 font-medium hover:underline">
+          See More
+        </button>
       </div>
     </div>
   );
