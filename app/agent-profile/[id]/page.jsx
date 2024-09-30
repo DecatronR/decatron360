@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
+import AgentProfilePhoto from "@/components/AgentProfile/AgentProfilePhoto";
 import AgentVerificationStatus from "@/components/AgentProfile/AgentVerficationStatus";
 import AgentAbout from "@/components/AgentProfile/AgentAbout";
 import AgentProperties from "@/components/AgentProfile/AgentProperties";
 import AgentReviews from "@/components/AgentProfile/AgentReviews";
+import AgentRating from "@/components/AgentProfile/AgentRating";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
@@ -122,7 +123,8 @@ const AgentProfilePage = () => {
         <div className="w-1/3">
           {/* Make the left column sticky so it stays in place */}
           <div className="sticky top-8">
-            <AgentProfileCard agentData={agentData} agentRating={agentRating} />
+            <AgentProfilePhoto />
+            <AgentRating />
 
             {/* Verification Status */}
             <div className="mt-6">

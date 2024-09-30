@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 
 const AgentVerificationStatus = ({
   isEmailVerified,
@@ -7,35 +7,55 @@ const AgentVerificationStatus = ({
   isIdentityVerified,
 }) => {
   return (
-    <div className="space-y-4 mt-4">
-      {/* Email Verification */}
-      <div className="flex items-center justify-between">
-        <span className="text-gray-700">Email</span>
-        {isEmailVerified ? (
-          <FaCheckCircle className="text-green-500" />
-        ) : (
-          <FaTimesCircle className="text-red-500" />
-        )}
-      </div>
+    <div className="bg-white p-6 rounded-lg shadow-md mt-4">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        Verification Status
+      </h2>
+      <div className="space-y-4">
+        {/* Email Verification */}
+        <div className="flex items-center justify-between border-b pb-2">
+          <span className="text-gray-700 text-base">Email</span>
+          {isEmailVerified ? (
+            <div className="flex items-center">
+              <FaCheckCircle className="text-green-500 text-lg mr-2" />
+              <span className="text-green-600 text-sm">Verified</span>
+            </div>
+          ) : (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+              Verify Email
+            </button>
+          )}
+        </div>
 
-      {/* Phone Verification */}
-      <div className="flex items-center justify-between">
-        <span className="text-gray-700">Phone Number</span>
-        {isPhoneVerified ? (
-          <FaCheckCircle className="text-green-500" />
-        ) : (
-          <FaTimesCircle className="text-red-500" />
-        )}
-      </div>
+        {/* Phone Verification */}
+        <div className="flex items-center justify-between border-b pb-2">
+          <span className="text-gray-700 text-base">Phone Number</span>
+          {isPhoneVerified ? (
+            <div className="flex items-center">
+              <FaCheckCircle className="text-green-500 text-lg mr-2" />
+              <span className="text-green-600 text-sm">Verified</span>
+            </div>
+          ) : (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+              Verify Phone
+            </button>
+          )}
+        </div>
 
-      {/* Identity Verification */}
-      <div className="flex items-center justify-between">
-        <span className="text-gray-700">Identity</span>
-        {isIdentityVerified ? (
-          <FaCheckCircle className="text-green-500" />
-        ) : (
-          <FaTimesCircle className="text-red-500" />
-        )}
+        {/* Identity Verification */}
+        <div className="flex items-center justify-between">
+          <span className="text-gray-700 text-base">Identity</span>
+          {isIdentityVerified ? (
+            <div className="flex items-center">
+              <FaCheckCircle className="text-green-500 text-lg mr-2" />
+              <span className="text-green-600 text-sm">Verified</span>
+            </div>
+          ) : (
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+              Verify Identity
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

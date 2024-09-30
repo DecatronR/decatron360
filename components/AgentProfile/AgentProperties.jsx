@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -32,10 +32,9 @@ const AgentProperties = ({ agentProperties }) => {
   );
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
+    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">My Listings</h2>
-        <button className="text-primary-500 font-medium">See More</button>
+        <h2 className="text-2xl font-bold text-gray-800">My Listings</h2>
       </div>
 
       {agentProperties.length > 0 ? (
@@ -43,47 +42,65 @@ const AgentProperties = ({ agentProperties }) => {
           {/* Carousel Navigation Buttons */}
           <button
             onClick={handlePrev}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10 hover:bg-gray-300 transition duration-200"
+            aria-label="Previous Property"
           >
             <FontAwesomeIcon icon={faChevronLeft} />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10 hover:bg-gray-300 transition duration-200"
+            aria-label="Next Property"
           >
             <FontAwesomeIcon icon={faChevronRight} />
           </button>
 
           {/* Display Visible Properties */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {visibleProperties.map((property, index) => (
-              <div key={index} className="rounded-lg overflow-hidden">
-                <Link href={`/properties/${property?._id}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleProperties.map((property) => (
+              <div
+                key={property._id}
+                className="rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
+              >
+                <Link href={`/properties/${property._id}`}>
                   {/* Display property image or a placeholder */}
                   {property.photo && property.photo.length > 0 ? (
                     <img
                       src={property.photo[0]} // Display the first photo
-                      alt={`Property ${currentIndex + index + 1}`}
-                      className="rounded-lg w-full h-auto object-cover"
+                      alt={`Property ${property.title}`}
+                      className="rounded-lg w-full h-48 object-cover cursor-pointer"
                     />
                   ) : (
-                    <div className="bg-gray-200 w-full h-64 flex items-center justify-center">
-                      <span>No Image Available</span>
+                    <div className="bg-gray-200 w-full h-48 flex items-center justify-center cursor-pointer">
+                      <span className="text-gray-500">No Image Available</span>
                     </div>
                   )}
                 </Link>
-                <div className="p-2">
-                  <h3 className="font-semibold">{property.title}</h3>
-                  <p className="text-sm text-gray-500">
+                <div className="p-4">
+                  <Link href={`/properties/${property._id}`}>
+                    <h3 className="font-semibold text-lg text-gray-800 cursor-pointer hover:text-primary-500">
+                      {property.title}
+                    </h3>
+                  </Link>
+                  <p className="text-sm text-gray-500 mt-1">
                     {property.propertyDetails}
                   </p>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* See More Button */}
+          <div className="mt-4 text-right">
+            <Link href="/properties">
+              <button className="text-primary-500 font-medium hover:underline">
+                See More
+              </button>
+            </Link>
+          </div>
         </div>
       ) : (
-        <p>No properties found.</p>
+        <p className="text-gray-500">No properties found.</p>
       )}
     </div>
   );

@@ -3,11 +3,13 @@ import React from "react";
 
 const AgentAbout = ({ agentData }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">About {agentData?.name}</h2>
-      </div>
-      <p className="text-gray-700">{agentData?.bio}</p>
+    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+      <h2 className="text-2xl font-bold text-gray-800">
+        About {agentData?.name}
+      </h2>
+      <p className="text-gray-600 mt-2">
+        {agentData?.bio ? agentData.bio : "This user has not added a bio yet."}
+      </p>
     </div>
   );
 };

@@ -127,19 +127,21 @@ const UserProfilePage = () => {
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen py-4 md:py-8">
-      <div className="flex flex-col md:flex-row max-w-6xl mx-auto">
+    <div className="bg-gray-100 min-h-screen py-8">
+      <div className="flex max-w-6xl mx-auto">
         {/* Left Column: Profile Info */}
-        <div className="w-full md:w-1/3 md:sticky md:top-8 mb-4 md:mb-0">
-          {/* <UserProfileCard userData={userData} userRating={userRating} /> */}
-          <UserProfilePhoto />
-          <UserRating userRating={userRating} />
-          <div className="mt-6">
-            <UserVerificationStatus
-              isEmailVerified={isEmailVerified}
-              isPhoneVerified={isPhoneVerified}
-              isIdentityVerified={isIdentityVerified}
-            />
+        <div className="w-1/3">
+          {/* Make the left column sticky so it stays in place */}
+          <div className="sticky top-8">
+            <UserProfilePhoto />
+            <UserRating userRating={userRating} />
+            <div className="mt-6">
+              <UserVerificationStatus
+                isEmailVerified={isEmailVerified}
+                isPhoneVerified={isPhoneVerified}
+                isIdentityVerified={isIdentityVerified}
+              />
+            </div>
           </div>
         </div>
 
