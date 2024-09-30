@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { generateRandomWord, generateRandomUrl } from "@/utils/random";
+import { generateRandomWord, generateRandomUrl } from "@/utils/helpers/random";
 
 const SaleForm = () => {
   const [mounted, setMounted] = useState(false);

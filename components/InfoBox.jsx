@@ -1,20 +1,31 @@
+"use client";
+import { useEffect, useState } from "react";
+
 const InfoBox = ({
   heading,
-  backgroundColor = 'bg-gray-100',
-  textColor = 'text-gray-800',
-  buttonInfo,
+  backgroundColor,
   children,
+  buttonInfo,
+  textColor,
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
-    <div className={`${backgroundColor} p-6 rounded-lg shadow-md`}>
-      <h2 className={`${textColor} text-2xl font-bold`}>{heading}</h2>
+    <div className={`${backgroundColor} rounded-lg p-4`}>
+      <h3 className="text-lg font-semibold">{heading}</h3>
       <p className={`${textColor} mt-2 mb-4`}>{children}</p>
-      <a
-        href={buttonInfo.link}
-        className={`inline-block ${buttonInfo.backgroundColor} text-white rounded-lg px-4 py-2 hover:opacity-80`}
-      >
-        {buttonInfo.text}
-      </a>
+      {isMounted && buttonInfo && buttonInfo.link && (
+        <a
+          href={buttonInfo.link}
+          className={`inline-block ${buttonInfo.backgroundColor} text-white rounded-lg px-4 py-2 hover:opacity-80`}
+        >
+          {buttonInfo.text}
+        </a>
+      )}
     </div>
   );
 };
