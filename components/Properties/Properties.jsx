@@ -1,7 +1,7 @@
 "use client";
 
 import Pagination from "@/components/Pagination";
-import PropertyCard from "@/components/PropertyCard";
+import PropertyCard from "./PropertyCard";
 import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";

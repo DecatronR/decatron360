@@ -65,13 +65,13 @@ const PropertyPage = () => {
           {/* Main content: property details and sticky sidebar */}
           <div className="container mx-auto py-8 px-4 md:px-4">
             <div className="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0">
-              {/* Property details */}
-              <div className="flex-1 bg-white shadow-lg rounded-lg p-0 md:p-6">
+              {/* Scrollable Property details */}
+              <div className="flex-1 bg-white shadow-lg rounded-lg p-0 md:p-6 h-screen overflow-y-auto">
                 <PropertyDetails property={property.data} />
               </div>
 
-              {/* Sidebar */}
-              <aside className="w-full md:w-1/3 sticky top-4 space-y-6">
+              {/* Sticky Sidebar */}
+              <aside className="w-full md:w-1/3 sticky top-4 h-fit">
                 <Link href={`/agent-profile/${property.data.userID}`}>
                   <AgentProfileCard agent={agent} />
                 </Link>

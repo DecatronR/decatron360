@@ -1,4 +1,4 @@
-import SelectListingType from "@/components/SelectListingType";
+import SelectListingType from "@/components/Properties/SelectListingType";
 
 const SelectListingTypePage = () => {
   return (

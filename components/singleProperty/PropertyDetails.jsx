@@ -9,7 +9,7 @@ import {
 
 const PropertyDetails = ({ property }) => {
   return (
-    <section className="bg-white rounded-lg p-6 space-y-6">
+    <section className="bg-white rounded-lg p-6 space-y-6 ">
       {/* Property Title and Location */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">{property.title}</h1>
@@ -17,12 +17,6 @@ const PropertyDetails = ({ property }) => {
           {property.neighbourhood}, {property.state}
         </p>
       </div>
-
-      {/* Property Rating */}
-      <div className="flex items-center space-x-2 mb-6">
-        {/* You can add rating stars here if needed */}
-      </div>
-
       {/* Property Info and Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-gray-50 p-4">

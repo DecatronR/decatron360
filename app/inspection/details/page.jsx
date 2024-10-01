@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import Spinner from "@/components/Spinner";
 import { formatCurrency } from "@/utils/helpers/formatCurrency";
 import { formatTime } from "@/utils/helpers/formatTime";
 import { PaystackButton } from "react-paystack";
@@ -93,6 +94,7 @@ const InspectionDetails = () => {
         type="date"
         value={editedDate}
         onChange={(e) => setEditedDate(e.target.value)}
+        className="border rounded-md p-2 w-full"
       />
     ) : inspectionData ? (
       inspectionData.date
@@ -104,6 +106,7 @@ const InspectionDetails = () => {
         type="time"
         value={editedTime}
         onChange={(e) => setEditedTime(e.target.value)}
+        className="border rounded-md p-2 w-full"
       />
     ) : inspectionData ? (
       formatTime(inspectionData.time)
@@ -153,78 +156,87 @@ const InspectionDetails = () => {
   const isDataReady = !loading && property && inspectionData && user;
 
   if (!isDataReady) {
-    return <p>Loading...</p>; // Show loading state until all data is ready
+    return <Spinner />;
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold mb-4">Booking Summary</h1>
+    <div className="bg-gray-50 min-h-screen py-8">
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold mb-6">Booking Summary</h1>
 
-        <div className="mb-6">
-          <h6 className="text-xl font-semibold mb-2">
-            {property?.data.title || "Loading..."}
-          </h6>
-          <p className="text-gray-600">
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">{propertyTitle}</h2>
+          <p className="text-gray-700 mb-2">
             Location: {neighbourhood}, {lga}, {state}
           </p>
-          <p className="text-gray-600">Inspection Date: {inspectionDate}</p>
-          <p className="text-gray-600">Inspection Time: {inspectionTime}</p>
+          <div className="text-gray-700">
+            <p>Inspection Date: {inspectionDate}</p>
+            <p>Inspection Time: {inspectionTime}</p>
+          </div>
           {isEditing ? (
-            <button onClick={handleSave} className="text-blue-500">
-              Save
+            <button onClick={handleSave} className="mt-2 text-blue-600">
+              Save Changes
             </button>
           ) : (
-            <button onClick={handleEdit} className="text-blue-500">
+            <button onClick={handleEdit} className="mt-2 text-blue-600">
               Edit
             </button>
           )}
         </div>
 
         {/* Price Breakdown */}
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Price Breakdown</h2>
-          <div className="flex justify-between mb-2">
-            <span>Inspection Fee</span>
+        <div className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Price Breakdown</h2>
+          <div className="flex justify-between mb-3">
+            <span className="text-gray-600">Inspection Fee</span>
             <span className="font-bold">{formatCurrency(inspectionFee)}</span>
           </div>
-          <div className="flex justify-between mb-2">
-            <span>Service Charge</span>
+          <div className="flex justify-between mb-3">
+            <span className="text-gray-600">Service Charge</span>
             <span className="font-bold">{formatCurrency(serviceCharge)}</span>
           </div>
-          <div className="border-t mt-4 pt-2 flex justify-between font-semibold">
+          <div className="border-t mt-4 pt-4 flex justify-between font-semibold text-lg">
             <span>Total</span>
-            <span className="font-bold">{formatCurrency(total)}</span>
+            <span>{formatCurrency(total)}</span>
           </div>
         </div>
 
         {/* Confirmation Checkboxes */}
-        <div className="mb-6">
+        <div className="mb-8">
           <label className="flex items-center mb-2">
             <input
               type="checkbox"
               checked={isInspectionConfirmed}
               onChange={() => setIsInspectionConfirmed(!isInspectionConfirmed)}
-              className="mr-2"
+              className="mr-2 w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-400 border-gray-300 rounded"
             />
-            I confirm the details of the inspection.
+            <span className="text-gray-700">
+              I confirm the inspection details.
+            </span>
           </label>
-          <label className="flex items-center mb-2">
+          <label className="flex items-center">
             <input
               type="checkbox"
               checked={isTermsAccepted}
               onChange={() => setIsTermsAccepted(!isTermsAccepted)}
-              className="mr-2"
+              className="mr-2 w-5 h-5 text-blue-600 focus:ring-2 focus:ring-blue-400 border-gray-300 rounded"
             />
-            I accept the terms and conditions.
+            <span className="text-gray-700">
+              I accept the terms and conditions.
+            </span>
           </label>
         </div>
 
         {/* Payment Button */}
-        <PaystackButton
-          {...componentProps}
-          disabled={!isDataReady || !isInspectionConfirmed || !isTermsAccepted}
-        />
+        <div className="flex justify-center">
+          <PaystackButton
+            {...componentProps}
+            className="bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors"
+            disabled={
+              !isDataReady || !isInspectionConfirmed || !isTermsAccepted
+            }
+          />
+        </div>
       </div>
     </div>
   );
