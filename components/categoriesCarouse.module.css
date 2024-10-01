@@ -1,0 +1,37 @@
+.category-carousel {
+    width: 90%; /* Set width as needed */
+    margin: auto; /* Center the carousel */
+  }
+  
+  .category-item {
+    background: #f0f0f0; /* Background color for category items */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding for content */
+    text-align: center; /* Center text */
+    transition: transform 0.3s; /* Animation on hover */
+  }
+  
+  .category-item:hover {
+    transform: scale(1.05); /* Scale effect on hover */
+  }
+  
+  .category-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 50%; /* Circular shape */
+    background-color: #e5e5e5; /* Light background */
+    transition: background-color 0.3s;
+  }
+  
+  .category-icon:hover {
+    background-color: #d0d0d0; /* Darker on hover */
+  }
+  
+  .category-title {
+    margin-top: 0.5rem; /* Space above the title */
+    font-weight: bold; /* Make the title bold */
+    color: #333; /* Dark text color */
+  }
+  
