@@ -128,7 +128,7 @@ const InspectionFeedbackForm = () => {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full bg-primary-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-600 transition-transform duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+        className="w-full bg-primary-500 text-white font-semibold py-3 px-6 rounded-lg hover:bg-primary-600 transition-transform duration-300 ease-in-out transform hover:scale-85 shadow-lg"
       >
         Submit Feedback
       </button>
