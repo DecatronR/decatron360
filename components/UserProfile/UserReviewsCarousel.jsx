@@ -6,9 +6,9 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const UserReviews = ({ userReviews }) => {
+const UserReviewsCarousel = ({ userReviews }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const reviewsPerPage = 3; // Number of reviews to display at a time
+  const reviewsPerPage = 3;
 
   const handleNext = () => {
     if (currentIndex < Math.ceil(userReviews.length / reviewsPerPage) - 1) {
@@ -83,4 +83,4 @@ const UserReviews = ({ userReviews }) => {
   );
 };
 
-export default UserReviews;
+export default UserReviewsCarousel;

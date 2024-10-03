@@ -1,16 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import UserProfileCard from "@/components/UserProfile/UserProfileCard";
 import UserProfilePhoto from "@/components/UserProfile/UserProfilePhoto";
 import UserVerificationStatus from "@/components/UserProfile/UserVerificationStatus";
 import UserAbout from "@/components/UserProfile/UserAbout";
-import UserProperties from "@/components/UserProfile/UserProperties";
-import UserReviews from "@/components/UserProfile/UserReviews";
+import UserPropertiesCarousel from "@/components/UserProfile/UserPropertiesCarousel";
+import UserReviewsCarousel from "@/components/UserProfile/UserReviewsCarousel";
 import UserRating from "@/components/UserProfile/UserRating";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
-import axios from "axios";
 import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
 
 const UserProfilePage = () => {
@@ -148,8 +146,11 @@ const UserProfilePage = () => {
         {/* Right Column: Scrollable Details */}
         <div className="w-full md:w-2/3 md:ml-8 h-auto md:h-[calc(100vh-4rem)] overflow-y-scroll">
           <UserAbout userData={userData} />
-          <UserProperties userProperties={userProperties} />
-          <UserReviews userReviews={userReviews} />
+          <UserPropertiesCarousel
+            userProperties={userProperties}
+            userId={userId}
+          />
+          <UserReviewsCarousel userReviews={userReviews} />
         </div>
       </div>
     </div>

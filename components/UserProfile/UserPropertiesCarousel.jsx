@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-const UserProperties = ({ userProperties }) => {
+const UserPropertiesCarousel = ({ userProperties, userId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -92,7 +92,7 @@ const UserProperties = ({ userProperties }) => {
 
           {/* See More Button */}
           <div className="mt-4 text-right">
-            <Link href="/properties">
+            <Link href={`/user-properties/${userId}`}>
               <button className="text-primary-500 font-medium hover:underline">
                 See More
               </button>
@@ -106,4 +106,4 @@ const UserProperties = ({ userProperties }) => {
   );
 };
 
-export default UserProperties;
+export default UserPropertiesCarousel;

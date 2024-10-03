@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import AgentReview from "@/components/AgentReview/AgentReview";
-import { fetchAgentReviews } from "@/utils/api/agents/fetchAgentReviews";
+// import { fetchAgentReviews } from "@/utils/api/agents/fetchAgentReviews";
 import Spinner from "@/components/Spinner";
 
 const AgentReviewPage = () => {
