@@ -24,7 +24,7 @@ const HomeProperties = () => {
 
   const recentProperties = properties
     ?.sort(() => Math.random() - Math.random())
-    .slice(0, 3);
+    .slice(0, 16);
 
   return (
     <>

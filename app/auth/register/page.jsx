@@ -84,10 +84,10 @@ const Registration = () => {
     console.log("inspection data", data);
     setInspectionData(data);
     setFormData((prevState) => ({
-      name: prevState.name || data.name || "",
-      email: prevState.email || data.email || "",
-      role: prevState.role || data.role || "",
-      phone: prevState.phone || data.phone || "08063247818",
+      name: prevState.name || data?.name || "",
+      email: prevState.email || data?.email || "",
+      role: prevState.role || data?.role || "",
+      phone: prevState.phone || data?.phone || "08063247818",
       password: prevState.password || "",
       confirmpassword: prevState.confirmpassword || "",
     }));

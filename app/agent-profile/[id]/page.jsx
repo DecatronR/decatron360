@@ -12,6 +12,7 @@ import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
 import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
+import Spinner from "@/components/Spinner";
 
 const AgentProfilePage = () => {
   const { id } = useParams();
@@ -27,6 +28,7 @@ const AgentProfilePage = () => {
   const [agentProperties, setAgentProperties] = useState([]);
   const [agentReviews, setAgentReviews] = useState([]);
   const [agentRating, setAgentRating] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Example verification statuses
   const isEmailVerified = false;
@@ -62,6 +64,8 @@ const AgentProfilePage = () => {
           setAgentData(res);
         } catch (error) {
           console.log("Issues fetching agent details: ", error);
+        } finally {
+          setLoading(false);
         }
       } else {
         console.log("Could not fetch agent details, user id not found");
@@ -115,6 +119,8 @@ const AgentProfilePage = () => {
     };
     handleFetchAgentRating();
   }, [id]);
+
+  if (loading) return <Spinner />;
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
