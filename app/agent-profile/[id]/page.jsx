@@ -140,13 +140,11 @@ const AgentProfilePage = () => {
         {/* Right Column: Scrollable Details */}
         <div className="w-2/3 ml-8 h-[calc(100vh-4rem)] overflow-y-scroll">
           <AgentAbout agentData={agentData} />
-
           <AgentPropertiesCarousel
             agentProperties={agentProperties}
             agentId={id}
           />
-
-          <AgentReviewsCarousel agentReviews={agentReviews} />
+          <AgentReviewsCarousel agentReviews={agentReviews} agentId={id} />
         </div>
       </div>
     </div>

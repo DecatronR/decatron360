@@ -44,17 +44,10 @@ const AgentPropertiesPage = async () => {
     };
     handleFetchAgentProperties();
   }, [id]);
-
   return (
     <>
       <section className="bg-primary-500 py-4">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-start sm:px-6 lg:px-8">
-          {/* Display agent's name conditionally */}
-          {agentData && (
-            <h1 className="text-3xl font-bold text-white mb-4">
-              Properties Listed by {agentData.name}
-            </h1>
-          )}
           <AgentPropertySearchForm />
         </div>
       </section>

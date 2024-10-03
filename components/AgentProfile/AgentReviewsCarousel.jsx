@@ -1,14 +1,15 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const AgentReviewsCarousel = ({ agentReviews }) => {
+const AgentReviewsCarousel = ({ agentReviews, agentId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const reviewsPerPage = 3; // Number of reviews to display at a time
+  const reviewsPerPage = 3;
 
   const handleNext = () => {
     if (currentIndex < Math.ceil(agentReviews.length / reviewsPerPage) - 1) {
@@ -75,9 +76,11 @@ const AgentReviewsCarousel = ({ agentReviews }) => {
 
       {/* See More Button */}
       <div className="mt-4 text-right">
-        <button className="text-primary-500 font-medium hover:underline">
-          See More
-        </button>
+        <Link href={`/agent-reviews/${agentId}`}>
+          <button className="text-primary-500 font-medium hover:underline">
+            See More
+          </button>
+        </Link>
       </div>
     </div>
   );
