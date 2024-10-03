@@ -46,7 +46,7 @@ const InspectionFeedbackForm = () => {
               onChange={(e) => setInspectionResult(e.target.value)}
               className="text-primary-500 focus:ring-primary-500 w-6 h-6"
             />
-            <span className="text-gray-800 text-lg font-semibold">
+            <span className="text-gray-800 text-lg font-medium">
               Successful
             </span>
           </label>
@@ -59,7 +59,7 @@ const InspectionFeedbackForm = () => {
               onChange={(e) => setInspectionResult(e.target.value)}
               className="text-primary-500 focus:ring-primary-500 w-6 h-6"
             />
-            <span className="text-gray-800 text-lg font-semibold">
+            <span className="text-gray-800 text-lg font-medium">
               Not Successful
             </span>{" "}
           </label>
