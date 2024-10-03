@@ -39,11 +39,11 @@ const MyInspections = ({ property }) => {
       <div className="flex items-start mb-4">
         <Link href={`/properties/${property.id}`} passHref>
           <Image
-            src={property.image} // Use the property image URL
+            src={property.image}
             alt={property.title}
-            width={100} // Set the desired width
-            height={100} // Set the desired height
-            className="rounded-lg mr-4 cursor-pointer object-cover" // Add styles
+            width={100}
+            height={100}
+            className="rounded-lg mr-4 cursor-pointer object-cover"
           />
         </Link>
         <Link href={`/properties/${property.id}`} passHref>
@@ -54,7 +54,7 @@ const MyInspections = ({ property }) => {
       </div>
       <p className="text-gray-600 mb-4">{property.description}</p>
       <div className="flex items-center text-gray-700 mb-4">
-        <FaMapMarkerAlt className="mr-2" /> {/* Location icon */}
+        <FaMapMarkerAlt className="mr-2" />
         <p className="font-semibold">{property.location}</p>{" "}
         {/* Displaying location */}
       </div>

@@ -59,7 +59,7 @@ const CategoriesCarousel = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000); // Simulate a 1 second loading time
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);

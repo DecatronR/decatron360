@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import AgentProfilePhoto from "@/components/AgentProfile/AgentProfilePhoto";
 import AgentVerificationStatus from "@/components/AgentProfile/AgentVerficationStatus";
 import AgentAbout from "@/components/AgentProfile/AgentAbout";
-import AgentProperties from "@/components/AgentProfile/AgentProperties";
-import AgentReviews from "@/components/AgentProfile/AgentReviews";
+import AgentPropertiesCarousel from "@/components/AgentProfile/AgentPropertiesCarousel";
+import AgentReviewsCarousel from "@/components/AgentProfile/AgentReviewsCarousel";
 import AgentRating from "@/components/AgentProfile/AgentRating";
 import { useParams } from "next/navigation";
 import axios from "axios";
@@ -141,9 +141,12 @@ const AgentProfilePage = () => {
         <div className="w-2/3 ml-8 h-[calc(100vh-4rem)] overflow-y-scroll">
           <AgentAbout agentData={agentData} />
 
-          <AgentProperties photos={photos} agentProperties={agentProperties} />
+          <AgentPropertiesCarousel
+            agentProperties={agentProperties}
+            agentId={id}
+          />
 
-          <AgentReviews agentReviews={agentReviews} />
+          <AgentReviewsCarousel agentReviews={agentReviews} />
         </div>
       </div>
     </div>

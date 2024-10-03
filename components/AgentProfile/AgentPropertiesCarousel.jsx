@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-const AgentProperties = ({ agentProperties }) => {
+const AgentPropertiesCarousel = ({ agentProperties, agentId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -92,7 +92,7 @@ const AgentProperties = ({ agentProperties }) => {
 
           {/* See More Button */}
           <div className="mt-4 text-right">
-            <Link href="/properties">
+            <Link href={`/agent-properties/${agentId}`}>
               <button className="text-primary-500 font-medium hover:underline">
                 See More
               </button>
@@ -106,4 +106,4 @@ const AgentProperties = ({ agentProperties }) => {
   );
 };
 
-export default AgentProperties;
+export default AgentPropertiesCarousel;

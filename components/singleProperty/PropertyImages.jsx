@@ -9,7 +9,7 @@ const PropertyImages = ({ images }) => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: true, // Enable arrows for navigation
+    arrows: true, 
     prevArrow: <CustomArrow direction="prev" />,
     nextArrow: <CustomArrow direction="next" />,
   };
