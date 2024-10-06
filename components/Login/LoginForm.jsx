@@ -10,8 +10,6 @@ const LoginForm = () => {
   const { signIn } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-
-  // State for login form
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
 

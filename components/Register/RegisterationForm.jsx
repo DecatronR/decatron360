@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { useSnackbar } from "notistack";
 
 const Registration = () => {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,8 +19,6 @@ const Registration = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
   const [inspectionData, setInspectionData] = useState(null);
 
   const handleChange = (event) => {
@@ -39,22 +39,22 @@ const Registration = () => {
 
   const onRegistration = async () => {
     try {
-      console.log("form data", formData);
       const response = await axios.post(
         "http://localhost:8080/auth/register",
         formData
       );
 
       if (response.status === 201) {
-        setSuccess("Registration successful! You can now login.");
-        console.log("Registration successful", response);
+        enqueueSnackbar("Registration successful!", { variant: "success" });
       } else {
-        setError("Registration failed. Please try again.");
-        console.log("Registration failed", response);
+        enqueueSnackbar(`Registration failed ${response.message}`, {
+          variant: "error",
+        });
       }
     } catch (error) {
-      console.error("Error during registration:", error);
-      setError("An error occurred during registration. Please try again.");
+      enqueueSnackbar(`Registration failed ${error.message}`, {
+        variant: "error",
+      });
     }
   };
 
@@ -62,9 +62,6 @@ const Registration = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Clear previous error messages
-    setError(null);
-    setSuccess(null);
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("password", formData.password);
     onRegistration();
@@ -73,13 +70,11 @@ const Registration = () => {
 
   const handleLoginClick = (event) => {
     event.preventDefault();
-    console.log("reg button clicked");
     router.replace("/auth/login");
   };
 
   useEffect(() => {
     const data = JSON.parse(sessionStorage.getItem("inspectionData"));
-    console.log("inspection data", data);
     setInspectionData(data);
     setFormData((prevState) => ({
       name: prevState.name || data?.name || "",
