@@ -3,8 +3,11 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Spinner from "../Spinner";
+import ButtonSpinner from "../ButtonSpinner";
+import { useSnackbar } from "notistack";
 
 const RentForm = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [states, setStates] = useState([]);
@@ -12,6 +15,7 @@ const RentForm = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [buttonLoader, setButtonLoader] = useState(false);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -229,11 +233,21 @@ const RentForm = () => {
     };
 
     console.log("Creating new property listing with formData: ", formData);
+    setButtonLoader(true);
     try {
-      const res = await axios(createListingConfig);
-      console.log("Successfully created listing type: ", res);
+      await axios(createListingConfig);
+      enqueueSnackbar("Successfully listed new property!", {
+        variant: "success",
+      });
+      const id = sessionStorage.getItem("userId");
+      route.push(`/user-properties/${id}`);
     } catch (error) {
       console.log("Issue with creating new property listing: ", error);
+      enqueueSnackbar(`Failed to  list new property: ${error.message}`, {
+        variant: "error",
+      });
+    } finally {
+      setButtonLoader(false);
     }
   };
 
@@ -541,7 +555,7 @@ const RentForm = () => {
             type="submit"
             className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
           >
-            Add Property
+            {buttonLoading ? <ButtonSpinner /> : "Add Property"}
           </button>
         </div>
       </form>

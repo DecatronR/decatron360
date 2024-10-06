@@ -3,8 +3,11 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Spinner from "../Spinner";
+import ButtonSpinner from "../ButtonSpinner";
+import { useSnackbar } from "notistack";
 
 const SaleForm = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [states, setStates] = useState([]);
@@ -12,6 +15,7 @@ const SaleForm = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -86,31 +90,34 @@ const SaleForm = () => {
       i < files.length && uploadedImages.length + newImages.length < 7;
       i++
     ) {
-      newImages.push(files[i]);
-      newPreviewUrls.push(URL.createObjectURL(files[i]));
+      const file = files[i];
+
+      // Check file size (e.g., 2MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`${file.name} is too large, maximum file size is 5MB`);
+        continue;
+      }
+
+      // Check file type (e.g., only allow image/jpeg or image/png)
+      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
+        alert(
+          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`
+        );
+        continue;
+      }
+
+      newImages.push(file);
+      newPreviewUrls.push(URL.createObjectURL(file));
     }
 
     setUploadedImages([...uploadedImages, ...newImages]);
     setPreviewUrls([...previewUrls, ...newPreviewUrls]);
-    const newPhotos = [
-      ...fields.photo,
-      ...newImages.map((file) => ({ path: URL.createObjectURL(file) })),
-    ];
-    setFields((prevFields) => ({ ...prevFields, photo: newPhotos }));
-  };
 
-  const removeImage = (index) => {
-    const newPreviewUrls = [...previewUrls];
-    newPreviewUrls.splice(index, 1);
-    setPreviewUrls(newPreviewUrls);
-
-    const newUploadedImages = [...uploadedImages];
-    newUploadedImages.splice(index, 1);
-    setUploadedImages(newUploadedImages);
-
-    const newPhotos = [...fields.photo];
-    newPhotos.splice(index, 1);
-    setFields((prevFields) => ({ ...prevFields, photo: newPhotos }));
+    // Update the actual files in fields
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: [...prevFields.photo, ...newImages],
+    }));
   };
 
   const formatPrice = (price) => {
@@ -150,21 +157,61 @@ const SaleForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+
+    // Append text fields
+    formData.append("userID", fields.userID);
+    formData.append("title", fields.title);
+    formData.append("listingType", fields.listingType);
+    formData.append("usageType", fields.usageType);
+    formData.append("propertyType", fields.propertyType);
+    formData.append("propertySubType", fields.propertySubType);
+    formData.append("propertyCondition", fields.propertyCondition);
+    formData.append("state", fields.state);
+    formData.append("lga", fields.lga);
+    formData.append("neighbourhood", fields.neighbourhood);
+    formData.append("size", fields.size);
+    formData.append("propertyDetails", fields.propertyDetails);
+    formData.append("NoOfLivingRooms", fields.NoOfLivingRooms);
+    formData.append("NoOfBedRooms", fields.NoOfBedRooms);
+    formData.append("NoOfKitchens", fields.NoOfKitchens);
+    formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
+    formData.append("Price", fields.Price);
+    formData.append("virtualTour", fields.virtualTour);
+    formData.append("video", fields.video);
+
+    // Append image files (each file)
+    fields.photo.forEach((photo, index) => {
+      formData.append(`photo`, photo); // Appending each image to FormData
+    });
+
     const createListingConfig = {
       method: "post",
       maxBodyLength: Infinity,
       url: "http://localhost:8080/propertyListing/createPropertyListing",
-      headers: {},
-      data: fields,
+      headers: {
+        "Content-Type": "multipart/form-data", // set to multipart for file upload
+      },
+      data: formData,
       withCredentials: true,
     };
 
-    console.log("Creating new property listing with data: ", fields);
+    console.log("Creating new property listing with formData: ", formData);
+    setButtonLoader(true);
     try {
-      const res = await axios(createListingConfig);
-      console.log("Successfully created listing type: ", res);
+      await axios(createListingConfig);
+      enqueueSnackbar("Successfully listed new property!", {
+        variant: "success",
+      });
+      const id = sessionStorage.getItem("userId");
+      route.push(`/user-properties/${id}`);
     } catch (error) {
       console.log("Issue with creating new property listing: ", error);
+      enqueueSnackbar(`Failed to  list new property: ${error.message}`, {
+        variant: "error",
+      });
+    } finally {
+      setButtonLoader(false);
     }
   };
 
@@ -432,6 +479,7 @@ const SaleForm = () => {
             multiple
             onChange={handleImageChange}
             required
+            aria-label="Upload images for your property listing (Maximum 7 images)"
           />
 
           {previewUrls.length > 0 && (
@@ -471,7 +519,7 @@ const SaleForm = () => {
             type="submit"
             className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
           >
-            Add Property
+            {buttonLoading ? <ButtonSpinner /> : "Add Property"}
           </button>
         </div>
       </form>
