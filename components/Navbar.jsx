@@ -170,16 +170,16 @@ const Navbar = () => {
                       tabIndex="-1"
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
-                      Your Profile
+                      My Profile
                     </Link>
                     <Link
-                      href="/properties/saved"
+                      href="/properties/favorite"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       role="menuitem"
                       tabIndex="-1"
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
-                      Saved Properties
+                      Favourite Properties
                     </Link>
                     <Link
                       href={`/agent-scheduler/${user.id}`}

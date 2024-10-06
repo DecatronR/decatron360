@@ -1,7 +1,7 @@
-import LoginWrapper from "@/components/Login/LoginWrapper";
+import LoginForm from "@/components/Login/LoginForm";
 
 const LoginPage = () => {
-  return <LoginWrapper />;
+  return <LoginForm />;
 };
 
 export default LoginPage;

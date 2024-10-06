@@ -103,31 +103,49 @@ const RentForm = () => {
       i < files.length && uploadedImages.length + newImages.length < 7;
       i++
     ) {
-      newImages.push(files[i]);
-      newPreviewUrls.push(URL.createObjectURL(files[i]));
+      const file = files[i];
+
+      // Check file size (e.g., 2MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert(`${file.name} is too large, maximum file size is 5MB`);
+        continue;
+      }
+
+      // Check file type (e.g., only allow image/jpeg or image/png)
+      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
+        alert(
+          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`
+        );
+        continue;
+      }
+
+      newImages.push(file);
+      newPreviewUrls.push(URL.createObjectURL(file));
     }
 
     setUploadedImages([...uploadedImages, ...newImages]);
     setPreviewUrls([...previewUrls, ...newPreviewUrls]);
-    const newPhotos = [
-      ...fields.photo,
-      ...newImages.map((file) => ({ path: URL.createObjectURL(file) })),
-    ];
-    setFields((prevFields) => ({ ...prevFields, photo: newPhotos }));
+
+    // Update the actual files in fields
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: [...prevFields.photo, ...newImages],
+    }));
   };
 
-  const removeImage = (index) => {
-    const newPreviewUrls = [...previewUrls];
-    newPreviewUrls.splice(index, 1);
-    setPreviewUrls(newPreviewUrls);
+  const handleImageRemove = (index) => {
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(previewUrls[index]);
 
-    const newUploadedImages = [...uploadedImages];
-    newUploadedImages.splice(index, 1);
-    setUploadedImages(newUploadedImages);
+    // Remove the image from preview and fields
+    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
 
-    const newPhotos = [...fields.photo];
-    newPhotos.splice(index, 1);
-    setFields((prevFields) => ({ ...prevFields, photo: newPhotos }));
+    // Update the fields.photo array to remove the corresponding file
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: prevFields.photo.filter((_, i) => i !== index),
+    }));
   };
 
   const formatPrice = (price) => {
@@ -164,19 +182,70 @@ const RentForm = () => {
     fetchAllData();
   }, [fetchData]);
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   const createListingConfig = {
+  //     method: "post",
+  //     maxBodyLength: Infinity,
+  //     url: "http://localhost:8080/propertyListing/createPropertyListing",
+  //     headers: {},
+  //     data: fields,
+  //     withCredentials: true,
+  //   };
+
+  //   console.log("Creating new property listing with data: ", fields);
+  //   try {
+  //     const res = await axios(createListingConfig);
+  //     console.log("Successfully created listing type: ", res);
+  //   } catch (error) {
+  //     console.log("Issue with creating new property listing: ", error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+
+    // Append text fields
+    formData.append("userID", fields.userID);
+    formData.append("title", fields.title);
+    formData.append("listingType", fields.listingType);
+    formData.append("usageType", fields.usageType);
+    formData.append("propertyType", fields.propertyType);
+    formData.append("propertySubType", fields.propertySubType);
+    formData.append("propertyCondition", fields.propertyCondition);
+    formData.append("state", fields.state);
+    formData.append("lga", fields.lga);
+    formData.append("neighbourhood", fields.neighbourhood);
+    formData.append("size", fields.size);
+    formData.append("propertyDetails", fields.propertyDetails);
+    formData.append("NoOfLivingRooms", fields.NoOfLivingRooms);
+    formData.append("NoOfBedRooms", fields.NoOfBedRooms);
+    formData.append("NoOfKitchens", fields.NoOfKitchens);
+    formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
+    formData.append("Price", fields.Price);
+    formData.append("virtualTour", fields.virtualTour);
+    formData.append("video", fields.video);
+
+    // Append image files (each file)
+    fields.photo.forEach((photo, index) => {
+      formData.append(`photo`, photo); // Appending each image to FormData
+    });
 
     const createListingConfig = {
       method: "post",
       maxBodyLength: Infinity,
       url: "http://localhost:8080/propertyListing/createPropertyListing",
-      headers: {},
-      data: fields,
+      headers: {
+        "Content-Type": "multipart/form-data", // set to multipart for file upload
+      },
+      data: formData,
       withCredentials: true,
     };
 
-    console.log("Creating new property listing with data: ", fields);
+    console.log("Creating new property listing with formData: ", formData);
     try {
       const res = await axios(createListingConfig);
       console.log("Successfully created listing type: ", res);
@@ -192,7 +261,7 @@ const RentForm = () => {
         className="space-y-6 bg-white shadow-md rounded-lg p-6"
       >
         <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
-          Add Property For Sale
+          Add Property For Rent
         </h2>
 
         <div className="mb-6">
@@ -447,6 +516,7 @@ const RentForm = () => {
             multiple
             onChange={handleImageChange}
             required
+            aria-label="Upload images for your property listing (Maximum 7 images)"
           />
 
           {previewUrls.length > 0 && (

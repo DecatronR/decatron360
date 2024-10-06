@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaBath,
   FaBed,
@@ -9,22 +9,16 @@ import {
   FaHeart,
 } from "react-icons/fa";
 
-const PropertyCard = ({ property }) => {
-  const [isFavorite, setIsFavorite] = useState(false); // State to track favorite status
-
+const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const formatPrice = (price) => {
     return `$${price.toLocaleString()}`;
-  };
-
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite); // Toggle favorite state
   };
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
       <div className="relative cursor-pointer rounded-lg shadow-lg overflow-hidden bg-white transition hover:shadow-2xl transform hover:scale-[1.02] duration-300">
         <div className="relative">
-          {property.photos.length > 0 && (
+          {property?.photos?.length > 0 && (
             <Image
               src={property.photos[0].path}
               alt={property.title}
@@ -39,8 +33,9 @@ const PropertyCard = ({ property }) => {
           <div
             className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
-              e.preventDefault(); // Prevents the Link from being triggered when clicking the favorite icon
-              toggleFavorite();
+              e.preventDefault();
+              e.stopPropagation(); // Stop the event from bubbling to the parent Link
+              onToggleFavorite();
             }}
           >
             <FaHeart

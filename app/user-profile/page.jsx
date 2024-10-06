@@ -18,15 +18,6 @@ const UserProfilePage = () => {
   const [userRating, setUserRating] = useState([]);
   const [userData, setUserData] = useState(null);
 
-  const dummyUser = {
-    photo: "/path/to/agent-photo.jpg",
-    name: "John Doe",
-    rank: "Top Agent",
-    reviews: 123,
-    ratings: 456,
-    joinDate: "2020-01-15",
-  };
-
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
     setUserId(id);
