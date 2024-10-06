@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
-import { generateRandomWord, generateRandomUrl } from "@/utils/helpers/random";
+import Spinner from "../Spinner";
 
 const SaleForm = () => {
   const [mounted, setMounted] = useState(false);
@@ -11,40 +11,46 @@ const SaleForm = () => {
   const [lga, setLga] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [fields, setFields] = useState({
     userID: "",
-    title: generateRandomWord(),
+    title: "",
     listingType: "sale",
-    usageType: generateRandomWord(),
-    propertyType: generateRandomWord(),
-    propertySubType: generateRandomWord(),
-    propertyCondition: generateRandomWord(),
+    usageType: "",
+    propertyType: "",
+    propertySubType: "",
+    propertyCondition: "",
     state: "",
     lga: "",
-    neighbourhood: generateRandomWord(),
-    size: "500",
-    propertyDetails: generateRandomWord(),
-    NoOfLivingRooms: "1",
-    NoOfBedRooms: "3",
-    NoOfKitchens: "2",
-    NoOfParkingSpace: "2",
-    Price: "5000000",
-    virtualTour: generateRandomUrl(),
-    video: generateRandomUrl(),
+    neighbourhood: "",
+    size: "",
+    propertyDetails: "",
+    NoOfLivingRooms: "",
+    NoOfBedRooms: "",
+    NoOfKitchens: "",
+    NoOfParkingSpace: "",
+    Price: "",
+    virtualTour: "",
+    video: "",
     photo: [],
   });
 
   useEffect(() => {
-    const id = sessionStorage.getItem("userId");
-    console.log("userId sale: ", id);
-    if (id) {
-      setFields((prevFields) => ({
-        ...prevFields,
-        userID: id,
-      }));
-      setMounted(true);
-    }
+    const loadUserId = async () => {
+      const id = sessionStorage.getItem("userId");
+      console.log("userId sale: ", id);
+      if (id) {
+        setFields((prevFields) => ({
+          ...prevFields,
+          userID: id,
+        }));
+        setMounted(true);
+      }
+      setLoading(false);
+    };
+
+    loadUserId();
   }, []);
 
   const handleChange = (e) => {
@@ -68,30 +74,6 @@ const SaleForm = () => {
         [name]: value,
       }));
     }
-  };
-  const handleAmenitiesChange = (e) => {
-    const { value, checked } = e.target;
-
-    // Clone the current array
-    const updatedAmenites = [...fields.amenities];
-
-    if (checked) {
-      // Add value to array
-      updatedAmenites.push(value);
-    } else {
-      // Remove value from array
-      const index = updatedAmenites.indexOf(value);
-
-      if (index !== -1) {
-        updatedAmenites.splice(index, 1);
-      }
-    }
-
-    // Update state with updated array
-    setFields((prevFields) => ({
-      ...prevFields,
-      amenities: updatedAmenites,
-    }));
   };
 
   const handleImageChange = (e) => {
@@ -186,7 +168,9 @@ const SaleForm = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     mounted && (
       <form
         onSubmit={handleSubmit}

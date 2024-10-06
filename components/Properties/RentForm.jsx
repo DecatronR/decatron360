@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
+import Spinner from "../Spinner";
 
 const RentForm = () => {
   const [mounted, setMounted] = useState(false);
@@ -10,6 +11,7 @@ const RentForm = () => {
   const [lga, setLga] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -35,15 +37,20 @@ const RentForm = () => {
   });
 
   useEffect(() => {
-    const id = sessionStorage.getItem("userId");
-    console.log("userId sale: ", id);
-    if (id) {
-      setFields((prevFields) => ({
-        ...prevFields,
-        userID: id,
-      }));
-      setMounted(true);
-    }
+    const loadUserId = async () => {
+      const id = sessionStorage.getItem("userId");
+      console.log("userId sale: ", id);
+      if (id) {
+        setFields((prevFields) => ({
+          ...prevFields,
+          userID: id,
+        }));
+        setMounted(true);
+      }
+      setLoading(false);
+    };
+
+    loadUserId();
   }, []);
 
   const handleChange = (e) => {
@@ -67,30 +74,6 @@ const RentForm = () => {
         [name]: value,
       }));
     }
-  };
-  const handleAmenitiesChange = (e) => {
-    const { value, checked } = e.target;
-
-    // Clone the current array
-    const updatedAmenites = [...fields.amenities];
-
-    if (checked) {
-      // Add value to array
-      updatedAmenites.push(value);
-    } else {
-      // Remove value from array
-      const index = updatedAmenites.indexOf(value);
-
-      if (index !== -1) {
-        updatedAmenites.splice(index, 1);
-      }
-    }
-
-    // Update state with updated array
-    setFields((prevFields) => ({
-      ...prevFields,
-      amenities: updatedAmenites,
-    }));
   };
 
   const handleImageChange = (e) => {
@@ -254,7 +237,9 @@ const RentForm = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     mounted && (
       <form
         onSubmit={handleSubmit}
