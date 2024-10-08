@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       const { userId, token } = await signInApi(email, password);
-      console.log("User ID: ", userId);
       document.cookie = `auth_jwt=${token}; path=/`;
 
       sessionStorage.setItem("userId", userId);
@@ -23,7 +22,6 @@ export const AuthProvider = ({ children }) => {
         { id: userId },
         { withCredentials: true }
       );
-      console.log("User: ", res.data.data);
       const user = res.data.data;
       setUser(user);
     } catch (error) {
@@ -44,13 +42,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const getUserData = async () => {
       const userId = sessionStorage.getItem("userId");
-      console.log("User ID inside the get user function: ", userId);
       if (userId) {
-        console.log("User ID inside the get user function: ", userId);
         try {
           const userData = await fetchUserData(userId);
           setUser(userData);
-          console.log("User data: ", userData);
         } catch (error) {
           console.error("Get user failed", error);
         } finally {

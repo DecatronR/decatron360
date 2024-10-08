@@ -120,6 +120,21 @@ const SaleForm = () => {
     }));
   };
 
+  const handleImageRemove = (index) => {
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(previewUrls[index]);
+
+    // Remove the image from preview and fields
+    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+
+    // Update the fields.photo array to remove the corresponding file
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: prevFields.photo.filter((_, i) => i !== index),
+    }));
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-NG", {
       style: "currency",

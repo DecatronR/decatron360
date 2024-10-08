@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import {
   faCouch,
@@ -7,9 +8,16 @@ import {
   faCar,
   faRuler,
 } from "@fortawesome/free-solid-svg-icons";
+import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyListing";
+import { deletePropertyListing } from "@/utils/api/propertyListing/deletePropertyListing";
+import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 
 const PropertyDetails = ({ property, userId }) => {
   const [isPropertyLister, setIsPropertyLister] = useState(false);
+  const [propertyData, setPropertyData] = useState(null);
+
+  console.log("property in Property details: ", property);
+  console.log("property Id in Property details: ", property._id);
 
   // checking if the logged in user is the user who listed the property
   useEffect(() => {
@@ -18,7 +26,19 @@ const PropertyDetails = ({ property, userId }) => {
     setIsPropertyLister(isCurrentUserTheLister);
   }, [userId]);
 
-  const handleEditProperty = async () => {};
+  const handleDeleteProperty = async () => {
+    try {
+      await deletePropertyListing(property.userID);
+      enqueueSnackbar("Successfully deleted property!", {
+        variant: "success",
+      });
+    } catch (error) {
+      console.log("Failed to edit property: ", error);
+      enqueueSnackbar("Failed to delete property!", {
+        variant: "error",
+      });
+    }
+  };
 
   return (
     <section className="bg-white rounded-lg p-6 space-y-6 ">
@@ -31,15 +51,16 @@ const PropertyDetails = ({ property, userId }) => {
       </div>
       {isPropertyLister && (
         <div className="flex space-x-4">
-          <button
+          <Link
+            href={`/properties/${property._id}/edit`}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-            // onClick={handleEditClick}
+            role="editProperty"
           >
             Edit
-          </button>
+          </Link>
           <button
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
-            // onClick={handleDeleteClick}
+            onClick={handleDeleteProperty}
           >
             Delete
           </button>

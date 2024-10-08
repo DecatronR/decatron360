@@ -1,571 +1,559 @@
-'use client';
+"use client";
 
-import { fetchProperty } from '@/utils/requests';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import { useEffect, useState, useCallback } from "react";
+import axios from "axios";
+import Spinner from "./Spinner";
+import ButtonSpinner from "./ButtonSpinner";
+import { useSnackbar } from "notistack";
+import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyListing";
+import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 
-const PropertyEditForm = () => {
-  const { id } = useParams();
-  const router = useRouter();
-
+const PropertyEditForm = ({ propertyId }) => {
+  const { enqueueSnackbar } = useSnackbar();
+  const [fields, setFields] = useState({});
+  const [propertyData, setPropertyData] = useState({});
+  const [existingImages, setExistingImages] = useState([]);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
   const [mounted, setMounted] = useState(false);
-  const [fields, setFields] = useState({
-    type: '',
-    name: '',
-    description: '',
-    location: {
-      street: '',
-      city: '',
-      state: '',
-      zipcode: '',
-    },
-    beds: '',
-    baths: '',
-    square_feet: '',
-    amenities: [],
-    rates: {
-      weekly: '',
-      monthly: '',
-      nightly: '',
-    },
-    seller_info: {
-      name: '',
-      email: '',
-      phone: '',
-    },
-  });
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [states, setStates] = useState([]);
+  const [lga, setLga] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    if (propertyData) {
+      setFields({
+        id: propertyData?.data?._id,
+        title: propertyData?.data?.title || "",
+        listingType: propertyData?.data?.listingType || "",
+        usageType: propertyData?.data?.usageType || "",
+        propertyType: propertyData?.data?.propertyType || "",
+        propertySubType: propertyData?.data?.propertySubType || "",
+        propertyCondition: propertyData?.data?.propertyCondition || "",
+        state: propertyData?.data?.state || "",
+        lga: propertyData?.data?.lga || "",
+        neighbourhood: propertyData?.data?.neighbourhood || "",
+        size: propertyData?.data?.size || "",
+        propertyDetails: propertyData?.data?.propertyDetails || "",
+        NoOfLivingRooms: propertyData?.data?.NoOfLivingRooms || "",
+        NoOfBedRooms: propertyData?.data?.NoOfBedRooms || "",
+        NoOfKitchens: propertyData?.data?.NoOfKitchens || "",
+        NoOfParkingSpace: propertyData?.data?.NoOfParkingSpace || "",
+        Price: propertyData?.data?.Price || "",
+        virtualTour: propertyData?.data?.virtualTour || "",
+        video: propertyData?.data?.video || "",
+        photo: propertyData?.photos || [],
+      });
+      setExistingImages(propertyData?.data?.photos || []);
+    }
+  }, [propertyData]);
 
-    // Fetch property data for form
-    const fetchPropertyData = async () => {
+  //fetch property data for editing
+  useEffect(() => {
+    const handlefetchPropertyData = async () => {
       try {
-        const propertyData = await fetchProperty(id);
-
-        // Check rates for null, if so then make empty string
-        if (propertyData && propertyData.rates) {
-          const defaultRates = { ...propertyData.rates };
-          for (const rate in defaultRates) {
-            if (defaultRates[rate] === null) {
-              defaultRates[rate] = '';
-            }
-          }
-          propertyData.rates = defaultRates;
-        }
-
-        setFields(propertyData);
+        const res = await editPropertyListing(propertyId);
+        setPropertyData(res);
+        setLoading(false);
       } catch (error) {
-        console.error(error);
-      } finally {
+        enqueueSnackbar("Failed to fetch property data for editing!", {
+          variant: "error",
+        });
         setLoading(false);
       }
     };
+    handlefetchPropertyData();
+  }, [propertyId, enqueueSnackbar]);
 
-    fetchPropertyData();
-  }, []);
+  //updates property when the data has been edited
+  const handleUpdateProperty = async () => {
+    try {
+      await updatePropertyListing(propertyData);
+      enqueueSnackbar("Successfully edited property!", {
+        variant: "success",
+      });
+    } catch (error) {
+      console.log("Failed to edit property: ", error);
+      enqueueSnackbar("Failed to update property!", {
+        variant: "error",
+      });
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Check if nested property
-    if (name.includes('.')) {
-      const [outerKey, innerKey] = name.split('.');
-
-      setFields((prevFields) => ({
-        ...prevFields,
-        [outerKey]: {
-          ...prevFields[outerKey],
-          [innerKey]: value,
-        },
-      }));
-    } else {
-      // Not nested
-      setFields((prevFields) => ({
-        ...prevFields,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleAmenitiesChange = (e) => {
-    const { value, checked } = e.target;
-
-    // Clone the current array
-    const updatedAmenites = [...fields.amenities];
-
-    if (checked) {
-      // Add value to array
-      updatedAmenites.push(value);
-    } else {
-      // Remove value from array
-      const index = updatedAmenites.indexOf(value);
-
-      if (index !== -1) {
-        updatedAmenites.splice(index, 1);
-      }
-    }
-
-    // Update state with updated array
     setFields((prevFields) => ({
       ...prevFields,
-      amenities: updatedAmenites,
+      [name]: value,
     }));
   };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = [];
+    const newPreviewUrls = [];
+
+    for (
+      let i = 0;
+      i < files.length && uploadedImages.length + newImages.length < 7;
+      i++
+    ) {
+      const file = files[i];
+      if (
+        file.size > 5 * 1024 * 1024 ||
+        !["image/jpeg", "image/png"].includes(file.type)
+      ) {
+        enqueueSnackbar(
+          `${file.name} is either too large or not a supported format.`,
+          {
+            variant: "warning",
+          }
+        );
+        continue;
+      }
+      newImages.push(file);
+      newPreviewUrls.push(URL.createObjectURL(file));
+    }
+
+    setUploadedImages([...uploadedImages, ...newImages]);
+    setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: [...prevFields.photo, ...newImages],
+    }));
+  };
+
+  const handleImageRemove = (index, isExisting) => {
+    if (isExisting) {
+      const imageToRemove = existingImages[index];
+      setImagesToDelete((prev) => [...prev, imageToRemove]);
+      setExistingImages((prev) => prev.filter((_, i) => i !== index));
+    } else {
+      setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+      setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    }).format(price);
+  };
+
+  const fetchData = useCallback(async (url, setter) => {
+    try {
+      const res = await axios.get(url, { withCredentials: true });
+      const data = res.data;
+      setter(data);
+    } catch (err) {
+      console.log(`Issue fetching data from ${url}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      await Promise.all([
+        fetchData(
+          "http://localhost:8080/propertyType/fetchPropertyType",
+          setPropertyTypes
+        ),
+        fetchData("http://localhost:8080/state/fetchState", setStates),
+        fetchData("http://localhost:8080/lga/fetchLGA", setLga),
+      ]);
+    };
+
+    fetchAllData();
+  }, [fetchData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+
+    // Append text fields
+    formData.append("id", fields.id);
+    formData.append("title", fields.title);
+    formData.append("listingType", fields.listingType);
+    formData.append("usageType", fields.usageType);
+    formData.append("propertyType", fields.propertyType);
+    formData.append("propertySubType", fields.propertySubType);
+    formData.append("propertyCondition", fields.propertyCondition);
+    formData.append("state", fields.state);
+    formData.append("lga", fields.lga);
+    formData.append("neighbourhood", fields.neighbourhood);
+    formData.append("size", fields.size);
+    formData.append("propertyDetails", fields.propertyDetails);
+    formData.append("NoOfLivingRooms", fields.NoOfLivingRooms);
+    formData.append("NoOfBedRooms", fields.NoOfBedRooms);
+    formData.append("NoOfKitchens", fields.NoOfKitchens);
+    formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
+    formData.append("Price", fields.Price);
+    formData.append("virtualTour", fields.virtualTour);
+    formData.append("video", fields.video);
+
+    // Append existing images
+    existingImages.forEach((image, index) => {
+      formData.append(`existingImages[${index}]`, image);
+    });
+
+    // Append images to delete
+    imagesToDelete.forEach((image, index) => {
+      formData.append(`imagesToDelete[${index}]`, image);
+    });
+
+    // Append new uploaded images
+    uploadedImages.forEach((photo, index) => {
+      formData.append(`photo[${index}]`, photo); // Append as array with indexing
+    });
+
+    console.log("Updating property listing with formData:");
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+
+    setButtonLoading(true);
+
     try {
-      const formData = new FormData(e.target);
-
-      const res = await fetch(`/api/properties/${id}`, {
-        method: 'PUT',
-        body: formData,
+      await updatePropertyListing(formData); // Assuming the backend accepts FormData
+      enqueueSnackbar("Successfully listed new property!", {
+        variant: "success",
       });
-
-      if (res.status === 200) {
-        router.push(`/properties/${id}`);
-      } else if (res.status === 401 || res.status === 403) {
-        toast.error('Permission denied');
-      } else {
-        toast.error('Something went wrong');
-      }
+      const id = sessionStorage.getItem("userId");
+      route.push(`/user-properties/${id}`);
     } catch (error) {
-      console.log(error);
-      toast.error('Something went wrong');
+      console.log("Issue with updating property listing: ", error);
+      enqueueSnackbar(`Failed to edit property: ${error.message}`, {
+        variant: "error",
+      });
+    } finally {
+      setButtonLoading(false);
     }
   };
 
-  return (
-    mounted &&
-    !loading && (
-      <form onSubmit={handleSubmit}>
-        <h2 className='text-3xl text-center font-semibold mb-6'>Edit Property</h2>
+  useEffect(() => {
+    // Cleanup preview URLs to avoid memory leaks
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previewUrls]);
 
-        <div className='mb-4'>
-          <label htmlFor='type' className='block text-gray-700 font-bold mb-2'>
-            Property Type
-          </label>
+  const existingImagesWithData = existingImages.map((url, index) => ({
+    url,
+    isExisting: true,
+    index,
+  }));
+
+  const newImagesWithData = previewUrls.map((url, index) => ({
+    url,
+    isExisting: false,
+    index,
+  }));
+
+  const imagesToDisplay = [...existingImagesWithData, ...newImagesWithData];
+
+  return loading ? (
+    <Spinner />
+  ) : (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 bg-white shadow-md rounded-lg p-6"
+    >
+      <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
+        Edit Property
+      </h2>
+
+      <div className="mb-6">
+        <label
+          htmlFor="propertyType"
+          className="block text-gray-800 font-medium mb-3"
+        >
+          Property Type
+        </label>
+        <select
+          id="propertyType"
+          name="propertyType"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          required
+          value={fields.propertyType}
+          onChange={handleChange}
+        >
+          <option disabled value="">
+            Select Property Type
+          </option>
+          {propertyTypes.map((type) => (
+            <option key={type._id} value={type._slug}>
+              {type.propertyType}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-6">
+        <label htmlFor="title" className="block text-gray-800 font-medium mb-3">
+          Listing Name
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          placeholder="e.g. Beautiful Apartment In Miami"
+          required
+          value={fields.title}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="mb-6">
+        <label
+          htmlFor="property_details"
+          className="block text-gray-800 font-medium mb-3"
+        >
+          Description
+        </label>
+        <textarea
+          id="propertyDetails"
+          name="propertyDetails"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          rows="4"
+          placeholder="Add an optional description of your property"
+          value={fields.propertyDetails}
+          onChange={handleChange}
+        ></textarea>
+      </div>
+
+      <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+        <label className="block text-gray-800 font-medium mb-3">Location</label>
+        <div className="space-y-4">
           <select
-            id='type'
-            name='type'
-            className='border rounded w-full py-2 px-3'
+            id="state"
+            name="state"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
-            value={fields.type}
+            value={fields.state}
             onChange={handleChange}
           >
-            <option value='Apartment'>Apartment</option>
-            <option value='Condo'>Condo</option>
-            <option value='House'>House</option>
-            <option value='Cabin Or Cottage'>Cabin or Cottage</option>
-            <option value='Room'>Room</option>
-            <option value='Studio'>Studio</option>
-            <option value='Other'>Other</option>
+            <option disabled value="">
+              Select State
+            </option>
+            {states.map((type) => (
+              <option key={type._id} value={type._slug}>
+                {type.state}
+              </option>
+            ))}
           </select>
-        </div>
-        <div className='mb-4'>
-          <label className='block text-gray-700 font-bold mb-2'>Listing Name</label>
-          <input
-            type='text'
-            id='name'
-            name='name'
-            className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='eg. Beautiful Apartment In Miami'
+
+          <select
+            id="lga"
+            name="lga"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
-            value={fields.name}
+            value={fields.lga}
             onChange={handleChange}
-          />
-        </div>
-        <div className='mb-4'>
-          <label htmlFor='description' className='block text-gray-700 font-bold mb-2'>
-            Description
-          </label>
-          <textarea
-            id='description'
-            name='description'
-            className='border rounded w-full py-2 px-3'
-            rows='4'
-            placeholder='Add an optional description of your property'
-            value={fields.description}
-            onChange={handleChange}
-          ></textarea>
-        </div>
-
-        <div className='mb-4 bg-blue-50 p-4'>
-          <label className='block text-gray-700 font-bold mb-2'>Location</label>
-          <input
-            type='text'
-            id='street'
-            name='location.street'
-            className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='Street'
-            value={fields.location.street}
-            onChange={handleChange}
-          />
-          <input
-            type='text'
-            id='city'
-            name='location.city'
-            className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='City'
-            required
-            value={fields.location.city}
-            onChange={handleChange}
-          />
-          <input
-            type='text'
-            id='state'
-            name='location.state'
-            className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='State'
-            required
-            value={fields.location.state}
-            onChange={handleChange}
-          />
-          <input
-            type='text'
-            id='zipcode'
-            name='location.zipcode'
-            className='border rounded w-full py-2 px-3 mb-2'
-            placeholder='Zipcode'
-            value={fields.location.zipcode}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className='mb-4 flex flex-wrap'>
-          <div className='w-full sm:w-1/3 pr-2'>
-            <label htmlFor='beds' className='block text-gray-700 font-bold mb-2'>
-              Beds
-            </label>
-            <input
-              type='number'
-              id='beds'
-              name='beds'
-              className='border rounded w-full py-2 px-3'
-              required
-              value={fields.beds}
-              onChange={handleChange}
-            />
-          </div>
-          <div className='w-full sm:w-1/3 px-2'>
-            <label htmlFor='baths' className='block text-gray-700 font-bold mb-2'>
-              Baths
-            </label>
-            <input
-              type='number'
-              id='baths'
-              name='baths'
-              className='border rounded w-full py-2 px-3'
-              required
-              value={fields.baths}
-              onChange={handleChange}
-            />
-          </div>
-          <div className='w-full sm:w-1/3 pl-2'>
-            <label htmlFor='square_feet' className='block text-gray-700 font-bold mb-2'>
-              Square Feet
-            </label>
-            <input
-              type='number'
-              id='square_feet'
-              name='square_feet'
-              className='border rounded w-full py-2 px-3'
-              required
-              value={fields.square_feet}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        <div className='mb-4'>
-          <label className='block text-gray-700 font-bold mb-2'>Amenities</label>
-          <div className='grid grid-cols-2 md:grid-cols-3 gap-2'>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_wifi'
-                name='amenities'
-                value='Wifi'
-                className='mr-2'
-                checked={fields.amenities.includes('Wifi')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_wifi'>Wifi</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_kitchen'
-                name='amenities'
-                value='Full Kitchen'
-                className='mr-2'
-                checked={fields.amenities.includes('Full Kitchen')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_kitchen'>Full kitchen</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_washer_dryer'
-                name='amenities'
-                value='Washer & Dryer'
-                className='mr-2'
-                checked={fields.amenities.includes('Washer & Dryer')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_washer_dryer'>Washer & Dryer</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_free_parking'
-                name='amenities'
-                value='Free Parking'
-                className='mr-2'
-                checked={fields.amenities.includes('Free Parking')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_free_parking'>Free Parking</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_pool'
-                name='amenities'
-                value='Swimming Pool'
-                className='mr-2'
-                checked={fields.amenities.includes('Swimming Pool')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_pool'>Swimming Pool</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_hot_tub'
-                name='amenities'
-                value='Hot Tub'
-                className='mr-2'
-                checked={fields.amenities.includes('Hot Tub')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_hot_tub'>Hot Tub</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_24_7_security'
-                name='amenities'
-                value='24/7 Security'
-                className='mr-2'
-                checked={fields.amenities.includes('24/7 Security')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_24_7_security'>24/7 Security</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_wheelchair_accessible'
-                name='amenities'
-                value='Wheelchair Accessible'
-                className='mr-2'
-                checked={fields.amenities.includes('Wheelchair Accessible')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_wheelchair_accessible'>Wheelchair Accessible</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_elevator_access'
-                name='amenities'
-                value='Elevator Access'
-                className='mr-2'
-                checked={fields.amenities.includes('Elevator Access')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_elevator_access'>Elevator Access</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_dishwasher'
-                name='amenities'
-                value='Dishwasher'
-                className='mr-2'
-                checked={fields.amenities.includes('Dishwasher')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_dishwasher'>Dishwasher</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_gym_fitness_center'
-                name='amenities'
-                value='Gym/Fitness Center'
-                className='mr-2'
-                checked={fields.amenities.includes('Gym/Fitness Center')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_gym_fitness_center'>Gym/Fitness Center</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_air_conditioning'
-                name='amenities'
-                value='Air Conditioning'
-                className='mr-2'
-                checked={fields.amenities.includes('Air Conditioning')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_air_conditioning'>Air Conditioning</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_balcony_patio'
-                name='amenities'
-                value='Balcony/Patio'
-                className='mr-2'
-                checked={fields.amenities.includes('Balcony/Patio')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_balcony_patio'>Balcony/Patio</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_smart_tv'
-                name='amenities'
-                value='Smart TV'
-                className='mr-2'
-                checked={fields.amenities.includes('Smart TV')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_smart_tv'>Smart TV</label>
-            </div>
-            <div>
-              <input
-                type='checkbox'
-                id='amenity_coffee_maker'
-                name='amenities'
-                value='Coffee Maker'
-                className='mr-2'
-                checked={fields.amenities.includes('Coffee Maker')}
-                onChange={handleAmenitiesChange}
-              />
-              <label htmlFor='amenity_coffee_maker'>Coffee Maker</label>
-            </div>
-          </div>
-        </div>
-
-        <div className='mb-4 bg-blue-50 p-4'>
-          <label className='block text-gray-700 font-bold mb-2'>Rates (Leave blank if not applicable)</label>
-          <div className='flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4'>
-            <div className='flex items-center'>
-              <label htmlFor='weekly_rate' className='mr-2'>
-                Weekly
-              </label>
-              <input
-                type='number'
-                id='weekly_rate'
-                name='rates.weekly'
-                className='border rounded w-full py-2 px-3'
-                value={fields.rates.weekly}
-                onChange={handleChange}
-              />
-            </div>
-            <div className='flex items-center'>
-              <label htmlFor='monthly_rate' className='mr-2'>
-                Monthly
-              </label>
-              <input
-                type='number'
-                id='monthly_rate'
-                name='rates.monthly'
-                className='border rounded w-full py-2 px-3'
-                value={fields.rates.monthly}
-                onChange={handleChange}
-              />
-            </div>
-            <div className='flex items-center'>
-              <label htmlFor='nightly_rate' className='mr-2'>
-                Nightly
-              </label>
-              <input
-                type='number'
-                id='nightly_rate'
-                name='rates.nightly'
-                className='border rounded w-full py-2 px-3'
-                value={fields.rates.nightly}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className='mb-4'>
-          <label htmlFor='seller_name' className='block text-gray-700 font-bold mb-2'>
-            Seller Name
-          </label>
-          <input
-            type='text'
-            id='seller_name'
-            name='seller_info.name'
-            className='border rounded w-full py-2 px-3'
-            placeholder='Name'
-            value={fields.seller_info.name}
-            onChange={handleChange}
-          />
-        </div>
-        <div className='mb-4'>
-          <label htmlFor='seller_email' className='block text-gray-700 font-bold mb-2'>
-            Seller Email
-          </label>
-          <input
-            type='email'
-            id='seller_email'
-            name='seller_info.email'
-            className='border rounded w-full py-2 px-3'
-            placeholder='Email address'
-            required
-            value={fields.seller_info.email}
-            onChange={handleChange}
-          />
-        </div>
-        <div className='mb-4'>
-          <label htmlFor='seller_phone' className='block text-gray-700 font-bold mb-2'>
-            Seller Phone
-          </label>
-          <input
-            type='tel'
-            id='seller_phone'
-            name='seller_info.phone'
-            className='border rounded w-full py-2 px-3'
-            placeholder='Phone'
-            value={fields.seller_info.phone}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <button
-            className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline'
-            type='submit'
           >
-            Update Property
-          </button>
+            <option disabled value="">
+              Select LGA
+            </option>
+            {lga.map((type) => (
+              <option key={type._id} value={type._slug}>
+                {type.lga}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="text"
+            id="neighbourhood"
+            name="neighbourhood"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            placeholder="Neighbourhood"
+            value={fields.neighbourhood}
+            onChange={handleChange}
+          />
         </div>
-      </form>
-    )
+      </div>
+
+      <div className="flex flex-wrap gap-4">
+        <div className="w-full sm:w-1/3">
+          <label
+            htmlFor="beds"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Beds
+          </label>
+          <input
+            type="number"
+            id="NoOfBedRooms"
+            name="NoOfBedRooms"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            required
+            value={fields.NoOfBedRooms}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="w-full sm:w-1/3">
+          <label
+            htmlFor="baths"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Baths
+          </label>
+          <input
+            type="number"
+            id="NoOfKitchens"
+            name="NoOfKitchens"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            required
+            value={fields.NoOfKitchens}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="w-full sm:w-1/3">
+          <label
+            htmlFor="size"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Size
+          </label>
+          <input
+            type="number"
+            id="size"
+            name="size"
+            placeholder="Square Meter (Sqm)"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            required
+            value={fields.size}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <label htmlFor="price" className="block text-gray-800 font-medium mb-3">
+          Price
+        </label>
+        <input
+          type="text"
+          id="Price"
+          name="Price"
+          placeholder="NGN 0.00"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          required
+          value={fields.Price}
+          onChange={handleChange}
+          onBlur={(e) => {
+            const formattedPrice = formatPrice(fields.Price);
+            setFields((prevFields) => ({
+              ...prevFields,
+              Price: formattedPrice,
+            }));
+          }}
+        />
+      </div>
+
+      <div className="mb-6">
+        <label
+          htmlFor="virtual_tour"
+          className="block text-gray-800 font-medium mb-3"
+        >
+          Virtual Tour
+        </label>
+        <input
+          type="text"
+          id="virtualTour"
+          name="virtualTour"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
+          value={fields.virtualTour}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="mb-6">
+        <label htmlFor="video" className="block text-gray-800 font-medium mb-3">
+          Video
+        </label>
+        <input
+          type="text"
+          id="video"
+          name="video"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          placeholder="https://www.youtube.com/watch?v=video-id"
+          required
+          value={fields.video}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="mb-6">
+        <label htmlFor="photo" className="block text-gray-800 font-medium mb-3">
+          Images (Select up to 7 images)
+        </label>
+        <input
+          type="file"
+          id="photo"
+          name="photo"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+          accept="image/*"
+          multiple
+          onChange={handleImageChange}
+          aria-label="Upload images for your property listing (Maximum 7 images)"
+        />
+
+        {imagesToDisplay.length > 0 && (
+          <div className="flex gap-4 mt-4 flex-wrap">
+            {imagesToDisplay.map((imageData) => (
+              <div
+                key={
+                  imageData.isExisting
+                    ? `existing-${imageData.index}`
+                    : `new-${imageData.index}`
+                }
+                className="relative w-28 h-28 rounded-lg border border-gray-300 overflow-hidden"
+              >
+                <img
+                  src={imageData.url}
+                  alt={`Image ${imageData.index}`}
+                  className="object-cover w-full h-full"
+                />
+                <button
+                  type="button"
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                  onClick={() =>
+                    handleImageRemove(imageData.index, imageData.isExisting)
+                  }
+                >
+                  X
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="flex justify-end gap-4">
+        <button
+          type="button"
+          className="bg-gray-500 text-white px-6 py-3 rounded-lg transition hover:bg-gray-600"
+          onClick={() => setShowForm(false)}
+          // create  a function for onCancel that routes back to the page that was open
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
+        >
+          {buttonLoading ? <ButtonSpinner /> : "Save Changes"}
+        </button>
+      </div>
+    </form>
   );
 };
 

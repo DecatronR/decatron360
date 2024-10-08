@@ -7,7 +7,6 @@ export const fetchUserData = async (userId) => {
       { id: userId },
       { withCredentials: true }
     );
-    console.log("user data: ", res.data.data);
     return res.data.data;
   } catch (error) {
     console.error("Issue fetching user data:", error);
