@@ -1,13 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import StarRatings from "react-star-ratings"; // Import react-star-ratings
+import StarRatings from "react-star-ratings";
+import { rateAndReviewUser } from "@/utils/api/user/rateAndReviewUser";
 
 const InspectionFeedbackForm = () => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
-  const [dispute, setDispute] = useState("");
-  const [isDisputeRaised, setIsDisputeRaised] = useState(false);
-  const [inspectionResult, setInspectionResult] = useState(""); // New state for the inspection result
+  const [inspectionResult, setInspectionResult] = useState("");
 
   const changeRating = (newRating) => {
     setRating(newRating);
@@ -16,14 +15,10 @@ const InspectionFeedbackForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const feedbackData = {
-      rating,
-      review,
-      inspectionResult, // Include the new field
-      dispute: isDisputeRaised ? dispute : null,
-    };
-    console.log("Feedback submitted:", feedbackData);
-    // Submit feedbackData to the server or handle it further
+    try {
+    } catch (error) {
+      console.log("Failed to submit feedback");
+    }
   };
 
   return (
@@ -69,7 +64,7 @@ const InspectionFeedbackForm = () => {
       {/* Rating Section */}
       <div className="mb-4">
         <label className="block text-xl font-semibold text-gray-800 mb-2">
-          Rate the Inspection
+          Rate the Agent
         </label>
         <StarRatings
           rating={rating}
@@ -93,38 +88,9 @@ const InspectionFeedbackForm = () => {
           onChange={(e) => setReview(e.target.value)}
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
           rows="5"
-          placeholder="Describe how the inspection went..."
+          placeholder="Describe how the inspection went with this agent..."
         ></textarea>
       </div>
-
-      {/* Raise Dispute Section */}
-      <div className="mb-6">
-        <div className="flex items-center mb-2">
-          <input
-            type="checkbox"
-            id="raiseDispute"
-            checked={isDisputeRaised}
-            onChange={() => setIsDisputeRaised(!isDisputeRaised)}
-            className="mr-2 text-primary-500 focus:ring-primary-500"
-          />
-          <label
-            htmlFor="raiseDispute"
-            className="text-xl font-semibold text-gray-800"
-          >
-            Raise a Dispute
-          </label>
-        </div>
-        {isDisputeRaised && (
-          <textarea
-            value={dispute}
-            onChange={(e) => setDispute(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition duration-200"
-            rows="4"
-            placeholder="Explain the issue encountered during the inspection..."
-          ></textarea>
-        )}
-      </div>
-
       {/* Submit Button */}
       <button
         type="submit"

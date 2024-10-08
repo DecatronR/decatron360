@@ -1,4 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState, useEffect } from "react";
 import {
   faCouch,
   faBed,
@@ -7,7 +8,16 @@ import {
   faRuler,
 } from "@fortawesome/free-solid-svg-icons";
 
-const PropertyDetails = ({ property }) => {
+const PropertyDetails = ({ property, userId }) => {
+  const [isPropertyLister, setIsPropertyLister] = useState(false);
+
+  // checking if the logged in user is the user who listed the property
+  useEffect(() => {
+    const storedUserId = sessionStorage.getItem("userId");
+    const isCurrentUserTheLister = storedUserId === userId;
+    setIsPropertyLister(isCurrentUserTheLister);
+  }, [userId]);
+
   return (
     <section className="bg-white rounded-lg p-6 space-y-6 ">
       {/* Property Title and Location */}
@@ -17,6 +27,22 @@ const PropertyDetails = ({ property }) => {
           {property.neighbourhood}, {property.state}
         </p>
       </div>
+      {isPropertyLister && (
+        <div className="flex space-x-4">
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+            // onClick={handleEditClick}
+          >
+            Edit
+          </button>
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
+            // onClick={handleDeleteClick}
+          >
+            Delete
+          </button>
+        </div>
+      )}
       {/* Property Info and Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-gray-50 p-4">
