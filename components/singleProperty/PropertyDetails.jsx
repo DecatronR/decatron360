@@ -18,6 +18,8 @@ const PropertyDetails = ({ property, userId }) => {
     setIsPropertyLister(isCurrentUserTheLister);
   }, [userId]);
 
+  const handleEditProperty = async () => {};
+
   return (
     <section className="bg-white rounded-lg p-6 space-y-6 ">
       {/* Property Title and Location */}
