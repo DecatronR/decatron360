@@ -47,11 +47,7 @@ const UserProfilePage = () => {
           const res = await fetchUserProperties(userId);
           console.log("my properties: ", res);
           setUserProperties(res);
-        } catch (error) {
-          console.log("Issue fetching user properties: ", error);
-        }
-      } else {
-        console.log("Could not fetch user properties, user id not found");
+        } catch (error) {}
       }
     };
     handleFetchUserProperties();
@@ -92,28 +88,9 @@ const UserProfilePage = () => {
     handleFetchUserRating();
   }, [userId]);
 
-  const isEmailVerified = false;
+  const isEmailVerified = true;
   const isPhoneVerified = false;
-  const isIdentityVerified = true;
-
-  const photos = [
-    "https://via.placeholder.com/150",
-    "https://via.placeholder.com/150",
-    "https://via.placeholder.com/150",
-  ];
-
-  const reviews = [
-    {
-      text: "Great host! The space was exactly as described, and John was very helpful throughout our stay.",
-      author: "Alice",
-      date: "February 2023",
-    },
-    {
-      text: "Very clean, convenient location, and the host was super responsive!",
-      author: "Michael",
-      date: "March 2023",
-    },
-  ];
+  const isIdentityVerified = false;
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
@@ -122,7 +99,7 @@ const UserProfilePage = () => {
         <div className="w-1/3">
           {/* Make the left column sticky so it stays in place */}
           <div className="sticky top-8">
-            <UserProfilePhoto />
+            <UserProfilePhoto userData={userData} />
             <UserRating userRating={userRating} />
             <div className="mt-6">
               <UserVerificationStatus

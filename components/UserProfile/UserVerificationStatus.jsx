@@ -21,7 +21,7 @@ const UserVerificationStatus = ({
               <span className="text-green-600 text-sm">Verified</span>
             </div>
           ) : (
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+            <button className="bg-primary-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-primary-700">
               Verify Email
             </button>
           )}
@@ -36,7 +36,7 @@ const UserVerificationStatus = ({
               <span className="text-green-600 text-sm">Verified</span>
             </div>
           ) : (
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+            <button className="bg-primary-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-primary-700">
               Verify Phone
             </button>
           )}
@@ -51,7 +51,7 @@ const UserVerificationStatus = ({
               <span className="text-green-600 text-sm">Verified</span>
             </div>
           ) : (
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
+            <button className="bg-primary-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-primary-700">
               Verify Identity
             </button>
           )}
