@@ -47,12 +47,12 @@ const Registration = () => {
       if (response.status === 201) {
         enqueueSnackbar("Registration successful!", { variant: "success" });
       } else {
-        enqueueSnackbar(`Registration failed ${response.message}`, {
+        enqueueSnackbar(`Registration failed`, {
           variant: "error",
         });
       }
     } catch (error) {
-      enqueueSnackbar(`Registration failed ${error.message}`, {
+      enqueueSnackbar(`Registration failed: ${error.message}`, {
         variant: "error",
       });
     }
@@ -182,7 +182,7 @@ const Registration = () => {
           </div>
           <div>
             <label
-              htmlFor="confirmPassword"
+              htmlFor="confirmpassword"
               className="block text-sm font-medium text-gray-700"
             >
               Confirm Password
@@ -220,8 +220,6 @@ const Registration = () => {
             </button>
           </div>
         </form>
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {success && <p className="text-sm text-green-500">{success}</p>}
         <div className="flex items-center justify-between">
           <span className="border-t border-gray-300 w-1/3" />
           <span className="text-sm text-gray-500">Or sign up with</span>
