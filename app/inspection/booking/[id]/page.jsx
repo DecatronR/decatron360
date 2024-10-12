@@ -128,10 +128,10 @@ const InspectionBooking = () => {
     try {
       const res = await handleBookInspection();
       console.log("Booking id: ", res);
-      //router to inspection success page
       enqueueSnackbar("Your inspection has been successfully booked!", {
         variant: "success",
       });
+      router.push("/inspection/success");
     } catch (error) {
       enqueueSnackbar("Failed to book inspection after payment", {
         variant: "error",
