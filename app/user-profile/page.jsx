@@ -99,7 +99,7 @@ const UserProfilePage = () => {
         <div className="w-1/3">
           {/* Make the left column sticky so it stays in place */}
           <div className="sticky top-8">
-            <UserProfilePhoto userData={userData} />
+            <UserProfilePhoto userId={userId} userData={userData} />
             <UserRating userRating={userRating} />
             <div className="mt-6">
               <UserVerificationStatus

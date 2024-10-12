@@ -15,7 +15,7 @@ const InspectionDetails = () => {
   const searchParams = useSearchParams();
   const [user, setUser] = useState();
   const [property, setProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [inspectionData, setInspectionData] = useState(null);
   const [isInspectionConfirmed, setIsInspectionConfirmed] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -55,7 +55,7 @@ const InspectionDetails = () => {
       } catch (error) {
         console.error("Error fetching property:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -153,7 +153,7 @@ const InspectionDetails = () => {
   console.log("Payment props: ", componentProps);
 
   // Make sure all data is loaded before rendering
-  const isDataReady = !loading && property && inspectionData && user;
+  const isDataReady = !isLoading && property && inspectionData && user;
 
   if (!isDataReady) {
     return <Spinner />;

@@ -20,8 +20,8 @@ const PropertyEditForm = ({ propertyId }) => {
   const [lga, setLga] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [buttonLoading, setButtonLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [buttonIsLoading, setButtonIsLoading] = useState(false);
 
   useEffect(() => {
     if (propertyData) {
@@ -57,12 +57,12 @@ const PropertyEditForm = ({ propertyId }) => {
       try {
         const res = await editPropertyListing(propertyId);
         setPropertyData(res);
-        setLoading(false);
+        setIsLoading(false);
       } catch (error) {
         enqueueSnackbar("Failed to fetch property data for editing!", {
           variant: "error",
         });
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     handlefetchPropertyData();
@@ -215,7 +215,7 @@ const PropertyEditForm = ({ propertyId }) => {
       console.log(key, value);
     }
 
-    setButtonLoading(true);
+    setIsButtonLoading(true);
 
     try {
       await updatePropertyListing(formData); // Assuming the backend accepts FormData
@@ -230,7 +230,7 @@ const PropertyEditForm = ({ propertyId }) => {
         variant: "error",
       });
     } finally {
-      setButtonLoading(false);
+      setIsButtonLoading(false);
     }
   };
 
@@ -255,7 +255,7 @@ const PropertyEditForm = ({ propertyId }) => {
 
   const imagesToDisplay = [...existingImagesWithData, ...newImagesWithData];
 
-  return loading ? (
+  return isLoading ? (
     <Spinner />
   ) : (
     <form
@@ -550,7 +550,7 @@ const PropertyEditForm = ({ propertyId }) => {
           type="submit"
           className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
         >
-          {buttonLoading ? <ButtonSpinner /> : "Save Changes"}
+          {isButtonLoading ? <ButtonSpinner /> : "Save Changes"}
         </button>
       </div>
     </form>

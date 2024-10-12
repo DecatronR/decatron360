@@ -3,9 +3,15 @@ import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
+import { useEffect } from "react";
+import { useSnackbar } from "notistack";
 import { useAuth } from "@/context/AuthContext";
+import { bookInspection } from "@/utils/api/inspection/bookInspection";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
+import ButtonSpinner from "../ButtonSpinner";
 
-const ScheduleInspectionForm = ({ propertyId }) => {
+const ScheduleInspectionForm = ({ propertyId, agentId }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -15,8 +21,18 @@ const ScheduleInspectionForm = ({ propertyId }) => {
     message: "",
     date: null,
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [userData, setUserData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const userId = sessionStorage.getItem("userId");
+    const handleFetchUser = async () => {
+      const res = await fetchUserData(userId);
+      setUserData(res);
+    };
+    handleFetchUser();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,48 +49,39 @@ const ScheduleInspectionForm = ({ propertyId }) => {
     }));
   };
 
-  const handleBookInspection = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
     const formattedDate = formData.date
       ? format(formData.date, "yyyy-MM-dd")
       : "";
     const formattedTime = formData.date ? format(formData.date, "HH:mm") : "";
 
-    const data = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      role: "buyer",
-      message: formData.message,
-      date: formattedDate,
-      time: formattedTime,
-    };
-
-    sessionStorage.setItem("inspectionData", JSON.stringify(data));
-    const queryParams = `id=${encodeURIComponent(propertyId)}`;
-
-    if (!user) {
+    const userId = sessionStorage.getItem("userId");
+    sessionStorage.setItem("inspectionDate", formattedDate);
+    sessionStorage.setItem("inspectionTime", formattedTime);
+    if (!userId) {
+      // Redirect to login if not logged in
       router.push(
         `/auth/login?redirect=${encodeURIComponent(
-          `/inspection/details?${queryParams}`
+          `/inspection/booking/${propertyId}`
         )}`
       );
     } else {
-      router.push(`/inspection/details?${queryParams}`);
+      router.push(`/inspection/booking/${propertyId}`);
+      // try {
+      //   const bookingId = await handleBookInspection(userId);
+      //   console.log("Booking id: ", bookingId);
+      //   enqueueSnackbar("Successfully booked inspection", {
+      //     variant: "success",
+      //   });
+      //   // Redirect to the inspection details page with the booking ID
+      //   router.push(`/inspection/details?bookingId=${bookingId}`);
+      // } catch (error) {
+      //   enqueueSnackbar("Failed to book inspection", { variant: "error" });
+      // }
     }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMessage("");
-
-    try {
-      await handleBookInspection();
-    } catch (error) {
-      setErrorMessage("Error scheduling inspection. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    setIsLoading(false);
   };
 
   return (
@@ -82,7 +89,6 @@ const ScheduleInspectionForm = ({ propertyId }) => {
       <h4 className="text-xl font-bold text-gray-900 mb-4">
         Schedule an Inspection
       </h4>
-      {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
           <span className="text-gray-700">Your Name</span>
@@ -133,7 +139,7 @@ const ScheduleInspectionForm = ({ propertyId }) => {
             required
           />
         </label>
-        <label className="block">
+        {/* <label className="block">
           <span className="text-gray-700">Message</span>
           <textarea
             name="message"
@@ -143,15 +149,15 @@ const ScheduleInspectionForm = ({ propertyId }) => {
             rows="4"
             className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
           />
-        </label>
+        </label> */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isLoading}
           className={`w-full py-2 px-4 rounded-md shadow-md ${
-            isSubmitting ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
+            isLoading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
           } text-white focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         >
-          {isSubmitting ? "Scheduling..." : "Schedule Inspection"}
+          {isLoading ? "Submitting...." : "Schedule Inspection"}
         </button>
       </form>
     </div>

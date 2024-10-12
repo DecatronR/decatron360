@@ -12,7 +12,7 @@ import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyLis
 import { deletePropertyListing } from "@/utils/api/propertyListing/deletePropertyListing";
 import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 
-const PropertyDetails = ({ property, userId }) => {
+const PropertyDetails = ({ property, agentId }) => {
   const [isPropertyLister, setIsPropertyLister] = useState(false);
   const [propertyData, setPropertyData] = useState(null);
 
@@ -22,9 +22,9 @@ const PropertyDetails = ({ property, userId }) => {
   // checking if the logged in user is the user who listed the property
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");
-    const isCurrentUserTheLister = storedUserId === userId;
+    const isCurrentUserTheLister = storedUserId === agentId;
     setIsPropertyLister(isCurrentUserTheLister);
-  }, [userId]);
+  }, [agentId]);
 
   const handleDeleteProperty = async () => {
     try {

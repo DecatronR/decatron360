@@ -29,8 +29,6 @@ const LoginForm = () => {
     try {
       const res = await signIn(formData.email, formData.password);
       console.log("login response", res);
-
-      // Show success snackbar upon successful login
       enqueueSnackbar("Login successful!", { variant: "success" });
 
       // Extract redirect path from query parameters

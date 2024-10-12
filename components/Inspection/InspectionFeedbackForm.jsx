@@ -16,8 +16,17 @@ const InspectionFeedbackForm = () => {
     e.preventDefault();
 
     try {
+      const reviewerId = sessionStorage.get("userId");
+      await rateAndReviewUser(agentId, rating, reviewerId, review);
+      enqueueSnackbar("Successfully submitted feedback", {
+        variant: "success",
+      });
     } catch (error) {
       console.log("Failed to submit feedback");
+      enqueueSnackbar(
+        "Failed to submit feedback, please contact our customer care",
+        { variant: "error" }
+      );
     }
   };
 

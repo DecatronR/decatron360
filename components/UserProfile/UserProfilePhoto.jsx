@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { updateUserData } from "@/utils/api/user/updateUserData";
 import { useSnackbar } from "notistack";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
 
-const UserProfilePhoto = ({ userData }) => {
+const UserProfilePhoto = ({ userId, userData }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [passport, setPassport] = useState(userData?.passport);
   const [passportChanged, setPassportChanged] = useState(false);
@@ -11,11 +12,26 @@ const UserProfilePhoto = ({ userData }) => {
 
   const BASE_URL = "http://localhost:8080/";
   // Update photo state if parent changes userData (e.g., after a re-fetch)
+  // useEffect(() => {
+  //   if (userData?.passport) {
+  //     console.log("userData now: ", userData);
+  //     setPassport(userData.passport);
+  //   }
+  // }, [userData?.passport]);
+
   useEffect(() => {
-    if (userData?.passport) {
-      setPassport(userData.passport);
-    }
-  }, [userData?.passport]);
+    if (!passportChanged) return;
+    const handleFetchPassport = async () => {
+      try {
+        const res = await fetchUserData(userId);
+        console.log("Passport: ", res.passport);
+        setPassport(res.passport);
+      } catch (error) {
+        console.loe("Failed to fetch passport: ", error);
+      }
+    };
+    handleFetchPassport();
+  }, [passportChanged]);
 
   const handlePassportChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -32,7 +48,7 @@ const UserProfilePhoto = ({ userData }) => {
 
   const handleProfileUpdate = async () => {
     try {
-      const userDataUpdate = { ...userData }; // Keep existing user data
+      const userDataUpdate = { ...userData };
 
       // Create a FormData object
       const formData = new FormData();

@@ -28,7 +28,7 @@ const AgentProfilePage = () => {
   const [agentProperties, setAgentProperties] = useState([]);
   const [agentReviews, setAgentReviews] = useState([]);
   const [agentRating, setAgentRating] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Example verification statuses
   const isEmailVerified = false;
@@ -65,7 +65,7 @@ const AgentProfilePage = () => {
         } catch (error) {
           console.log("Issues fetching agent details: ", error);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
       } else {
         console.log("Could not fetch agent details, user id not found");
@@ -120,7 +120,7 @@ const AgentProfilePage = () => {
     handleFetchAgentRating();
   }, [id]);
 
-  if (loading) return <Spinner />;
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">

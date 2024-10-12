@@ -1,8 +1,12 @@
+"use client";
+import { useState, useEffect } from "react";
+import Spinner from "@/components/Spinner";
+
 const FavoritePropertiesPage = () => {
   const [userId, setUserId] = useState("");
   const [properties, setProperties] = useState([]);
   const [isFavorite, setIsFavorite] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
@@ -33,7 +37,7 @@ const FavoritePropertiesPage = () => {
         } catch (error) {
           console.error("Failed to fetch favorite properties: ", error);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
       } else {
         console.log(
@@ -44,8 +48,8 @@ const FavoritePropertiesPage = () => {
     handleFetchFavoriteProperties();
   }, [userId]);
 
-  return loading ? (
-    <Spinner loading={loading} />
+  return isLoading ? (
+    <Spinner loading={isLoading} />
   ) : (
     <section className="px-4 py-6">
       <div className="container-xl lg:container m-auto px-4 py-6">

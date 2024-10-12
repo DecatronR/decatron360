@@ -18,7 +18,7 @@ const PropertyMap = ({ property }) => {
     width: "100%",
     height: "500px",
   });
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [geocodeError, setGeocodeError] = useState(false);
 
   setDefaults({
@@ -39,7 +39,7 @@ const PropertyMap = ({ property }) => {
         if (res.results.length === 0) {
           // No results found
           setGeocodeError(true);
-          setLoading(false);
+          setIsLoading(false);
           return;
         }
 
@@ -53,18 +53,18 @@ const PropertyMap = ({ property }) => {
           longitude: lng,
         });
 
-        setLoading(false);
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
         setGeocodeError(true);
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchCoords();
   }, []);
 
-  if (loading) return <Spinner loading={loading} />;
+  if (isLoading) return <Spinner loading={isLoading} />;
 
   // Handle case where geocoding failed
   if (geocodeError) {
@@ -72,7 +72,7 @@ const PropertyMap = ({ property }) => {
   }
 
   return (
-    !loading && (
+    !isLoading && (
       <Map
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
         mapLib={import("mapbox-gl")}

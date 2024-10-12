@@ -1069,8 +1069,8 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
 
 electron-to-chromium@^1.5.28:
-  version "1.5.35"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.35.tgz#1d38d386186c72b1fa6e74c3a7de5f888b503100"
+  version "1.5.36"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.36.tgz#ec41047f0e1446ec5dce78ed5970116533139b88"
 
 emoji-regex@^8.0.0:
   version "8.0.0"
