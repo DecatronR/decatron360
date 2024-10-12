@@ -11,7 +11,7 @@ import {
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const formatPrice = (price) => {
-    return `$${price.toLocaleString()}`;
+    return `${price.toLocaleString()}`;
   };
 
   return (
