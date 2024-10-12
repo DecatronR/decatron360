@@ -40,7 +40,6 @@ const InspectionBooking = () => {
 
         const propertyResponse = await fetchPropertyData(propertyId);
         setProperty(propertyResponse);
-        // setAgentId(propertyResponse.userID);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -97,12 +96,10 @@ const InspectionBooking = () => {
 
   const handleBookInspection = async () => {
     const userId = sessionStorage.getItem("userId");
+    const agentId = sessionStorage.getItem("agentId");
     const bookingDateTime = new Date(
       `${editedDate}T${editedTime}:00`
     ).toISOString();
-
-    const propertyResponse = await fetchPropertyData(propertyId);
-    setAgentId(propertyResponse.userID);
 
     const isValid = validateBookingData(
       userId,
@@ -174,7 +171,7 @@ const InspectionBooking = () => {
       }
     : {};
 
-  if (!user || !agentId || isLoading) {
+  if (!user || isLoading) {
     return <Spinner />;
   }
 

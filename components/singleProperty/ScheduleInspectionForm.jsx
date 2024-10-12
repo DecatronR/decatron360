@@ -60,6 +60,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
     const userId = sessionStorage.getItem("userId");
     sessionStorage.setItem("inspectionDate", formattedDate);
     sessionStorage.setItem("inspectionTime", formattedTime);
+    sessionStorage.setItem("agentId", agentId);
     if (!userId) {
       // Redirect to login if not logged in
       router.push(
