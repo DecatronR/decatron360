@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import { useEffect } from "react/cjs/react.production.min";
+import { useEffect, useState } from "react";
 
 const InspectionSuccessPage = () => {
   const [userId, setUserId] = useState("");
@@ -30,7 +30,7 @@ const InspectionSuccessPage = () => {
         {/* Button */}
         <div className="flex justify-center">
           <Link
-            href={`/my-inspection/${userId}`}
+            href={`/my-inspections/${userId}`}
             className="inline-block bg-primary-500 text-white text-center py-3 px-6 rounded-lg shadow transition duration-300 ease-in-out transform hover:scale-105 hover:bg-primary-600"
           >
             Go to Dashboard

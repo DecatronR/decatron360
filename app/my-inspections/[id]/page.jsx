@@ -1,4 +1,8 @@
+"use client";
+import { useParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import MyInspections from "@/components/Inspection/MyInspections";
+import { fetchUserBookings } from "@/utils/api/inspection/fetchUserBookings";
 
 const inspectionsData = [
   {
@@ -25,10 +29,27 @@ const inspectionsData = [
 ];
 
 const MyInspectionPage = () => {
+  const { id } = useParams();
+  const [userInspections, setUserInspections] = useState([]);
+
   // Sort inspections by date, closest first
   const sortedInspections = inspectionsData.sort(
     (a, b) => a.inspectionDate - b.inspectionDate
   );
+
+  useEffect(() => {
+    const handleFetchUserInspections = async () => {
+      if (!id) return;
+      try {
+        const res = await fetchUserBookings(id);
+        console.log("User inspection bookings: ", res);
+        setUserInspections(res);
+      } catch (error) {
+        console.log("");
+      }
+    };
+    handleFetchUserInspections();
+  }, []);
 
   return (
     <section className="bg-blue-50 min-h-screen flex items-center">
