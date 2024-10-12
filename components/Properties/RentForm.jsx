@@ -5,6 +5,7 @@ import axios from "axios";
 import Spinner from "../Spinner";
 import ButtonSpinner from "../ButtonSpinner";
 import { useSnackbar } from "notistack";
+import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 
 const RentForm = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -210,21 +211,10 @@ const RentForm = () => {
       formData.append(`photo`, photo);
     });
 
-    const createListingConfig = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: "http://localhost:8080/propertyListing/createPropertyListing",
-      headers: {
-        "Content-Type": "multipart/form-data", // set to multipart for file upload
-      },
-      data: formData,
-      withCredentials: true,
-    };
-
     console.log("Creating new property listing with formData: ", formData);
     setButtonLoading(true);
     try {
-      await axios(createListingConfig);
+      await createPropertyListing(formData);
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
