@@ -12,7 +12,7 @@ export const fetchUserBookings = async (userId) => {
       { withCredentials: true }
     );
 
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Failed fetching user bookings:", error);
     throw error;

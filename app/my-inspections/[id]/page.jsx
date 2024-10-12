@@ -1,55 +1,60 @@
 "use client";
 import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import Spinner from "@/components/Spinner";
 import MyInspections from "@/components/Inspection/MyInspections";
 import { fetchUserBookings } from "@/utils/api/inspection/fetchUserBookings";
-
-const inspectionsData = [
-  {
-    id: 1,
-    title: "Beautiful Family Home",
-    description:
-      "A beautiful 4 bedroom house located in the heart of the city.",
-    inspectionDate: new Date("2024-10-15T14:00:00"),
-  },
-  {
-    id: 2,
-    title: "Modern Apartment",
-    description: "A spacious apartment in downtown with stunning views.",
-    inspectionDate: new Date("2024-10-10T10:00:00"),
-  },
-  {
-    id: 3,
-    title: "Cozy Cottage",
-    description:
-      "A cozy cottage in the countryside, perfect for family getaways.",
-    inspectionDate: new Date("2024-10-20T16:00:00"),
-  },
-  // Add more inspection objects as needed
-];
+import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 
 const MyInspectionPage = () => {
   const { id } = useParams();
-  const [userInspections, setUserInspections] = useState([]);
-
-  // Sort inspections by date, closest first
-  const sortedInspections = inspectionsData.sort(
-    (a, b) => a.inspectionDate - b.inspectionDate
-  );
+  const [bookings, setBookings] = useState([]);
+  const [properties, setProperties] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const handleFetchUserInspections = async () => {
+    const handleFetchUserBookings = async () => {
       if (!id) return;
       try {
         const res = await fetchUserBookings(id);
-        console.log("User inspection bookings: ", res);
-        setUserInspections(res);
+        setBookings(res);
       } catch (error) {
-        console.log("");
+        console.error("Error fetching bookings", error);
+      } finally {
+        setLoading(false);
       }
     };
-    handleFetchUserInspections();
-  }, []);
+    handleFetchUserBookings();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchAllProperties = async () => {
+      const propertyPromises = bookings.map((booking) =>
+        fetchPropertyData(booking.propertyId)
+      );
+      const fetchedProperties = await Promise.all(propertyPromises);
+
+      const propertyMap = bookings.reduce((acc, booking, index) => {
+        acc[booking.propertyId] = fetchedProperties[index];
+        return acc;
+      }, {});
+
+      console.log("properties: ", propertyMap);
+      setProperties(propertyMap);
+    };
+
+    if (bookings.length > 0) {
+      fetchAllProperties();
+    }
+  }, [bookings]);
+
+  const sortedInspections = bookings.sort(
+    (a, b) => new Date(a.inspectionDateTime) - new Date(b.inspectionDateTime)
+  );
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <section className="bg-blue-50 min-h-screen flex items-center">
@@ -59,7 +64,11 @@ const MyInspectionPage = () => {
           <p className="text-center text-gray-600">No upcoming inspections.</p>
         ) : (
           sortedInspections.map((inspection) => (
-            <MyInspections key={inspection.id} property={inspection} />
+            <MyInspections
+              key={inspection.id}
+              bookings={bookings}
+              properties={properties}
+            />
           ))
         )}
       </div>

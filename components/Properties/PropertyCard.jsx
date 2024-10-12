@@ -13,6 +13,9 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
+  const BASE_URL = "http://localhost:8080/";
+  // console.log(`Image path: , ${BASE_URL}${property.photos[0].path}`);
+  console.log("Image path:", property.photos[0]);
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
@@ -20,7 +23,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
         <div className="relative">
           {property?.photos?.length > 0 && (
             <Image
-              src={property.photos[0].path}
+              src={
+                // `${BASE_URL}${property.photos[0].path}` ||
+                "/path/to/default/profile.png"
+              }
               alt={property.title}
               height={0}
               width={0}
@@ -34,7 +40,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
               e.preventDefault();
-              e.stopPropagation(); // Stop the event from bubbling to the parent Link
+              e.stopPropagation();
               onToggleFavorite();
             }}
           >

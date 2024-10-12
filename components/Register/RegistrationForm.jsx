@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useSnackbar } from "notistack";
+import { fetchRoles } from "@/utils/api/registration/fetchRoles";
 
 const Registration = () => {
   const router = useRouter();
@@ -12,14 +13,40 @@ const Registration = () => {
     name: "",
     email: "",
     role: "",
-    phone: "08063247818",
+    phone: "",
     password: "",
     confirmpassword: "",
   });
-
+  const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [inspectionData, setInspectionData] = useState(null);
+
+  useEffect(() => {
+    const handleFetchRoles = async () => {
+      try {
+        const res = await fetchRoles();
+        console.log("Roles: ", roles);
+        setRoles(res);
+      } catch (error) {
+        console.log("");
+      }
+    };
+    handleFetchRoles();
+  }, []);
+
+  useEffect(() => {
+    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
+    setInspectionData(data);
+    setFormData((prevState) => ({
+      name: prevState.name || data?.name || "",
+      email: prevState.email || data?.email || "",
+      role: prevState.role || data?.role || "",
+      phone: prevState.phone || data?.phone || "",
+      password: prevState.password || "",
+      confirmpassword: prevState.confirmpassword || "",
+    }));
+  }, []);
 
   const handleChange = (event) => {
     setFormData({
@@ -73,19 +100,6 @@ const Registration = () => {
     router.replace("/auth/login");
   };
 
-  useEffect(() => {
-    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
-    setInspectionData(data);
-    setFormData((prevState) => ({
-      name: prevState.name || data?.name || "",
-      email: prevState.email || data?.email || "",
-      role: prevState.role || data?.role || "",
-      phone: prevState.phone || data?.phone || "08063247818",
-      password: prevState.password || "",
-      confirmpassword: prevState.confirmpassword || "",
-    }));
-  }, []);
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-lg">
@@ -131,6 +145,24 @@ const Registration = () => {
           </div>
           <div>
             <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Phone number
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="phone"
+              autoComplete="phone"
+              required
+              value={formData.phone}
+              onChange={handleChange}
+              className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label
               htmlFor="role"
               className="block text-sm font-medium text-gray-700"
             >
@@ -144,9 +176,12 @@ const Registration = () => {
               onChange={handleChange}
               className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
             >
-              {/* we need to fetch roles dynamically from the backend */}
-              <option value="buyer">Buyer/Renter</option>
-              <option value="agent">Agent</option>
+              {roles &&
+                roles.map((role) => (
+                  <option key={role.id} value={role.name}>
+                    {role.name}
+                  </option>
+                ))}
             </select>
           </div>
           <div>

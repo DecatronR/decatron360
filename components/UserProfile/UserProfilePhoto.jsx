@@ -63,8 +63,10 @@ const UserProfilePhoto = ({ userId, userData }) => {
       console.log("updated data: ", res);
 
       if (res.passport) {
-        console.log("Image absolute path: ", `${BASE_URL}${res.passport}`);
-        setPassport(`${BASE_URL}${res.passport}`);
+        const updatedPassportPath = res.passport.startsWith("/")
+          ? `${BASE_URL}${res.passport}`
+          : `${BASE_URL}/${res.passport}`;
+        setPassport(updatedPassportPath);
       }
 
       enqueueSnackbar("Successfully updated user profile!", {
@@ -83,11 +85,16 @@ const UserProfilePhoto = ({ userId, userData }) => {
     <div className="flex flex-col items-center">
       <div className="relative mb-4">
         <img
-          src={passport || "/path/to/default/profile.png"}
+          src={
+            passport?.startsWith("http")
+              ? passport
+              : `/${passport}` || "/path/to/default/profile.png"
+          }
           alt="Profile"
           className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
           onClick={() => fileInputRef.current.click()}
         />
+
         <input
           type="file"
           accept="image/*"
