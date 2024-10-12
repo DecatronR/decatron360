@@ -26,7 +26,7 @@ const Registration = () => {
     const handleFetchRoles = async () => {
       try {
         const res = await fetchRoles();
-        console.log("Roles: ", roles);
+        console.log("Roles: ", res);
         setRoles(res);
       } catch (error) {
         console.log("");
@@ -176,10 +176,13 @@ const Registration = () => {
               onChange={handleChange}
               className="block w-full px-3 py-2 mt-1 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-400 focus:border-primary-400 sm:text-sm"
             >
+              <option disabled value="">
+                Select Role
+              </option>
               {roles &&
                 roles.map((role) => (
-                  <option key={role.id} value={role.name}>
-                    {role.name}
+                  <option key={role.id} value={role.slug}>
+                    {role.roleName}
                   </option>
                 ))}
             </select>
