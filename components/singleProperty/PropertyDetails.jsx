@@ -138,6 +138,7 @@ const PropertyDetails = ({ property, agentId }) => {
       </div>
 
       {/* Virtual Tour and Video */}
+      {/* Virtual Tour and Video */}
       <div className="bg-gray-50 p-4">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">
           Virtual Tour
@@ -145,19 +146,59 @@ const PropertyDetails = ({ property, agentId }) => {
         <div className="space-y-4">
           {property.virtualTour && (
             <div className="rounded-md overflow-hidden">
-              <video controls className="w-full h-auto rounded-lg">
-                <source src={property.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              {property.virtualTour.includes("youtube") ? (
+                <iframe
+                  width="560"
+                  height="315"
+                  src={`${property.virtualTour}?autoplay=1`}
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              ) : property.virtualTour.includes("matterport") ? (
+                <iframe
+                  width="100%"
+                  height="500"
+                  src={`${property.virtualTour}&play=1`}
+                  frameborder="0"
+                  allowfullscreen
+                ></iframe>
+              ) : property.virtualTour.includes("cloudpano") ? (
+                <iframe
+                  width="100%"
+                  height="500"
+                  src={property.virtualTour}
+                  frameborder="0"
+                  allowfullscreen
+                ></iframe>
+              ) : (
+                <video controls className="w-full h-auto rounded-lg">
+                  <source src={property.virtualTour} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
           )}
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Video</h2>
           {property.video && (
             <div className="rounded-md overflow-hidden">
-              <video controls className="w-full h-auto rounded-lg">
-                <source src={property.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              {property.video.includes("youtube") ? (
+                <iframe
+                  width="560"
+                  height="315"
+                  src={`${property.video}?autoplay=1`}
+                  title="YouTube video player"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                ></iframe>
+              ) : (
+                <video controls className="w-full h-auto rounded-lg">
+                  <source src={property.video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
           )}
         </div>

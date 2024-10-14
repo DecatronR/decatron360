@@ -21,10 +21,12 @@ const PropertyEditForm = ({ propertyId }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [buttonIsLoading, setButtonIsLoading] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   useEffect(() => {
-    if (propertyData) {
+    if (propertyData && propertyId) {
+      console.log("property Id ready 1: ", propertyId);
+      console.log("property Id ready 2: ", propertyData?.data?._id);
       setFields({
         id: propertyData?.data?._id,
         title: propertyData?.data?.title || "",

@@ -7,7 +7,7 @@ export const addFavoriteProperties = async (userId, propertyListingId) => {
       { userId, propertyListingId },
       { withCredentials: true }
     );
-    return res.data.data;
+    return res.data;
   } catch (error) {
     console.error("Error adding to favourite properties:", error);
     throw error;

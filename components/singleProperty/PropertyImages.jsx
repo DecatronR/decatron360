@@ -1,77 +1,140 @@
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import React, { useState } from "react";
+import { Dialog, IconButton } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useSwipeable } from "react-swipeable";
 
 const PropertyImages = ({ images }) => {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true, 
-    prevArrow: <CustomArrow direction="prev" />,
-    nextArrow: <CustomArrow direction="next" />,
+  const BASE_URL = "http://localhost:8080/";
+  const displayedImages = images.slice(0, 7);
+
+  const [selectedIndex, setSelectedIndex] = useState(null);
+
+  const handleImageClick = (index) => {
+    setSelectedIndex(index);
   };
 
-  return (
-    <section className="relative bg-gray-100 rounded-lg overflow-hidden shadow-md">
-      <Slider {...settings}>
-        {images.map((image, index) => (
-          <div key={index} className="relative group">
-            <img
-              src={image.path}
-              alt={`Property Image ${index + 1}`}
-              className="w-full h-96 object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-              <span className="text-white text-lg font-bold">
-                Property Image {index + 1}
-              </span>
-            </div>
-          </div>
-        ))}
-      </Slider>
-    </section>
-  );
-};
+  const handleClose = () => {
+    setSelectedIndex(null);
+  };
 
-const CustomArrow = ({ direction, onClick }) => {
+  const handlePrevious = () => {
+    if (selectedIndex > 0) {
+      setSelectedIndex((prevIndex) => prevIndex - 1);
+    }
+  };
+
+  const handleNext = () => {
+    if (selectedIndex < displayedImages.length - 1) {
+      setSelectedIndex((prevIndex) => prevIndex + 1);
+    }
+  };
+
+  // Swipe handlers
+  const handlers = useSwipeable({
+    onSwipedLeft: handleNext,
+    onSwipedRight: handlePrevious,
+    preventDefaultTouchmoveEvent: true,
+    trackMouse: true, // enables mouse swipe detection as well
+  });
+
   return (
-    <div
-      className={`absolute top-1/2 transform -translate-y-1/2 ${
-        direction === "prev" ? "left-4" : "right-4"
-      } z-10 cursor-pointer text-gray-700 hover:text-gray-900 transition duration-300`}
-      onClick={onClick}
-    >
-      {direction === "prev" ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-8 h-8"
+    <>
+      <section className="relative bg-gray-100 rounded-lg overflow-hidden shadow-md p-4">
+        {/* Adjust the grid layout for mobile */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-auto sm:h-[600px]">
+          <div
+            className="relative group col-span-1 cursor-pointer"
+            onClick={() => handleImageClick(0)}
+          >
+            <img
+              src={`${BASE_URL}${displayedImages[0]?.path}`}
+              alt={`Primary Property Image`}
+              className="w-full h-64 sm:h-full object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105 rounded-lg"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out rounded-lg"></div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 col-span-1">
+            {displayedImages.slice(1).map((image, index) => (
+              <div
+                key={index}
+                className="relative group cursor-pointer"
+                onClick={() => handleImageClick(index + 1)}
+              >
+                <img
+                  src={`${BASE_URL}${image.path}`}
+                  alt={`Property Image ${index + 2}`}
+                  className="w-full h-32 sm:h-full object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105 rounded-lg"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out rounded-lg">
+                  <span className="text-white text-sm font-bold">
+                    Image {index + 2}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Fullscreen Dialog for selected image */}
+      <Dialog
+        open={selectedIndex !== null}
+        onClose={handleClose}
+        maxWidth="lg"
+        PaperProps={{
+          style: { backgroundColor: "transparent", boxShadow: "none" },
+        }}
+        fullScreen={window.innerWidth < 640} // Set fullScreen for mobile devices
+      >
+        <div
+          {...handlers} // Add swipeable handlers here
+          className="relative flex justify-center items-center w-full h-full"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M15 19l-7-7 7-7"
+          <IconButton
+            onClick={handleClose}
+            className="absolute top-2 right-2 text-white"
+          >
+            <CloseIcon />
+          </IconButton>
+
+          {/* Left arrow for navigating images */}
+          {selectedIndex > 0 && (
+            <IconButton
+              onClick={handlePrevious}
+              className="absolute left-2 sm:left-4 text-white"
+              aria-label="Previous image"
+            >
+              <ArrowBackIcon
+                fontSize={window.innerWidth < 640 ? "medium" : "large"}
+              />
+            </IconButton>
+          )}
+
+          {/* Display the selected image */}
+          <img
+            src={`${BASE_URL}${displayedImages[selectedIndex]?.path}`}
+            alt="Selected Property"
+            className="w-full h-auto object-contain max-h-[90vh] rounded-lg"
           />
-        </svg>
-      ) : (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-8 h-8"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      )}
-    </div>
+
+          {/* Right arrow for navigating images */}
+          {selectedIndex < displayedImages.length - 1 && (
+            <IconButton
+              onClick={handleNext}
+              className="absolute right-2 sm:right-4 text-white"
+              aria-label="Next image"
+            >
+              <ArrowForwardIcon
+                fontSize={window.innerWidth < 640 ? "medium" : "large"}
+              />
+            </IconButton>
+          )}
+        </div>
+      </Dialog>
+    </>
   );
 };
 

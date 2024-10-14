@@ -12,6 +12,8 @@ const InspectionFeedbackForm = () => {
     setRating(newRating);
   };
 
+  //fetch agent id from, booking API
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
