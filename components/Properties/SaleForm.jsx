@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import Spinner from "../Spinner";
 import ButtonSpinner from "../ButtonSpinner";
@@ -8,6 +9,7 @@ import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 
 const SaleForm = () => {
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
   const [propertyTypes, setPropertyTypes] = useState([]);
@@ -221,10 +223,8 @@ const SaleForm = () => {
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
-      const id = sessionStorage.getItem("userId");
-      route.push(`/user-properties/${id}`);
+      router.push(`/properties/${fields.id}`);
     } catch (error) {
-      console.log("Issue with creating new property listing: ", error);
       enqueueSnackbar(`Failed to  list new property: ${error.message}`, {
         variant: "error",
       });

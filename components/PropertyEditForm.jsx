@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 import Spinner from "./Spinner";
 import ButtonSpinner from "./ButtonSpinner";
@@ -9,6 +10,7 @@ import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyLis
 import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 
 const PropertyEditForm = ({ propertyId }) => {
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [fields, setFields] = useState({});
   const [propertyData, setPropertyData] = useState({});
@@ -27,8 +29,6 @@ const PropertyEditForm = ({ propertyId }) => {
 
   useEffect(() => {
     if (propertyData && propertyId) {
-      console.log("property Id ready 1: ", propertyId);
-      console.log("property Id ready 2: ", propertyData?.data?._id);
       setFields({
         id: propertyData?.data?._id,
         title: propertyData?.data?.title || "",
@@ -71,21 +71,6 @@ const PropertyEditForm = ({ propertyId }) => {
     };
     handlefetchPropertyData();
   }, [propertyId, enqueueSnackbar]);
-
-  //updates property when the data has been edited
-  const handleUpdateProperty = async () => {
-    try {
-      await updatePropertyListing(propertyData);
-      enqueueSnackbar("Successfully edited property!", {
-        variant: "success",
-      });
-    } catch (error) {
-      console.log("Failed to edit property: ", error);
-      enqueueSnackbar("Failed to update property!", {
-        variant: "error",
-      });
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -222,22 +207,16 @@ const PropertyEditForm = ({ propertyId }) => {
       formData.append(`photo[${index}]`, photo); // Append as array with indexing
     });
 
-    console.log("Updating property listing with formData:");
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
     setIsButtonLoading(true);
-
+    console.log("Property Id: ", fields.id);
     try {
-      await updatePropertyListing(formData); // Assuming the backend accepts FormData
+      await updatePropertyListing(formData);
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
-      const id = sessionStorage.getItem("userId");
-      route.push(`/user-properties/${id}`);
+
+      router.push(`/properties/${fields.id}`);
     } catch (error) {
-      console.log("Issue with updating property listing: ", error);
       enqueueSnackbar(`Failed to edit property: ${error.message}`, {
         variant: "error",
       });
