@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import {
   faCouch,
   faBed,
+  faBath,
+  faShower,
   faUtensils,
   faCar,
   faRuler,
@@ -73,8 +75,9 @@ const PropertyDetails = ({ property, agentId }) => {
             Property Information
           </h2>
           <p>
-            <strong>Type:</strong> {property.propertyType} -{" "}
-            {property.propertySubType}
+            <strong>Type:</strong> {property.propertyType}
+            {/* -{" "}
+            {property.propertySubType} */}
           </p>
           <p>
             <strong>Listing Type:</strong> {property.listingType}
@@ -86,35 +89,35 @@ const PropertyDetails = ({ property, agentId }) => {
             <strong>Usage Type:</strong> {property.usageType}
           </p>
           <p>
-            <strong>Price:</strong> ${property.Price}
+            <strong>Price:</strong> {property.Price}
           </p>
         </div>
 
         <div className="bg-gray-50 p-4">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Features</h2>
           <ul className="list-none space-y-2">
-            <li className="flex items-center">
+            {/* <li className="flex items-center">
               <FontAwesomeIcon
                 icon={faCouch}
                 className="text-indigo-600 mr-2"
               />
               Living Rooms: {property.NoOfLivingRooms}
-            </li>
+            </li> */}
             <li className="flex items-center">
               <FontAwesomeIcon icon={faBed} className="text-indigo-600 mr-2" />
               Bedrooms: {property.NoOfBedRooms}
             </li>
             <li className="flex items-center">
               <FontAwesomeIcon
-                icon={faUtensils}
+                icon={faShower}
                 className="text-indigo-600 mr-2"
               />
-              Kitchens: {property.NoOfKitchens}
+              Bathroom: {property.NoOfKitchens}
             </li>
-            <li className="flex items-center">
+            {/* <li className="flex items-center">
               <FontAwesomeIcon icon={faCar} className="text-indigo-600 mr-2" />
               Parking Spaces: {property.NoOfParkingSpace}
-            </li>
+            </li> */}
             <li className="flex items-center">
               <FontAwesomeIcon
                 icon={faRuler}

@@ -15,7 +15,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   };
   const BASE_URL = "http://localhost:8080/";
   // console.log(`Image path: , ${BASE_URL}${property.photos[0].path}`);
-  console.log("Image path:", property.photos[0]);
+  console.log("Image path:", `${BASE_URL}${property.photos[0].path}`);
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
@@ -24,7 +24,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           {property?.photos?.length > 0 && (
             <Image
               src={
-                // `${BASE_URL}${property.photos[0].path}` ||
+                `${BASE_URL}${property.photos[0].path}` ||
                 "/path/to/default/profile.png"
               }
               alt={property.title}

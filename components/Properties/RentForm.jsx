@@ -97,14 +97,17 @@ const RentForm = () => {
 
       // Check file size (e.g., 2MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert(`${file.name} is too large, maximum file size is 5MB`);
+        enqueueSnackbar(`${file.name} is too large, maximum file size is 5MB`, {
+          variant: "error",
+        });
         continue;
       }
 
       // Check file type (e.g., only allow image/jpeg or image/png)
       if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
-        alert(
-          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`
+        enqueueSnackbar(
+          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`,
+          { variant: "error" }
         );
         continue;
       }
@@ -219,6 +222,7 @@ const RentForm = () => {
         variant: "success",
       });
       const id = sessionStorage.getItem("userId");
+      console.log("Router after upload: ", `/user-properties/${id}`);
       route.push(`/user-properties/${id}`);
     } catch (error) {
       console.log("Issue with creating new property listing: ", error);
