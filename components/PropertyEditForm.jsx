@@ -18,6 +18,8 @@ const PropertyEditForm = ({ propertyId }) => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [states, setStates] = useState([]);
   const [lga, setLga] = useState([]);
+  const [propertyCondition, setPropertyCondition] = useState([]);
+  const [propertyUsage, setPropertyUsage] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -165,6 +167,14 @@ const PropertyEditForm = ({ propertyId }) => {
         ),
         fetchData("http://localhost:8080/state/fetchState", setStates),
         fetchData("http://localhost:8080/lga/fetchLGA", setLga),
+        fetchData(
+          "http://localhost:8080/propertyCondition/fetchPropertyCondition",
+          setPropertyCondition
+        ),
+        fetchData(
+          "http://localhost:8080/propertyUsage/fetchPropertyUsage",
+          setPropertyUsage
+        ),
       ]);
     };
 
@@ -310,6 +320,60 @@ const PropertyEditForm = ({ propertyId }) => {
         />
       </div>
 
+      <div className="flex gap-4">
+        <div className="w-1/2">
+          <label
+            htmlFor="property_condition"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Property Condition
+          </label>
+          <select
+            id="propertyCondition"
+            name="propertyCondition"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            required
+            value={fields.propertyCondition}
+            onChange={handleChange}
+          >
+            <option disabled value="">
+              Select Condition
+            </option>
+            {propertyCondition.map((type) => (
+              <option key={type._id} value={type._slug}>
+                {type.propertyCondition}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-1/2">
+          <label
+            htmlFor="usage_type"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Property Usage
+          </label>
+          <select
+            id="usageType"
+            name="usageType"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            required
+            value={fields.usageType}
+            onChange={handleChange}
+          >
+            <option disabled value="">
+              Select Usage Type
+            </option>
+            {propertyUsage.map((type) => (
+              <option key={type._id} value={type._slug}>
+                {type.propertyUsage}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="mb-6">
         <label
           htmlFor="property_details"
@@ -330,11 +394,11 @@ const PropertyEditForm = ({ propertyId }) => {
 
       <div className="mb-6 bg-blue-50 p-4 rounded-lg">
         <label className="block text-gray-800 font-medium mb-3">Location</label>
-        <div className="space-y-4">
+        <div className="flex space-x-4">
           <select
             id="state"
             name="state"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
             value={fields.state}
             onChange={handleChange}
@@ -352,7 +416,7 @@ const PropertyEditForm = ({ propertyId }) => {
           <select
             id="lga"
             name="lga"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
             value={fields.lga}
             onChange={handleChange}
@@ -371,7 +435,7 @@ const PropertyEditForm = ({ propertyId }) => {
             type="text"
             id="neighbourhood"
             name="neighbourhood"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             placeholder="Neighbourhood"
             value={fields.neighbourhood}
             onChange={handleChange}
@@ -379,8 +443,8 @@ const PropertyEditForm = ({ propertyId }) => {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4">
-        <div className="w-full sm:w-1/3">
+      <div className="flex gap-4">
+        <div className="w-1/2">
           <label
             htmlFor="beds"
             className="block text-gray-800 font-medium mb-3"
@@ -397,8 +461,7 @@ const PropertyEditForm = ({ propertyId }) => {
             onChange={handleChange}
           />
         </div>
-
-        <div className="w-full sm:w-1/3">
+        <div className="w-1/2">
           <label
             htmlFor="baths"
             className="block text-gray-800 font-medium mb-3"
@@ -415,8 +478,10 @@ const PropertyEditForm = ({ propertyId }) => {
             onChange={handleChange}
           />
         </div>
+      </div>
 
-        <div className="w-full sm:w-1/3">
+      <div className="flex gap-4">
+        <div className="w-1/2">
           <label
             htmlFor="size"
             className="block text-gray-800 font-medium mb-3"
@@ -434,29 +499,32 @@ const PropertyEditForm = ({ propertyId }) => {
             onChange={handleChange}
           />
         </div>
-      </div>
 
-      <div className="mb-6">
-        <label htmlFor="price" className="block text-gray-800 font-medium mb-3">
-          Price
-        </label>
-        <input
-          type="text"
-          id="Price"
-          name="Price"
-          placeholder="NGN 0.00"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-          required
-          value={fields.Price}
-          onChange={handleChange}
-          onBlur={(e) => {
-            const formattedPrice = formatPrice(fields.Price);
-            setFields((prevFields) => ({
-              ...prevFields,
-              Price: formattedPrice,
-            }));
-          }}
-        />
+        <div className="w-1/2">
+          <label
+            htmlFor="price"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Price
+          </label>
+          <input
+            type="text"
+            id="Price"
+            name="Price"
+            placeholder="NGN 0.00"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            required
+            value={fields.Price}
+            onChange={handleChange}
+            onBlur={(e) => {
+              const formattedPrice = formatPrice(fields.Price);
+              setFields((prevFields) => ({
+                ...prevFields,
+                Price: formattedPrice,
+              }));
+            }}
+          />
+        </div>
       </div>
 
       <div className="mb-6">
