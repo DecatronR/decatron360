@@ -13,6 +13,7 @@ import {
 import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyListing";
 import { deletePropertyListing } from "@/utils/api/propertyListing/deletePropertyListing";
 import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
+import Swal from "sweetalert2";
 
 const PropertyDetails = ({ property, agentId }) => {
   const [isPropertyLister, setIsPropertyLister] = useState(false);
@@ -30,15 +31,25 @@ const PropertyDetails = ({ property, agentId }) => {
 
   const handleDeleteProperty = async () => {
     try {
-      await deletePropertyListing(property.userID);
-      enqueueSnackbar("Successfully deleted property!", {
-        variant: "success",
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to delete this property? This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
       });
+
+      if (result.isConfirmed) {
+        await deletePropertyListing(property._id);
+
+        Swal.fire("Deleted!", "Your property has been deleted.", "success");
+      }
     } catch (error) {
-      console.log("Failed to edit property: ", error);
-      enqueueSnackbar("Failed to delete property!", {
-        variant: "error",
-      });
+      console.error("Failed to delete property:", error);
+      Swal.fire("Failed", "Failed to delete property!", "error");
     }
   };
 

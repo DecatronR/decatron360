@@ -48,7 +48,8 @@
     "react-star-ratings": "^2.3.0",
     "react-swipeable": "^7.0.1",
     "slick-carousel": "^1.8.1",
-    "socket.io-client": "^4.8.0"
+    "socket.io-client": "^4.8.0",
+    "sweetalert2": "^11.14.3"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.5.0",
