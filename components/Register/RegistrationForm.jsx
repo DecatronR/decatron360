@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useSnackbar } from "notistack";
-import { fetchRoles } from "@/utils/api/registration/fetchRoles";
+import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 
 const Registration = () => {
   const router = useRouter();
@@ -26,7 +26,6 @@ const Registration = () => {
     const handleFetchRoles = async () => {
       try {
         const res = await fetchRoles();
-        console.log("Roles: ", res);
         setRoles(res);
       } catch (error) {
         console.log("");

@@ -23,20 +23,20 @@ const SaleForm = () => {
   const [fields, setFields] = useState({
     userID: "",
     title: "",
-    listingType: "Sale",
+    listingType: "Rent",
     usageType: "",
     propertyType: "",
-    propertySubType: "",
+    propertySubType: "null",
     propertyCondition: "",
     state: "",
     lga: "",
     neighbourhood: "",
     size: "",
     propertyDetails: "",
-    NoOfLivingRooms: "",
+    NoOfLivingRooms: "null",
     NoOfBedRooms: "",
     NoOfKitchens: "",
-    NoOfParkingSpace: "",
+    NoOfParkingSpace: "null",
     Price: "",
     virtualTour: "",
     video: "",
@@ -290,17 +290,17 @@ const SaleForm = () => {
         <div className="flex gap-4">
           <div className="w-1/2">
             <label
-              htmlFor="title"
+              htmlFor="property_condition"
               className="block text-gray-800 font-medium mb-3"
             >
               Property Condition
             </label>
             <select
-              id="state"
-              name="state"
+              id="propertyCondition"
+              name="propertyCondition"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.state}
+              value={fields.propertyCondition}
               onChange={handleChange}
             >
               <option disabled value="">
@@ -316,17 +316,17 @@ const SaleForm = () => {
 
           <div className="w-1/2">
             <label
-              htmlFor="title"
+              htmlFor="usage_type"
               className="block text-gray-800 font-medium mb-3"
             >
               Property Usage
             </label>
             <select
-              id="state"
-              name="state"
+              id="usageType"
+              name="usageType"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.state}
+              value={fields.usageType}
               onChange={handleChange}
             >
               <option disabled value="">
