@@ -20,7 +20,7 @@ const RentForm = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [buttonLoading, setButtonLoading] = useState(false);
+  const [isbuttonLoading, setIsButtonLoading] = useState(false);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -218,20 +218,27 @@ const RentForm = () => {
     });
 
     console.log("Creating new property listing with formData: ", formData);
-    setButtonLoading(true);
+    setIsButtonLoading(true);
+    const userId = sessionStorage.getItem("userId");
     try {
       await createPropertyListing(formData);
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
-      const userId = sessionStorage.getItem("userId");
       router.push(`/user-properties/${userId}`);
     } catch (error) {
-      enqueueSnackbar(`Failed to  list new property: ${error.message}`, {
-        variant: "error",
-      });
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+        enqueueSnackbar(`Failed to list new property: ${errorMessage}`, {
+          variant: "error",
+        });
+      } else {
+        enqueueSnackbar(`Failed to list new property: ${error.message}`, {
+          variant: "error",
+        });
+      }
     } finally {
-      setButtonLoading(false);
+      setIsButtonLoading(false);
     }
   };
 
@@ -600,7 +607,7 @@ const RentForm = () => {
             type="submit"
             className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
           >
-            {buttonLoading ? <ButtonSpinner /> : "Add Property"}
+            {isbuttonLoading ? <ButtonSpinner /> : "Add Property"}
           </button>
         </div>
       </form>

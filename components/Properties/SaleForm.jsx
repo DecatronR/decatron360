@@ -20,7 +20,7 @@ const SaleForm = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [buttonLoading, setButtonLoading] = useState(false);
+  const [isbuttonLoading, setIsButtonLoading] = useState(false);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -220,7 +220,7 @@ const SaleForm = () => {
     });
 
     console.log("Creating new property listing with formData: ", formData);
-    setButtonLoading(true);
+    setIsButtonLoading(true);
     const userId = sessionStorage.getItem("userId");
     try {
       await createPropertyListing(formData);
@@ -240,7 +240,7 @@ const SaleForm = () => {
         });
       }
     } finally {
-      setButtonLoading(false);
+      setIsButtonLoading(false);
     }
   };
 
@@ -609,7 +609,7 @@ const SaleForm = () => {
             type="submit"
             className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
           >
-            {buttonLoading ? <ButtonSpinner /> : "Add Property"}
+            {isbuttonLoading ? <ButtonSpinner /> : "Add Property"}
           </button>
         </div>
       </form>
