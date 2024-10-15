@@ -209,7 +209,6 @@ const PropertyEditForm = ({ propertyId }) => {
     });
 
     setIsButtonLoading(true);
-    console.log("Property Id: ", fields.id);
     try {
       await updatePropertyListing(formData);
       enqueueSnackbar("Successfully listed new property!", {

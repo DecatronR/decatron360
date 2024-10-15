@@ -221,16 +221,24 @@ const SaleForm = () => {
 
     console.log("Creating new property listing with formData: ", formData);
     setButtonLoading(true);
+    const userId = sessionStorage.getItem("userId");
     try {
       await createPropertyListing(formData);
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
-      router.push(`/properties/${fields.id}`);
+      router.push(`/user-properties/${userId}`);
     } catch (error) {
-      enqueueSnackbar(`Failed to  list new property: ${error.message}`, {
-        variant: "error",
-      });
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+        enqueueSnackbar(`Failed to list new property: ${errorMessage}`, {
+          variant: "error",
+        });
+      } else {
+        enqueueSnackbar(`Failed to list new property: ${error.message}`, {
+          variant: "error",
+        });
+      }
     } finally {
       setButtonLoading(false);
     }

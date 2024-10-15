@@ -224,8 +224,8 @@ const RentForm = () => {
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
-      const id = sessionStorage.getItem("userId");
-      router.push(`/properties/${fields.id}`);
+      const userId = sessionStorage.getItem("userId");
+      router.push(`/user-properties/${userId}`);
     } catch (error) {
       enqueueSnackbar(`Failed to  list new property: ${error.message}`, {
         variant: "error",
