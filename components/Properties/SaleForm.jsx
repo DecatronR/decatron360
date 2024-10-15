@@ -85,6 +85,8 @@ const SaleForm = () => {
     }
   };
 
+  const handlePriceChange = () => {};
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = [];
@@ -144,10 +146,11 @@ const SaleForm = () => {
   };
 
   const formatPrice = (price) => {
+    const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ""));
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
       currency: "NGN",
-    }).format(price);
+    }).format(numericPrice);
   };
 
   const fetchData = useCallback(async (url, setter) => {
@@ -242,7 +245,7 @@ const SaleForm = () => {
         className="space-y-6 bg-white shadow-md rounded-lg p-6"
       >
         <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
-          Add Property For Rent
+          Add Property For Sale
         </h2>
 
         <div className="mb-6">
@@ -487,7 +490,13 @@ const SaleForm = () => {
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
               value={fields.Price}
-              onChange={handleChange}
+              onChange={(e) => {
+                const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
+                setFields((prevFields) => ({
+                  ...prevFields,
+                  Price: numericPrice,
+                }));
+              }}
               onBlur={(e) => {
                 const formattedPrice = formatPrice(fields.Price);
                 setFields((prevFields) => ({

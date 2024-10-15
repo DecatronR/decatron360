@@ -19,12 +19,15 @@ const UserProfilePhoto = ({ userId, userData }) => {
   //   }
   // }, [userData?.passport]);
 
+  console.log("USER DATA: ", userData);
+  console.log("Passport: ", passport);
+
   useEffect(() => {
     if (!passportChanged) return;
     const handleFetchPassport = async () => {
       try {
         const res = await fetchUserData(userId);
-        console.log("Passport: ", res.passport);
+        console.log("User data ...pas: ", res);
         setPassport(res.passport);
       } catch (error) {
         console.loe("Failed to fetch passport: ", error);
@@ -52,7 +55,7 @@ const UserProfilePhoto = ({ userId, userData }) => {
 
       // Create a FormData object
       const formData = new FormData();
-      formData.append("passport", file); // Append the file to FormData
+      formData.append("passport", file);
       // Append other user data
       for (const key in userDataUpdate) {
         formData.append(key, userDataUpdate[key]);
@@ -63,10 +66,7 @@ const UserProfilePhoto = ({ userId, userData }) => {
       console.log("updated data: ", res);
 
       if (res.passport) {
-        const updatedPassportPath = res.passport.startsWith("/")
-          ? `${BASE_URL}${res.passport}`
-          : `${BASE_URL}/${res.passport}`;
-        setPassport(updatedPassportPath);
+        setPassport(`${BASE_URL}${res.passport}`);
       }
 
       enqueueSnackbar("Successfully updated user profile!", {
@@ -85,11 +85,7 @@ const UserProfilePhoto = ({ userId, userData }) => {
     <div className="flex flex-col items-center">
       <div className="relative mb-4">
         <img
-          src={
-            passport?.startsWith("http")
-              ? passport
-              : `/${passport}` || "/path/to/default/profile.png"
-          }
+          src={`${passport}` || "/path/to/default/profile.png"}
           alt="Profile"
           className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
           onClick={() => fileInputRef.current.click()}

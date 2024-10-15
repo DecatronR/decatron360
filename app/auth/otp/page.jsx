@@ -3,8 +3,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
+import { useSnackbar } from "notistack";
 
 const Otp = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { signIn } = useAuth();
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -89,6 +91,7 @@ const Otp = () => {
       setSuccess(null);
 
       await onConfirmOtp();
+      enqueueSnackbar("Registration successful!", { variant: "success" });
       await onLogin();
       const queryParams = new URLSearchParams(window.location.search);
       const redirectPath = queryParams.get("redirect") || "/";
@@ -96,7 +99,9 @@ const Otp = () => {
       // Redirect to the path specified in the query parameter or default to home
       router.replace(redirectPath);
     } catch (error) {
-      console.log("Error during OTP confirmation", error);
+      enqueueSnackbar("Failed to complete OTP verification!", {
+        variant: "error",
+      });
     }
   };
 

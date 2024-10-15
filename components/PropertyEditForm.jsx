@@ -127,10 +127,11 @@ const PropertyEditForm = ({ propertyId }) => {
   };
 
   const formatPrice = (price) => {
+    const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ""));
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
       currency: "NGN",
-    }).format(price);
+    }).format(numericPrice);
   };
 
   const fetchData = useCallback(async (url, setter) => {
@@ -494,7 +495,13 @@ const PropertyEditForm = ({ propertyId }) => {
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
             value={fields.Price}
-            onChange={handleChange}
+            onChange={(e) => {
+              const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
+              setFields((prevFields) => ({
+                ...prevFields,
+                Price: numericPrice,
+              }));
+            }}
             onBlur={(e) => {
               const formattedPrice = formatPrice(fields.Price);
               setFields((prevFields) => ({
