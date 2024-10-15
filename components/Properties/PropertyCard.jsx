@@ -19,7 +19,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
-      <div className="relative cursor-pointer rounded-lg shadow-lg overflow-hidden bg-white transition hover:shadow-2xl transform hover:scale-[1.02] duration-300">
+      <div className="relative cursor-pointer rounded-lg shadow-lg bg-white transition hover:shadow-2xl transform hover:scale-[1.02] duration-300 max-h-80 overflow-hidden">
         <div className="relative">
           {property?.photos?.length > 0 && (
             <Image
@@ -61,7 +61,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             <h2 className="text-lg font-bold text-gray-900 mb-1">
               {property.title}
             </h2>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 truncate">
               {property.propertyType} in {property.neighbourhood},{" "}
               {property.state}
             </p>
