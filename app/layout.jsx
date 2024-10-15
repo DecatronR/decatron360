@@ -9,7 +9,7 @@ import "photoswipe/dist/photoswipe.css";
 const MainLayout = ({ children }) => {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen flex flex-col">
         <AuthProvider>
           <SnackbarProvider
             maxSnack={3}
@@ -25,8 +25,8 @@ const MainLayout = ({ children }) => {
             }}
           >
             <Navbar />
-            <main>{children}</main>
-            <Footer />
+            <main className="flex-1">{children}</main>
+            <Footer className="mt-auto" />
           </SnackbarProvider>
         </AuthProvider>
       </body>
