@@ -1628,6 +1628,10 @@ dom-helpers@^5.0.1:
     "@babel/runtime" "^7.8.7"
     csstype "^3.0.2"
 
+dotenv@^16.4.5:
+  version "16.4.5"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
+
 earcut@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/earcut/-/earcut-3.0.0.tgz#a8d5bf891224eaea8287201b5e787c6c0318af89"

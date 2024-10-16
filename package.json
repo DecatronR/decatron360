@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "engines": {
-    "node": "21.x"
+    "node": "20.x"
   },
   "scripts": {
     "build": "next build",
@@ -31,6 +31,7 @@
     "@radix-ui/react-dialog": "^1.1.1",
     "axios": "^1.7.4",
     "css-loader": "^7.1.2",
+    "dotenv": "^16.4.5",
     "eslint-plugin-import": "^2.31.0",
     "json-loader": "^0.5.7",
     "mapbox-gl": "^3.1.2",
