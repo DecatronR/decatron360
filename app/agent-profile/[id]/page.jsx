@@ -16,26 +16,16 @@ import Spinner from "@/components/Spinner";
 
 const AgentProfilePage = () => {
   const { id } = useParams();
-  // const agent = {
-  //   photo: "/path/to/agent-photo.jpg",
-  //   name: "John Doe",
-  //   rank: "Top Agent",
-  //   reviews: 123,
-  //   ratings: 456,
-  //   joinDate: "2020-01-15",
-  // };
   const [agentData, setAgentData] = useState(null);
   const [agentProperties, setAgentProperties] = useState([]);
   const [agentReviews, setAgentReviews] = useState([]);
   const [agentRating, setAgentRating] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Example verification statuses
   const isEmailVerified = false;
   const isPhoneVerified = false;
   const isIdentityVerified = true;
 
-  // Example data for listings and reviews
   const photos = [
     "https://via.placeholder.com/150",
     "https://via.placeholder.com/150",
@@ -91,7 +81,6 @@ const AgentProfilePage = () => {
     handleFetchAgentProperties();
   }, [id]);
 
-  //reviews need to my tilted towards the user not the property
   useEffect(() => {
     const handleFetchAgentReviews = async () => {
       if (id) {
@@ -124,11 +113,11 @@ const AgentProfilePage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
-      <div className="flex max-w-6xl mx-auto">
+      <div className="flex flex-col md:flex-row max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Left Column: Profile Info */}
-        <div className="w-1/3">
+        <div className="md:w-1/3 mb-8 md:mb-0">
           {/* Make the left column sticky so it stays in place */}
-          <div className="sticky top-8">
+          <div className="md:sticky top-8">
             <AgentProfilePhoto />
             <AgentRating />
 
@@ -144,7 +133,7 @@ const AgentProfilePage = () => {
         </div>
 
         {/* Right Column: Scrollable Details */}
-        <div className="w-2/3 ml-8 h-[calc(100vh-4rem)] overflow-y-scroll">
+        <div className="md:w-2/3 md:ml-8 h-[calc(100vh-4rem)] overflow-y-scroll">
           <AgentAbout agentData={agentData} />
           <AgentPropertiesCarousel
             agentProperties={agentProperties}

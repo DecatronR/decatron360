@@ -9,10 +9,10 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center relative z-10">
         <div className="text-center">
           <h1 className="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl transition-transform transform hover:scale-105">
-            Find The Perfect Property
+            Painless Property Inspections
           </h1>
           <p className="my-4 text-xl text-white">
-            Discover the perfect property that suits your needs.
+            Connecting Real Estate Buyers and Renters, With Accountable Agents
           </p>
         </div>
 
