@@ -10,7 +10,7 @@ import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyLis
 import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 
 const PropertyEditForm = ({ propertyId }) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [fields, setFields] = useState({});

@@ -7,7 +7,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useSwipeable } from "react-swipeable";
 
 const PropertyImages = ({ images }) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const displayedImages = images.slice(0, 7);
 
   const [selectedIndex, setSelectedIndex] = useState(null);

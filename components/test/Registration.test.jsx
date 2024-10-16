@@ -7,7 +7,7 @@ import axios from "axios";
 import { vi } from "vitest";
 
 // Mocking the necessary modules
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 const mockEnqueueSnackbar = vi.fn();
 
 vi.mock("axios");

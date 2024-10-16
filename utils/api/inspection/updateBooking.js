@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const updateBooking = async (bookingId, bookingData) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   if (!bookingId) {
     throw new Error("Booking id is required to update booking");
   }

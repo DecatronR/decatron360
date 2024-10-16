@@ -7,7 +7,7 @@ import { useSnackbar } from "notistack";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 
 const Registration = () => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({

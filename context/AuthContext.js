@@ -7,7 +7,7 @@ import axios from "axios";
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 

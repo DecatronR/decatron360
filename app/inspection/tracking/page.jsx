@@ -6,7 +6,7 @@ import io from "socket.io-client";
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 const InspectionTracker = ({ propertyLocation }) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const [agentLocation, setAgentLocation] = useState(null);
   const [buyerLocation, setBuyerLocation] = useState(null);
   const [socket, setSocket] = useState(null);

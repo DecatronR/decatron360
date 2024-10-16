@@ -4,7 +4,7 @@ import { useSnackbar } from "notistack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 
 const UserProfilePhoto = ({ userId, userData }) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const { enqueueSnackbar } = useSnackbar();
   const [passport, setPassport] = useState(userData?.passport);
   const [passportChanged, setPassportChanged] = useState(false);

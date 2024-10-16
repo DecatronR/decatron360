@@ -6,12 +6,12 @@ export const updateUserData = async (userData) => {
     maxBodyLength: Infinity,
     url: `${baseUrl}/users/update`,
     headers: {
-      "Content-Type": "multipart/form-data", // set to multipart for file upload
+      "Content-Type": "multipart/form-data",
     },
     data: userData,
     withCredentials: true,
   };
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   try {
     const res = await axios(updateUserConfig);
     return res.data.user;

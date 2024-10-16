@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 
 const Otp = () => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { signIn } = useAuth();

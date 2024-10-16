@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 /** @type {import('next').NextConfig} */
 import withTM from "next-transpile-modules";
 import path from "path";

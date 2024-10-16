@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const fetchPropertyData = async (propertyId) => {
-  const baseUrl = process.env.BASE_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   if (!propertyId) {
     throw new Error("property ID is required to fetch single property data");
   }
