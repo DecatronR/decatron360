@@ -1,14 +1,14 @@
 "use client";
-import FavoriteButton from "@/components/SingleProperty/FavoriteButton";
-import PropertyDetails from "@/components/SingleProperty/PropertyDetails";
-import PropertyImages from "@/components/SingleProperty/PropertyImages";
-import ShareButtons from "@/components/SingleProperty/ShareButtons";
+import FavoriteButton from "../../../components/SingleProperty/FavoriteButton";
+import PropertyDetails from "../../../components/SingleProperty/PropertyDetails";
+import PropertyImages from "../../../components/SingleProperty/PropertyImages";
+import ShareButtons from "../../../components/SingleProperty/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
-import ScheduleInspectionForm from "@/components/SingleProperty/ScheduleInspectionForm";
+import ScheduleInspectionForm from "../../../components/SingleProperty/ScheduleInspectionForm";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 
