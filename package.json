@@ -2,6 +2,9 @@
   "name": "decatron360",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "21.x"
+  },
   "scripts": {
     "build": "next build",
     "dev": "concurrently \"next dev\" \"yarn test:watch\"",

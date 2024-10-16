@@ -1,0 +1,5 @@
+{
+    "build": {
+      "nodeVersion": "21.x"
+    }
+  }
