@@ -4,13 +4,12 @@ import { useSnackbar } from "notistack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 
 const UserProfilePhoto = ({ userId, userData }) => {
+  const baseUrl = process.env.BASE_URL;
   const { enqueueSnackbar } = useSnackbar();
   const [passport, setPassport] = useState(userData?.passport);
   const [passportChanged, setPassportChanged] = useState(false);
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
-
-  const BASE_URL = "http://localhost:8080/";
   // Update photo state if parent changes userData (e.g., after a re-fetch)
   // useEffect(() => {
   //   if (userData?.passport) {
@@ -66,7 +65,7 @@ const UserProfilePhoto = ({ userId, userData }) => {
       console.log("updated data: ", res);
 
       if (res.passport) {
-        setPassport(`${BASE_URL}${res.passport}`);
+        setPassport(`${baseUrl}/${res.passport}`);
       }
 
       enqueueSnackbar("Successfully updated user profile!", {

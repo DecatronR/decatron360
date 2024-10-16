@@ -10,6 +10,7 @@ import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyLis
 import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 
 const PropertyEditForm = ({ propertyId }) => {
+  const baseUrl = process.env.BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [fields, setFields] = useState({});
@@ -148,17 +149,17 @@ const PropertyEditForm = ({ propertyId }) => {
     const fetchAllData = async () => {
       await Promise.all([
         fetchData(
-          "http://localhost:8080/propertyType/fetchPropertyType",
+          `${baseUrl}/propertyType/fetchPropertyType`,
           setPropertyTypes
         ),
-        fetchData("http://localhost:8080/state/fetchState", setStates),
-        fetchData("http://localhost:8080/lga/fetchLGA", setLga),
+        fetchData(`${baseUrl}/state/fetchState`, setStates),
+        fetchData(`${baseUrl}/lga/fetchLGA`, setLga),
         fetchData(
-          "http://localhost:8080/propertyCondition/fetchPropertyCondition",
+          `${baseUrl}/propertyCondition/fetchPropertyCondition`,
           setPropertyCondition
         ),
         fetchData(
-          "http://localhost:8080/propertyUsage/fetchPropertyUsage",
+          `${baseUrl}/propertyUsage/fetchPropertyUsage`,
           setPropertyUsage
         ),
       ]);
@@ -205,7 +206,7 @@ const PropertyEditForm = ({ propertyId }) => {
 
     // Append new uploaded images
     uploadedImages.forEach((photo, index) => {
-      formData.append(`photo[${index}]`, photo); // Append as array with indexing
+      formData.append(`photo[${index}]`, photo);
     });
 
     setIsButtonLoading(true);

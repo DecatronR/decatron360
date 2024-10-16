@@ -1,8 +1,9 @@
 import axios from "axios";
 
 export const fetchRoles = async () => {
+  const baseUrl = process.env.BASE_URL;
   try {
-    const res = await axios.get("http://localhost:8080/role/getRoles", {
+    const res = await axios.get(`${baseUrl}/role/getRoles`, {
       withCredentials: true,
     });
     return res.data;

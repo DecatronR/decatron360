@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const updateBooking = async (bookingId, bookingData) => {
+  const baseUrl = process.env.BASE_URL;
   if (!bookingId) {
     throw new Error("Booking id is required to update booking");
   }
@@ -11,7 +12,7 @@ export const updateBooking = async (bookingId, bookingData) => {
 
   try {
     const res = await axios.put(
-      `http://localhost:8080/bookings/${bookingId}`,
+      `${baseUrl}/bookings/${bookingId}`,
       bookingData,
       { withCredentials: true }
     );

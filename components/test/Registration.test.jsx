@@ -7,7 +7,7 @@ import axios from "axios";
 import { vi } from "vitest";
 
 // Mocking the necessary modules
-
+const baseUrl = process.env.BASE_URL;
 const mockEnqueueSnackbar = vi.fn();
 
 vi.mock("axios");
@@ -112,17 +112,14 @@ describe("Registration Component", () => {
     await waitFor(() => {
       expect(mockRouter.replace).toHaveBeenCalledWith("/auth/otp");
     });
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:8080/auth/register",
-      {
-        name: "John Doe",
-        email: "john@example.com",
-        role: "buyer",
-        phone: "08063247818",
-        password: "password123",
-        confirmpassword: "password123",
-      }
-    );
+    expect(axios.post).toHaveBeenCalledWith(`${baseUrl}/auth/register`, {
+      name: "John Doe",
+      email: "john@example.com",
+      role: "buyer",
+      phone: "08063247818",
+      password: "password123",
+      confirmpassword: "password123",
+    });
   });
 
   it("shows error if registration fails", async () => {

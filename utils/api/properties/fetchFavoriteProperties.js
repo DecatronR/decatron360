@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export const fetchFavoriteProperties = async (userId) => {
+  const baseUrl = process.env.BASE_URL;
   try {
     const res = await axios.post(
-      "http://localhost:8080/favorite/getMyFavorites",
+      `${baseUrl}/favorite/getMyFavorites`,
       { userId },
       { withCredentials: true }
     );

@@ -10,12 +10,11 @@ import {
 } from "react-icons/fa";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
+  const baseUrl = process.env.BASE_URL;
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
-  const BASE_URL = "http://localhost:8080/";
-  // console.log(`Image path: , ${BASE_URL}${property.photos[0].path}`);
-  console.log("Image path:", `${BASE_URL}${property.photos[0].path}`);
+  console.log("Image path:", `${baseUrl}/${property.photos[0].path}`);
   console.log("Favorite property Id: ", property._id);
 
   return (
@@ -25,7 +24,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           {property?.photos?.length > 0 && (
             <Image
               src={
-                `${BASE_URL}${property.photos[0].path}` ||
+                `${baseUrl}/${property.photos[0].path}` ||
                 "/path/to/default/profile.png"
               }
               alt={property.title}

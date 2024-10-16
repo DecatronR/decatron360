@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export const fetchUserData = async (userId) => {
+  const baseUrl = process.env.BASE_URL;
   try {
     const res = await axios.post(
-      "http://localhost:8080/users/editUsers",
+      `${baseUrl}/users/editUsers`,
       { id: userId },
       { withCredentials: true }
     );

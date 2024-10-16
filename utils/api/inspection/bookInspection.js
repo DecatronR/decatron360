@@ -6,9 +6,10 @@ export const bookInspection = async (
   agentID,
   bookingDateTime
 ) => {
+  const baseUrl = process.env.BASE_URL;
   try {
     const res = await axios.post(
-      "http://localhost:8080/booking/book",
+      `${baseUrl}/booking/book`,
       { userID, propertyID, agentID, bookingDateTime },
       { withCredentials: true }
     );

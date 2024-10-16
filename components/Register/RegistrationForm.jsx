@@ -7,6 +7,7 @@ import { useSnackbar } from "notistack";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 
 const Registration = () => {
+  const baseUrl = process.env.BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
@@ -65,13 +66,12 @@ const Registration = () => {
 
   const onRegistration = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:8080/auth/register",
-        formData
-      );
+      const response = await axios.post(`${baseUrl}/auth/register`, formData);
 
       if (response.status === 201) {
-        enqueueSnackbar("Registration successful!", { variant: "success" });
+        enqueueSnackbar("Please complete OTP verification!", {
+          variant: "success",
+        });
       } else {
         enqueueSnackbar(`Registration failed`, {
           variant: "error",

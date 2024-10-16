@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export const deletePropertyListing = async (propertyId) => {
+  const baseUrl = process.env.BASE_URL;
   try {
     const res = await axios.post(
-      "http://localhost:8080/propertyListing/deletePropertyListing",
+      `${baseUrl}/propertyListing/deletePropertyListing`,
       { id: propertyId },
       { withCredentials: true }
     );

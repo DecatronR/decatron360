@@ -7,6 +7,7 @@ import axios from "axios";
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
+  const baseUrl = process.env.BASE_URL;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.setItem("userId", userId);
 
       const res = await axios.post(
-        "http://localhost:8080/users/editUsers",
+        `${baseUrl}/users/editUsers`,
         { id: userId },
         { withCredentials: true }
       );

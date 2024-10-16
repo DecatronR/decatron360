@@ -1,13 +1,14 @@
 import axios from "axios";
 
 export const fetchPropertyData = async (propertyId) => {
+  const baseUrl = process.env.BASE_URL;
   if (!propertyId) {
     throw new Error("property ID is required to fetch single property data");
   }
 
   try {
     const res = await axios.post(
-      "http://localhost:8080/propertyListing/editPropertyListing",
+      `${baseUrl}/propertyListing/editPropertyListing`,
       { id: propertyId },
       { withCredentials: true }
     );

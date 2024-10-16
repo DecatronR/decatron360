@@ -1,13 +1,14 @@
 import axios from "axios";
 
 export const fetchUserProperties = async (userId) => {
+  const baseUrl = process.env.BASE_URL;
   if (!userId) {
     throw new Error("User ID is required to fetch properties");
   }
 
   try {
     const res = await axios.post(
-      "http://localhost:8080/propertyListing/myProperty",
+      `${baseUrl}/propertyListing/myProperty`,
       { userID: userId },
       { withCredentials: true }
     );

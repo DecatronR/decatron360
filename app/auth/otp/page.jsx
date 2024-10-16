@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 
 const Otp = () => {
+  const baseUrl = process.env.BASE_URL;
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { signIn } = useAuth();
@@ -27,7 +28,7 @@ const Otp = () => {
   }, []);
 
   const handleChange = (element, index) => {
-    const value = element.value.replace(/[^0-9]/g, ""); // only allow digits
+    const value = element.value.replace(/[^0-9]/g, "");
     if (value) {
       setOtp((prevOtp) => {
         const newOtp = [...prevOtp];
@@ -50,7 +51,7 @@ const Otp = () => {
 
   const handleResendOtp = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/auth/resendOTP");
+      const res = await axios.get(`${baseUrl}/auth/resendOTP`);
       console.log("OTP resent", res.data);
     } catch (error) {
       console.log("Error resending OTP", error);
@@ -62,7 +63,7 @@ const Otp = () => {
     if (otpValue.length === 6) {
       try {
         const res = await axios.post(
-          "http://localhost:8080/auth/confirmOTP",
+          `${baseUrl}/auth/confirmOTP`,
           { email: email, otp: otpValue },
           { withCredentials: true }
         );

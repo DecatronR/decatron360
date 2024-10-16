@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export const fetchProperties = async () => {
+  const baseUrl = process.env.BASE_URL;
   try {
     const res = await axios.get(
-      "http://localhost:8080/propertyListing/fetchPropertyListing",
+      `${baseUrl}/propertyListing/fetchPropertyListing`,
       { withCredentials: true }
     );
     return res.data;

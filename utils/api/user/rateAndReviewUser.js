@@ -6,9 +6,10 @@ export const rateAndReviewUser = async (
   reviewerID,
   comment
 ) => {
+  const baseUrl = process.env.BASE_URL;
   try {
     await axios.post(
-      "http://localhost:8080/users/rateUser",
+      `${baseUrl}/users/rateUser`,
       { userID, rating, reviewerID, comment },
       { withCredentials: true }
     );

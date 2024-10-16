@@ -1,10 +1,11 @@
 import axios from "axios";
 
 export const createPropertyListing = async (createListingData) => {
+  const baseUrl = process.env.BASE_URL;
   const createListingConfig = {
     method: "post",
     maxBodyLength: Infinity,
-    url: "http://localhost:8080/propertyListing/createPropertyListing",
+    url: `${baseUrl}/propertyListing/createPropertyListing`,
     headers: {
       "Content-Type": "multipart/form-data", // set to multipart for file upload
     },

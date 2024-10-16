@@ -1,9 +1,10 @@
 import axios from "axios";
 
 export const addFavoriteProperties = async (userId, propertyListingId) => {
+  const baseUrl = process.env.BASE_URL;
   try {
     const res = await axios.post(
-      "http://localhost:8080/favorite/createFavorite",
+      `${baseUrl}/favorite/createFavorite`,
       { userId, propertyListingId },
       { withCredentials: true }
     );

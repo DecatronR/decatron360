@@ -6,7 +6,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useSwipeable } from "react-swipeable";
 
 const PropertyImages = ({ images }) => {
-  const BASE_URL = "http://localhost:8080/";
+  const baseUrl = process.env.BASE_URL;
   const displayedImages = images.slice(0, 7);
 
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -49,7 +49,7 @@ const PropertyImages = ({ images }) => {
             onClick={() => handleImageClick(0)}
           >
             <img
-              src={`${BASE_URL}${displayedImages[0]?.path}`}
+              src={`${baseUrl}/${displayedImages[0]?.path}`}
               alt={`Primary Property Image`}
               className="w-full h-64 sm:h-full object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105 rounded-lg"
             />
@@ -64,7 +64,7 @@ const PropertyImages = ({ images }) => {
                 onClick={() => handleImageClick(index + 1)}
               >
                 <img
-                  src={`${BASE_URL}${image.path}`}
+                  src={`${baseUrl}/${image.path}`}
                   alt={`Property Image ${index + 2}`}
                   className="w-full h-32 sm:h-full object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105 rounded-lg"
                 />
@@ -115,7 +115,7 @@ const PropertyImages = ({ images }) => {
 
           {/* Display the selected image */}
           <img
-            src={`${BASE_URL}${displayedImages[selectedIndex]?.path}`}
+            src={`${baseUrl}/${displayedImages[selectedIndex]?.path}`}
             alt="Selected Property"
             className="w-full h-auto object-contain max-h-[90vh] rounded-lg"
           />

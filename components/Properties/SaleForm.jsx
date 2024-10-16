@@ -9,6 +9,7 @@ import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 
 const SaleForm = () => {
+  const baseUrl = process.env.BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
@@ -169,17 +170,17 @@ const SaleForm = () => {
     const fetchAllData = async () => {
       await Promise.all([
         fetchData(
-          "http://localhost:8080/propertyType/fetchPropertyType",
+          `${baseUrl}/propertyType/fetchPropertyType`,
           setPropertyTypes
         ),
-        fetchData("http://localhost:8080/state/fetchState", setStates),
-        fetchData("http://localhost:8080/lga/fetchLGA", setLga),
+        fetchData(`${baseUrl}/state/fetchState`, setStates),
+        fetchData(`${baseUrl}/lga/fetchLGA`, setLga),
         fetchData(
-          "http://localhost:8080/propertyCondition/fetchPropertyCondition",
+          `${baseUrl}/propertyCondition/fetchPropertyCondition`,
           setPropertyCondition
         ),
         fetchData(
-          "http://localhost:8080/propertyUsage/fetchPropertyUsage",
+          `${baseUrl}/propertyUsage/fetchPropertyUsage`,
           setPropertyUsage
         ),
       ]);

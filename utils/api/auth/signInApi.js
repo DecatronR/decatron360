@@ -1,8 +1,9 @@
 import axios from "axios";
 
 export const signInApi = async (email, password) => {
+  const baseUrl = process.env.BASE_URL;
   try {
-    const res = await axios.post("http://localhost:8080/auth/login", {
+    const res = await axios.post(`${baseUrl}/auth/login`, {
       email,
       password,
     });
