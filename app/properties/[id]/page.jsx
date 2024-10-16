@@ -1,5 +1,5 @@
 "use client";
-import FavoriteButton from "@/components/SingleProperty/BookmarkButton";
+import FavoriteButton from "@/components/SingleProperty/FavoriteButton";
 import PropertyDetails from "@/components/SingleProperty/PropertyDetails";
 import PropertyImages from "@/components/SingleProperty/PropertyImages";
 import ShareButtons from "@/components/SingleProperty/ShareButtons";
