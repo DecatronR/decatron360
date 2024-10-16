@@ -5,7 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import "@fullcalendar/common/main.css";
+// import "@fullcalendar/common/main.css";
 
 const AgentScheduler = () => {
   const { id } = useParams(); // Fetch specific data for this user

@@ -1,13 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchPropertyTypes } from "utils/api/propertyListing/fetchPropertyTypes";
 
 const PropertySearchForm = () => {
+  const router = useRouter();
   const [location, setLocation] = useState("");
+  const [propertyTypes, setPropertyTypes] = useState([]);
   const [propertyType, setPropertyType] = useState("All");
 
-  const router = useRouter();
+  useEffect(() => {
+    const handleFetchPropertyTypes = async () => {
+      try {
+        const res = await fetchPropertyTypes();
+        console.log("Property types for search: ", res);
+        setPropertyTypes(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    handleFetchPropertyTypes();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,14 +64,12 @@ const PropertySearchForm = () => {
           onChange={(e) => setPropertyType(e.target.value)}
         >
           <option value="All">All</option>
-          <option value="Apartment">Apartment</option>
-          <option value="Studio">Studio</option>
-          <option value="Condo">Condo</option>
-          <option value="House">House</option>
-          <option value="Cabin Or Cottage">Cabin or Cottage</option>
-          <option value="Loft">Loft</option>
-          <option value="Room">Room</option>
-          <option value="Other">Other</option>
+          {propertyTypes.length > 0 &&
+            propertyTypes.map((type) => (
+              <option key={type.id} value={type.propertyType}>
+                {type.propertyType}
+              </option>
+            ))}
         </select>
       </div>
       <button
