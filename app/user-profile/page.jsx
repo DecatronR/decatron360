@@ -53,7 +53,6 @@ const UserProfilePage = () => {
     handleFetchUserProperties();
   }, [userId]);
 
-  //reviews need to my tilted towards the user not the property
   useEffect(() => {
     const handleFetchUserReviews = async () => {
       if (userId) {
@@ -94,11 +93,10 @@ const UserProfilePage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
-      <div className="flex max-w-6xl mx-auto">
+      <div className="flex flex-col md:flex-row max-w-6xl mx-auto">
         {/* Left Column: Profile Info */}
-        <div className="w-1/3">
-          {/* Make the left column sticky so it stays in place */}
-          <div className="sticky top-8">
+        <div className="w-full md:w-1/3">
+          <div className="md:sticky md:top-8">
             <UserProfilePhoto userId={userId} userData={userData} />
             <UserRating userRating={userRating} />
             <div className="mt-6">
@@ -112,7 +110,7 @@ const UserProfilePage = () => {
         </div>
 
         {/* Right Column: Scrollable Details */}
-        <div className="w-full md:w-2/3 md:ml-8 h-auto md:h-[calc(100vh-4rem)] overflow-y-scroll">
+        <div className="w-full mt-8 md:mt-0 md:w-2/3 md:ml-8 md:h-[calc(100vh-4rem)] overflow-y-auto">
           <UserAbout userData={userData} />
           <UserPropertiesCarousel
             userProperties={userProperties}
