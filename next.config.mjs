@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require("path");
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -13,12 +15,22 @@ const nextConfig = {
         pathname: "**",
       },
       {
-        protocol: "http", // Allow images from localhost
+        protocol: "http",
         hostname: "localhost",
-        port: "8080", // Ensure this matches the port your local server uses
-        pathname: "/uploads/properties/**", // Adjust the path to match your image path
+        port: "8080",
+        pathname: "/uploads/properties/**",
       },
     ],
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": path.resolve(__dirname),
+    };
+    return config;
+  },
+  webpackDevMiddleware: (config) => {
+    return config;
   },
 };
 
