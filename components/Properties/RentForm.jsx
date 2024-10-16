@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Spinner from "../Spinner";
@@ -247,6 +247,7 @@ const RentForm = () => {
   ) : (
     mounted && (
       <form
+        data-testid="rent-form"
         onSubmit={handleSubmit}
         className="space-y-6 bg-white shadow-md rounded-lg p-6"
       >

@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import Spinner from "@/components/Spinner";
+import { addFavoriteProperties } from "@/utils/api/properties/addFavoriteProperties";
+import PropertyCard from "@/components/Properties/PropertyCard";
 
 const FavoritePropertiesPage = () => {
   const [userId, setUserId] = useState("");
@@ -13,27 +15,16 @@ const FavoritePropertiesPage = () => {
     setUserId(id);
   }, []);
 
-  const handleToggleFavorite = async (propertyId) => {
-    try {
-      if (isFavorite[propertyId]) {
-        // Optionally call your removeFavoriteProperties function
-        console.log("removed from favorite properties");
-        setIsFavorite((prev) => ({ ...prev, [propertyId]: false }));
-      } else {
-        await addFavoriteProperties(userId, propertyId);
-        setIsFavorite((prev) => ({ ...prev, [propertyId]: true }));
-      }
-    } catch (error) {
-      console.log("Error toggling favorite: ", error);
-    }
-  };
-
   useEffect(() => {
     const handleFetchFavoriteProperties = async () => {
       if (userId) {
         try {
           const res = await fetchFavoriteProperties(userId);
           setProperties(res);
+          const favoriteIds = res.map((property) => property._id);
+          setIsFavorite((prev) =>
+            favoriteIds.reduce((acc, id) => ({ ...acc, [id]: true }), {})
+          );
         } catch (error) {
           console.error("Failed to fetch favorite properties: ", error);
         } finally {
@@ -47,6 +38,24 @@ const FavoritePropertiesPage = () => {
     };
     handleFetchFavoriteProperties();
   }, [userId]);
+
+  const handleToggleFavorite = async (propertyId) => {
+    try {
+      setIsLoadingFavorite(true);
+      if (isFavorite[propertyId]) {
+        // Optionally call your removeFavoriteProperties function
+        console.log("removed from favorite properties");
+        setIsFavorite((prev) => ({ ...prev, [propertyId]: false }));
+      } else {
+        await addFavoriteProperties(userId, propertyId);
+        setIsFavorite((prev) => ({ ...prev, [propertyId]: true }));
+      }
+    } catch (error) {
+      console.log("Error toggling favorite: ", error);
+    } finally {
+      setIsLoadingFavorite(false);
+    }
+  };
 
   return isLoading ? (
     <Spinner loading={isLoading} />
@@ -63,7 +72,7 @@ const FavoritePropertiesPage = () => {
                 key={property._id}
                 property={property}
                 isFavorite={isFavorite[property._id]}
-                onToggleFavorite={() => handleToggleFavorite(property._id)} // Ensure this is passed
+                onToggleFavorite={handleToggleFavorite(property._id)}
               />
             ))}
           </div>

@@ -1,9 +1,15 @@
 import { defineConfig } from "vitest/config";
+import path from "path";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./"),
+    },
+  },
   test: {
-    environment: "jsdom", // Use jsdom for browser-like testing
-    globals: true, // Enable global test functions like `describe`, `it`, etc.
-    setupFiles: "./vitest.setup.js", // Setup file for additional configurations
+    environment: "jsdom",
+    globals: true,
+    setupFiles: "./vitest.setup.js",
   },
 });

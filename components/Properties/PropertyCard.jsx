@@ -16,6 +16,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const BASE_URL = "http://localhost:8080/";
   // console.log(`Image path: , ${BASE_URL}${property.photos[0].path}`);
   console.log("Image path:", `${BASE_URL}${property.photos[0].path}`);
+  console.log("Favorite property Id: ", property._id);
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
@@ -41,7 +42,11 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onToggleFavorite();
+              if (typeof onToggleFavorite === "function") {
+                onToggleFavorite(property._id);
+              } else {
+                console.error("onToggleFavorite is not a function");
+              }
             }}
           >
             <FaHeart
