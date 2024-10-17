@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
 import mapboxgl from "mapbox-gl";
 import io from "socket.io-client";
 import getCoordinates from "utils/helpers/getCoordinates";
@@ -74,7 +76,7 @@ const InspectionTracker = ({ propertyLocation }) => {
         }
       };
 
-      handleGetPropertyCoordinates(); // Make sure to call the function
+      handleGetPropertyCoordinates();
     }
   }, [state, lga, neighbourhood]);
 
@@ -132,21 +134,21 @@ const InspectionTracker = ({ propertyLocation }) => {
 
   // Initialize Mapbox map
   useEffect(() => {
-    if (mapContainerRef.current) {
+    if (mapContainerRef.current && propertyLatitude && propertyLongitude) {
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v11",
-        center: [propertyLongitude, propertyLatitude],
+        center: [propertyLongitude, propertyLatitude], // Center the map on the property location
         zoom: 15,
       });
 
-      // Add markers for property, agent, and buyer
+      // Add marker for the property
       const propertyMarker = new mapboxgl.Marker()
         .setLngLat([propertyLongitude, propertyLatitude])
-        .setPopup(new mapboxgl.Popup().setText("Property"))
+        .setPopup(new mapboxgl.Popup().setText("Property Location")) // Add a popup for the property marker
         .addTo(map);
 
-      // Update agent marker if location is available
+      // Add markers for agent and buyer if available
       if (agentLocation) {
         new mapboxgl.Marker({ color: "blue" })
           .setLngLat([agentLocation.lng, agentLocation.lat])
@@ -154,7 +156,6 @@ const InspectionTracker = ({ propertyLocation }) => {
           .addTo(map);
       }
 
-      // Update buyer marker if location is available
       if (buyerLocation) {
         new mapboxgl.Marker({ color: "green" })
           .setLngLat([buyerLocation.lng, buyerLocation.lat])
@@ -165,7 +166,7 @@ const InspectionTracker = ({ propertyLocation }) => {
       // Clean up the map on component unmount
       return () => map.remove();
     }
-  }, [propertyLocation, agentLocation, buyerLocation]);
+  }, [propertyLatitude, propertyLongitude, agentLocation, buyerLocation]);
 
   return (
     <div style={{ height: "100vh", width: "100%" }} ref={mapContainerRef}></div>
