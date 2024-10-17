@@ -65,7 +65,6 @@ const MyInspectionPage = () => {
         {sortedInspections.length === 0 ? (
           <p className="text-center text-gray-600">No upcoming inspections.</p>
         ) : (
-          // Pass the sorted bookings to MyInspections component
           <MyInspections bookings={sortedInspections} />
         )}
       </div>

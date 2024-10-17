@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchBooking = async (bookingId) => {
+export const fetchBookingData = async (bookingId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   if (!bookingId) {
     throw new Error("Booking id is required to fetch booking");

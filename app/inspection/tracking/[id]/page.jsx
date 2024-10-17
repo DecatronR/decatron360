@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import mapboxgl from "mapbox-gl";
 import io from "socket.io-client";
+import { fetchBookingData } from "utils/api/inspection/fetchBookingData";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -15,6 +16,23 @@ const InspectionTracker = ({ propertyLocation }) => {
   const mapContainerRef = useRef(null);
   const [propertyLatitude, setPropertyLatitude] = useState(null);
   const [propertyLongitude, setPropertyLongitude] = useState(null);
+  const [bookingData, setBookingData] = useState({});
+
+  console.log("Booking id: ", id);
+
+  useEffect(() => {
+    if (!id) return;
+    const handleFetchBookingData = async () => {
+      try {
+        const res = await fetchBookingData(id);
+        console.log("Booking data: ", res);
+        setBookingData(res);
+      } catch (error) {
+        console.log("Failed to fetch booking data: ", error);
+      }
+    };
+    handleFetchBookingData();
+  }, []);
 
   // Fetching property location from session storage
   useEffect(() => {
