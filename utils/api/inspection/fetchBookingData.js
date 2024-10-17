@@ -8,12 +8,12 @@ export const fetchBookingData = async (bookingId) => {
 
   try {
     const res = await axios.post(
-      `${baseUrl}/booking/booking`,
+      `${baseUrl}/booking/getBooking`,
       { id: bookingId },
       { withCredentials: true }
     );
 
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Failed fetching booking:", error);
     throw error;

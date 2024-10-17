@@ -3,7 +3,9 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "next/navigation";
 import mapboxgl from "mapbox-gl";
 import io from "socket.io-client";
+import getCoordinates from "utils/helpers/getCoordinates";
 import { fetchBookingData } from "utils/api/inspection/fetchBookingData";
+import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -17,6 +19,9 @@ const InspectionTracker = ({ propertyLocation }) => {
   const [propertyLatitude, setPropertyLatitude] = useState(null);
   const [propertyLongitude, setPropertyLongitude] = useState(null);
   const [bookingData, setBookingData] = useState({});
+  const [state, setState] = useState("");
+  const [lga, setLga] = useState("");
+  const [neighbourhood, setNeighbourhood] = useState("");
 
   console.log("Booking id: ", id);
 
@@ -32,16 +37,46 @@ const InspectionTracker = ({ propertyLocation }) => {
       }
     };
     handleFetchBookingData();
-  }, []);
+  }, [id]);
 
-  // Fetching property location from session storage
+  //fetch property location (neighbourhood, lga, state)
   useEffect(() => {
-    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
-    if (data) {
-      setPropertyLatitude(data.latitude);
-      setPropertyLongitude(data.longitude);
+    if (bookingData.propertyID) {
+      const handleFetchPropertyLocation = async () => {
+        try {
+          const res = await fetchPropertyData(bookingData.propertyID);
+          console.log("Property data: ", res);
+          setNeighbourhood(res.data.neighbourhood);
+          setLga(res.data.lga);
+          setState(res.data.state);
+        } catch (error) {
+          console.log("Failed to fetch property data: ", error);
+        }
+      };
+
+      handleFetchPropertyLocation();
     }
-  }, []);
+  }, [bookingData.propertyID]);
+
+  //geo code property location and store longitude and latitiude
+  useEffect(() => {
+    //temporarily removed the lga data to make sure the call passes
+    if (state && neighbourhood) {
+      const handleGetPropertyCoordinates = async () => {
+        const propertyLocation = `${neighbourhood} ${lga} ${state}`;
+        try {
+          const res = await getCoordinates(propertyLocation);
+          console.log("property coordinates: ", res);
+          setPropertyLatitude(res.latitude);
+          setPropertyLongitude(res.longitude);
+        } catch (error) {
+          console.log("Failed to get property location coordinates: ", error);
+        }
+      };
+
+      handleGetPropertyCoordinates(); // Make sure to call the function
+    }
+  }, [state, lga, neighbourhood]);
 
   // Initialize WebSocket connection
   useEffect(() => {

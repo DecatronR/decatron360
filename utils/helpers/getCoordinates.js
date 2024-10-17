@@ -2,6 +2,7 @@ import axios from "axios";
 
 const getCoordinates = async (address) => {
   const apiKey = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+
   const response = await axios.get(
     `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
       address
