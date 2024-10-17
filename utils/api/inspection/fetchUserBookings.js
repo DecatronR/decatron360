@@ -8,7 +8,7 @@ export const fetchUserBookings = async (userId) => {
 
   try {
     const res = await axios.post(
-      `${baseUrl}/booking/userBookings`,
+      `${baseUrl}/booking/getMyBooking`,
       { userID: userId },
       { withCredentials: true }
     );

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
 import { useSnackbar } from "notistack";
 import { formatCurrency } from "@/utils/helpers/formatCurrency";
@@ -12,6 +12,7 @@ import { bookInspection } from "@/utils/api/inspection/bookInspection";
 
 const InspectionBooking = () => {
   const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { id: propertyId } = useParams();
   const [user, setUser] = useState(null);

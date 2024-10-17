@@ -4,12 +4,10 @@ import React, { useState, useEffect } from "react";
 import Spinner from "@/components/Spinner";
 import MyInspections from "@/components/Inspection/MyInspections";
 import { fetchUserBookings } from "@/utils/api/inspection/fetchUserBookings";
-import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 
 const MyInspectionPage = () => {
   const { id } = useParams();
   const [bookings, setBookings] = useState([]);
-  const [properties, setProperties] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,6 +15,7 @@ const MyInspectionPage = () => {
       if (!id) return;
       try {
         const res = await fetchUserBookings(id);
+        console.log("User bookings: ", res);
         setBookings(res);
       } catch (error) {
         console.error("Error fetching bookings", error);
@@ -27,29 +26,9 @@ const MyInspectionPage = () => {
     handleFetchUserBookings();
   }, [id]);
 
-  useEffect(() => {
-    const fetchAllProperties = async () => {
-      const propertyPromises = bookings.map((booking) =>
-        fetchPropertyData(booking.propertyId)
-      );
-      const fetchedProperties = await Promise.all(propertyPromises);
-
-      const propertyMap = bookings.reduce((acc, booking, index) => {
-        acc[booking.propertyId] = fetchedProperties[index];
-        return acc;
-      }, {});
-
-      console.log("properties: ", propertyMap);
-      setProperties(propertyMap);
-    };
-
-    if (bookings.length > 0) {
-      fetchAllProperties();
-    }
-  }, [bookings]);
-
   const sortedInspections = bookings.sort(
-    (a, b) => new Date(a.inspectionDateTime) - new Date(b.inspectionDateTime)
+    (a, b) =>
+      new Date(a.booking.bookingDateTime) - new Date(b.booking.bookingDateTime)
   );
 
   if (loading) {
@@ -63,13 +42,8 @@ const MyInspectionPage = () => {
         {sortedInspections.length === 0 ? (
           <p className="text-center text-gray-600">No upcoming inspections.</p>
         ) : (
-          sortedInspections.map((inspection) => (
-            <MyInspections
-              key={inspection.id}
-              bookings={bookings}
-              properties={properties}
-            />
-          ))
+          // Pass the sorted bookings to MyInspections component
+          <MyInspections bookings={sortedInspections} />
         )}
       </div>
     </section>
