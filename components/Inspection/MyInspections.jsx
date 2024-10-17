@@ -118,12 +118,11 @@ const MyInspections = ({ bookings }) => {
                 </h3>
                 <p className="text-2xl font-bold">{timeLeft[index]}</p>
               </div>
-              <button
-                onClick={handleStartTracking}
-                className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300"
-              >
-                Start Tracking
-              </button>
+              <Link href={`/inspection/tracking/${booking.booking._id}`}>
+                <button className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300">
+                  Start Tracking
+                </button>
+              </Link>
             </div>
           );
         })

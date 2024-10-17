@@ -1,21 +1,21 @@
 import axios from "axios";
 
-export const fetchUserBookings = async (userId) => {
+export const fetchAgentBookings = async (userId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   if (!userId) {
-    throw new Error("User ID is required to fetch user bookings");
+    throw new Error("User ID is required to fetch agentbookings");
   }
 
   try {
     const res = await axios.post(
-      `${baseUrl}/booking/getMyBooking`,
+      `${baseUrl}/booking/getAgentBooking`,
       { userID: userId },
       { withCredentials: true }
     );
 
     return res.data.data;
   } catch (error) {
-    console.error("Failed fetching user bookings:", error);
+    console.error("Failed fetching agent bookings:", error);
     throw error;
   }
 };

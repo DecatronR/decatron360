@@ -5,10 +5,11 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { createSchedule } from "utils/api/scheduler/createSchedule";
 // import "@fullcalendar/common/main.css";
 
 const AgentScheduler = () => {
-  const { id } = useParams(); // Fetch specific data for this user
+  const { id } = useParams();
   const [bookedDates, setBookedDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
@@ -27,7 +28,7 @@ const AgentScheduler = () => {
 
   const formatTimeTo12Hour = (time) => {
     const [hour, minute] = time.split(":");
-    const formattedHour = hour % 12 || 12; // Convert to 12-hour format
+    const formattedHour = hour % 12 || 12;
     const ampm = hour < 12 ? "AM" : "PM";
     return `${formattedHour}:${minute} ${ampm}`;
   };
@@ -66,6 +67,15 @@ const AgentScheduler = () => {
         ...prev,
         [dateStr]: prev[dateStr].filter((time) => time !== timeSlot),
       }));
+    }
+  };
+
+  const handleSetAvailability = async () => {
+    try {
+      const res = await createSchedule();
+      console.log("Create availability successfully: ", res);
+    } catch (error) {
+      console.log("Failed to create availability: ", error);
     }
   };
 
@@ -121,11 +131,11 @@ const AgentScheduler = () => {
               <div className="h-[69vh] overflow-y-auto">
                 <FullCalendar
                   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                  initialView="timeGridWeek"
+                  initialView="dayGridMonth"
                   headerToolbar={{
                     left: "prev,next today",
                     center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay",
+                    right: "dayGridMonth",
                   }}
                   selectable={true}
                   dayMaxEvents={true}

@@ -4,27 +4,50 @@ import React, { useState, useEffect } from "react";
 import Spinner from "@/components/Spinner";
 import MyInspections from "@/components/Inspection/MyInspections";
 import { fetchUserBookings } from "@/utils/api/inspection/fetchUserBookings";
+import { fetchAgentBookings } from "utils/api/inspection/fetchAgentBookings";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const MyInspectionPage = () => {
   const { id } = useParams();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState("");
 
+  //fetch user data
   useEffect(() => {
-    const handleFetchUserBookings = async () => {
-      if (!id) return;
+    const handleFetchUserRole = async () => {
+      const userId = sessionStorage.getItem("userId");
       try {
-        const res = await fetchUserBookings(id);
-        console.log("User bookings: ", res);
+        const res = await fetchUserData(userId);
+        setRole(res.role);
+      } catch (error) {
+        console.log("Failed to fetch user data:", error);
+      }
+    };
+    handleFetchUserRole();
+  }, []);
+
+  // Fetch bookings based on role
+  useEffect(() => {
+    const handleFetchBookings = async () => {
+      if (!id || !role) return;
+
+      try {
+        let res;
+        if (role === "agent") {
+          res = await fetchAgentBookings(id);
+        } else {
+          res = await fetchUserBookings(id);
+        }
         setBookings(res);
       } catch (error) {
-        console.error("Error fetching bookings", error);
+        console.error("Error fetching bookings:", error);
       } finally {
         setLoading(false);
       }
     };
-    handleFetchUserBookings();
-  }, [id]);
+    handleFetchBookings();
+  }, [id, role]);
 
   const sortedInspections = bookings.sort(
     (a, b) =>
