@@ -3,20 +3,18 @@ import React, { useState } from "react";
 import StarRatings from "react-star-ratings";
 import { rateAndReviewUser } from "@/utils/api/user/rateAndReviewUser";
 
-const InspectionFeedbackForm = () => {
+const InspectionFeedbackForm = ({ inspectionData }) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [inspectionResult, setInspectionResult] = useState("");
+  const agentId = inspectionData.agenId;
 
   const changeRating = (newRating) => {
     setRating(newRating);
   };
 
-  //fetch agent id from, booking API
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const reviewerId = sessionStorage.get("userId");
       await rateAndReviewUser(agentId, rating, reviewerId, review);

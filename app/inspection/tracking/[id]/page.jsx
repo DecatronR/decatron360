@@ -154,6 +154,7 @@ const InspectionTracker = ({ propertyLocation }) => {
   }, [userRole, socket]);
 
   // Initialize Mapbox map
+  // Inside the useEffect that handles the Mapbox map
   useEffect(() => {
     if (mapContainerRef.current && propertyLatitude && propertyLongitude) {
       const map = new mapboxgl.Map({
@@ -166,26 +167,105 @@ const InspectionTracker = ({ propertyLocation }) => {
       // Add marker for the property
       const propertyMarker = new mapboxgl.Marker()
         .setLngLat([propertyLongitude, propertyLatitude])
-        .setPopup(new mapboxgl.Popup().setText("Property Location")) // Add a popup for the property marker
+        .setPopup(new mapboxgl.Popup().setText("Property Location"))
         .addTo(map);
 
-      // Add markers for agent and buyer if available
-      if (agentLocation) {
-        new mapboxgl.Marker({ color: "blue" })
-          .setLngLat([agentLocation.lng, agentLocation.lat])
-          .setPopup(new mapboxgl.Popup().setText("Agent"))
-          .addTo(map);
-      }
+      // Define GeoJSON source for the line between property, agent, and buyer
+      const lineData = {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          geometry: {
+            type: "LineString",
+            coordinates: [[propertyLongitude, propertyLatitude]],
+          },
+        },
+      };
 
-      if (buyerLocation) {
-        new mapboxgl.Marker({ color: "green" })
-          .setLngLat([buyerLocation.lng, buyerLocation.lat])
-          .setPopup(new mapboxgl.Popup().setText("Buyer"))
-          .addTo(map);
-      }
+      map.on("load", () => {
+        // Add the line to the map
+        map.addSource("route", lineData);
+        map.addLayer({
+          id: "route",
+          type: "line",
+          source: "route",
+          layout: {
+            "line-join": "round",
+            "line-cap": "round",
+          },
+          paint: {
+            "line-color": "#888",
+            "line-width": 4,
+          },
+        });
 
-      // Clean up the map on component unmount
-      return () => map.remove();
+        // Add agent and buyer markers dynamically
+        let agentMarker, buyerMarker;
+
+        if (agentLocation) {
+          agentMarker = new mapboxgl.Marker({ color: "blue" })
+            .setLngLat([agentLocation.lng, agentLocation.lat])
+            .setPopup(new mapboxgl.Popup().setText("Agent"))
+            .addTo(map);
+        }
+
+        if (buyerLocation) {
+          buyerMarker = new mapboxgl.Marker({ color: "green" })
+            .setLngLat([buyerLocation.lng, buyerLocation.lat])
+            .setPopup(new mapboxgl.Popup().setText("Buyer"))
+            .addTo(map);
+        }
+
+        // Update the line coordinates as agent and buyer move
+        const updateLine = () => {
+          const newCoordinates = [[propertyLongitude, propertyLatitude]]; // Start with property location
+
+          if (agentLocation) {
+            newCoordinates.push([agentLocation.lng, agentLocation.lat]);
+          }
+
+          if (buyerLocation) {
+            newCoordinates.push([buyerLocation.lng, buyerLocation.lat]);
+          }
+
+          // Update the source data for the line
+          map.getSource("route").setData({
+            type: "Feature",
+            geometry: {
+              type: "LineString",
+              coordinates: newCoordinates,
+            },
+          });
+        };
+
+        // Watch for changes in agent or buyer locations
+        if (agentLocation || buyerLocation) {
+          updateLine(); // Initial line update
+        }
+
+        // If agent location updates
+        socket.on("agentLocationUpdate", (location) => {
+          setAgentLocation(location);
+          if (agentMarker) {
+            agentMarker.setLngLat([location.lng, location.lat]);
+          }
+          updateLine(); // Update line with new location
+        });
+
+        // If buyer location updates
+        socket.on("buyerLocationUpdate", (location) => {
+          setBuyerLocation(location);
+          if (buyerMarker) {
+            buyerMarker.setLngLat([location.lng, location.lat]);
+          }
+          updateLine(); // Update line with new location
+        });
+
+        // Clean up the map on component unmount
+        return () => {
+          map.remove();
+        };
+      });
     }
   }, [propertyLatitude, propertyLongitude, agentLocation, buyerLocation]);
 
