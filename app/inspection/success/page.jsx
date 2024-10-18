@@ -33,7 +33,7 @@ const InspectionSuccessPage = () => {
             href={`/my-inspections/${userId}`}
             className="inline-block bg-primary-500 text-white text-center py-3 px-6 rounded-lg shadow transition duration-300 ease-in-out transform hover:scale-105 hover:bg-primary-600"
           >
-            Go to Dashboard
+            Go to Inspections
           </Link>
         </div>
       </div>
