@@ -9,6 +9,7 @@ import getCoordinates from "utils/helpers/getCoordinates";
 import { fetchBookingData } from "utils/api/inspection/fetchBookingData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import zIndex from "@mui/material/styles/zIndex";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -29,6 +30,7 @@ const InspectionTracker = ({ propertyLocation }) => {
 
   console.log("Booking id: ", id);
 
+  // Fetch User Data
   useEffect(() => {
     const handleFetchUserData = async () => {
       const userId = sessionStorage.getItem("userId");
@@ -43,6 +45,7 @@ const InspectionTracker = ({ propertyLocation }) => {
     handleFetchUserData();
   }, []);
 
+  // Fetch Booking Data
   useEffect(() => {
     if (!id) return;
     const handleFetchBookingData = async () => {
@@ -57,7 +60,7 @@ const InspectionTracker = ({ propertyLocation }) => {
     handleFetchBookingData();
   }, [id]);
 
-  // Fetch property location (neighbourhood, lga, state)
+  // Fetch Property Location
   useEffect(() => {
     if (bookingData.propertyID) {
       const handleFetchPropertyLocation = async () => {
@@ -76,7 +79,7 @@ const InspectionTracker = ({ propertyLocation }) => {
     }
   }, [bookingData.propertyID]);
 
-  // Geocode property location and store longitude and latitude
+  // Get Property Coordinates
   useEffect(() => {
     if (state && neighbourhood) {
       const handleGetPropertyCoordinates = async () => {
@@ -154,13 +157,12 @@ const InspectionTracker = ({ propertyLocation }) => {
   }, [userRole, socket]);
 
   // Initialize Mapbox map
-  // Inside the useEffect that handles the Mapbox map
   useEffect(() => {
     if (mapContainerRef.current && propertyLatitude && propertyLongitude) {
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
         style: "mapbox://styles/mapbox/streets-v11",
-        center: [propertyLongitude, propertyLatitude], // Center the map on the property location
+        center: [propertyLongitude, propertyLatitude],
         zoom: 15,
       });
 
@@ -269,8 +271,32 @@ const InspectionTracker = ({ propertyLocation }) => {
     }
   }, [propertyLatitude, propertyLongitude, agentLocation, buyerLocation]);
 
+  // Function to end inspection
+  const endInspection = () => {
+    if (socket) {
+      socket.emit("endInspection");
+    }
+    // Optionally redirect or navigate away from the inspection tracker page
+    console.log("Inspection ended.");
+  };
+
   return (
-    <div style={{ height: "100vh", width: "100%" }} ref={mapContainerRef}></div>
+    <div className="relative w-full h-screen">
+      <h1 className="absolute top-5 left-5 text-2xl font-bold">
+        Inspection Tracker
+      </h1>
+      <div style={{ height: "100vh", width: "100%" }} ref={mapContainerRef} />
+
+      <button
+        onClick={endInspection}
+        className="absolute top-5 right-5 px-4 py-2 text-white bg-red-500 border-2 rounded-md cursor-pointer z-10"
+      >
+        End Inspection
+      </button>
+      <a href="/" className="absolute top-5 left-5">
+        <FontAwesomeIcon icon={faHome} size="2x" />
+      </a>
+    </div>
   );
 };
 
