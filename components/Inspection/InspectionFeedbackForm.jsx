@@ -1,13 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import StarRatings from "react-star-ratings";
+import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 import { rateAndReviewUser } from "@/utils/api/user/rateAndReviewUser";
 
 const InspectionFeedbackForm = ({ inspectionData }) => {
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [inspectionResult, setInspectionResult] = useState("");
-  const agentId = inspectionData.agenId;
+  const agentId = inspectionData.agentID;
 
   const changeRating = (newRating) => {
     setRating(newRating);
@@ -16,13 +20,16 @@ const InspectionFeedbackForm = ({ inspectionData }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const reviewerId = sessionStorage.get("userId");
+      const reviewerId = sessionStorage.getItem("userId");
+
+      console.log("agentId: ", agentId);
       await rateAndReviewUser(agentId, rating, reviewerId, review);
       enqueueSnackbar("Successfully submitted feedback", {
         variant: "success",
       });
+      router.push("/");
     } catch (error) {
-      console.log("Failed to submit feedback");
+      console.log("Failed to submit feedback: ", error);
       enqueueSnackbar(
         "Failed to submit feedback, please contact our customer care",
         { variant: "error" }

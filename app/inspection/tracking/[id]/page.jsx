@@ -1,19 +1,21 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import mapboxgl from "mapbox-gl";
 import io from "socket.io-client";
+import Swal from "sweetalert2";
 import getCoordinates from "utils/helpers/getCoordinates";
 import { fetchBookingData } from "utils/api/inspection/fetchBookingData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "utils/api/user/fetchUserData";
-import zIndex from "@mui/material/styles/zIndex";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 const InspectionTracker = ({ propertyLocation }) => {
+  const router = useRouter();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const { id } = useParams();
   const [agentLocation, setAgentLocation] = useState(null);
@@ -272,12 +274,40 @@ const InspectionTracker = ({ propertyLocation }) => {
   }, [propertyLatitude, propertyLongitude, agentLocation, buyerLocation]);
 
   // Function to end inspection
-  const endInspection = () => {
-    if (socket) {
-      socket.emit("endInspection");
+  const handleEndInspection = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Please make sure you have completed the inspection before ending!.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, end it!",
+        cancelButtonText: "Cancel",
+      });
+      if (result.isConfirmed) {
+        if (socket && socket.connected) {
+          socket.emit("endInspection");
+        } else {
+          console.error("Socket is not connected");
+          Swal.fire(
+            "Error",
+            "Unable to end inspection due to socket disconnection.",
+            "error"
+          );
+        }
+        router.push(`/inspection/feedback/${id}`);
+        Swal.fire(
+          "Ended!",
+          "Your inspection has ended, please tell us how it went.",
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error("Failed to end inspection:", error);
+      Swal.fire("Failed", "Failed to end inspection", "error");
     }
-    // Optionally redirect or navigate away from the inspection tracker page
-    console.log("Inspection ended.");
   };
 
   return (
@@ -288,7 +318,7 @@ const InspectionTracker = ({ propertyLocation }) => {
       <div style={{ height: "100vh", width: "100%" }} ref={mapContainerRef} />
 
       <button
-        onClick={endInspection}
+        onClick={handleEndInspection}
         className="absolute top-5 right-5 px-4 py-2 text-white bg-red-500 border-2 rounded-md cursor-pointer z-10"
       >
         End Inspection
