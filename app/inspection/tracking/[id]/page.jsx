@@ -8,6 +8,7 @@ import io from "socket.io-client";
 import getCoordinates from "utils/helpers/getCoordinates";
 import { fetchBookingData } from "utils/api/inspection/fetchBookingData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
@@ -24,8 +25,23 @@ const InspectionTracker = ({ propertyLocation }) => {
   const [state, setState] = useState("");
   const [lga, setLga] = useState("");
   const [neighbourhood, setNeighbourhood] = useState("");
+  const [userRole, setUserRole] = useState(null);
 
   console.log("Booking id: ", id);
+
+  useEffect(() => {
+    const handleFetchUserData = async () => {
+      const userId = sessionStorage.getItem("userId");
+      try {
+        const res = await fetchUserData(userId);
+        console.log("User role: ", res.role);
+        setUserRole(res.role);
+      } catch (error) {
+        console.log("Failed to fetch user role: ", error);
+      }
+    };
+    handleFetchUserData();
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -41,7 +57,7 @@ const InspectionTracker = ({ propertyLocation }) => {
     handleFetchBookingData();
   }, [id]);
 
-  //fetch property location (neighbourhood, lga, state)
+  // Fetch property location (neighbourhood, lga, state)
   useEffect(() => {
     if (bookingData.propertyID) {
       const handleFetchPropertyLocation = async () => {
@@ -60,9 +76,8 @@ const InspectionTracker = ({ propertyLocation }) => {
     }
   }, [bookingData.propertyID]);
 
-  //geo code property location and store longitude and latitiude
+  // Geocode property location and store longitude and latitude
   useEffect(() => {
-    //temporarily removed the lga data to make sure the call passes
     if (state && neighbourhood) {
       const handleGetPropertyCoordinates = async () => {
         const propertyLocation = `${neighbourhood} ${lga} ${state}`;
@@ -85,6 +100,7 @@ const InspectionTracker = ({ propertyLocation }) => {
     const socketInstance = io(baseUrl);
     setSocket(socketInstance);
 
+    // Listen for location updates from the server
     socketInstance.on("agentLocationUpdate", (location) => {
       setAgentLocation(location);
     });
@@ -99,8 +115,8 @@ const InspectionTracker = ({ propertyLocation }) => {
     };
   }, []);
 
-  // Function to get and emit location
-  const fetchAndEmitLocation = (isAgent) => {
+  // Function to get and emit location based on role
+  const fetchAndEmitLocation = () => {
     navigator.geolocation.watchPosition(
       (position) => {
         const location = {
@@ -108,11 +124,15 @@ const InspectionTracker = ({ propertyLocation }) => {
           lng: position.coords.longitude,
         };
 
-        // Emit the location to the server
-        if (isAgent && socket) {
+        console.log("Emitting location:", location);
+
+        // Emit the location to the server based on the user's role
+        if (userRole === "agent" && socket) {
           socket.emit("agentLocation", location);
-        } else if (socket) {
+          console.log("Emitted agent location");
+        } else if (userRole === "buyer" && socket) {
           socket.emit("buyerLocation", location);
+          console.log("Emitted buyer location");
         }
       },
       (error) => {
@@ -126,11 +146,12 @@ const InspectionTracker = ({ propertyLocation }) => {
     );
   };
 
-  // Fetch and emit agent and buyer locations
+  // Fetch and emit location based on user role
   useEffect(() => {
-    fetchAndEmitLocation(true); // For agent
-    fetchAndEmitLocation(false); // For buyer
-  }, [socket]);
+    if (userRole) {
+      fetchAndEmitLocation(); // Fetch location for agent or buyer
+    }
+  }, [userRole, socket]);
 
   // Initialize Mapbox map
   useEffect(() => {
