@@ -67,7 +67,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             </h2>
             <p className="text-xs text-gray-500 truncate">
               {property.propertyType} in {property.neighbourhood},{" "}
-              {property.state}
+              {property.lga} , {property.state}
             </p>
           </div>
           <div className="flex items-center text-gray-600 text-xs space-x-2 mb-2">

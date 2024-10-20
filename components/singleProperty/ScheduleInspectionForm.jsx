@@ -71,17 +71,6 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
       );
     } else {
       router.push(`/inspection/booking/${propertyId}`);
-      // try {
-      //   const bookingId = await handleBookInspection(userId);
-      //   console.log("Booking id: ", bookingId);
-      //   enqueueSnackbar("Successfully booked inspection", {
-      //     variant: "success",
-      //   });
-      //   // Redirect to the inspection details page with the booking ID
-      //   router.push(`/inspection/details?bookingId=${bookingId}`);
-      // } catch (error) {
-      //   enqueueSnackbar("Failed to book inspection", { variant: "error" });
-      // }
     }
     setIsLoading(false);
   };

@@ -29,7 +29,7 @@ const nextConfig = withTM(transpileModules)({
       {
         protocol: "http",
         hostname: "localhost",
-        port: "8080",
+        port: "1280",
         pathname: "/uploads/properties/**",
       },
     ],

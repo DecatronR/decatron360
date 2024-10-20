@@ -60,7 +60,7 @@ const PropertyDetails = ({ property, agentId }) => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">{property.title}</h1>
         <p className="text-gray-500 mt-2">
-          {property.neighbourhood}, {property.state}
+          {property.neighbourhood}, {property.lga}, {property.state}
         </p>
       </div>
       {isPropertyLister && (

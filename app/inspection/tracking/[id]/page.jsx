@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import mapboxgl from "mapbox-gl";
+import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import io from "socket.io-client";
 import Swal from "sweetalert2";
 import getCoordinates from "utils/helpers/getCoordinates";
@@ -14,299 +15,250 @@ import { fetchUserData } from "utils/api/user/fetchUserData";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
-const InspectionTracker = ({ propertyLocation }) => {
-  const router = useRouter();
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const { id } = useParams();
-  const [agentLocation, setAgentLocation] = useState(null);
-  const [buyerLocation, setBuyerLocation] = useState(null);
+const useWebSocket = (baseUrl) => {
   const [socket, setSocket] = useState(null);
-  const mapContainerRef = useRef(null);
-  const [propertyLatitude, setPropertyLatitude] = useState(null);
-  const [propertyLongitude, setPropertyLongitude] = useState(null);
-  const [bookingData, setBookingData] = useState({});
-  const [state, setState] = useState("");
-  const [lga, setLga] = useState("");
-  const [neighbourhood, setNeighbourhood] = useState("");
-  const [userRole, setUserRole] = useState(null);
 
-  console.log("Booking id: ", id);
-
-  // Fetch User Data
-  useEffect(() => {
-    const handleFetchUserData = async () => {
-      const userId = sessionStorage.getItem("userId");
-      try {
-        const res = await fetchUserData(userId);
-        console.log("User role: ", res.role);
-        setUserRole(res.role);
-      } catch (error) {
-        console.log("Failed to fetch user role: ", error);
-      }
-    };
-    handleFetchUserData();
-  }, []);
-
-  // Fetch Booking Data
-  useEffect(() => {
-    if (!id) return;
-    const handleFetchBookingData = async () => {
-      try {
-        const res = await fetchBookingData(id);
-        console.log("Booking data: ", res);
-        setBookingData(res);
-      } catch (error) {
-        console.log("Failed to fetch booking data: ", error);
-      }
-    };
-    handleFetchBookingData();
-  }, [id]);
-
-  // Fetch Property Location
-  useEffect(() => {
-    if (bookingData.propertyID) {
-      const handleFetchPropertyLocation = async () => {
-        try {
-          const res = await fetchPropertyData(bookingData.propertyID);
-          console.log("Property data: ", res);
-          setNeighbourhood(res.data.neighbourhood);
-          setLga(res.data.lga);
-          setState(res.data.state);
-        } catch (error) {
-          console.log("Failed to fetch property data: ", error);
-        }
-      };
-
-      handleFetchPropertyLocation();
-    }
-  }, [bookingData.propertyID]);
-
-  // Get Property Coordinates
-  useEffect(() => {
-    if (state && neighbourhood) {
-      const handleGetPropertyCoordinates = async () => {
-        const propertyLocation = `${neighbourhood} ${lga} ${state}`;
-        try {
-          const res = await getCoordinates(propertyLocation);
-          console.log("property coordinates: ", res);
-          setPropertyLatitude(res.latitude);
-          setPropertyLongitude(res.longitude);
-        } catch (error) {
-          console.log("Failed to get property location coordinates: ", error);
-        }
-      };
-
-      handleGetPropertyCoordinates();
-    }
-  }, [state, lga, neighbourhood]);
-
-  // Initialize WebSocket connection
   useEffect(() => {
     const socketInstance = io(baseUrl);
     setSocket(socketInstance);
 
-    // Listen for location updates from the server
-    socketInstance.on("agentLocationUpdate", (location) => {
-      setAgentLocation(location);
-    });
+    return () => socketInstance.disconnect();
+  }, [baseUrl]);
 
-    socketInstance.on("buyerLocationUpdate", (location) => {
-      setBuyerLocation(location);
-    });
+  return socket;
+};
 
-    // Clean up the socket connection when the component unmounts
-    return () => {
-      socketInstance.disconnect();
+const useUserRole = () => {
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      const userId = sessionStorage.getItem("userId");
+      try {
+        const userData = await fetchUserData(userId);
+        setUserRole(userData.role);
+      } catch (error) {
+        console.error("Failed to fetch user role", error);
+      }
     };
+    fetchUserRole();
   }, []);
 
-  // Function to get and emit location based on role
-  const fetchAndEmitLocation = () => {
-    navigator.geolocation.watchPosition(
-      (position) => {
-        const location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
+  return userRole;
+};
 
-        console.log("Emitting location:", location);
+const useBookingData = (id) => {
+  const [bookingData, setBookingData] = useState(null);
 
-        // Emit the location to the server based on the user's role
-        if (userRole === "agent" && socket) {
-          socket.emit("agentLocation", location);
-          console.log("Emitted agent location");
-        } else if (userRole === "buyer" && socket) {
-          socket.emit("buyerLocation", location);
-          console.log("Emitted buyer location");
-        }
-      },
-      (error) => {
-        console.error("Error getting location:", error);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 5000,
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchBooking = async () => {
+      try {
+        const data = await fetchBookingData(id);
+        setBookingData(data);
+      } catch (error) {
+        console.error("Failed to fetch booking data", error);
       }
-    );
-  };
+    };
 
-  // Fetch and emit location based on user role
+    fetchBooking();
+  }, [id]);
+
+  return bookingData;
+};
+
+const usePropertyData = (propertyID) => {
+  const [propertyGeoJSON, setPropertyGeoJSON] = useState(null);
+
   useEffect(() => {
-    if (userRole) {
-      fetchAndEmitLocation(); // Fetch location for agent or buyer
-    }
-  }, [userRole, socket]);
+    if (!propertyID) return;
 
-  // Initialize Mapbox map
-  useEffect(() => {
-    if (mapContainerRef.current && propertyLatitude && propertyLongitude) {
-      const map = new mapboxgl.Map({
-        container: mapContainerRef.current,
-        style: "mapbox://styles/mapbox/streets-v11",
-        center: [propertyLongitude, propertyLatitude],
-        zoom: 15,
-      });
-
-      // Add marker for the property
-      const propertyMarker = new mapboxgl.Marker()
-        .setLngLat([propertyLongitude, propertyLatitude])
-        .setPopup(new mapboxgl.Popup().setText("Property Location"))
-        .addTo(map);
-
-      // Define GeoJSON source for the line between property, agent, and buyer
-      const lineData = {
-        type: "geojson",
-        data: {
+    const fetchPropertyLocation = async () => {
+      try {
+        const propertyData = await fetchPropertyData(propertyID);
+        const { state, lga, neighbourhood } = propertyData.data;
+        const fullLocation = `${neighbourhood} ${lga} ${state}`;
+        const coordinates = await getCoordinates(fullLocation);
+        const geoJSON = {
           type: "Feature",
           geometry: {
-            type: "LineString",
-            coordinates: [[propertyLongitude, propertyLatitude]],
+            type: "Point",
+            coordinates: [coordinates.longitude, coordinates.latitude],
           },
-        },
+          properties: {
+            propertyID: propertyID,
+          },
+        };
+        setPropertyGeoJSON(geoJSON);
+      } catch (error) {
+        console.error("Failed to fetch property location", error);
+      }
+    };
+
+    fetchPropertyLocation();
+  }, [propertyID]);
+
+  return propertyGeoJSON;
+};
+
+const InspectionTracker = () => {
+  const router = useRouter();
+  const { id } = useParams();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const userRole = useUserRole();
+  const bookingData = useBookingData(id);
+  const propertyGeoJSON = usePropertyData(bookingData?.propertyID);
+  const socket = useWebSocket(baseUrl);
+
+  const mapContainerRef = useRef(null);
+  const [agentLocation, setAgentLocation] = useState(null);
+  const [buyerLocation, setBuyerLocation] = useState(null);
+
+  const agentMarker = document.createElement("div");
+  agentMarker.className = "agent-marker";
+
+  const buyerMarker = document.createElement("div");
+  buyerMarker.className = "buyer-marker";
+
+  // Watch User Location and Emit to Socket
+  useEffect(() => {
+    if (!userRole || !socket) return;
+
+    const emitLocation = (position) => {
+      const location = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
       };
 
-      map.on("load", () => {
-        // Add the line to the map
-        map.addSource("route", lineData);
-        map.addLayer({
-          id: "route",
-          type: "line",
-          source: "route",
-          layout: {
-            "line-join": "round",
-            "line-cap": "round",
-          },
-          paint: {
-            "line-color": "#888",
-            "line-width": 4,
-          },
-        });
-
-        // Add agent and buyer markers dynamically
-        let agentMarker, buyerMarker;
-
-        if (agentLocation) {
-          agentMarker = new mapboxgl.Marker({ color: "blue" })
-            .setLngLat([agentLocation.lng, agentLocation.lat])
-            .setPopup(new mapboxgl.Popup().setText("Agent"))
-            .addTo(map);
-        }
-
-        if (buyerLocation) {
-          buyerMarker = new mapboxgl.Marker({ color: "green" })
-            .setLngLat([buyerLocation.lng, buyerLocation.lat])
-            .setPopup(new mapboxgl.Popup().setText("Buyer"))
-            .addTo(map);
-        }
-
-        // Update the line coordinates as agent and buyer move
-        const updateLine = () => {
-          const newCoordinates = [[propertyLongitude, propertyLatitude]]; // Start with property location
-
-          if (agentLocation) {
-            newCoordinates.push([agentLocation.lng, agentLocation.lat]);
-          }
-
-          if (buyerLocation) {
-            newCoordinates.push([buyerLocation.lng, buyerLocation.lat]);
-          }
-
-          // Update the source data for the line
-          map.getSource("route").setData({
-            type: "Feature",
-            geometry: {
-              type: "LineString",
-              coordinates: newCoordinates,
-            },
-          });
-        };
-
-        // Watch for changes in agent or buyer locations
-        if (agentLocation || buyerLocation) {
-          updateLine(); // Initial line update
-        }
-
-        // If agent location updates
-        socket.on("agentLocationUpdate", (location) => {
-          setAgentLocation(location);
-          if (agentMarker) {
-            agentMarker.setLngLat([location.lng, location.lat]);
-          }
-          updateLine(); // Update line with new location
-        });
-
-        // If buyer location updates
-        socket.on("buyerLocationUpdate", (location) => {
-          setBuyerLocation(location);
-          if (buyerMarker) {
-            buyerMarker.setLngLat([location.lng, location.lat]);
-          }
-          updateLine(); // Update line with new location
-        });
-
-        // Clean up the map on component unmount
-        return () => {
-          map.remove();
-        };
-      });
-    }
-  }, [propertyLatitude, propertyLongitude, agentLocation, buyerLocation]);
-
-  // Function to end inspection
-  const handleEndInspection = async () => {
-    try {
-      const result = await Swal.fire({
-        title: "Are you sure?",
-        text: "Please make sure you have completed the inspection before ending!.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, end it!",
-        cancelButtonText: "Cancel",
-      });
-      if (result.isConfirmed) {
-        if (socket && socket.connected) {
-          socket.emit("endInspection");
-        } else {
-          console.error("Socket is not connected");
-          Swal.fire(
-            "Error",
-            "Unable to end inspection due to socket disconnection.",
-            "error"
-          );
-        }
-        router.push(`/inspection/feedback/${id}`);
-        Swal.fire(
-          "Ended!",
-          "Your inspection has ended, please tell us how it went.",
-          "success"
-        );
+      if (userRole === "agent") {
+        socket.emit("agentLocation", location);
+      } else if (userRole === "buyer") {
+        socket.emit("buyerLocation", location);
       }
-    } catch (error) {
-      console.error("Failed to end inspection:", error);
-      Swal.fire("Failed", "Failed to end inspection", "error");
+    };
+
+    const handleLocationError = (error) => {
+      console.error("Error getting location", error);
+    };
+
+    navigator.geolocation.watchPosition(emitLocation, handleLocationError, {
+      enableHighAccuracy: true,
+      maximumAge: 10000,
+      timeout: 5000,
+    });
+  }, [userRole, socket]);
+
+  // WebSocket for Receiving Location Updates
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("agentLocationUpdate", setAgentLocation);
+    socket.on("buyerLocationUpdate", setBuyerLocation);
+
+    return () => {
+      socket.off("agentLocationUpdate", setAgentLocation);
+      socket.off("buyerLocationUpdate", setBuyerLocation);
+    };
+  }, [socket]);
+
+  // Initialize Map
+  useEffect(() => {
+    if (!mapContainerRef.current || !propertyGeoJSON) return;
+
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: propertyGeoJSON.geometry.coordinates,
+      zoom: 15,
+    });
+
+    const propertyMarker = new mapboxgl.Marker()
+      .setLngLat(propertyGeoJSON.geometry.coordinates)
+      .setPopup(new mapboxgl.Popup().setText("Property Location"))
+      .addTo(map);
+
+    if (agentLocation) {
+      const agentMarkerElement = new mapboxgl.Marker({
+        element: agentMarker,
+        anchor: "bottom",
+      })
+        .setLngLat([agentLocation.lng, agentLocation.lat])
+        .addTo(map);
+    }
+
+    if (buyerLocation) {
+      const buyerMarkerElement = new mapboxgl.Marker({
+        element: buyerMarker,
+        anchor: "bottom",
+      })
+        .setLngLat([buyerLocation.lng, buyerLocation.lat])
+        .addTo(map);
+    }
+
+    const directions = new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      unit: "metric",
+      profile: "mapbox/driving",
+    });
+
+    map.addControl(directions, "top-left");
+
+    if (agentLocation) {
+      directions.setOrigin([agentLocation.lng, agentLocation.lat]);
+    } else if (buyerLocation) {
+      directions.setOrigin([buyerLocation.lng, buyerLocation.lat]);
+    }
+
+    directions.setDestination(propertyGeoJSON.geometry.coordinates);
+
+    directions.on("route", (e) => {
+      const route = e.route;
+      map.addLayer({
+        id: "route",
+        type: "line",
+        source: {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: route.geometry,
+          },
+        },
+        layout: {
+          "line-join": "round",
+          "line-cap": "round",
+        },
+        paint: {
+          "line-color": "#03a9f4",
+          "line-width": 5,
+        },
+      });
+      const distance = route.distance / 1000;
+      const time = route.duration / 60;
+
+      document.getElementById("distance").innerText = `${distance.toFixed(
+        2
+      )} km`;
+      document.getElementById("time").innerText = `${time.toFixed(2)} minutes`;
+    });
+
+    return () => map.remove();
+  }, [propertyGeoJSON, agentLocation, buyerLocation]);
+
+  const handleEndInspection = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Please make sure you have completed the inspection.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, end it!",
+    });
+
+    if (result.isConfirmed && socket) {
+      socket.emit("endInspection");
+      router.push(`/inspection/feedback/${id}`);
+      Swal.fire("Ended!", "Your inspection has ended.", "success");
     }
   };
 
@@ -315,11 +267,10 @@ const InspectionTracker = ({ propertyLocation }) => {
       <h1 className="absolute top-5 left-5 text-2xl font-bold">
         Inspection Tracker
       </h1>
-      <div style={{ height: "100vh", width: "100%" }} ref={mapContainerRef} />
-
+      <div ref={mapContainerRef} className="h-full w-full"></div>
       <button
         onClick={handleEndInspection}
-        className="absolute top-5 right-5 px-4 py-2 text-white bg-red-500 border-2 rounded-md cursor-pointer z-10"
+        className="absolute top-5 right-5 px-4 py-2 text-white bg-red-500 rounded-md"
       >
         End Inspection
       </button>

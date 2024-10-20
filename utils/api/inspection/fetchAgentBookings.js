@@ -9,7 +9,7 @@ export const fetchAgentBookings = async (userId) => {
   try {
     const res = await axios.post(
       `${baseUrl}/booking/getAgentBooking`,
-      { userID: userId },
+      { agentID: userId },
       { withCredentials: true }
     );
 
