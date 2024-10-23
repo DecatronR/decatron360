@@ -29,7 +29,13 @@ const LoginForm = () => {
     try {
       const res = await signIn(formData.email, formData.password);
       console.log("login response", res);
-      enqueueSnackbar("Login successful!", { variant: "success" });
+      if (res.success || res.status === 200) {
+        enqueueSnackbar("Login successful!", { variant: "success" });
+      } else {
+        enqueueSnackbar("Failed to login. Please check your credentials.", {
+          variant: "error",
+        });
+      }
 
       // Extract redirect path from query parameters
       const queryParams = new URLSearchParams(window.location.search);
