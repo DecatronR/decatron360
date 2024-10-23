@@ -29,7 +29,7 @@ const LoginForm = () => {
     try {
       const res = await signIn(formData.email, formData.password);
       console.log("login response", res);
-      if (res.success || res.status === 200) {
+      if (res.responseCode === 200) {
         enqueueSnackbar("Login successful!", { variant: "success" });
       } else {
         enqueueSnackbar("Failed to login. Please check your credentials.", {
