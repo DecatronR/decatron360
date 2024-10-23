@@ -27,16 +27,8 @@ const LoginForm = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const res = await signIn(formData.email, formData.password);
-      console.log("login response", res);
-      if (res.responseCode === 200) {
-        enqueueSnackbar("Login successful!", { variant: "success" });
-      } else {
-        enqueueSnackbar("Failed to login. Please check your credentials.", {
-          variant: "error",
-        });
-      }
-
+      await signIn(formData.email, formData.password);
+      enqueueSnackbar("Login successful!", { variant: "success" });
       // Extract redirect path from query parameters
       const queryParams = new URLSearchParams(window.location.search);
       const redirectPath = queryParams.get("redirect") || "/";
@@ -45,9 +37,6 @@ const LoginForm = () => {
       router.replace(redirectPath);
     } catch (error) {
       console.error("Issues with login", error);
-      enqueueSnackbar("Failed to login. Please check your credentials.", {
-        variant: "error",
-      });
     }
   };
 

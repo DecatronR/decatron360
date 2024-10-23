@@ -10,7 +10,7 @@ export const signInApi = async (email, password) => {
     console.log("response: ", res.data);
     const userId = res.data.user;
     const token = res.data.token;
-    return { res, userId, token };
+    return { userId, token };
   } catch (error) {
     throw error;
   }
