@@ -17,11 +17,17 @@ export const AuthProvider = ({ children }) => {
       document.cookie = `auth_jwt=${token}; path=/`;
 
       sessionStorage.setItem("userId", userId);
+      sessionStorage.setItem("token", token);
 
       const res = await axios.post(
         `${baseUrl}/users/editUsers`,
         { id: userId },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       const user = res.data.data;
       setUser(user);
@@ -34,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOutApi();
       sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("token");
       setUser(null);
     } catch (error) {
       console.error("Sign out failed", error);

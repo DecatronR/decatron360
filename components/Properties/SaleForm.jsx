@@ -155,8 +155,18 @@ const SaleForm = () => {
   };
 
   const fetchData = useCallback(async (url, setter) => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in session storage");
+      return;
+    }
     try {
-      const res = await axios.get(url, { withCredentials: true });
+      const res = await axios.get(url, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(`Successfully fetched data from ${url}: `, res);
       const data = res.data;
       console.log("Data: ", data);

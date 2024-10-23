@@ -136,8 +136,18 @@ const PropertyEditForm = ({ propertyId }) => {
   };
 
   const fetchData = useCallback(async (url, setter) => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in session storage");
+      return;
+    }
     try {
-      const res = await axios.get(url, { withCredentials: true });
+      const res = await axios.get(url, {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = res.data;
       setter(data);
     } catch (err) {

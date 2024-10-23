@@ -2,6 +2,12 @@ import axios from "axios";
 
 export const fetchUserSchedule = async (userId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const token = sessionStorage.getItem("token");
+  if (!token) {
+    console.error("No token found in session storage");
+    return;
+  }
+
   if (!userId) {
     throw new Error("User ID is required to fetch schedule");
   }
@@ -10,7 +16,12 @@ export const fetchUserSchedule = async (userId) => {
     const res = await axios.post(
       `${baseUrl}/mySchedule/fetch`,
       { userID: userId },
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     return res.data.data;

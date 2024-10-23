@@ -2,6 +2,10 @@ import axios from "axios";
 
 export const fetchUserReviews = async (userId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  if (!token) {
+    console.error("No token found in session storage");
+    return;
+  }
   if (!userId) {
     throw new Error("User ID is required to fetch reviews");
   }
@@ -10,7 +14,12 @@ export const fetchUserReviews = async (userId) => {
     const res = await axios.post(
       `${baseUrl}/review/getReview`,
       { userID: userId },
-      { withCredentials: true }
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
     return res.data;
