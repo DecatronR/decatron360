@@ -14,7 +14,11 @@ const Footer = () => {
     <footer className="bg-slate-900 text-white py-10">
       <div className="container mx-auto flex flex-col md:flex-row justify-between px-4">
         <div className="flex flex-col mb-6 md:mb-0">
-          <Image src={logo} alt="Logo" className="h-7 w-14 mb-4" />
+          <Image
+            src={logo}
+            alt="Logo"
+            className="h-auto w-20 mb-4 object-cover"
+          />
           <p className="text-gray-400 mb-4 text-sm">
             Your one-stop platform for all property needs.
           </p>
