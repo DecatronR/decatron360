@@ -40,7 +40,7 @@ const Footer = () => {
               <FaTwitter />
             </a>
             <a
-              href="https://linkedin.com"
+              href="http://www.linkedin.com/company/mydecatron"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white"
@@ -48,7 +48,7 @@ const Footer = () => {
               <FaLinkedinIn />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/decatron_official/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-white"
