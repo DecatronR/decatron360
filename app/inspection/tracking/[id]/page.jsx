@@ -1,9 +1,14 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHome,
+  faUserTie,
+  faHandHoldingUsd,
+} from "@fortawesome/free-solid-svg-icons";
 import pin from "@/assets/images/pin.svg";
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
@@ -78,10 +83,8 @@ const usePropertyData = (propertyID) => {
     const fetchPropertyLocation = async () => {
       try {
         const propertyData = await fetchPropertyData(propertyID);
-        console.log("property data: ", propertyData.data);
         const { state, lga, neighbourhood } = propertyData.data;
-        console.log("location: ", neighbourhood, lga, state);
-        const fullLocation = `${neighbourhood} ${lga} ${state}`;
+        const fullLocation = `${neighbourhood}, ${lga}, ${state}`;
         const coordinates = await getCoordinates(fullLocation);
         const geoJSON = {
           type: "Feature",
@@ -177,26 +180,47 @@ const InspectionTracker = () => {
       zoom: 15,
     });
 
-    const propertyMarker = new mapboxgl.Marker()
+    const propertyIcon = document.createElement("div");
+    ReactDOM.render(
+      <FontAwesomeIcon
+        icon={faHome}
+        style={{ color: "#5a47fb", fontSize: "35px" }}
+      />,
+      propertyIcon
+    );
+
+    const propertyMarker = new mapboxgl.Marker(propertyIcon)
       .setLngLat(propertyGeoJSON.geometry.coordinates)
       .setPopup(new mapboxgl.Popup().setText("Property Location"))
       .addTo(map);
 
     if (agentLocation) {
-      const agentMarkerElement = new mapboxgl.Marker({
-        element: agentMarker,
-        anchor: "bottom",
-      })
+      const agentIcon = document.createElement("div");
+      ReactDOM.render(
+        <FontAwesomeIcon
+          icon={faUserTie}
+          style={{ color: "#007aff", fontSize: "35px" }}
+        />,
+        agentIcon
+      );
+      new mapboxgl.Marker({ element: agentIcon, anchor: "bottom" })
         .setLngLat([agentLocation.lng, agentLocation.lat])
+        .setPopup(new mapboxgl.Popup().setText("Agent Location"))
         .addTo(map);
     }
 
     if (buyerLocation) {
-      const buyerMarkerElement = new mapboxgl.Marker({
-        element: buyerMarker,
-        anchor: "bottom",
-      })
+      const buyerIcon = document.createElement("div");
+      ReactDOM.render(
+        <FontAwesomeIcon
+          icon={faHandHoldingUsd}
+          style={{ color: "#ff6347", fontSize: "35px" }}
+        />,
+        buyerIcon
+      );
+      new mapboxgl.Marker({ element: buyerIcon, anchor: "bottom" })
         .setLngLat([buyerLocation.lng, buyerLocation.lat])
+        .setPopup(new mapboxgl.Popup().setText("Buyer Location"))
         .addTo(map);
     }
 
@@ -208,13 +232,28 @@ const InspectionTracker = () => {
 
     map.addControl(directions, "top-left");
 
-    if (agentLocation) {
-      directions.setOrigin([agentLocation.lng, agentLocation.lat]);
-    } else if (buyerLocation) {
-      directions.setOrigin([buyerLocation.lng, buyerLocation.lat]);
-    }
-
     directions.setDestination(propertyGeoJSON.geometry.coordinates);
+
+    const updateOrigin = () => {
+      if (agentLocation) {
+        directions.setOrigin([agentLocation.lng, agentLocation.lat]);
+      } else if (buyerLocation) {
+        directions.setOrigin([buyerLocation.lng, buyerLocation.lat]);
+      }
+    };
+
+    updateOrigin(); // Call to update origin on initial load
+
+    // Listen for updates to agent and buyer locations
+    socket.on("agentLocationUpdate", (location) => {
+      setAgentLocation(location);
+      directions.setOrigin([location.lng, location.lat]); // Update directions with new agent location
+    });
+
+    socket.on("buyerLocationUpdate", (location) => {
+      setBuyerLocation(location);
+      directions.setOrigin([location.lng, location.lat]); // Update directions with new buyer location
+    });
 
     directions.on("route", (e) => {
       const route = e.route;
