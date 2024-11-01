@@ -52,7 +52,12 @@ const AgentScheduler = () => {
   const handleDateClick = (dateInfo) => {
     const clickedDate = dateInfo.dateStr;
 
-    if (availableTimes[clickedDate]) {
+    if (availableTimes[clickedDate] && selectedDate === clickedDate) {
+      const updatedTimes = { ...availableTimes };
+      delete updatedTimes[clickedDate];
+      setAvailableTimes(updatedTimes);
+      setSelectedDate(null);
+    } else if (availableTimes[clickedDate]) {
       setSelectedDate(clickedDate);
     } else {
       setAvailableTimes({ ...availableTimes, [clickedDate]: [] });
