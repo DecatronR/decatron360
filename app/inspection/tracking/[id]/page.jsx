@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
+import pin from "@/assets/images/pin.svg";
 import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import io from "socket.io-client";
@@ -77,7 +78,9 @@ const usePropertyData = (propertyID) => {
     const fetchPropertyLocation = async () => {
       try {
         const propertyData = await fetchPropertyData(propertyID);
+        console.log("property data: ", propertyData.data);
         const { state, lga, neighbourhood } = propertyData.data;
+        console.log("location: ", neighbourhood, lga, state);
         const fullLocation = `${neighbourhood} ${lga} ${state}`;
         const coordinates = await getCoordinates(fullLocation);
         const geoJSON = {
