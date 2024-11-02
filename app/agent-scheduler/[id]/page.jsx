@@ -33,22 +33,6 @@ const AgentScheduler = () => {
     return `${formattedHour}:${minute} ${ampm}`;
   };
 
-  // const handleDateClick = (dateInfo) => {
-  //   const clickedDate = dateInfo.dateStr;
-
-  //   if (availableTimes[clickedDate]) {
-  //     delete availableTimes[clickedDate];
-  //     setSelectedDate(null);
-  //   } else {
-  //     setAvailableTimes({ ...availableTimes, [clickedDate]: [] });
-  //     setSelectedDate(clickedDate);
-  //   }
-
-  //   if (bookedDates[clickedDate]) {
-  //     delete bookedDates[clickedDate];
-  //   }
-  // };
-
   const handleDateClick = (dateInfo) => {
     const clickedDate = dateInfo.dateStr;
 
