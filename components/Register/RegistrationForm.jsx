@@ -27,6 +27,7 @@ const Registration = () => {
     const handleFetchRoles = async () => {
       try {
         const res = await fetchRoles();
+        console.log("Roles: ", res);
         setRoles(res);
       } catch (error) {
         console.log("");

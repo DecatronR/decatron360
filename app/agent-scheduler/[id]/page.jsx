@@ -36,16 +36,16 @@ const AgentScheduler = () => {
   const handleDateClick = (dateInfo) => {
     const clickedDate = dateInfo.dateStr;
 
-    if (availableTimes[clickedDate]) {
-      delete availableTimes[clickedDate];
+    if (availableTimes[clickedDate] && selectedDate === clickedDate) {
+      const updatedTimes = { ...availableTimes };
+      delete updatedTimes[clickedDate];
+      setAvailableTimes(updatedTimes);
       setSelectedDate(null);
+    } else if (availableTimes[clickedDate]) {
+      setSelectedDate(clickedDate);
     } else {
       setAvailableTimes({ ...availableTimes, [clickedDate]: [] });
       setSelectedDate(clickedDate);
-    }
-
-    if (bookedDates[clickedDate]) {
-      delete bookedDates[clickedDate];
     }
   };
 
@@ -187,7 +187,7 @@ const AgentScheduler = () => {
         <div className="text-center mt-5">
           <button
             onClick={handleSaveChanges}
-            className="bg-primary-600 text-white px-6 py-2 rounded-lg text-sm hover:bg-primary-500 transition duration-200 shadow-md hover:shadow-lg"
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-500 transition duration-200 shadow-md hover:shadow-lg"
           >
             Save Changes
           </button>
