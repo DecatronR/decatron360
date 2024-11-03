@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const createSchedule = async (userId, date, time) => {
+export const createSchedule = async (userId, availability) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -10,7 +10,7 @@ export const createSchedule = async (userId, date, time) => {
   try {
     const res = await axios.post(
       `${baseUrl}/mySchedule/create`,
-      { userId, date, time },
+      { userId, availability },
       {
         withCredentials: true,
         headers: {
