@@ -5,7 +5,7 @@ const ButtonSpinner = ({ loading }) => {
   return (
     <div className="flex items-center justify-center">
       <ClipLoader
-        color="#5a47fb"
+        color="#ffff"
         loading={loading}
         size={20}
         aria-label="Loading Spinner"
