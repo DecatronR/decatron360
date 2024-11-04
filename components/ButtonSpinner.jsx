@@ -1,13 +1,13 @@
 "use client";
-import { MoonLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 
 const ButtonSpinner = ({ loading }) => {
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <MoonLoader
+    <div className="flex items-center justify-center">
+      <ClipLoader
         color="#5a47fb"
         loading={loading}
-        size={10}
+        size={20}
         aria-label="Loading Spinner"
         cssOverride={{
           display: "block",
@@ -17,7 +17,7 @@ const ButtonSpinner = ({ loading }) => {
         }}
       />
       {loading && (
-        <p className="mt-4 text-lg text-gray-700">Loading, please wait...</p>
+        <p className="ml-2 text-sm text-gray-700">Loading, please wait...</p>
       )}
     </div>
   );
