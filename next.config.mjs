@@ -27,10 +27,15 @@ const nextConfig = withTM(transpileModules)({
         pathname: "**",
       },
       {
+        protocol: "https",
+        hostname: "decatron-backend.onrender.com",
+        pathname: "/uploads/**",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "1280",
-        pathname: "/uploads/properties/**",
+        pathname: "/uploads/**",
       },
     ],
   },
