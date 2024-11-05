@@ -138,6 +138,7 @@ const AgentProfilePage = () => {
           <AgentPropertiesCarousel
             agentProperties={agentProperties}
             agentId={id}
+            agentData={agentData}
           />
           <AgentReviewsCarousel agentReviews={agentReviews} agentId={id} />
         </div>

@@ -5,9 +5,11 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
 import Link from "next/link";
 
-const AgentPropertiesCarousel = ({ agentProperties, agentId }) => {
+const AgentPropertiesCarousel = ({ agentProperties, agentId, agentData }) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -31,10 +33,17 @@ const AgentPropertiesCarousel = ({ agentProperties, agentId }) => {
     currentIndex + itemsPerPage
   );
 
+  // console.log(
+  //   "Visible properties: ",
+  //   `${baseUrl}/${visibleProperties[0].photos[0].path}`
+  // );
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">My Listings</h2>
+        <h2 className="text-2xl font-bold text-gray-800">
+          {agentData?.name}'s Listings
+        </h2>
       </div>
 
       {agentProperties.length > 0 ? (
@@ -64,9 +73,12 @@ const AgentPropertiesCarousel = ({ agentProperties, agentId }) => {
               >
                 <Link href={`/properties/${property._id}`}>
                   {/* Display property image or a placeholder */}
-                  {property.photo && property.photo.length > 0 ? (
+                  {property.photos && property.photos.length > 0 ? (
                     <img
-                      src={property.photo[0]} // Display the first photo
+                      src={
+                        `${baseUrl}/${property.photos[0].path}` ||
+                        "/path/to/default/profile.png"
+                      }
                       alt={`Property ${property.title}`}
                       className="rounded-lg w-full h-48 object-cover cursor-pointer"
                     />
@@ -78,11 +90,11 @@ const AgentPropertiesCarousel = ({ agentProperties, agentId }) => {
                 </Link>
                 <div className="p-4">
                   <Link href={`/properties/${property._id}`}>
-                    <h3 className="font-semibold text-lg text-gray-800 cursor-pointer hover:text-primary-500">
+                    <h3 className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-primary-500">
                       {property.title}
                     </h3>
                   </Link>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 mt-1 truncate">
                     {property.propertyDetails}
                   </p>
                 </div>
