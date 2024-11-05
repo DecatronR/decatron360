@@ -64,7 +64,7 @@ const PropertySearchForm = () => {
           onChange={(e) => setPropertyType(e.target.value)}
         >
           <option value="All">All</option>
-          {propertyTypes.length > 0 &&
+          {propertyTypes?.length > 0 &&
             propertyTypes.map((type) => (
               <option key={type.id} value={type.propertyType}>
                 {type.propertyType}
