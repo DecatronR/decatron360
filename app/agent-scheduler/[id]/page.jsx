@@ -6,7 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { createSchedule } from "utils/api/scheduler/createSchedule";
-import { fetchUserSchedule } from "utils/api/scheduler/fetchUserSchedule";
+import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import ButtonSpinner from "components/ButtonSpinner";
 import { useSnackbar } from "notistack";
 // import "@fullcalendar/common/main.css";
@@ -39,9 +39,9 @@ const AgentScheduler = () => {
   };
 
   useEffect(() => {
-    const handleFetchUserSchedule = async () => {
+    const handleFetchAgentSchedule = async () => {
       try {
-        const res = await fetchUserSchedule(userId);
+        const res = await fetchAgentSchedule(userId);
         console.log("user schedule: ", res);
 
         const available = {};
@@ -73,7 +73,7 @@ const AgentScheduler = () => {
       }
     };
 
-    handleFetchUserSchedule();
+    handleFetchAgentSchedule();
   }, [userId]);
 
   const handleDateClick = (dateInfo) => {
