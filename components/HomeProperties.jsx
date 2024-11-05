@@ -38,7 +38,7 @@ const HomeProperties = () => {
             Latest Properties
           </h2>
           {loading ? (
-            <div className="flex justify-center items-center py-6">
+            <div className="flex justify-center items-center min-h-[200px]">
               <Spinner />
             </div>
           ) : recentProperties.length === 0 ? (
