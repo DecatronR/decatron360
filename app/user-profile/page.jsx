@@ -115,6 +115,7 @@ const UserProfilePage = () => {
           <UserPropertiesCarousel
             userProperties={userProperties}
             userId={userId}
+            userData={userData}
           />
           <UserReviewsCarousel userReviews={userReviews} />
         </div>
