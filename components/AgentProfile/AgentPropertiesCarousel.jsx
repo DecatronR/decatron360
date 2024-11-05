@@ -5,7 +5,6 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import Image from "next/image";
 import Link from "next/link";
 
 const AgentPropertiesCarousel = ({ agentProperties, agentId, agentData }) => {
@@ -32,11 +31,6 @@ const AgentPropertiesCarousel = ({ agentProperties, agentId, agentData }) => {
     currentIndex,
     currentIndex + itemsPerPage
   );
-
-  // console.log(
-  //   "Visible properties: ",
-  //   `${baseUrl}/${visibleProperties[0].photos[0].path}`
-  // );
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
