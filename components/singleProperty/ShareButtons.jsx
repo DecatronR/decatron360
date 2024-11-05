@@ -11,7 +11,9 @@ import {
 } from "react-share";
 
 const ShareButtons = ({ property }) => {
-  const shareUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/properties/${property._id}`;
+  const shareUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/properties/${property.data._id}`;
+  console.log("share url: ", shareUrl);
+  console.log("property object in share: ", property);
 
   return (
     <>
@@ -22,8 +24,10 @@ const ShareButtons = ({ property }) => {
         {/* Share buttons with unified styles */}
         <FacebookShareButton
           url={shareUrl}
-          quote={property.title}
-          hashtag={`#${property.propertyType?.replace(/\s/g, "")}ForRent`}
+          quote={property.data.title}
+          hashtag={`#${property.data.propertyType?.replace(/\s/g, "")} For ${
+            property.data.listingType
+          }`}
           className="share-button"
         >
           <FacebookIcon size={30} round={true} />
@@ -31,8 +35,12 @@ const ShareButtons = ({ property }) => {
 
         <TwitterShareButton
           url={shareUrl}
-          title={property.title}
-          hashtags={[`${property.propertyType?.replace(/\s/g, "")}ForRent`]}
+          title={property.data.title}
+          hashtags={[
+            `${property.data.propertyType?.replace(/\s/g, "")} For ${
+              property.data.listingType
+            }`,
+          ]}
           className="share-button"
         >
           <TwitterIcon size={30} round={true} />
@@ -40,7 +48,7 @@ const ShareButtons = ({ property }) => {
 
         <WhatsappShareButton
           url={shareUrl}
-          title={property.title}
+          title={property.data.title}
           separator=":: "
           className="share-button"
         >
@@ -49,7 +57,7 @@ const ShareButtons = ({ property }) => {
 
         <EmailShareButton
           url={shareUrl}
-          subject={property.title}
+          subject={property.data.title}
           body={`Check out this property listing: ${shareUrl}`}
           className="share-button"
         >
