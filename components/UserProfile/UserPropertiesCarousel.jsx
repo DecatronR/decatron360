@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-const UserPropertiesCarousel = ({ userProperties, userId }) => {
+const UserPropertiesCarousel = ({ userProperties, userId, userData }) => {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -64,9 +65,12 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
               >
                 <Link href={`/properties/${property._id}`}>
                   {/* Display property image or a placeholder */}
-                  {property.photo && property.photo.length > 0 ? (
+                  {property.photos && property.photos.length > 0 ? (
                     <img
-                      src={property.photo[0]} // Display the first photo
+                      src={
+                        `${baseUrl}/${property.photos[0].path}` ||
+                        "/path/to/default/profile.png"
+                      }
                       alt={`Property ${property.title}`}
                       className="rounded-lg w-full h-48 object-cover cursor-pointer"
                     />
@@ -78,11 +82,11 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
                 </Link>
                 <div className="p-4">
                   <Link href={`/properties/${property._id}`}>
-                    <h3 className="font-semibold text-lg text-gray-800 cursor-pointer hover:text-primary-500">
+                    <h3 className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-primary-500">
                       {property.title}
                     </h3>
                   </Link>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 mt-1 truncate">
                     {property.propertyDetails}
                   </p>
                 </div>

@@ -62,7 +62,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 
         <div className="p-4">
           <div className="mb-2">
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
+            <h2 className="text-sm font-bold text-gray-900 mb-1 truncate">
               {property.title}
             </h2>
             <p className="text-xs text-gray-500 truncate">
