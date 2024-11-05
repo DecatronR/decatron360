@@ -13,7 +13,6 @@ import {
 const ShareButtons = ({ property }) => {
   const shareUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/properties/${property.data._id}`;
   console.log("share url: ", shareUrl);
-  console.log("property object in share: ", property);
 
   return (
     <>
