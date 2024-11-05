@@ -11,10 +11,9 @@ import {
   faCar,
   faRuler,
 } from "@fortawesome/free-solid-svg-icons";
-import { editPropertyListing } from "@/utils/api/propertyListing/editPropertyListing";
 import { deletePropertyListing } from "@/utils/api/propertyListing/deletePropertyListing";
-import { updatePropertyListing } from "@/utils/api/propertyListing/updatePropertyListing";
 import Swal from "sweetalert2";
+import ReactPlayer from "react-player";
 
 const PropertyDetails = ({ property, agentId }) => {
   const [isPropertyLister, setIsPropertyLister] = useState(false);
@@ -195,22 +194,13 @@ const PropertyDetails = ({ property, agentId }) => {
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Video</h2>
           {property.video && (
             <div className="rounded-md overflow-hidden">
-              {property.video.includes("youtube") ? (
-                <iframe
-                  width="560"
-                  height="315"
-                  src={`${property.video}?autoplay=1`}
-                  title="YouTube video player"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen
-                ></iframe>
-              ) : (
-                <video controls className="w-full h-auto rounded-lg">
-                  <source src={property.video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              )}
+              <ReactPlayer
+                url={property.video}
+                width="100%"
+                height="500px"
+                controls={true}
+                playing={false}
+              />
             </div>
           )}
         </div>
