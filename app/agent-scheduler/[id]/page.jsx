@@ -6,13 +6,18 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { createSchedule } from "utils/api/scheduler/createSchedule";
+import { fetchUserSchedule } from "utils/api/scheduler/fetchUserSchedule";
+import ButtonSpinner from "components/ButtonSpinner";
+import { useSnackbar } from "notistack";
 // import "@fullcalendar/common/main.css";
 
 const AgentScheduler = () => {
-  const { id } = useParams();
+  const { id: userId } = useParams();
+  const { enqueueSnackbar } = useSnackbar();
   const [bookedDates, setBookedDates] = useState({});
   const [availableTimes, setAvailableTimes] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const timeSlots = [
     "09:00",
@@ -32,6 +37,13 @@ const AgentScheduler = () => {
     const ampm = hour < 12 ? "AM" : "PM";
     return `${formattedHour}:${minute} ${ampm}`;
   };
+
+  useEffect(() => {
+    const handleFetchUserSchedule = async () => {
+      try {
+      } catch (error) {}
+    };
+  });
 
   const handleDateClick = (dateInfo) => {
     const clickedDate = dateInfo.dateStr;
@@ -71,17 +83,41 @@ const AgentScheduler = () => {
   };
 
   const handleSetAvailability = async () => {
+    const availability = Object.entries(availableTimes).map(
+      ([date, times]) => ({
+        date: date.replace(/-/g, "/"), // Formatting date as required
+        time: times.map((t) => parseInt(t.split(":")[0])), // Extracting hour as integer
+      })
+    );
+
+    console.log("availability: ", availability);
+
     try {
-      const res = await createSchedule();
-      console.log("Create availability successfully: ", res);
+      setIsButtonLoading(true);
+      const res = await createSchedule(userId, availability);
+      enqueueSnackbar("Successfully updated schedule!", {
+        variant: "success",
+      });
+      console.log("Availability created successfully:", res);
     } catch (error) {
-      console.log("Failed to create availability: ", error);
+      console.error("Failed to create availability:", error);
+      if (error.response && error.response.data) {
+        const errorMessage = error.response.data.message;
+        enqueueSnackbar(`Failed to update schedule: ${errorMessage}`, {
+          variant: "error",
+        });
+      } else {
+        enqueueSnackbar(`Failed to update schedule: ${error.message}`, {
+          variant: "error",
+        });
+      }
+    } finally {
+      setIsButtonLoading(false);
     }
   };
 
   const handleSaveChanges = () => {
-    console.log("Available Times:", availableTimes);
-    console.log("Booked Dates:", bookedDates);
+    handleSetAvailability();
   };
 
   const eventColor = (dateStr) => {
@@ -187,9 +223,9 @@ const AgentScheduler = () => {
         <div className="text-center mt-5">
           <button
             onClick={handleSaveChanges}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-500 transition duration-200 shadow-md hover:shadow-lg"
+            className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
           >
-            Save Changes
+            {isButtonLoading ? <ButtonSpinner /> : "Save Changes"}
           </button>
         </div>
       </div>
