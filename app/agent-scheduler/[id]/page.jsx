@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -41,9 +41,40 @@ const AgentScheduler = () => {
   useEffect(() => {
     const handleFetchUserSchedule = async () => {
       try {
-      } catch (error) {}
+        const res = await fetchUserSchedule(userId);
+        console.log("user schedule: ", res);
+
+        const available = {};
+        const booked = {};
+
+        res.forEach((schedule) => {
+          const dateStr = schedule.date.replace(/\//g, "-"); // Convert date format to match FullCalendar requirements
+          const timeSlot = `${schedule.time}:00`; // Format time slot as HH:00
+
+          // Update conditions to check for "0", "1", and "2"
+          //cross check this conditions with Ezekiel later
+          if (schedule.isAvailable === "0") {
+            // "0" indicates available
+            if (!available[dateStr]) available[dateStr] = [];
+            available[dateStr].push(timeSlot);
+          } else if (schedule.isAvailable === "1") {
+            // "1" indicates unavailable - could be skipped if not visually represented
+          } else if (schedule.isAvailable === "2") {
+            // "2" indicates booked
+            if (!booked[dateStr]) booked[dateStr] = [];
+            booked[dateStr].push(timeSlot);
+          }
+        });
+
+        setAvailableTimes(available);
+        setBookedDates(booked);
+      } catch (error) {
+        console.log("Could not fetch user schedule: ", error);
+      }
     };
-  });
+
+    handleFetchUserSchedule();
+  }, [userId]);
 
   const handleDateClick = (dateInfo) => {
     const clickedDate = dateInfo.dateStr;
@@ -176,12 +207,22 @@ const AgentScheduler = () => {
                   selectable={true}
                   dayMaxEvents={true}
                   dateClick={handleDateClick}
-                  events={Object.keys(availableTimes).map((date) => ({
-                    start: date,
-                    end: date,
-                    display: "background",
-                    backgroundColor: eventColor(date),
-                  }))}
+                  events={[
+                    // Map available times to green background events
+                    ...Object.keys(availableTimes).map((date) => ({
+                      start: date,
+                      end: date,
+                      display: "background",
+                      backgroundColor: "green",
+                    })),
+                    // Map booked dates to red background events
+                    ...Object.keys(bookedDates).map((date) => ({
+                      start: date,
+                      end: date,
+                      display: "background",
+                      backgroundColor: "red",
+                    })),
+                  ]}
                   height="auto"
                 />
               </div>
