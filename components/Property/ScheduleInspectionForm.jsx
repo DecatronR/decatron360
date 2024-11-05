@@ -1,18 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
-import { useEffect } from "react";
-import { useSnackbar } from "notistack";
 import { useAuth } from "@/context/AuthContext";
-import { bookInspection } from "@/utils/api/inspection/bookInspection";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import ButtonSpinner from "../ButtonSpinner";
+import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 
 const ScheduleInspectionForm = ({ propertyId, agentId }) => {
-  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -23,7 +20,8 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
     date: null,
   });
   const [userData, setUserData] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [availableDates, setAvailableDates] = useState({});
 
   useEffect(() => {
     if (!user) return;
@@ -34,6 +32,34 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
     };
     handleFetchUser();
   }, []);
+
+  useEffect(() => {
+    const handleFetchAgentSchedule = async () => {
+      const rawAvailability = await fetchAgentSchedule(agentId);
+
+      // Transform the data into the required format
+      const formattedAvailability = rawAvailability.reduce((acc, slot) => {
+        if (slot.isAvailable === "0") {
+          // Only add available slots
+          const formattedDate = format(new Date(slot.date), "yyyy-MM-dd");
+          const formattedTime = `${slot.time.padStart(2, "0")}:00`; // Format time as HH:mm
+
+          // Initialize the date key if it doesn't exist
+          if (!acc[formattedDate]) {
+            acc[formattedDate] = [];
+          }
+
+          // Add the time to the date's array
+          acc[formattedDate].push(formattedTime);
+        }
+        return acc;
+      }, {});
+
+      setAvailableDates(formattedAvailability);
+    };
+
+    handleFetchAgentSchedule();
+  }, [agentId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +78,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsButtonLoading(true);
     const formattedDate = formData.date
       ? format(formData.date, "yyyy-MM-dd")
       : "";
@@ -72,7 +98,21 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
     } else {
       router.push(`/inspection/booking/${propertyId}`);
     }
-    setIsLoading(false);
+    setIsButtonLoading(false);
+  };
+
+  const isDateAvailable = (date) => {
+    const formattedDate = format(date, "yyyy-MM-dd");
+    return !!availableDates[formattedDate];
+  };
+
+  const isTimeAvailable = (time) => {
+    const selectedDate = formData.date
+      ? format(formData.date, "yyyy-MM-dd")
+      : null;
+    if (!selectedDate || !availableDates[selectedDate]) return false;
+    const formattedTime = format(time, "HH:mm");
+    return availableDates[selectedDate].includes(formattedTime);
   };
 
   return (
@@ -123,32 +163,25 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
             selected={formData.date}
             onChange={handleDateChange}
             showTimeSelect
-            timeIntervals={30}
+            timeIntervals={60}
             timeCaption="Time"
             dateFormat="MMMM d, yyyy h:mm aa"
             className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
             required
+            filterDate={isDateAvailable} // Disable dates not available
+            filterTime={isTimeAvailable} // Disable times not available
           />
         </label>
-        {/* <label className="block">
-          <span className="text-gray-700">Message</span>
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Additional details or requests"
-            rows="4"
-            className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
-          />
-        </label> */}
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isButtonLoading}
           className={`w-full py-2 px-4 rounded-md shadow-md ${
-            isLoading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
+            isButtonLoading
+              ? "bg-gray-400"
+              : "bg-indigo-600 hover:bg-indigo-700"
           } text-white focus:outline-none focus:ring-2 focus:ring-indigo-500`}
         >
-          {isLoading ? "Submitting...." : "Schedule Inspection"}
+          {isButtonLoading ? <ButtonSpinner /> : "Schedule Inspection"}
         </button>
       </form>
     </div>
