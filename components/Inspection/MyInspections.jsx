@@ -63,10 +63,7 @@ const MyInspections = ({ bookings }) => {
               <div className="flex items-start mb-4">
                 <Link href={""} passHref>
                   <Image
-                    src={
-                      `${baseUrl}/${booking.photos[0].path}` ||
-                      "/placeholder.jpg"
-                    }
+                    src={`${booking.photos[0]?.path}` || "/placeholder.jpg"}
                     alt={booking.propertyDetails.title || "Property image"}
                     width={100}
                     height={100}
