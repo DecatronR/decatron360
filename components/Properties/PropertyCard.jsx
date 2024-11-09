@@ -14,8 +14,6 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
-  console.log("Image path:", `${baseUrl}/${property.photos[0].path}`);
-  console.log("Favorite property Id: ", property._id);
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
