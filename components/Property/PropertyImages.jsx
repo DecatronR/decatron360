@@ -50,7 +50,7 @@ const PropertyImages = ({ images }) => {
             onClick={() => handleImageClick(0)}
           >
             <img
-              src={`${baseUrl}/${displayedImages[0]?.path}`}
+              src={`${displayedImages[0]?.path}`}
               alt={`Primary Property Image`}
               className="w-full h-64 sm:h-full object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105 rounded-lg"
             />
@@ -65,7 +65,7 @@ const PropertyImages = ({ images }) => {
                 onClick={() => handleImageClick(index + 1)}
               >
                 <img
-                  src={`${baseUrl}/${image.path}`}
+                  src={`${image.path}`}
                   alt={`Property Image ${index + 2}`}
                   className="w-full h-32 sm:h-full object-cover transition-transform duration-300 ease-in-out transform group-hover:scale-105 rounded-lg"
                 />
