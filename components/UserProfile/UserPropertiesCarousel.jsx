@@ -68,7 +68,7 @@ const UserPropertiesCarousel = ({ userProperties, userId, userData }) => {
                   {property.photos && property.photos.length > 0 ? (
                     <img
                       src={
-                        `${baseUrl}/${property.photos[0].path}` ||
+                        `${property.photos[0].path}` ||
                         "/path/to/default/profile.png"
                       }
                       alt={`Property ${property.title}`}

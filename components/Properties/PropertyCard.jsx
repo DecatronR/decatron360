@@ -24,8 +24,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           {property?.photos?.length > 0 && (
             <Image
               src={
-                `${baseUrl}/${property.photos[0].path}` ||
-                "/path/to/default/profile.png"
+                `${property.photos[0].path}` || "/path/to/default/profile.png"
               }
               alt={property.title}
               height={0}

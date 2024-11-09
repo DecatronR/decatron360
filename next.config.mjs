@@ -31,12 +31,6 @@ const nextConfig = withTM(transpileModules)({
         hostname: "decatron-backend.onrender.com",
         pathname: "/uploads/**",
       },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "1280",
-        pathname: "/uploads/**",
-      },
     ],
   },
   webpack: (config) => {
