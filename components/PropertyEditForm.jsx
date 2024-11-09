@@ -484,7 +484,6 @@ const PropertyEditForm = ({ propertyId }) => {
             name="size"
             placeholder="Square Meter (Sqm)"
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            required
             value={fields.size}
             onChange={handleChange}
           />
