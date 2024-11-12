@@ -34,11 +34,11 @@ const HomeProperties = () => {
     <>
       <section className="px-4 py-6">
         <div className="container-xl lg:container m-auto">
-          <h2 className="text-3xl font-bold text-primary-500 mb-6 text-center">
+          <h2 className="text-3xl font-bold text-primary-500 mb-4 text-center">
             Latest Properties
           </h2>
           {loading ? (
-            <div className="flex justify-center items-center py-4">
+            <div className="flex justify-center items-center py-2">
               <Spinner />
             </div>
           ) : recentProperties.length === 0 ? (
