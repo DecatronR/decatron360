@@ -10,7 +10,6 @@ import {
 } from "react-icons/fa";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
