@@ -19,7 +19,7 @@ const AgentProfilePhoto = ({ agentPhoto }) => {
     <div className="flex flex-col items-center">
       <div className="relative mb-4">
         <img
-          src={photo || "/path/to/default/profile.png"} // Default profile photo
+          // src={photo || "/path/to/default/profile.png"} // Default profile photo
           alt="Profile"
           className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
           onClick={() => fileInputRef.current.click()}
