@@ -51,16 +51,12 @@ const AgentScheduler = () => {
           const dateStr = schedule.date.replace(/\//g, "-"); // Convert date format to match FullCalendar requirements
           const timeSlot = `${schedule.time}:00`; // Format time slot as HH:00
 
-          // Update conditions to check for "0", "1", and "2"
-          //cross check this conditions with Ezekiel later
           if (schedule.isAvailable === "0") {
             // "0" indicates available
             if (!available[dateStr]) available[dateStr] = [];
             available[dateStr].push(timeSlot);
           } else if (schedule.isAvailable === "1") {
-            // "1" indicates unavailable - could be skipped if not visually represented
-          } else if (schedule.isAvailable === "2") {
-            // "2" indicates booked
+            // "1" indicates booked
             if (!booked[dateStr]) booked[dateStr] = [];
             booked[dateStr].push(timeSlot);
           }
@@ -93,6 +89,9 @@ const AgentScheduler = () => {
   };
 
   const handleTimeSlotClick = (dateStr, timeSlot) => {
+    if (bookedDates[dateStr]?.includes(timeSlot)) {
+      return; // Prevent booked slots from being modified
+    }
     if (availableTimes[dateStr]?.includes(timeSlot)) {
       setAvailableTimes((prev) => ({
         ...prev,
@@ -102,13 +101,6 @@ const AgentScheduler = () => {
       setAvailableTimes((prev) => ({
         ...prev,
         [dateStr]: [...(prev[dateStr] || []), timeSlot],
-      }));
-    }
-
-    if (bookedDates[dateStr]?.includes(timeSlot)) {
-      setBookedDates((prev) => ({
-        ...prev,
-        [dateStr]: prev[dateStr].filter((time) => time !== timeSlot),
       }));
     }
   };
@@ -242,19 +234,31 @@ const AgentScheduler = () => {
                     >
                       All Day
                     </button>
-                    {timeSlots.map((slot) => (
-                      <button
-                        key={slot}
-                        onClick={() => handleTimeSlotClick(selectedDate, slot)}
-                        className={`mb-2 px-4 py-2 rounded transition duration-200 ${
-                          availableTimes[selectedDate]?.includes(slot)
-                            ? "bg-green-400 text-white hover:bg-green-500"
-                            : "bg-gray-200 hover:bg-gray-300"
-                        }`}
-                      >
-                        {formatTimeTo12Hour(slot)}
-                      </button>
-                    ))}
+                    {timeSlots.map((slot) => {
+                      const isAvailable =
+                        availableTimes[selectedDate]?.includes(slot) || false;
+                      const isBooked =
+                        bookedDates[selectedDate]?.includes(slot) || false;
+
+                      return (
+                        <button
+                          key={slot}
+                          onClick={() =>
+                            handleTimeSlotClick(selectedDate, slot)
+                          }
+                          className={`mb-2 px-4 py-2 rounded transition duration-200 ${
+                            isBooked
+                              ? "bg-red-400 text-white cursor-not-allowed"
+                              : isAvailable
+                              ? "bg-green-400 text-white hover:bg-green-500"
+                              : "bg-gray-200 hover:bg-gray-300"
+                          }`}
+                          disabled={isBooked}
+                        >
+                          {formatTimeTo12Hour(slot)}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
