@@ -8,15 +8,15 @@ export const fetchAgentSchedule = async (userId) => {
   }
 
   try {
-    const res = await axios.get(
+    const res = await axios.post(
       `${baseUrl}/mySchedule/fetch`,
-      { userID: userId },
+      { userId: userId },
       {
         withCredentials: true,
       }
     );
 
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Failed fetching user schedule:", error);
     throw error;
