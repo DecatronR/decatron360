@@ -6,6 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { createSchedule } from "utils/api/scheduler/createSchedule";
+import { updateSchedule } from "utils/api/scheduler/updateSchedule";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import ButtonSpinner from "components/ButtonSpinner";
 import { useSnackbar } from "notistack";
@@ -117,13 +118,13 @@ const AgentScheduler = () => {
 
     try {
       setIsButtonLoading(true);
-      const res = await createSchedule(userId, availability);
+      const res = await updateSchedule(userId, availability);
       enqueueSnackbar("Successfully updated schedule!", {
         variant: "success",
       });
       console.log("Availability created successfully:", res);
     } catch (error) {
-      console.error("Failed to create availability:", error);
+      console.error("Failed to to update schedule:", error);
       if (error.response && error.response.data) {
         const errorMessage = error.response.data.message;
         enqueueSnackbar(`Failed to update schedule: ${errorMessage}`, {

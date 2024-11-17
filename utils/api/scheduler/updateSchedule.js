@@ -1,20 +1,20 @@
 import axios from "axios";
 
-export const updateSchedule = async (id, date, time) => {
+export const updateSchedule = async (userId, availability) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
     console.error("No token found in session storage");
     return;
   }
-  if (!id) {
+  if (!userId) {
     throw new Error("Schedule id is required to update booking");
   }
 
   try {
-    const res = await axios.put(
+    const res = await axios.post(
       `${baseUrl}/mySchedule/update`,
-      { id, date, time },
+      { userId, availability },
       {
         withCredentials: true,
         headers: {
