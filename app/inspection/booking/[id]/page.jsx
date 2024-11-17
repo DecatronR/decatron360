@@ -9,6 +9,7 @@ import { PaystackButton } from "react-paystack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { bookInspection } from "@/utils/api/inspection/bookInspection";
+import { scheduleBooked } from "utils/api/scheduler/scheduleBooked";
 
 const InspectionBooking = () => {
   const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
@@ -125,9 +126,22 @@ const InspectionBooking = () => {
     }
   };
 
+  const handleBookedSlot = async () => {
+    const bookedSlotId = sessionStorage.getItem("bookedSlotId");
+    try {
+      await scheduleBooked(bookedSlotId);
+    } catch (error) {
+      console.error(
+        "Failed to schedule book inspection on agent calender: ",
+        error
+      );
+    }
+  };
+
   const handlePaymentSuccess = async () => {
     try {
       const res = await handleBookInspection();
+      await handleBookedSlot();
       console.log("Booking id: ", res);
       enqueueSnackbar("Your inspection has been successfully booked!", {
         variant: "success",

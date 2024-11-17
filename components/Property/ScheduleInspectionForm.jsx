@@ -22,6 +22,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
   const [userData, setUserData] = useState({});
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState({});
+  const [slotIds, setSlotIds] = useState({});
 
   useEffect(() => {
     if (!user) return;
@@ -51,11 +52,17 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
 
           // Add the time to the date's array
           acc[formattedDate].push(formattedTime);
+
+          slotIds[formattedDate] = slotIds[formattedDate] || {};
+          slotIds[formattedDate][formattedTime] = slot._id;
         }
         return acc;
       }, {});
 
+      console.log("Formatted Availability:", formattedAvailability);
+      console.log("Slot IDs:", slotIds);
       setAvailableDates(formattedAvailability);
+      setSlotIds(slotIds);
     };
 
     handleFetchAgentSchedule();
@@ -79,25 +86,39 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsButtonLoading(true);
-    const formattedDate = formData.date
+
+    const selectedDate = formData.date
       ? format(formData.date, "yyyy-MM-dd")
       : "";
-    const formattedTime = formData.date ? format(formData.date, "HH:mm") : "";
+    const selectedTime = formData.date ? format(formData.date, "HH:mm") : "";
 
-    const userId = sessionStorage.getItem("userId");
-    sessionStorage.setItem("inspectionDate", formattedDate);
-    sessionStorage.setItem("inspectionTime", formattedTime);
-    sessionStorage.setItem("agentId", agentId);
-    if (!userId) {
-      // Redirect to login if not logged in
+    // Look up the slotId for the selected date and time
+    const selectedSlotId = slotIds[selectedDate]?.[selectedTime];
+
+    // Check if a valid slotId is found
+    if (selectedSlotId) {
+      // Store the slotId, inspection date, and time in sessionStorage
+      sessionStorage.setItem("bookedSlotId", selectedSlotId);
+      sessionStorage.setItem("inspectionDate", selectedDate);
+      sessionStorage.setItem("inspectionTime", selectedTime);
+      sessionStorage.setItem("agentId", agentId);
+    } else {
+      console.error("Selected slot is unavailable or not found.");
+    }
+
+    // Check if the user is logged in
+    if (!user) {
+      // Redirect to login page if the user is not logged in
       router.push(
         `/auth/login?redirect=${encodeURIComponent(
           `/inspection/booking/${propertyId}`
         )}`
       );
     } else {
+      // Redirect to the inspection booking page if the user is logged in
       router.push(`/inspection/booking/${propertyId}`);
     }
+
     setIsButtonLoading(false);
   };
 
@@ -110,9 +131,15 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
     const selectedDate = formData.date
       ? format(formData.date, "yyyy-MM-dd")
       : null;
+
     if (!selectedDate || !availableDates[selectedDate]) return false;
+
+    // Convert `time` to "HH:mm" format
     const formattedTime = format(time, "HH:mm");
-    return availableDates[selectedDate].includes(formattedTime);
+
+    return availableDates[selectedDate].some(
+      (slot) => slot === formattedTime // Compare formatted time directly with available time slot
+    );
   };
 
   return (
@@ -168,8 +195,8 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
             dateFormat="MMMM d, yyyy h:mm aa"
             className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
             required
-            filterDate={isDateAvailable} // Disable dates not available
-            filterTime={isTimeAvailable} // Disable times not available
+            filterDate={(date) => isDateAvailable(date)} // Disable unavailable dates
+            filterTime={(time) => isTimeAvailable(time)} // Disable times not available
           />
         </label>
         <button
