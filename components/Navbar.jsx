@@ -81,12 +81,20 @@ const Navbar = () => {
           {/* Right side menu (Login button when not authenticated) */}
           {!user && (
             <div className="hidden md:block md:ml-6">
-              <button
-                onClick={handleLogin}
-                className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 transition"
-              >
-                <span>Login</span>
-              </button>
+              <div className="flex space-x-4">
+                <button
+                  onClick={handleLogin}
+                  className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 transition"
+                >
+                  <span>Login</span>
+                </button>
+                <button
+                  onClick={() => router.push("/auth/register")}
+                  className="flex items-center text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2 transition"
+                >
+                  <span>Sign Up</span>
+                </button>
+              </div>
             </div>
           )}
 
@@ -261,12 +269,22 @@ const Navbar = () => {
               </button>
             )}
             {!user && (
-              <button
-                onClick={handleLogin}
-                className="text-white block w-full rounded-md bg-gray-700 px-3 py-2 text-base font-medium hover:bg-gray-800 transition"
-              >
-                Login
-              </button>
+              <div className="hidden md:block md:ml-6">
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleLogin}
+                    className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 transition"
+                  >
+                    <span>Login</span>
+                  </button>
+                  <button
+                    onClick={() => router.push("/auth/register")}
+                    className="flex items-center text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2 transition"
+                  >
+                    <span>Sign Up</span>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
