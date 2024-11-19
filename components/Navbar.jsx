@@ -269,21 +269,19 @@ const Navbar = () => {
               </button>
             )}
             {!user && (
-              <div className="hidden md:block md:ml-6">
-                <div className="flex space-x-4">
-                  <button
-                    onClick={handleLogin}
-                    className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 transition"
-                  >
-                    <span>Login</span>
-                  </button>
-                  <button
-                    onClick={() => router.push("/auth/register")}
-                    className="flex items-center text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2 transition"
-                  >
-                    <span>Sign Up</span>
-                  </button>
-                </div>
+              <div className="space-y-1 px-2 pb-3 pt-2">
+                <button
+                  onClick={handleLogin}
+                  className="block w-full text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 text-base font-medium transition"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => router.push("/auth/register")}
+                  className="block w-full text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2 text-base font-medium transition"
+                >
+                  Sign Up
+                </button>
               </div>
             )}
           </div>
