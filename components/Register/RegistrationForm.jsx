@@ -121,7 +121,7 @@ const Registration = () => {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:ring-primary-400 focus:border-primary-400"
+                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
               />
             </div>
             <div>
@@ -139,7 +139,7 @@ const Registration = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:ring-primary-400 focus:border-primary-400"
+                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
               />
             </div>
           </div>
@@ -159,7 +159,7 @@ const Registration = () => {
                 required
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:ring-primary-400 focus:border-primary-400"
+                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
               >
                 <option disabled value="">
                   Select Role
@@ -187,7 +187,7 @@ const Registration = () => {
                 required
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:ring-primary-400 focus:border-primary-400"
+                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
               />
             </div>
           </div>
@@ -210,7 +210,7 @@ const Registration = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:ring-primary-400 focus:border-primary-400"
+                  className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
                 />
                 <button
                   type="button"
@@ -240,7 +240,7 @@ const Registration = () => {
                   required
                   value={formData.confirmpassword}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 mt-1 border rounded shadow-sm focus:ring-primary-400 focus:border-primary-400"
+                  className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
                 />
                 <button
                   type="button"
@@ -259,7 +259,7 @@ const Registration = () => {
 
           <button
             type="submit"
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded shadow hover:bg-primary-600"
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md shadow-sm hover:bg-primary-600"
           >
             Sign up
           </button>
