@@ -90,7 +90,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="flex items-center text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2 transition"
+                  className="flex items-center text-gray-700 bg-gray-200 hover:bg-white rounded-md px-4 py-2 transition"
                 >
                   <span>Sign Up</span>
                 </button>
@@ -278,7 +278,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="block w-full text-white bg-blue-600 hover:bg-blue-700 rounded-md px-4 py-2 text-base font-medium transition"
+                  className="block w-full text-gray-700 bg-gray-200 hover:bg-white rounded-md px-4 py-2 text-base font-medium transition"
                 >
                   Sign Up
                 </button>
