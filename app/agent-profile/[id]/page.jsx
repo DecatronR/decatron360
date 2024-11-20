@@ -30,19 +30,6 @@ const AgentProfilePage = () => {
     "https://via.placeholder.com/150",
   ];
 
-  const reviews = [
-    {
-      text: "Great host! The space was exactly as described, and John was very helpful throughout our stay.",
-      author: "Alice",
-      date: "February 2023",
-    },
-    {
-      text: "Very clean, convenient location, and the host was super responsive!",
-      author: "Michael",
-      date: "March 2023",
-    },
-  ];
-
   useEffect(() => {
     const handleFetchAgentData = async () => {
       if (id) {
@@ -84,9 +71,9 @@ const AgentProfilePage = () => {
       if (id) {
         try {
           const res = await fetchUserRatingAndReviews(id);
-          console.log("agent reviews: ", res);
-          setAgentRating(res);
-          setAgentReviews(res);
+          console.log("agent reviews: ", res.ratings);
+          setAgentRating(res.averageRating || 0);
+          setAgentReviews(res.ratings || []);
         } catch (error) {
           console.log("Issues fetching agent reviews: ", error);
         }
@@ -107,7 +94,7 @@ const AgentProfilePage = () => {
           {/* Make the left column sticky so it stays in place */}
           <div className="md:sticky top-8">
             <AgentProfilePhoto />
-            <AgentRating />
+            <AgentRating agentRating={agentRating} />
 
             {/* Verification Status */}
             <div className="mt-6">

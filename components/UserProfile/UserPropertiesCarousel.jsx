@@ -7,8 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-const UserPropertiesCarousel = ({ userProperties, userId, userData }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+const UserPropertiesCarousel = ({ userProperties, userId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 

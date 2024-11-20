@@ -7,7 +7,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const AgentReviewsCarousel = ({ agentReviews, agentId }) => {
+const AgentReviewsCarousel = ({ agentReviews = [], agentId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3;
 
@@ -43,7 +43,7 @@ const AgentReviewsCarousel = ({ agentReviews, agentId }) => {
               key={index}
               className="border rounded-lg p-4 shadow-sm flex-1 bg-gray-50 transition duration-300 hover:shadow-lg"
             >
-              <p className="text-gray-700 text-lg italic">“{review.text}”</p>
+              <p className="text-gray-700 text-sm italic">“{review.comment}”</p>
               <p className="text-sm text-gray-500 mt-2">
                 — {review.author},{" "}
                 <span className="font-medium">{review.date}</span>
