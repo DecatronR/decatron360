@@ -2,11 +2,12 @@
 import React from "react";
 import StarRatings from "react-star-ratings";
 
-const AgentRating = ({ userRating }) => {
+const AgentRating = ({ agentRating }) => {
+  const rating = Number(agentRating);
   return (
     <div className="flex justify-center items-center">
       <StarRatings
-        rating={3}
+        rating={rating}
         starRatedColor="gold"
         numberOfStars={5}
         starDimension="20px"
