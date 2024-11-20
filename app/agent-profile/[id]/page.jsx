@@ -7,11 +7,9 @@ import AgentPropertiesCarousel from "@/components/AgentProfile/AgentPropertiesCa
 import AgentReviewsCarousel from "@/components/AgentProfile/AgentReviewsCarousel";
 import AgentRating from "@/components/AgentProfile/AgentRating";
 import { useParams } from "next/navigation";
-import axios from "axios";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
-import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
-import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
+import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 import Spinner from "@/components/Spinner";
 
 const AgentProfilePage = () => {
@@ -22,9 +20,9 @@ const AgentProfilePage = () => {
   const [agentRating, setAgentRating] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isEmailVerified = false;
+  const isEmailVerified = true;
   const isPhoneVerified = false;
-  const isIdentityVerified = true;
+  const isIdentityVerified = false;
 
   const photos = [
     "https://via.placeholder.com/150",
@@ -82,11 +80,12 @@ const AgentProfilePage = () => {
   }, [id]);
 
   useEffect(() => {
-    const handleFetchAgentReviews = async () => {
+    const handleFetchAgentRatingAndReviews = async () => {
       if (id) {
         try {
-          const res = await fetchUserReviews(id);
+          const res = await fetchUserRatingAndReviews(id);
           console.log("agent reviews: ", res);
+          setAgentRating(res);
           setAgentReviews(res);
         } catch (error) {
           console.log("Issues fetching agent reviews: ", error);
@@ -95,18 +94,7 @@ const AgentProfilePage = () => {
         console.log("Could not fetch agent reviews, user id not found");
       }
     };
-    handleFetchAgentReviews();
-  }, [id]);
-
-  useEffect(() => {
-    const handleFetchAgentRating = async () => {
-      if (id) {
-        const res = await fetchUserRating(id);
-        console.log("my rating: ", res);
-        setAgentRating(res);
-      }
-    };
-    handleFetchAgentRating();
+    handleFetchAgentRatingAndReviews();
   }, [id]);
 
   if (isLoading) return <Spinner />;

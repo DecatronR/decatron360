@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchUserRating = async (userId) => {
+export const fetchUserRatingAndReviews = async (userId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   if (!userId) {
