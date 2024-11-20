@@ -5,6 +5,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { format } from "date-fns"; // Import date-fns for formatting dates
 
 const UserReviewsCarousel = ({ userReviews = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -35,18 +36,27 @@ const UserReviewsCarousel = ({ userReviews = [] }) => {
 
       <div className="relative">
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          {currentReviews.map((review, index) => (
-            <div
-              key={index}
-              className="border rounded-lg p-4 shadow-sm flex-1 bg-gray-50 transition duration-300 hover:shadow-lg"
-            >
-              <p className="text-gray-700 text-sm italic">“{review.comment}”</p>
-              <p className="text-sm text-gray-500 mt-2">
-                — {review.author},{" "}
-                <span className="font-medium">{review.date}</span>
-              </p>
-            </div>
-          ))}
+          {currentReviews.map((review, index) => {
+            // Format the createdAt field
+            const formattedDate = review.createdAt
+              ? format(new Date(review.createdAt), "MMMM dd, yyyy")
+              : "Unknown date";
+
+            return (
+              <div
+                key={index}
+                className="border rounded-lg p-4 shadow-sm flex-1 bg-gray-50 transition duration-300 hover:shadow-lg"
+              >
+                <p className="text-gray-700 text-sm italic">
+                  “{review.comment}”
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  — {review.author},{" "}
+                  <span className="font-medium text-xs">{formattedDate}</span>
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Navigation Buttons */}
