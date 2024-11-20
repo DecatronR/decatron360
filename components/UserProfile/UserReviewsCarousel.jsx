@@ -6,7 +6,7 @@ import {
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 
-const UserReviewsCarousel = ({ userReviews }) => {
+const UserReviewsCarousel = ({ userReviews = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3;
 
@@ -24,10 +24,8 @@ const UserReviewsCarousel = ({ userReviews }) => {
 
   // Calculate the start and end index for slicing the reviews
   const startIndex = currentIndex * reviewsPerPage;
-  const currentReviews = userReviews.slice(
-    startIndex,
-    startIndex + reviewsPerPage
-  );
+  const currentReviews =
+    userReviews?.slice(startIndex, startIndex + reviewsPerPage) || [];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -42,7 +40,7 @@ const UserReviewsCarousel = ({ userReviews }) => {
               key={index}
               className="border rounded-lg p-4 shadow-sm flex-1 bg-gray-50 transition duration-300 hover:shadow-lg"
             >
-              <p className="text-gray-700 text-lg italic">“{review.text}”</p>
+              <p className="text-gray-700 text-sm italic">“{review.comment}”</p>
               <p className="text-sm text-gray-500 mt-2">
                 — {review.author},{" "}
                 <span className="font-medium">{review.date}</span>

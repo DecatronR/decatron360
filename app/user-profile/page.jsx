@@ -57,9 +57,9 @@ const UserProfilePage = () => {
       if (userId) {
         try {
           const res = await fetchUserRatingAndReviews(userId);
-          console.log("user reviews: ", res);
-          setUserRating(res);
-          setUserReviews(res);
+          console.log("user rating and reviews: ", res.averageRating);
+          setUserRating(res.averageRating || 0);
+          setUserReviews(res.ratings || []);
         } catch (error) {
           console.log("Issue fetching user reviews");
         }
