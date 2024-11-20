@@ -7,11 +7,9 @@ import AgentPropertiesCarousel from "@/components/AgentProfile/AgentPropertiesCa
 import AgentReviewsCarousel from "@/components/AgentProfile/AgentReviewsCarousel";
 import AgentRating from "@/components/AgentProfile/AgentRating";
 import { useParams } from "next/navigation";
-import axios from "axios";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
-import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
-import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
+import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 import Spinner from "@/components/Spinner";
 
 const AgentProfilePage = () => {
@@ -22,27 +20,14 @@ const AgentProfilePage = () => {
   const [agentRating, setAgentRating] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isEmailVerified = false;
+  const isEmailVerified = true;
   const isPhoneVerified = false;
-  const isIdentityVerified = true;
+  const isIdentityVerified = false;
 
   const photos = [
     "https://via.placeholder.com/150",
     "https://via.placeholder.com/150",
     "https://via.placeholder.com/150",
-  ];
-
-  const reviews = [
-    {
-      text: "Great host! The space was exactly as described, and John was very helpful throughout our stay.",
-      author: "Alice",
-      date: "February 2023",
-    },
-    {
-      text: "Very clean, convenient location, and the host was super responsive!",
-      author: "Michael",
-      date: "March 2023",
-    },
   ];
 
   useEffect(() => {
@@ -82,12 +67,13 @@ const AgentProfilePage = () => {
   }, [id]);
 
   useEffect(() => {
-    const handleFetchAgentReviews = async () => {
+    const handleFetchAgentRatingAndReviews = async () => {
       if (id) {
         try {
-          const res = await fetchUserReviews(id);
-          console.log("agent reviews: ", res);
-          setAgentReviews(res);
+          const res = await fetchUserRatingAndReviews(id);
+          console.log("agent reviews: ", res.ratings);
+          setAgentRating(res.averageRating || 0);
+          setAgentReviews(res.ratings || []);
         } catch (error) {
           console.log("Issues fetching agent reviews: ", error);
         }
@@ -95,18 +81,7 @@ const AgentProfilePage = () => {
         console.log("Could not fetch agent reviews, user id not found");
       }
     };
-    handleFetchAgentReviews();
-  }, [id]);
-
-  useEffect(() => {
-    const handleFetchAgentRating = async () => {
-      if (id) {
-        const res = await fetchUserRating(id);
-        console.log("my rating: ", res);
-        setAgentRating(res);
-      }
-    };
-    handleFetchAgentRating();
+    handleFetchAgentRatingAndReviews();
   }, [id]);
 
   if (isLoading) return <Spinner />;
@@ -119,7 +94,7 @@ const AgentProfilePage = () => {
           {/* Make the left column sticky so it stays in place */}
           <div className="md:sticky top-8">
             <AgentProfilePhoto />
-            <AgentRating />
+            <AgentRating agentRating={agentRating} />
 
             {/* Verification Status */}
             <div className="mt-6">

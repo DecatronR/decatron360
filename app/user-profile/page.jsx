@@ -8,8 +8,7 @@ import UserReviewsCarousel from "@/components/UserProfile/UserReviewsCarousel";
 import UserRating from "@/components/UserProfile/UserRating";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
-import { fetchUserReviews } from "@/utils/api/user/fetchUserReviews";
-import { fetchUserRating } from "@/utils/api/user/fetchUserRating";
+import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 
 const UserProfilePage = () => {
   const [userId, setUserId] = useState("");
@@ -54,12 +53,13 @@ const UserProfilePage = () => {
   }, [userId]);
 
   useEffect(() => {
-    const handleFetchUserReviews = async () => {
+    const handleFetchUserRatingAndReviews = async () => {
       if (userId) {
         try {
-          const res = await fetchUserReviews(userId);
-          console.log("user reviews: ", res);
-          setUserReviews(res);
+          const res = await fetchUserRatingAndReviews(userId);
+          console.log("user rating and reviews: ", res.averageRating);
+          setUserRating(res.averageRating || 0);
+          setUserReviews(res.ratings || []);
         } catch (error) {
           console.log("Issue fetching user reviews");
         }
@@ -67,24 +67,7 @@ const UserProfilePage = () => {
         console.log("Could not fetch user reviews, user id not found");
       }
     };
-    handleFetchUserReviews();
-  }, [userId]);
-
-  useEffect(() => {
-    const handleFetchUserRating = async () => {
-      if (userId) {
-        try {
-          const res = await fetchUserRating(userId);
-          console.log("my rating: ", res);
-          setUserRating(res);
-        } catch (error) {
-          console.log("Issue fetching user rating");
-        }
-      } else {
-        console.log("Could not fetch rating, user id not found");
-      }
-    };
-    handleFetchUserRating();
+    handleFetchUserRatingAndReviews();
   }, [userId]);
 
   const isEmailVerified = true;

@@ -5,8 +5,9 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { format } from "date-fns"; // Import date-fns for formatting dates
 
-const UserReviewsCarousel = ({ userReviews }) => {
+const UserReviewsCarousel = ({ userReviews = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const reviewsPerPage = 3;
 
@@ -24,10 +25,8 @@ const UserReviewsCarousel = ({ userReviews }) => {
 
   // Calculate the start and end index for slicing the reviews
   const startIndex = currentIndex * reviewsPerPage;
-  const currentReviews = userReviews.slice(
-    startIndex,
-    startIndex + reviewsPerPage
-  );
+  const currentReviews =
+    userReviews?.slice(startIndex, startIndex + reviewsPerPage) || [];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -35,50 +34,42 @@ const UserReviewsCarousel = ({ userReviews }) => {
         <h2 className="text-2xl font-bold text-gray-800">Reviews</h2>
       </div>
 
-      <div className="relative">
-        <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          {currentReviews.map((review, index) => (
-            <div
-              key={index}
-              className="border rounded-lg p-4 shadow-sm flex-1 bg-gray-50 transition duration-300 hover:shadow-lg"
-            >
-              <p className="text-gray-700 text-lg italic">“{review.text}”</p>
-              <p className="text-sm text-gray-500 mt-2">
-                — {review.author},{" "}
-                <span className="font-medium">{review.date}</span>
-              </p>
-            </div>
-          ))}
-        </div>
+      {userReviews.length > 0 ? (
+        <div>
+          {/* Horizontal Scrollable Reviews */}
+          <div className="flex overflow-x-scroll space-x-4 scrollbar-hide">
+            {userReviews.map((review, index) => {
+              const formattedDate = review.createdAt
+                ? format(new Date(review.createdAt), "MMMM dd, yyyy")
+                : "Unknown date";
 
-        {/* Navigation Buttons */}
-        <div className="absolute top-1/2 transform -translate-y-1/2 flex justify-between w-full px-4">
-          <button
-            onClick={handlePrevious}
-            disabled={currentIndex === 0}
-            className={`bg-gray-300 text-gray-700 rounded-full p-2 transition duration-300 hover:bg-gray-400 disabled:opacity-50`}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </button>
-          <button
-            onClick={handleNext}
-            disabled={
-              currentIndex ===
-              Math.ceil(userReviews.length / reviewsPerPage) - 1
-            }
-            className={`bg-gray-300 text-gray-700 rounded-full p-2 transition duration-300 hover:bg-gray-400 disabled:opacity-50`}
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </button>
-        </div>
-      </div>
+              return (
+                <div
+                  key={index}
+                  className="min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] border rounded-lg p-4 shadow-sm bg-gray-50 transition duration-300 hover:shadow-lg"
+                >
+                  <p className="text-gray-700 text-sm italic">
+                    “{review.comment}”
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    — {review.author},{" "}
+                    <span className="font-medium text-xs">{formattedDate}</span>
+                  </p>
+                </div>
+              );
+            })}
+          </div>
 
-      {/* See More Button */}
-      <div className="mt-4 text-right">
-        <button className="text-primary-500 font-medium hover:underline">
-          See More
-        </button>
-      </div>
+          {/* See More Button */}
+          <div className="mt-4 text-right">
+            <button className="text-primary-500 font-medium hover:underline">
+              See More
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-500">No reviews found.</p>
+      )}
     </div>
   );
 };

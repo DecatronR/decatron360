@@ -41,29 +41,13 @@ const AgentPropertiesCarousel = ({ agentProperties, agentId, agentData }) => {
       </div>
 
       {agentProperties.length > 0 ? (
-        <div className="relative">
-          {/* Carousel Navigation Buttons */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10 hover:bg-gray-300 transition duration-200"
-            aria-label="Previous Property"
-          >
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10 hover:bg-gray-300 transition duration-200"
-            aria-label="Next Property"
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </button>
-
-          {/* Display Visible Properties */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleProperties.map((property) => (
+        <div>
+          {/* Horizontal Scroll Container */}
+          <div className="flex overflow-x-scroll space-x-4 scrollbar-hide">
+            {agentProperties.map((property) => (
               <div
                 key={property._id}
-                className="rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
+                className="min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
               >
                 <Link href={`/properties/${property._id}`}>
                   {/* Display property image or a placeholder */}

@@ -7,8 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-const UserPropertiesCarousel = ({ userProperties, userId, userData }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+const UserPropertiesCarousel = ({ userProperties, userId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
 
@@ -39,29 +38,13 @@ const UserPropertiesCarousel = ({ userProperties, userId, userData }) => {
       </div>
 
       {userProperties.length > 0 ? (
-        <div className="relative">
-          {/* Carousel Navigation Buttons */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10 hover:bg-gray-300 transition duration-200"
-            aria-label="Previous Property"
-          >
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-200 rounded-full p-2 shadow-md z-10 hover:bg-gray-300 transition duration-200"
-            aria-label="Next Property"
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </button>
-
+        <div>
           {/* Display Visible Properties */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleProperties.map((property) => (
+          <div className="flex overflow-x-scroll space-x-4 scrollbar-hide">
+            {userProperties.map((property) => (
               <div
                 key={property._id}
-                className="rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
+                className="min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
               >
                 <Link href={`/properties/${property._id}`}>
                   {/* Display property image or a placeholder */}
