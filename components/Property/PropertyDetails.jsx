@@ -94,23 +94,23 @@ const PropertyDetails = ({ property, agentId }) => {
         <div className="flex space-x-4">
           <Link
             href={`/properties/${property._id}/edit`}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition duration-200"
             role="editProperty"
           >
             Edit
           </Link>
           <button
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
             onClick={handleSoldOutProperty}
           >
             Sold out
           </button>
-          <button
+          {/* <button
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
             onClick={handleDeleteProperty}
           >
             Delete
-          </button>
+          </button> */}
         </div>
       )}
       {/* Property Info and Features */}
