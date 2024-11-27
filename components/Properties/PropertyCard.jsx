@@ -31,6 +31,18 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             />
           )}
 
+          {/* Sold Out Tag */}
+          {property.isSoldOut === "1" && (
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+              Sold Out
+            </div>
+          )}
+
+          {/* For Rent / For Sale Tag */}
+          <div className="absolute top-4 right-16 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+            {property.listingType === "Rent" ? "For Rent" : "For Sale"}
+          </div>
+
           {/* Favorite Icon */}
           <div
             className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
@@ -45,13 +57,13 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             }}
           >
             <FaHeart
-              className={`text-2xl transition duration-300 ${
+              className={`text-2xm transition duration-300 ${
                 isFavorite ? "text-red-500" : "text-gray-400"
               }`}
             />
           </div>
 
-          <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-lg text-sm font-semibold">
+          <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-lg text-sm font-semibold">
             {property.Price && formatPrice(property.Price)}
           </div>
         </div>
