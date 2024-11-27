@@ -12,12 +12,14 @@ import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
 import ScheduleInspectionForm from "../../../components/Property/ScheduleInspectionForm";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
+import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 
 const PropertyPage = () => {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [agentId, setAgentId] = useState("");
   const [agentData, setAgentData] = useState("");
+  const [agentRating, setAgentRating] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -54,6 +56,23 @@ const PropertyPage = () => {
     handleFetchAgent();
   }, [agentId]);
 
+  useEffect(() => {
+    const handleFetchAgentRating = async () => {
+      if (id) {
+        try {
+          const res = await fetchUserRatingAndReviews(id);
+          console.log("agent ratingss: ", res.ratings);
+          setAgentRating(res.averageRating || 0);
+        } catch (error) {
+          console.log("Issues fetching agent rating: ", error);
+        }
+      } else {
+        console.log("Could not fetch agent reviews, user id not found");
+      }
+    };
+    handleFetchAgentRating();
+  }, [id]);
+
   if (!property && !isLoading) {
     return (
       <h1 className="text-center text-2xl font-bold mt-10">
@@ -84,7 +103,10 @@ const PropertyPage = () => {
               {/* Sticky Sidebar */}
               <aside className="w-full md:w-1/3 sticky top-4 h-fit">
                 <Link href={`/agent-profile/${agentId}`}>
-                  <AgentProfileCard agent={agentData} />
+                  <AgentProfileCard
+                    agentData={agentData}
+                    agentRating={agentRating}
+                  />
                 </Link>
                 <div className="space-y-4">
                   <FavoriteButton property={property} />

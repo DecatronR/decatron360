@@ -8,6 +8,7 @@ import StarRatings from "react-star-ratings";
 const AgentProfileCard = ({ agentData, agentRating }) => {
   const { user } = useAuth();
   const [photo, setPhoto] = useState(agentData?.photo || "/default-avatar.png"); // Default avatar image
+  const rating = Number(agentRating);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -46,7 +47,7 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
           </p>
           <div className="flex items-center">
             <StarRatings
-              rating={agentRating || 0} // Using prop for dynamic ratings
+              rating={rating} // Using prop for dynamic ratings
               starRatedColor="gold"
               numberOfStars={5}
               starDimension="20px"
