@@ -45,6 +45,11 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
           <p className="text-xl font-semibold text-gray-800">
             {agentData?.name}
           </p>
+          <p className="text-m font-normal text-gray-800">
+            {agentData?.role?.charAt(0).toUpperCase() +
+              agentData?.role?.slice(1)}
+          </p>
+
           <div className="flex items-center">
             <StarRatings
               rating={rating}
