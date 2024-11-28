@@ -62,9 +62,11 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             </div>
 
             {/* Sold Out */}
-            <div className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
-              Sold Out
-            </div>
+            {property.isSoldOut && (
+              <div className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+                Sold Out
+              </div>
+            )}
 
             {/* For Rent / For Sale */}
             <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
