@@ -165,12 +165,35 @@ const Navbar = () => {
                 </button>
                 {isProfileMenuOpen && (
                   <div
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
+                    {/* User Information */}
+                    <div className="px-4 py-3 border-b border-gray-200">
+                      <div className="flex items-center space-x-3">
+                        <Image
+                          className="h-10 w-10 rounded-full"
+                          src={profileImage || profileDefault}
+                          alt="User Profile"
+                          width={40}
+                          height={40}
+                        />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {user?.name || "User Name"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {user?.role?.charAt(0).toUpperCase() +
+                              user?.role?.slice(1) || "Role"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dropdown Menu Items */}
                     <Link
                       href="/user-profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
