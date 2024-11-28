@@ -172,37 +172,36 @@ const Navbar = () => {
                     tabIndex="-1"
                   >
                     {/* User Information */}
-                    <div className="px-4 py-3 border-b border-gray-200">
-                      <div className="flex items-center space-x-3">
-                        <Image
-                          className="h-10 w-10 rounded-full"
-                          src={profileImage || profileDefault}
-                          alt="User Profile"
-                          width={40}
-                          height={40}
-                        />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {user?.name || "User Name"}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {user?.role?.charAt(0).toUpperCase() +
-                              user?.role?.slice(1) || "Role"}
-                          </p>
-                        </div>
+                    <div className="px-4 py-3 border-b border-gray-200 hover:bg-gray-100">
+                      <div className="flex items-center space-x-3 ">
+                        <Link
+                          href="/user-profile"
+                          className="flex items-center space-x-3 "
+                          role="menuitem"
+                          tabIndex="-1"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          <Image
+                            className="h-10 w-10 rounded-full"
+                            src={profileImage || profileDefault}
+                            alt="User Profile"
+                            width={40}
+                            height={40}
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {user?.name || "User Name"}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {user?.role?.charAt(0).toUpperCase() +
+                                user?.role?.slice(1) || "Role"}
+                            </p>
+                          </div>
+                        </Link>
                       </div>
                     </div>
 
                     {/* Dropdown Menu Items */}
-                    <Link
-                      href="/user-profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                      tabIndex="-1"
-                      onClick={() => setIsProfileMenuOpen(false)}
-                    >
-                      My Profile
-                    </Link>
                     <Link
                       href="/properties/favorite"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
