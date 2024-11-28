@@ -29,6 +29,34 @@ const PropertyDetails = ({ property, agentId }) => {
     setIsPropertyLister(isCurrentUserTheLister);
   }, [agentId]);
 
+  const handleSoldOutProperty = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to mark this property as sold out? This action cannot be undone.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, it's sold out!",
+        cancelButtonText: "Cancel",
+      });
+
+      if (result.isConfirmed) {
+        //add sold out API call here
+
+        Swal.fire(
+          "Sold out!",
+          "Your property has been marked as sold out.",
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error("Failed to mark property as sold out:", error);
+      Swal.fire("Failed", "Failed to mark property as sold out!", "error");
+    }
+  };
+
   const handleDeleteProperty = async () => {
     try {
       const result = await Swal.fire({
@@ -66,17 +94,23 @@ const PropertyDetails = ({ property, agentId }) => {
         <div className="flex space-x-4">
           <Link
             href={`/properties/${property._id}/edit`}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+            className="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition duration-200"
             role="editProperty"
           >
             Edit
           </Link>
           <button
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
+            onClick={handleSoldOutProperty}
+          >
+            Sold out
+          </button>
+          {/* <button
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
             onClick={handleDeleteProperty}
           >
             Delete
-          </button>
+          </button> */}
         </div>
       )}
       {/* Property Info and Features */}

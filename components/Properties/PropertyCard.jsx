@@ -31,7 +31,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             />
           )}
 
-          {/* Favorite Icon */}
+          {/* Top Tags */}
+          <div className="absolute top-4 left-4 bg-black bg-opacity-100 text-white px-3 py-1 rounded-full text-sm font-semibold">
+            {property.Price && formatPrice(property.Price)}
+          </div>
           <div
             className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
@@ -45,14 +48,28 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             }}
           >
             <FaHeart
-              className={`text-2xl transition duration-300 ${
+              className={`text-2xm transition duration-300 ${
                 isFavorite ? "text-red-500" : "text-gray-400"
               }`}
             />
           </div>
 
-          <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-lg text-sm font-semibold">
-            {property.Price && formatPrice(property.Price)}
+          {/* Bottom Tags */}
+          <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center gap-4">
+            {/* Listed By Role */}
+            <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+              {property.listedBy === "Owner" ? "Owner" : "Agent"}
+            </div>
+
+            {/* Sold Out */}
+            <div className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+              Sold Out
+            </div>
+
+            {/* For Rent / For Sale */}
+            <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+              {property.listingType === "Rent" ? "For Rent" : "For Sale"}
+            </div>
           </div>
         </div>
 
@@ -63,7 +80,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             </h2>
             <p className="text-xs text-gray-500 truncate">
               {property.propertyType} in {property.neighbourhood},{" "}
-              {property.lga} , {property.state}
+              {property.lga}, {property.state}
             </p>
           </div>
           <div className="flex items-center text-gray-600 text-xs space-x-2 mb-2">
