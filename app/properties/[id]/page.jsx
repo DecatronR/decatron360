@@ -58,9 +58,9 @@ const PropertyPage = () => {
 
   useEffect(() => {
     const handleFetchAgentRating = async () => {
-      if (id) {
+      if (agentId) {
         try {
-          const res = await fetchUserRatingAndReviews(id);
+          const res = await fetchUserRatingAndReviews(agentId);
           console.log("agent ratingss: ", res.ratings);
           setAgentRating(res.averageRating || 0);
         } catch (error) {
@@ -71,7 +71,7 @@ const PropertyPage = () => {
       }
     };
     handleFetchAgentRating();
-  }, [id]);
+  }, [agentId]);
 
   if (!property && !isLoading) {
     return (

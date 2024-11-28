@@ -47,14 +47,13 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
           </p>
           <div className="flex items-center">
             <StarRatings
-              rating={rating} // Using prop for dynamic ratings
+              rating={rating}
               starRatedColor="gold"
               numberOfStars={5}
               starDimension="20px"
               starSpacing="2px"
               name="rating"
             />
-            <span className="ml-2 text-gray-600">{agentRating}</span>
           </div>
           {/* <p className="text-gray-500 text-sm">
             Joined{" "}
