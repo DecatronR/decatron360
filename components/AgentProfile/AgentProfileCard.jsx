@@ -8,6 +8,7 @@ import StarRatings from "react-star-ratings";
 const AgentProfileCard = ({ agentData, agentRating }) => {
   const { user } = useAuth();
   const [photo, setPhoto] = useState(agentData?.photo || "/default-avatar.png"); // Default avatar image
+  const rating = Number(agentRating);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -21,7 +22,7 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 transition duration-300 hover:shadow-xl">
+    <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 transition duration-300 hover:shadow-xl mb-4">
       <div className="flex flex-col sm:flex-row items-center">
         <div className="w-24 h-24 sm:w-20 sm:h-20 rounded-full overflow-hidden mr-4 cursor-pointer shadow-lg transition-transform duration-200 transform hover:scale-105">
           <Image
@@ -44,16 +45,20 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
           <p className="text-xl font-semibold text-gray-800">
             {agentData?.name}
           </p>
+          <p className="text-m font-normal text-gray-800">
+            {agentData?.role?.charAt(0).toUpperCase() +
+              agentData?.role?.slice(1)}
+          </p>
+
           <div className="flex items-center">
             <StarRatings
-              rating={agentRating || 0} // Using prop for dynamic ratings
+              rating={rating}
               starRatedColor="gold"
               numberOfStars={5}
               starDimension="20px"
               starSpacing="2px"
               name="rating"
             />
-            <span className="ml-2 text-gray-600">{agentRating}</span>
           </div>
           {/* <p className="text-gray-500 text-sm">
             Joined{" "}
