@@ -22,7 +22,7 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 transition duration-300 hover:shadow-xl">
+    <div className="bg-white p-6 rounded-lg shadow-lg space-y-4 transition duration-300 hover:shadow-xl mb-4">
       <div className="flex flex-col sm:flex-row items-center">
         <div className="w-24 h-24 sm:w-20 sm:h-20 rounded-full overflow-hidden mr-4 cursor-pointer shadow-lg transition-transform duration-200 transform hover:scale-105">
           <Image
