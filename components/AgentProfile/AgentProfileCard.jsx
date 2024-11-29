@@ -7,7 +7,9 @@ import StarRatings from "react-star-ratings";
 
 const AgentProfileCard = ({ agentData, agentRating }) => {
   const { user } = useAuth();
-  const [photo, setPhoto] = useState(agentData?.photo || "/default-avatar.png"); // Default avatar image
+  const [photo, setPhoto] = useState(
+    agentData?.passport || "/default-avatar.png"
+  ); // Default avatar image
   const rating = Number(agentRating);
 
   const handleImageChange = (e) => {

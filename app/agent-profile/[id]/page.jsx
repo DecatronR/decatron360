@@ -87,7 +87,11 @@ const AgentProfilePage = () => {
         <div className="md:w-1/3 mb-8 md:mb-0">
           {/* Make the left column sticky so it stays in place */}
           <div className="md:sticky top-8">
-            <AgentProfilePhoto agentId={id} agentData={agentData} />
+            <AgentProfilePhoto
+              agentId={id}
+              agentData={agentData}
+              onAgentDataUpdate={handleFetchAgentData}
+            />
             <AgentRating agentRating={agentRating} />
 
             {/* Verification Status */}

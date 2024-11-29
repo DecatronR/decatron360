@@ -86,7 +86,11 @@ const UserProfilePage = () => {
         {/* Left Column: Profile Info */}
         <div className="w-full md:w-1/3">
           <div className="md:sticky md:top-8">
-            <UserProfilePhoto userId={userId} userData={userData} />
+            <UserProfilePhoto
+              userId={userId}
+              userData={userData}
+              onUserDataUpdate={handleFetchUserData}
+            />
             <UserRating userRating={userRating} />
             <div className="mt-6">
               <UserVerificationStatus
