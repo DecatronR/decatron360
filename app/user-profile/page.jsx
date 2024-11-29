@@ -9,13 +9,19 @@ import UserRating from "@/components/UserProfile/UserRating";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
+import Spinner from "components/Spinner";
 
 const UserProfilePage = () => {
   const [userId, setUserId] = useState("");
+  const [userData, setUserData] = useState(null);
   const [userProperties, setUserProperties] = useState([]);
   const [userReviews, setUserReviews] = useState([]);
   const [userRating, setUserRating] = useState([]);
-  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const isEmailVerified = true;
+  const isPhoneVerified = false;
+  const isIdentityVerified = false;
 
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
@@ -31,6 +37,8 @@ const UserProfilePage = () => {
           setUserData(res);
         } catch (error) {
           console.log("Issues fetching user data: ", error);
+        } finally {
+          setIsLoading(false);
         }
       } else {
         console.log("Could not fetch user data, user id not found");
@@ -70,9 +78,7 @@ const UserProfilePage = () => {
     handleFetchUserRatingAndReviews();
   }, [userId]);
 
-  const isEmailVerified = true;
-  const isPhoneVerified = false;
-  const isIdentityVerified = false;
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="bg-gray-100 min-h-screen py-8">
