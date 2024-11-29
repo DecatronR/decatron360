@@ -24,12 +24,6 @@ const AgentProfilePage = () => {
   const isPhoneVerified = false;
   const isIdentityVerified = false;
 
-  const photos = [
-    "https://via.placeholder.com/150",
-    "https://via.placeholder.com/150",
-    "https://via.placeholder.com/150",
-  ];
-
   useEffect(() => {
     const handleFetchAgentData = async () => {
       if (id) {
