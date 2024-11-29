@@ -24,22 +24,23 @@ const AgentProfilePage = () => {
   const isPhoneVerified = false;
   const isIdentityVerified = false;
 
-  useEffect(() => {
-    const handleFetchAgentData = async () => {
-      if (id) {
-        try {
-          const res = await fetchUserData(id);
-          console.log("agent data: ", res);
-          setAgentData(res);
-        } catch (error) {
-          console.log("Issues fetching agent details: ", error);
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        console.log("Could not fetch agent details, user id not found");
+  const handleFetchAgentData = async () => {
+    if (id) {
+      try {
+        const res = await fetchUserData(id);
+        console.log("agent data: ", res);
+        setAgentData(res);
+      } catch (error) {
+        console.log("Issues fetching agent details: ", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
+    } else {
+      console.log("Could not fetch agent details, user id not found");
+    }
+  };
+
+  useEffect(() => {
     handleFetchAgentData();
   }, [id]);
 
@@ -87,7 +88,11 @@ const AgentProfilePage = () => {
         <div className="md:w-1/3 mb-8 md:mb-0">
           {/* Make the left column sticky so it stays in place */}
           <div className="md:sticky top-8">
-            <AgentProfilePhoto />
+            <AgentProfilePhoto
+              agentId={id}
+              agentData={agentData}
+              onAgentDataUpdate={handleFetchAgentData}
+            />
             <AgentRating agentRating={agentRating} />
 
             {/* Verification Status */}

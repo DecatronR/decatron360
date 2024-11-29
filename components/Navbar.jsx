@@ -157,7 +157,7 @@ const Navbar = () => {
                   <span className="sr-only">Open user menu</span>
                   <Image
                     className="h-8 w-8 rounded-full"
-                    src={profileImage || profileDefault}
+                    src={user?.passport || profileDefault}
                     alt="User Profile"
                     width={40}
                     height={40}
@@ -183,7 +183,7 @@ const Navbar = () => {
                         >
                           <Image
                             className="h-10 w-10 rounded-full"
-                            src={profileImage || profileDefault}
+                            src={user?.passport || profileDefault}
                             alt="User Profile"
                             width={40}
                             height={40}

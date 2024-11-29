@@ -1,21 +1,25 @@
 "use client";
 import Image from "next/image";
-import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import StarRatings from "react-star-ratings";
 
 const AgentProfileCard = ({ agentData, agentRating }) => {
-  const { user } = useAuth();
-  const [photo, setPhoto] = useState(agentData?.photo || "/default-avatar.png"); // Default avatar image
+  const [photo, setPhoto] = useState("/default-avatar.png");
   const rating = Number(agentRating);
+
+  useEffect(() => {
+    if (agentData?.passport) {
+      setPhoto(agentData.passport);
+    }
+  }, [agentData?.passport]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhoto(reader.result);
+        setPhoto(reader.result); // Update the local preview
       };
       reader.readAsDataURL(file);
     }
@@ -49,7 +53,6 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
             {agentData?.role?.charAt(0).toUpperCase() +
               agentData?.role?.slice(1)}
           </p>
-
           <div className="flex items-center">
             <StarRatings
               rating={rating}
@@ -60,12 +63,6 @@ const AgentProfileCard = ({ agentData, agentRating }) => {
               name="rating"
             />
           </div>
-          {/* <p className="text-gray-500 text-sm">
-            Joined{" "}
-            {formatDistanceToNow(new Date(agentData?.joinDate), {
-              addSuffix: true,
-            })}
-          </p> */}
         </div>
       </div>
     </div>
