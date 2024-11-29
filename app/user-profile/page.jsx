@@ -28,22 +28,23 @@ const UserProfilePage = () => {
     setUserId(id);
   }, []);
 
-  useEffect(() => {
-    const handleFetchUserData = async () => {
-      if (userId) {
-        try {
-          const res = await fetchUserData(userId);
-          console.log("user data: ", res);
-          setUserData(res);
-        } catch (error) {
-          console.log("Issues fetching user data: ", error);
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        console.log("Could not fetch user data, user id not found");
+  const handleFetchUserData = async () => {
+    if (userId) {
+      try {
+        const res = await fetchUserData(userId);
+        console.log("user data: ", res);
+        setUserData(res);
+      } catch (error) {
+        console.log("Issues fetching user data: ", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
+    } else {
+      console.log("Could not fetch user data, user id not found");
+    }
+  };
+
+  useEffect(() => {
     handleFetchUserData();
   }, [userId]);
 
