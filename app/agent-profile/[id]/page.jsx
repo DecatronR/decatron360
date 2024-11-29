@@ -24,22 +24,23 @@ const AgentProfilePage = () => {
   const isPhoneVerified = false;
   const isIdentityVerified = false;
 
-  useEffect(() => {
-    const handleFetchAgentData = async () => {
-      if (id) {
-        try {
-          const res = await fetchUserData(id);
-          console.log("agent data: ", res);
-          setAgentData(res);
-        } catch (error) {
-          console.log("Issues fetching agent details: ", error);
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        console.log("Could not fetch agent details, user id not found");
+  const handleFetchAgentData = async () => {
+    if (id) {
+      try {
+        const res = await fetchUserData(id);
+        console.log("agent data: ", res);
+        setAgentData(res);
+      } catch (error) {
+        console.log("Issues fetching agent details: ", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
+    } else {
+      console.log("Could not fetch agent details, user id not found");
+    }
+  };
+
+  useEffect(() => {
     handleFetchAgentData();
   }, [id]);
 
