@@ -1,5 +1,9 @@
 export const metadata = {
-    title: 'Decatron 360',
-    description: 'easy | fast | safe',
-    keywords: 'properties, real estate, houses, homes, apartments, rent, buy, sell',
-  };
+  title: "Decatron",
+  description: "Creating a leap in value",
+  keywords:
+    "properties, real estate, houses, homes, apartments, rent, buy, sell",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
