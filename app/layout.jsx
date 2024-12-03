@@ -1,37 +1,23 @@
-"use client";
 import "@/assets/styles/globals.css";
-import { AuthProvider } from "@/context/AuthContext";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
-import { SnackbarProvider } from "notistack";
 import "photoswipe/dist/photoswipe.css";
+import ClientLayout from "@/components/ClientLayout";
 
-const MainLayout = ({ children }) => {
+export const metadata = {
+  title: "Decatron",
+  description: "Creating a leap in value",
+  keywords:
+    "properties, real estate, houses, homes, apartments, rent, buy, sell",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        <AuthProvider>
-          <SnackbarProvider
-            maxSnack={3}
-            classes={{
-              variantSuccess: "bg-green-500 text-white",
-              variantError: "bg-red-500 text-white",
-              variantWarning: "bg-yellow-500 text-black",
-              variantInfo: "bg-blue-500 text-white",
-            }}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right",
-            }}
-          >
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer className="mt-auto" />
-          </SnackbarProvider>
-        </AuthProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
-};
-
-export default MainLayout;
+}
