@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { updateUserData } from "utils/api/user/updateUserData";
 import { useSnackbar } from "notistack";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import AgentProfileModal from "./AgentProfileModal";
 
 const AgentProfilePhoto = ({ agentId, agentData, onAgentDataUpdate }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -9,6 +10,7 @@ const AgentProfilePhoto = ({ agentId, agentData, onAgentDataUpdate }) => {
   const [passportChanged, setPassportChanged] = useState(false);
   const fileInputRef = useRef(null);
   const [file, setFile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePassportChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -68,28 +70,21 @@ const AgentProfilePhoto = ({ agentId, agentData, onAgentDataUpdate }) => {
           src={agentData?.passport || "/path/to/default/profile.png"}
           alt="Profile"
           className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
-          onClick={() => fileInputRef.current.click()}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handlePassportChange}
-          className="hidden"
-          aria-label="Change Profile Photo"
+          onClick={() => setIsModalOpen(true)}
         />
       </div>
-      <p className="text-center mt-2 text-sm text-gray-600">
-        Click on the photo to change it.
-      </p>
-      {passportChanged && (
-        <button
-          onClick={handleProfileUpdate}
-          className="bg-primary-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-primary-700"
+      {/* {isModalOpen && (
+        <AgentProfileModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
         >
-          Save Changes
-        </button>
-      )}
+          <img
+            src={passport || "/path/to/default/profile.png"}
+            alt="Full-size Profile"
+            className="w-full h-auto max-w-screen-lg max-h-screen"
+          />
+        </AgentProfileModal>
+      )} */}
     </div>
   );
 };

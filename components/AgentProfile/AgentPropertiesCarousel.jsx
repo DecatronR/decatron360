@@ -33,7 +33,11 @@ const AgentPropertiesCarousel = ({ agentProperties, agentId, agentData }) => {
   );
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+    <div
+      className="bg-white p-6 rounded-lg shadow-md mb-6 relative"
+      style={{ zIndex: 0 }}
+    >
+      {/* Adding relative position ensures the z-index hierarchy is correct */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold text-gray-800">
           {agentData?.name}'s Listings
