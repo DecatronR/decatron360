@@ -21,9 +21,7 @@ const AgentVerificationStatus = ({
               <span className="text-green-600 text-sm">Verified</span>
             </div>
           ) : (
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
-              Verify Email
-            </button>
+            <span className="text-gray-500 text-sm">Unverified</span>
           )}
         </div>
 
@@ -36,9 +34,7 @@ const AgentVerificationStatus = ({
               <span className="text-green-600 text-sm">Verified</span>
             </div>
           ) : (
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
-              Verify Phone
-            </button>
+            <span className="text-gray-500 text-sm">Unverified</span>
           )}
         </div>
 
@@ -51,9 +47,7 @@ const AgentVerificationStatus = ({
               <span className="text-green-600 text-sm">Verified</span>
             </div>
           ) : (
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md transition-colors hover:bg-blue-700">
-              Verify Identity
-            </button>
+            <span className="text-gray-500 text-sm">Unverified</span>
           )}
         </div>
       </div>
