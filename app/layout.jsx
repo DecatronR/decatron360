@@ -7,9 +7,6 @@ export const metadata = {
   description: "Creating a leap in value",
   keywords:
     "properties, real estate, houses, homes, apartments, rent, buy, sell",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default function RootLayout({ children }) {
