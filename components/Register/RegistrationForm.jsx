@@ -265,7 +265,7 @@ const Registration = () => {
             type="submit"
             className="w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md shadow-sm hover:bg-primary-600"
           >
-            Sign up
+            {isButtonLoading ? <ButtonSpinner /> : "Sign up"}
           </button>
         </form>
         <div className="mt-4 text-sm text-center text-gray-500">

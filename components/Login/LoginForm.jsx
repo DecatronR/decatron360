@@ -109,7 +109,7 @@ const LoginForm = () => {
               type="submit"
               className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400"
             >
-              {isButtonLoading ? <ButtonSpinner /> : "Schedule Inspection"}
+              {isButtonLoading ? <ButtonSpinner /> : "Sign in"}
             </button>
           </div>
         </form>
