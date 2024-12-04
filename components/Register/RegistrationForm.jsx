@@ -5,6 +5,7 @@ import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useSnackbar } from "notistack";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
+import ButtonSpinner from "components/ButtonSpinner";
 
 const Registration = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -22,6 +23,7 @@ const Registration = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [inspectionData, setInspectionData] = useState(null);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   useEffect(() => {
     const handleFetchRoles = async () => {
@@ -85,11 +87,13 @@ const Registration = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsButtonLoading(true);
 
     sessionStorage.setItem("email", formData.email);
     sessionStorage.setItem("password", formData.password);
     onRegistration();
     router.replace("/auth/otp");
+    setIsButtonLoading(false);
   };
 
   const handleLoginClick = (event) => {
@@ -261,7 +265,7 @@ const Registration = () => {
             type="submit"
             className="w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md shadow-sm hover:bg-primary-600"
           >
-            Sign up
+            {isButtonLoading ? <ButtonSpinner /> : "Sign up"}
           </button>
         </form>
         <div className="mt-4 text-sm text-center text-gray-500">

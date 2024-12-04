@@ -5,6 +5,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
+import ButtonSpinner from "components/ButtonSpinner";
 
 const LoginForm = () => {
   const { signIn } = useAuth();
@@ -12,6 +13,7 @@ const LoginForm = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const handleChange = (event) => {
     setFormData({
@@ -26,6 +28,7 @@ const LoginForm = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    setIsButtonLoading(true);
     try {
       await signIn(formData.email, formData.password);
       enqueueSnackbar("Login successful!", { variant: "success" });
@@ -37,6 +40,8 @@ const LoginForm = () => {
       router.replace(redirectPath);
     } catch (error) {
       console.error("Issues with login", error);
+    } finally {
+      setIsButtonLoading(true);
     }
   };
 
@@ -104,7 +109,7 @@ const LoginForm = () => {
               type="submit"
               className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400"
             >
-              Sign in
+              {isButtonLoading ? <ButtonSpinner /> : "Sign in"}
             </button>
           </div>
         </form>
