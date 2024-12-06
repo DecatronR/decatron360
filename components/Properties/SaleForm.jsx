@@ -26,7 +26,7 @@ const SaleForm = () => {
   const [fields, setFields] = useState({
     userID: "",
     title: "",
-    listingType: "Rent",
+    listingType: "Sale",
     usageType: "",
     propertyType: "",
     propertySubType: "null",
