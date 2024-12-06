@@ -1,9 +1,13 @@
 "use client";
-
+import dynamic from "next/dynamic";
 import { AuthProvider } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { SnackbarProvider } from "notistack";
+
+const Analytics = dynamic(() => import("@/components/Analytics"), {
+  ssr: false,
+});
 
 export default function ClientLayout({ children }) {
   return (
@@ -21,6 +25,7 @@ export default function ClientLayout({ children }) {
           horizontal: "right",
         }}
       >
+        <Analytics />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer className="mt-auto" />
