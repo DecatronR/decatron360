@@ -2,6 +2,7 @@ import "@/assets/styles/globals.css";
 import "photoswipe/dist/photoswipe.css";
 import Script from "next/script";
 import ClientLayout from "@/components/ClientLayout";
+import Analytics from "components/Analytics";
 
 export const metadata = {
   title: "Decatron",
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
       <body className="min-h-screen flex flex-col">
+        <Analytics />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
