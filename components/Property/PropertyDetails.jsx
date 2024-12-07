@@ -81,6 +81,11 @@ const PropertyDetails = ({ property, agentId }) => {
     }
   };
 
+  const getInstagramPostId = (url) => {
+    const match = url.match(/instagram\.com\/p\/([^/]+)/);
+    return match ? match[1] : null;
+  };
+
   return (
     <section className="bg-white rounded-lg p-6 space-y-6 ">
       {/* Property Title and Location */}
@@ -226,16 +231,27 @@ const PropertyDetails = ({ property, agentId }) => {
             </div>
           )}
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Video</h2>
-          {property.video && (
-            <div className="rounded-md overflow-hidden">
-              <ReactPlayer
-                url={property.video}
+          {property.video.includes("instagram") ? (
+            <div className="instagram-embed rounded-md overflow-hidden">
+              <iframe
+                src={`https://www.instagram.com/p/${getInstagramPostId(
+                  property.video
+                )}/embed`}
                 width="100%"
                 height="500px"
-                controls={true}
-                playing={false}
-              />
+                frameBorder="0"
+                allow="encrypted-media"
+                allowFullScreen
+              ></iframe>
             </div>
+          ) : (
+            <ReactPlayer
+              url={property.video}
+              width="100%"
+              height="500px"
+              controls={true}
+              playing={false}
+            />
           )}
         </div>
       </div>
