@@ -244,6 +244,19 @@ const PropertyDetails = ({ property, agentId }) => {
                 allowFullScreen
               ></iframe>
             </div>
+          ) : property.video.includes("facebook.com/reel") ? (
+            <div className="facebook-embed rounded-md overflow-hidden">
+              <iframe
+                src={`https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+                  property.video
+                )}`}
+                width="100%"
+                height="500px"
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              ></iframe>
+            </div>
           ) : (
             <ReactPlayer
               url={property.video}
