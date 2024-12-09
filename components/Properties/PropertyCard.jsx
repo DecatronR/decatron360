@@ -37,7 +37,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             {property.Price && formatPrice(property.Price)}
           </div>
           <div
-            className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
+            className="absolute top-4 right-4 bg-transparent-400 p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -51,7 +51,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             {isFavorite ? (
               <FaHeart className="text-red-500 text-xl transition duration-300" />
             ) : (
-              <FaRegHeart className="text-white-400 text-xl transition duration-300" />
+              <FaRegHeart className="text-white text-2xl transition duration-300" />
             )}
           </div>
 
