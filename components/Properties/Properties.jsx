@@ -5,6 +5,7 @@ import PropertyCard from "./PropertyCard";
 import Spinner from "@/components/Spinner";
 import { useEffect, useState } from "react";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
+import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
@@ -30,6 +31,32 @@ const Properties = () => {
     handleFetchProperties();
   }, [page, pageSize]);
 
+  const handleToggleFavorite = async (propertyId) => {
+    console.log("Toggling favorite for:", propertyId);
+    const userId = sessionStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID not found.");
+      return;
+    }
+    try {
+      const res = await addFavoriteProperties(userId, propertyId);
+      console.log("favorite res: ", res.responseCode);
+      if (res.responseCode === 201) {
+        setProperties((prevProperties) =>
+          prevProperties.map((property) =>
+            property._id === propertyId
+              ? { ...property, isFavorite: !property.isFavorite }
+              : property
+          )
+        );
+      } else {
+        console.error("Failed to toggle favorite status.");
+      }
+    } catch (error) {
+      console.error("Error toggling favorite status:", error);
+    }
+  };
+
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
@@ -44,7 +71,12 @@ const Properties = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {properties.map((property) => (
-              <PropertyCard key={property._id} property={property} />
+              <PropertyCard
+                key={property._id}
+                property={property}
+                isFavorite={property.isFavorite}
+                onToggleFavorite={() => handleToggleFavorite(property._id)}
+              />
             ))}
           </div>
         )}

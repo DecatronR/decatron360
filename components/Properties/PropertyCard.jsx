@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
+  console.log("onToggleFavorite:", onToggleFavorite);
+
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
@@ -36,24 +38,23 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           <div className="absolute top-4 left-4 bg-black bg-opacity-100 text-white px-3 py-1 rounded-full text-sm font-semibold">
             {property.Price && formatPrice(property.Price)}
           </div>
-          <div
-            className="absolute top-4 right-4 bg-transparent-400 p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
+          <button
+            className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (typeof onToggleFavorite === "function") {
-                onToggleFavorite(property._id);
-              } else {
-                console.error("onToggleFavorite is not a function");
-              }
+              e.preventDefault(); // Prevent navigation on click
+              e.stopPropagation(); // Stop click from bubbling to the parent
+              onToggleFavorite();
             }}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
             {isFavorite ? (
               <FaHeart className="text-red-500 text-xl transition duration-300" />
             ) : (
               <FaRegHeart className="text-white text-2xl transition duration-300" />
             )}
-          </div>
+          </button>
 
           {/* Bottom Tags */}
           <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center gap-4">
