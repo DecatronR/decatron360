@@ -7,6 +7,7 @@ import {
   FaMapMarkerAlt,
   FaRulerCombined,
   FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
@@ -47,11 +48,11 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               }
             }}
           >
-            <FaHeart
-              className={`text-2xm transition duration-300 ${
-                isFavorite ? "text-red-500" : "text-gray-400"
-              }`}
-            />
+            {isFavorite ? (
+              <FaHeart className="text-red-500 text-xl transition duration-300" />
+            ) : (
+              <FaRegHeart className="text-white-400 text-xl transition duration-300" />
+            )}
           </div>
 
           {/* Bottom Tags */}
