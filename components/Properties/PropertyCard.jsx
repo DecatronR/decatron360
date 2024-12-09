@@ -11,8 +11,6 @@ import {
 } from "react-icons/fa";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
-  console.log("onToggleFavorite:", onToggleFavorite);
-
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
