@@ -31,7 +31,7 @@ const SelectListingType = () => {
       </a>
 
       <a
-        href={`https://www.facebook.com/v14.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${domainUrl}/properties/add/facebook&scope=pages_read_engagement,pages_manage_posts,user_posts,pages_read_user_content&response_type=code`}
+        href={`https://www.facebook.com/v21.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${domainUrl}/properties/add/facebook&scope=pages_read_engagement,pages_manage_posts,user_posts,pages_read_user_content&response_type=code`}
         className="block bg-white shadow-lg transition-transform transform hover:scale-105 rounded-lg p-6 text-left relative overflow-hidden"
       >
         <InfoBox
