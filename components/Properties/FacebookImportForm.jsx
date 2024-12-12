@@ -65,42 +65,6 @@ const FacebookImportForm = () => {
     handleFacebookRedirect();
   }, []);
 
-  const handleRedirect = async (req, res) => {
-    const authCode = req.query.code;
-    const tokenUrl = `https://graph.facebook.com/v14.0/oauth/access_token?
-        client_id=YOUR_APP_ID
-        &redirect_uri=YOUR_REDIRECT_URI
-        &client_secret=YOUR_APP_SECRET
-        &code=${authCode}`;
-    const response = await axios.post(tokenUrl);
-    const accessToken = response.data.access_token;
-
-    // Step 5: Use the Access Token to Fetch Property Listings
-    const graphUrl = `https://graph.facebook.com/v14.0/me/accounts?access_token=${accessToken}`;
-    const graphResponse = await axios.get(graphUrl);
-    const pages = graphResponse.data.data;
-
-    // Fetch posts from each page
-    const posts = [];
-    for (const page of pages) {
-      const pagePostsUrl = `https://graph.facebook.com/v14.0/${page.id}/posts?access_token=${accessToken}`;
-      const pagePostsResponse = await axios.get(pagePostsUrl);
-      const pagePosts = pagePostsResponse.data.data;
-      posts.push(...pagePosts);
-    }
-
-    // Parse posts to extract property listings
-    const propertyListings = [];
-    for (const post of posts) {
-      // Parse post to extract property listing
-      const propertyListing = {};
-      propertyListings.push(propertyListing);
-    }
-
-    // Return property listings
-    res.json(propertyListings);
-  };
-
   useEffect(() => {
     const loadUserId = async () => {
       const id = sessionStorage.getItem("userId");
