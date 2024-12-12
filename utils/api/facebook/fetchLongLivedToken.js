@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getLongLivedToken = async ({ shortLivedToken }) => {
+export const fetchLongLivedToken = async ({ shortLivedToken }) => {
   const appId = process.env.NEXT_PUBLIC_FB_APP_ID;
   const appSecret = process.env.NEXT_PUBLIC_FB_APP_SECRET;
 

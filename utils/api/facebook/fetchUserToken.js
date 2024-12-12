@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getUserToken = async ({ authCode }) => {
+export const fetchUserToken = async ({ authCode }) => {
   const appId = process.env.NEXT_PUBLIC_FB_APP_ID;
   const domainUrl = process.env.NEXT_PUBLIC_DOMAIN;
   const appSecret = process.env.NEXT_PUBLIC_FB_APP_SECRET;

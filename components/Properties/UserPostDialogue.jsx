@@ -11,7 +11,7 @@ const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
   const handleConfirmSelection = () => {
     if (selectedPost) {
       onPostSelect(selectedPost);
-      setDialogOpen(false); // Close the dialog after selecting a post
+      setDialogOpen(false);
     }
   };
 
@@ -35,7 +35,8 @@ const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
             Please select a post to proceed with creating your listing.
           </Dialog.Description>
 
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Posts Grid */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {posts.map((post) => (
               <div
                 key={post.id}
@@ -46,12 +47,25 @@ const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
                     : "bg-gray-100"
                 } hover:bg-blue-50`}
               >
-                <h3 className="font-semibold">{post.title}</h3>
-                <p className="text-sm text-gray-700">{post.description}</p>
+                {/* Post Content */}
+                <h3 className="font-semibold text-sm">
+                  {post.message || "No message available"}
+                </h3>
+                {post.attachments?.data?.[0]?.media?.image?.src && (
+                  <img
+                    src={post.attachments.data[0].media.image.src}
+                    alt="Post media"
+                    className="mt-2 rounded-md"
+                  />
+                )}
+                <p className="text-xs text-gray-500 mt-2">
+                  {new Date(post.created_time).toLocaleString()}
+                </p>
               </div>
             ))}
           </div>
 
+          {/* Action Buttons */}
           <div className="mt-6 flex justify-end space-x-4">
             <button
               onClick={handleCancel}

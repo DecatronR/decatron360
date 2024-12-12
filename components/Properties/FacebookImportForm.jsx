@@ -7,12 +7,13 @@ import Spinner from "../Spinner";
 import ButtonSpinner from "../ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
-import { getUserToken } from "utils/api/facebook/getUserToken";
+import { fetchUserToken } from "utils/api/facebook/fetchUserToken";
 import { verifyUserToken } from "utils/api/facebook/verifyUserToken";
-import { getLongLivedToken } from "utils/api/facebook/getLongLivedToken";
+import { fetchLongLivedToken } from "utils/api/facebook/fetchLongLivedToken";
 import { sendTokenToServer } from "utils/api/facebook/sendTokenToServer";
-import { getUserFacebookProfile } from "utils/api/facebook/getUserFacebookProfile";
+import { fetchUserFacebookProfile } from "utils/api/facebook/fetchUserFacebookProfile";
 import UserPostDialog from "./UserPostDialogue";
+import { fetchUserPosts } from "utils/api/facebook/fetchUserPosts";
 
 const FacebookImportForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -76,7 +77,7 @@ const FacebookImportForm = () => {
       }
 
       try {
-        const userToken = await getUserToken({ authCode });
+        const userToken = await fetchUserToken({ authCode });
         if (!userToken) {
           throw new Error("Failed to retrieve user token.");
         }
@@ -86,16 +87,19 @@ const FacebookImportForm = () => {
           throw new Error("Invalid user token.");
         }
 
-        const longLivedToken = await getLongLivedToken({
+        const longLivedToken = await fetchLongLivedToken({
           shortLivedToken: userToken,
         });
         //temporary
         setFacebookToken(longLivedToken);
         await sendTokenToServer(longLivedToken);
 
-        const res = await getUserFacebookProfile(longLivedToken);
+        const userProfile = await fetchUserFacebookProfile(longLivedToken);
+        console.log("Facebook user profile: ", userProfile);
 
-        console.log("Facebook user profile: ", res);
+        const userPost = await fetchUserPosts(longLivedToken);
+        console.log("User posts: ", userPost);
+
         setDialogOpen(true);
       } catch (error) {
         console.error(
@@ -106,7 +110,7 @@ const FacebookImportForm = () => {
     };
 
     handleFacebookRedirect();
-  }, [getUserToken, verifyUserToken, getLongLivedToken]);
+  }, [fetchUserToken, verifyUserToken, fetchLongLivedToken]);
 
   useEffect(() => {
     const loadUserId = async () => {
@@ -714,11 +718,12 @@ const FacebookImportForm = () => {
           </div>
         </form>
         <UserPostDialog
-          posts={posts}
-          onPostSelect={handlePostSelect}
+          posts={userPosts}
+          onPostSelect={(postId) => console.log("Selected post ID:", postId)} //replace the function that gets triggered when a post is selected
           dialogOpen={dialogOpen}
           setDialogOpen={setDialogOpen}
         />
+        ;
       </div>
     )
   );
