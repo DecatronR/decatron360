@@ -27,7 +27,16 @@ const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
 
       {/* Dialog Content */}
       <Dialog.Content className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="relative bg-white p-6 rounded-lg shadow-lg w-96 z-10">
+        <div
+          className="relative bg-white p-6 rounded-lg shadow-lg z-10 overflow-hidden"
+          style={{
+            width: "90%", // Larger width
+            maxWidth: "800px", // Restrict the maximum width
+            maxHeight: "80vh", // Limit height to 80% of the viewport height
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
           <Dialog.Title className="text-2xl font-semibold">
             Select a Post
           </Dialog.Title>
@@ -36,7 +45,10 @@ const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
           </Dialog.Description>
 
           {/* Posts Grid */}
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div
+            className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto"
+            style={{ flex: "1 1 auto", maxHeight: "calc(80vh - 150px)" }}
+          >
             {posts.map((post) => (
               <div
                 key={post.id}
