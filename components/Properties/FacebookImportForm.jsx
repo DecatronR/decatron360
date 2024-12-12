@@ -32,6 +32,7 @@ const FacebookImportForm = () => {
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
   const [facebookToken, setFacebookToken] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [userPosts, setUserPosts] = useState([]);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -56,11 +57,11 @@ const FacebookImportForm = () => {
     photo: [],
   });
 
-  const posts = [
-    { id: 1, title: "Post 1", description: "Description of post 1" },
-    { id: 2, title: "Post 2", description: "Description of post 2" },
-    { id: 3, title: "Post 3", description: "Description of post 3" },
-  ];
+  // const posts = [
+  //   { id: 1, title: "Post 1", description: "Description of post 1" },
+  //   { id: 2, title: "Post 2", description: "Description of post 2" },
+  //   { id: 3, title: "Post 3", description: "Description of post 3" },
+  // ];
 
   // Function to handle post selection
   const handlePostSelect = (postId) => {
@@ -97,8 +98,9 @@ const FacebookImportForm = () => {
         const userProfile = await fetchUserFacebookProfile(longLivedToken);
         console.log("Facebook user profile: ", userProfile);
 
-        const userPost = await fetchUserPosts(longLivedToken);
-        console.log("User posts: ", userPost);
+        const post = await fetchUserPosts(longLivedToken);
+        console.log("User posts: ", post);
+        setUserPosts(post);
 
         setDialogOpen(true);
       } catch (error) {
