@@ -1,96 +1,73 @@
-"use client";
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+import * as Dialog from "@radix-ui/react-dialog";
+import { useState } from "react";
 
-const UserPropertiesCarousel = ({ userProperties, userId }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerPage = 3;
+const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
+  const [selectedPost, setSelectedPost] = useState(null);
 
-  const handlePrev = () => {
-    setCurrentIndex(
-      (prevIndex) =>
-        (prevIndex - itemsPerPage + userProperties.length) %
-        userProperties.length
-    );
+  const handlePostSelect = (postId) => {
+    setSelectedPost(postId);
   };
 
-  const handleNext = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex + itemsPerPage) % userProperties.length
-    );
+  const handleConfirmSelection = () => {
+    if (selectedPost) {
+      onPostSelect(selectedPost);
+      setDialogOpen(false);
+    }
   };
 
-  // Handle cases where there are no properties or no photos
-  const visibleProperties = userProperties.slice(
-    currentIndex,
-    currentIndex + itemsPerPage
-  );
+  const handleCancel = () => {
+    setSelectedPost(null);
+    setDialogOpen(false);
+  };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">My Listings</h2>
-      </div>
+    <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+      <Dialog.Content className="fixed inset-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg w-[90%] max-w-lg p-6">
+        <Dialog.Title className="text-2xl font-bold text-gray-800">
+          Select a Post
+        </Dialog.Title>
+        <Dialog.Description className="mt-2 text-sm text-gray-600">
+          Choose a post to continue. Click "Confirm" when you're done.
+        </Dialog.Description>
 
-      {userProperties.length > 0 ? (
-        <div>
-          {/* Display Visible Properties */}
-          <div className="flex overflow-x-scroll space-x-4 scrollbar-hide">
-            {userProperties.map((property) => (
-              <div
-                key={property._id}
-                className="min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
-              >
-                <Link href={`/properties/${property._id}`}>
-                  {/* Display property image or a placeholder */}
-                  {property.photos && property.photos.length > 0 ? (
-                    <img
-                      src={
-                        `${property.photos[0].path}` ||
-                        "/path/to/default/profile.png"
-                      }
-                      alt={`Property ${property.title}`}
-                      className="rounded-lg w-full h-48 object-cover cursor-pointer"
-                    />
-                  ) : (
-                    <div className="bg-gray-200 w-full h-48 flex items-center justify-center cursor-pointer">
-                      <span className="text-gray-500">No Image Available</span>
-                    </div>
-                  )}
-                </Link>
-                <div className="p-4">
-                  <Link href={`/properties/${property._id}`}>
-                    <h3 className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-primary-500">
-                      {property.title}
-                    </h3>
-                  </Link>
-                  <p className="text-sm text-gray-500 mt-1 truncate">
-                    {property.propertyDetails}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* See More Button */}
-          <div className="mt-4 text-right">
-            <Link href={`/user-properties/${userId}`}>
-              <button className="text-primary-500 font-medium hover:underline">
-                See More
-              </button>
-            </Link>
-          </div>
+        <div className="mt-4 grid grid-cols-1 gap-4 max-h-[300px] overflow-y-auto">
+          {posts.map((post) => (
+            <div
+              key={post.id}
+              onClick={() => handlePostSelect(post.id)}
+              className={`cursor-pointer p-4 border rounded-md transition-colors ${
+                selectedPost === post.id
+                  ? "bg-blue-50 border-blue-500"
+                  : "bg-gray-50 border-gray-300"
+              } hover:bg-blue-100`}
+            >
+              <h3 className="text-lg font-semibold text-gray-800">
+                {post.title}
+              </h3>
+              <p className="text-sm text-gray-500">{post.description}</p>
+            </div>
+          ))}
         </div>
-      ) : (
-        <p className="text-gray-500">No properties found.</p>
-      )}
-    </div>
+
+        <div className="mt-6 flex justify-end space-x-4">
+          <button
+            onClick={handleCancel}
+            className="bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirmSelection}
+            disabled={!selectedPost}
+            className="bg-primary-500 text-white py-2 px-4 rounded-md hover:bg-primary-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Confirm
+          </button>
+        </div>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };
 
-export default UserPropertiesCarousel;
+export default UserPostDialog;
