@@ -8,6 +8,8 @@ import ButtonSpinner from "../ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 import { getUserToken } from "utils/api/facebook/getUserToken";
+import { verifyUserToken } from "utils/api/facebook/verifyUserToken";
+import { getLongLivedToken } from "utils/api/facebook/getLongLivedToken";
 
 const FacebookImportForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -53,17 +55,37 @@ const FacebookImportForm = () => {
     const handleFacebookRedirect = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const authCode = urlParams.get("code");
-      console.log("auth code: ", authCode);
+      if (!authCode) {
+        console.error("No auth code found in URL.");
+        return;
+      }
+
       try {
-        const token = await getUserToken({ authCode });
-        console.log("Facebook token: ", token);
-        setFacebookToken(token);
+        const userToken = await getUserToken({ authCode });
+        if (!userToken) {
+          throw new Error("Failed to retrieve user token.");
+        }
+
+        const tokenDetails = await verifyUserToken({ userToken });
+        if (!tokenDetails.is_valid) {
+          throw new Error("Invalid user token.");
+        }
+
+        const longLivedToken = await getLongLivedToken({
+          shortLivedToken: userToken,
+        });
+
+        setFacebookToken(longLivedToken);
       } catch (error) {
-        console.error("Error handling Facebook redirect:", error);
+        console.error(
+          "Error during Facebook redirect handling:",
+          error.message
+        );
       }
     };
+
     handleFacebookRedirect();
-  }, []);
+  }, [getUserToken, verifyUserToken, getLongLivedToken]);
 
   useEffect(() => {
     const loadUserId = async () => {
