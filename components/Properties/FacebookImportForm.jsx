@@ -7,6 +7,7 @@ import Spinner from "../Spinner";
 import ButtonSpinner from "../ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
+import { getUserToken } from "utils/api/facebook/getUserToken";
 
 const FacebookImportForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -23,6 +24,7 @@ const FacebookImportForm = () => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
+  const [facebookToken, setFacebookToken] = useState();
 
   const [fields, setFields] = useState({
     userID: "",
@@ -46,6 +48,22 @@ const FacebookImportForm = () => {
     video: "",
     photo: [],
   });
+
+  useEffect(() => {
+    const handleFacebookRedirect = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const authCode = urlParams.get("code");
+      console.log("auth code: ", authCode);
+      try {
+        const token = await getUserToken({ authCode });
+        console.log("Facebook token: ", token);
+        setFacebookToken(token);
+      } catch (error) {
+        console.error("Error handling Facebook redirect:", error);
+      }
+    };
+    handleFacebookRedirect();
+  }, []);
 
   const handleRedirect = async (req, res) => {
     const authCode = req.query.code;
