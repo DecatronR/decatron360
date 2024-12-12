@@ -10,6 +10,9 @@ import { createPropertyListing } from "@/utils/api/propertyListing/createPropert
 import { getUserToken } from "utils/api/facebook/getUserToken";
 import { verifyUserToken } from "utils/api/facebook/verifyUserToken";
 import { getLongLivedToken } from "utils/api/facebook/getLongLivedToken";
+import { sendTokenToServer } from "utils/api/facebook/sendTokenToServer";
+import { getUserFacebookProfile } from "utils/api/facebook/getUserFacebookProfile";
+import UserPostDialog from "./UserPostDialogue";
 
 const FacebookImportForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -27,6 +30,7 @@ const FacebookImportForm = () => {
   const [loading, setLoading] = useState(true);
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
   const [facebookToken, setFacebookToken] = useState();
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -51,6 +55,17 @@ const FacebookImportForm = () => {
     photo: [],
   });
 
+  const posts = [
+    { id: 1, title: "Post 1", description: "Description of post 1" },
+    { id: 2, title: "Post 2", description: "Description of post 2" },
+    { id: 3, title: "Post 3", description: "Description of post 3" },
+  ];
+
+  // Function to handle post selection
+  const handlePostSelect = (postId) => {
+    console.log(`Post selected: ${postId}`);
+  };
+
   useEffect(() => {
     const handleFacebookRedirect = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -74,8 +89,14 @@ const FacebookImportForm = () => {
         const longLivedToken = await getLongLivedToken({
           shortLivedToken: userToken,
         });
-
+        //temporary
         setFacebookToken(longLivedToken);
+        await sendTokenToServer(longLivedToken);
+
+        const res = await getUserFacebookProfile(longLivedToken);
+
+        console.log("Facebook user profile: ", res);
+        setDialogOpen(true);
       } catch (error) {
         console.error(
           "Error during Facebook redirect handling:",
@@ -301,396 +322,404 @@ const FacebookImportForm = () => {
     <Spinner />
   ) : (
     mounted && (
-      <form
-        data-testid="sale-form"
-        onSubmit={handleSubmit}
-        className="space-y-6 bg-white shadow-md rounded-lg p-6"
-      >
-        <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
-          Facebook Import
-        </h2>
+      <div>
+        <form
+          data-testid="sale-form"
+          onSubmit={handleSubmit}
+          className="space-y-6 bg-white shadow-md rounded-lg p-6"
+        >
+          <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
+            Facebook Import
+          </h2>
 
-        <div className="mb-6">
-          <label
-            htmlFor="propertyType"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Listing Type
-          </label>
-          <select
-            id="listingType"
-            name="listingType"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            required
-            value={fields.listingType}
-            onChange={handleChange}
-          >
-            <option disabled value="">
-              Select Listing Type
-            </option>
-            {listingTypes.map((type) => (
-              <option key={type._id} value={type._slug}>
-                {type.listingType}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="propertyType"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Property Type
-          </label>
-          <select
-            id="propertyType"
-            name="propertyType"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            required
-            value={fields.propertyType}
-            onChange={handleChange}
-          >
-            <option disabled value="">
-              Select Property Type
-            </option>
-            {propertyTypes.map((type) => (
-              <option key={type._id} value={type._slug}>
-                {type.propertyType}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="title"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Listing Name
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            placeholder="e.g. Beautiful Apartment In Miami"
-            required
-            value={fields.title}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="flex gap-4">
-          <div className="w-1/2">
+          <div className="mb-6">
             <label
-              htmlFor="property_condition"
+              htmlFor="propertyType"
               className="block text-gray-800 font-medium mb-3"
             >
-              Property Condition
+              Listing Type
             </label>
             <select
-              id="propertyCondition"
-              name="propertyCondition"
+              id="listingType"
+              name="listingType"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.propertyCondition}
+              value={fields.listingType}
               onChange={handleChange}
             >
               <option disabled value="">
-                Select Condition
+                Select Listing Type
               </option>
-              {propertyCondition.map((type) => (
+              {listingTypes.map((type) => (
                 <option key={type._id} value={type._slug}>
-                  {type.propertyCondition}
+                  {type.listingType}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="w-1/2">
+          <div className="mb-6">
             <label
-              htmlFor="usage_type"
+              htmlFor="propertyType"
               className="block text-gray-800 font-medium mb-3"
             >
-              Property Usage
+              Property Type
             </label>
             <select
-              id="usageType"
-              name="usageType"
+              id="propertyType"
+              name="propertyType"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.usageType}
+              value={fields.propertyType}
               onChange={handleChange}
             >
               <option disabled value="">
-                Select Usage Type
+                Select Property Type
               </option>
-              {propertyUsage.map((type) => (
+              {propertyTypes.map((type) => (
                 <option key={type._id} value={type._slug}>
-                  {type.propertyUsage}
+                  {type.propertyType}
                 </option>
               ))}
             </select>
           </div>
-        </div>
 
-        <div className="mb-6">
-          <label
-            htmlFor="property_details"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Description
-          </label>
-          <textarea
-            id="propertyDetails"
-            name="propertyDetails"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            rows="4"
-            placeholder="Add an optional description of your property"
-            value={fields.propertyDetails}
-            onChange={handleChange}
-          ></textarea>
-        </div>
-
-        <div className="mb-6 bg-blue-50 p-4 rounded-lg">
-          <label className="block text-gray-800 font-medium mb-3">
-            Location
-          </label>
-          <div className="flex space-x-4">
-            <select
-              id="state"
-              name="state"
-              className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
-              value={fields.state}
-              onChange={handleChange}
-            >
-              <option disabled value="">
-                Select State
-              </option>
-              {states.map((type) => (
-                <option key={type._id} value={type._slug}>
-                  {type.state}
-                </option>
-              ))}
-            </select>
-
-            <select
-              id="lga"
-              name="lga"
-              className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
-              value={fields.lga}
-              onChange={handleChange}
-            >
-              <option disabled value="">
-                Select LGA
-              </option>
-              {lga.map((type) => (
-                <option key={type._id} value={type._slug}>
-                  {type.lga}
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="text"
-              id="neighbourhood"
-              name="neighbourhood"
-              className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              placeholder="Neighbourhood"
-              value={fields.neighbourhood}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="w-1/2">
+          <div className="mb-6">
             <label
-              htmlFor="beds"
+              htmlFor="title"
               className="block text-gray-800 font-medium mb-3"
             >
-              Beds
-            </label>
-            <input
-              type="number"
-              id="NoOfBedRooms"
-              name="NoOfBedRooms"
-              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
-              value={fields.NoOfBedRooms}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="w-1/2">
-            <label
-              htmlFor="baths"
-              className="block text-gray-800 font-medium mb-3"
-            >
-              Baths
-            </label>
-            <input
-              type="number"
-              id="NoOfKitchens"
-              name="NoOfKitchens"
-              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
-              value={fields.NoOfKitchens}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        <div className="flex gap-4">
-          <div className="w-1/2">
-            <label
-              htmlFor="size"
-              className="block text-gray-800 font-medium mb-3"
-            >
-              Size
-            </label>
-            <input
-              type="number"
-              id="size"
-              name="size"
-              placeholder="Square Meter (Sqm)"
-              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              value={fields.size}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="w-1/2">
-            <label
-              htmlFor="price"
-              className="block text-gray-800 font-medium mb-3"
-            >
-              Price
+              Listing Name
             </label>
             <input
               type="text"
-              id="Price"
-              name="Price"
-              placeholder="NGN 0.00"
+              id="title"
+              name="title"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              placeholder="e.g. Beautiful Apartment In Miami"
               required
-              value={fields.Price}
-              onChange={(e) => {
-                const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
-                setFields((prevFields) => ({
-                  ...prevFields,
-                  Price: numericPrice,
-                }));
-              }}
-              onBlur={(e) => {
-                const formattedPrice = formatPrice(fields.Price);
-                setFields((prevFields) => ({
-                  ...prevFields,
-                  Price: formattedPrice,
-                }));
-              }}
+              value={fields.title}
+              onChange={handleChange}
             />
           </div>
-        </div>
 
-        <div className="mb-6">
-          <label
-            htmlFor="virtual_tour"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Virtual Tour
-          </label>
-          <input
-            type="text"
-            id="virtualTour"
-            name="virtualTour"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
-            value={fields.virtualTour}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="video"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Video
-          </label>
-          <input
-            type="text"
-            id="video"
-            name="video"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            placeholder="https://www.youtube.com/watch?v=video-id"
-            value={fields.video}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="photo"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Images (Select up to 7 images)
-          </label>
-          <input
-            type="file"
-            id="photo"
-            name="photo"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-            required
-            aria-label="Upload images for your property listing (Maximum 7 images)"
-          />
-
-          {previewUrls.length > 0 && (
-            <div className="flex gap-4 mt-4 flex-wrap">
-              {previewUrls.map((previewUrl, index) => (
-                <div
-                  key={index}
-                  className="relative w-28 h-28 rounded-lg border border-gray-300 overflow-hidden"
-                >
-                  <img
-                    src={previewUrl}
-                    alt={`Preview ${index}`}
-                    className="object-cover w-full h-full"
-                  />
-                  <button
-                    type="button"
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                    onClick={() => handleImageRemove(index)}
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+          <div className="flex gap-4">
+            <div className="w-1/2">
+              <label
+                htmlFor="property_condition"
+                className="block text-gray-800 font-medium mb-3"
+              >
+                Property Condition
+              </label>
+              <select
+                id="propertyCondition"
+                name="propertyCondition"
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.propertyCondition}
+                onChange={handleChange}
+              >
+                <option disabled value="">
+                  Select Condition
+                </option>
+                {propertyCondition.map((type) => (
+                  <option key={type._id} value={type._slug}>
+                    {type.propertyCondition}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
-        </div>
 
-        <div className="flex justify-end gap-4">
-          {/* <button
+            <div className="w-1/2">
+              <label
+                htmlFor="usage_type"
+                className="block text-gray-800 font-medium mb-3"
+              >
+                Property Usage
+              </label>
+              <select
+                id="usageType"
+                name="usageType"
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.usageType}
+                onChange={handleChange}
+              >
+                <option disabled value="">
+                  Select Usage Type
+                </option>
+                {propertyUsage.map((type) => (
+                  <option key={type._id} value={type._slug}>
+                    {type.propertyUsage}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="property_details"
+              className="block text-gray-800 font-medium mb-3"
+            >
+              Description
+            </label>
+            <textarea
+              id="propertyDetails"
+              name="propertyDetails"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              rows="4"
+              placeholder="Add an optional description of your property"
+              value={fields.propertyDetails}
+              onChange={handleChange}
+            ></textarea>
+          </div>
+
+          <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+            <label className="block text-gray-800 font-medium mb-3">
+              Location
+            </label>
+            <div className="flex space-x-4">
+              <select
+                id="state"
+                name="state"
+                className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.state}
+                onChange={handleChange}
+              >
+                <option disabled value="">
+                  Select State
+                </option>
+                {states.map((type) => (
+                  <option key={type._id} value={type._slug}>
+                    {type.state}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                id="lga"
+                name="lga"
+                className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.lga}
+                onChange={handleChange}
+              >
+                <option disabled value="">
+                  Select LGA
+                </option>
+                {lga.map((type) => (
+                  <option key={type._id} value={type._slug}>
+                    {type.lga}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                type="text"
+                id="neighbourhood"
+                name="neighbourhood"
+                className="border rounded-lg w-1/3 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                placeholder="Neighbourhood"
+                value={fields.neighbourhood}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="w-1/2">
+              <label
+                htmlFor="beds"
+                className="block text-gray-800 font-medium mb-3"
+              >
+                Beds
+              </label>
+              <input
+                type="number"
+                id="NoOfBedRooms"
+                name="NoOfBedRooms"
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.NoOfBedRooms}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="w-1/2">
+              <label
+                htmlFor="baths"
+                className="block text-gray-800 font-medium mb-3"
+              >
+                Baths
+              </label>
+              <input
+                type="number"
+                id="NoOfKitchens"
+                name="NoOfKitchens"
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.NoOfKitchens}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="w-1/2">
+              <label
+                htmlFor="size"
+                className="block text-gray-800 font-medium mb-3"
+              >
+                Size
+              </label>
+              <input
+                type="number"
+                id="size"
+                name="size"
+                placeholder="Square Meter (Sqm)"
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                value={fields.size}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="w-1/2">
+              <label
+                htmlFor="price"
+                className="block text-gray-800 font-medium mb-3"
+              >
+                Price
+              </label>
+              <input
+                type="text"
+                id="Price"
+                name="Price"
+                placeholder="NGN 0.00"
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+                required
+                value={fields.Price}
+                onChange={(e) => {
+                  const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
+                  setFields((prevFields) => ({
+                    ...prevFields,
+                    Price: numericPrice,
+                  }));
+                }}
+                onBlur={(e) => {
+                  const formattedPrice = formatPrice(fields.Price);
+                  setFields((prevFields) => ({
+                    ...prevFields,
+                    Price: formattedPrice,
+                  }));
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="virtual_tour"
+              className="block text-gray-800 font-medium mb-3"
+            >
+              Virtual Tour
+            </label>
+            <input
+              type="text"
+              id="virtualTour"
+              name="virtualTour"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
+              value={fields.virtualTour}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="video"
+              className="block text-gray-800 font-medium mb-3"
+            >
+              Video
+            </label>
+            <input
+              type="text"
+              id="video"
+              name="video"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              placeholder="https://www.youtube.com/watch?v=video-id"
+              value={fields.video}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="mb-6">
+            <label
+              htmlFor="photo"
+              className="block text-gray-800 font-medium mb-3"
+            >
+              Images (Select up to 7 images)
+            </label>
+            <input
+              type="file"
+              id="photo"
+              name="photo"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              required
+              aria-label="Upload images for your property listing (Maximum 7 images)"
+            />
+
+            {previewUrls.length > 0 && (
+              <div className="flex gap-4 mt-4 flex-wrap">
+                {previewUrls.map((previewUrl, index) => (
+                  <div
+                    key={index}
+                    className="relative w-28 h-28 rounded-lg border border-gray-300 overflow-hidden"
+                  >
+                    <img
+                      src={previewUrl}
+                      alt={`Preview ${index}`}
+                      className="object-cover w-full h-full"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                      onClick={() => handleImageRemove(index)}
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-4">
+            {/* <button
             type="button"
             className="bg-gray-500 text-white px-6 py-3 rounded-lg transition hover:bg-gray-600"
             onClick={() => setShowForm(false)}
           >
             Cancel
           </button> */}
-          <button
-            type="submit"
-            className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
-          >
-            {isbuttonLoading ? <ButtonSpinner /> : "Add Property"}
-          </button>
-        </div>
-      </form>
+            <button
+              type="submit"
+              className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
+            >
+              {isbuttonLoading ? <ButtonSpinner /> : "Add Property"}
+            </button>
+          </div>
+        </form>
+        <UserPostDialog
+          posts={posts}
+          onPostSelect={handlePostSelect}
+          dialogOpen={dialogOpen}
+          setDialogOpen={setDialogOpen}
+        />
+      </div>
     )
   );
 };
