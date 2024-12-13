@@ -57,15 +57,9 @@ const FacebookImportForm = () => {
     photo: [],
   });
 
-  // const posts = [
-  //   { id: 1, title: "Post 1", description: "Description of post 1" },
-  //   { id: 2, title: "Post 2", description: "Description of post 2" },
-  //   { id: 3, title: "Post 3", description: "Description of post 3" },
-  // ];
-
   // Function to handle post selection
   const handlePostSelect = (postId) => {
-    console.log(`Post selected: ${postId}`);
+    console.log(`Post selected: ${postId.id}`);
   };
 
   useEffect(() => {
@@ -721,7 +715,7 @@ const FacebookImportForm = () => {
         </form>
         <UserPostDialog
           posts={userPosts}
-          onPostSelect={(postId) => console.log("Selected post ID:", postId)} //replace the function that gets triggered when a post is selected
+          onPostSelect={handlePostSelect} //replace the function that gets triggered when a post is selected
           dialogOpen={dialogOpen}
           setDialogOpen={setDialogOpen}
         />

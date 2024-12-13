@@ -5,7 +5,9 @@ const UserPostDialog = ({ posts, onPostSelect, dialogOpen, setDialogOpen }) => {
   const [selectedPost, setSelectedPost] = useState(null);
 
   const handlePostSelect = (postId) => {
-    setSelectedPost(postId);
+    const selectedPostData = posts.find((post) => post.id === postId);
+    console.log(selectedPostData);
+    setSelectedPost(selectedPostData);
   };
 
   const handleConfirmSelection = () => {
