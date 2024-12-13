@@ -14,6 +14,7 @@ import { sendTokenToServer } from "utils/api/facebook/sendTokenToServer";
 import { fetchUserFacebookProfile } from "utils/api/facebook/fetchUserFacebookProfile";
 import UserPostDialog from "./UserPostDialogue";
 import { fetchUserPosts } from "utils/api/facebook/fetchUserPosts";
+import { fetchSinglePost } from "utils/api/facebook/fetchSinglePost";
 
 const FacebookImportForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -33,6 +34,7 @@ const FacebookImportForm = () => {
   const [facebookToken, setFacebookToken] = useState();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
+  const [singlePost, setSinglePost] = useState([]);
 
   const [fields, setFields] = useState({
     userID: "",
@@ -56,11 +58,6 @@ const FacebookImportForm = () => {
     video: "",
     photo: [],
   });
-
-  // Function to handle post selection
-  const handlePostSelect = (postId) => {
-    console.log(`Post selected: ${postId.id}`);
-  };
 
   useEffect(() => {
     const handleFacebookRedirect = async () => {
@@ -107,6 +104,15 @@ const FacebookImportForm = () => {
 
     handleFacebookRedirect();
   }, [fetchUserToken, verifyUserToken, fetchLongLivedToken]);
+
+  // Function to handle post selection
+  const handlePostSelect = async (post) => {
+    console.log(`Post selected: ${post.id}`);
+    const postId = post.id;
+    const res = await fetchSinglePost(postId, facebookToken);
+    console.log("Fetched single post successfully: ", res);
+    setSinglePost(res);
+  };
 
   useEffect(() => {
     const loadUserId = async () => {
