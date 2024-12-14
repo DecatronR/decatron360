@@ -5,9 +5,12 @@ import Link from "next/link";
 import Spinner from "./Spinner";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
+import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
+import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoriteProperties";
 
 const HomeProperties = () => {
   const [properties, setProperties] = useState([]);
+  const [favoriteProperties, setFavoriteProperties] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const handleFetchProperties = useCallback(async () => {
@@ -23,30 +26,80 @@ const HomeProperties = () => {
     }
   }, []);
 
-  useEffect(() => {
-    handleFetchProperties();
-  }, [handleFetchProperties]);
-
-  const handleToggleFavorite = async (propertyId) => {
-    console.log("Toggling favorite for:", propertyId);
+  const handleFetchFavoriteProperties = async () => {
     const userId = sessionStorage.getItem("userId");
     if (!userId) {
       console.error("User ID not found.");
       return;
     }
     try {
-      const res = await addFavoriteProperties(userId, propertyId);
-      console.log("favorite res: ", res.responseCode);
-      if (res.responseCode === 201) {
-        setProperties((prevProperties) =>
-          prevProperties.map((property) =>
-            property._id === propertyId
-              ? { ...property, isFavorite: !property.isFavorite }
-              : property
-          )
-        );
+      const res = await fetchFavoriteProperties(userId);
+      console.log("Favorite properties: ", res);
+    } catch (error) {
+      console.error("Failed to fetch user favorite properties");
+    }
+  };
+
+  useEffect(() => {
+    handleFetchProperties();
+    handleFetchFavoriteProperties();
+  }, [handleFetchProperties]);
+
+  const handleToggleFavorite = async (propertyId) => {
+    console.log("Toggling favorite for:", propertyId);
+    const userId = sessionStorage.getItem("userId");
+
+    if (!userId) {
+      console.error("User ID not found.");
+      return;
+    }
+
+    try {
+      // Fetch favorites to check if the property is already marked as favorite
+      const favoritesResponse = await fetchFavoriteProperties(userId);
+      console.log("fetch favorite res: ", favoritesResponse);
+      if (!favoritesResponse) {
+        console.error("Failed to fetch favorites.");
+        return;
+      }
+
+      // Find if the property is in the list of favorites
+      const favoriteItem = favoritesResponse.find(
+        (favorite) => favorite.propertyListingId === propertyId
+      );
+
+      if (favoriteItem) {
+        // Property is already marked as favorite, so trigger the delete function
+        const deleteRes = await deleteFavoriteProperties(favoriteItem._id);
+        console.log("Delete favorite res:", deleteRes.responseCode);
+
+        if (deleteRes.responseCode === 200) {
+          setProperties((prevProperties) =>
+            prevProperties.map((property) =>
+              property._id === propertyId
+                ? { ...property, isFavorite: false }
+                : property
+            )
+          );
+        } else {
+          console.error("Failed to remove favorite.");
+        }
       } else {
-        console.error("Failed to toggle favorite status.");
+        // Property is not marked as favorite, so trigger the add function
+        const addRes = await addFavoriteProperties(userId, propertyId);
+        console.log("Add favorite res:", addRes.responseCode);
+
+        if (addRes.responseCode === 201) {
+          setProperties((prevProperties) =>
+            prevProperties.map((property) =>
+              property._id === propertyId
+                ? { ...property, isFavorite: true }
+                : property
+            )
+          );
+        } else {
+          console.error("Failed to add favorite.");
+        }
       }
     } catch (error) {
       console.error("Error toggling favorite status:", error);
