@@ -16,23 +16,6 @@ const Properties = () => {
   const [pageSize, setPageSize] = useState(6);
   const [totalItems, setTotalItems] = useState(0);
 
-  // useEffect(() => {
-  //   const handleFetchProperties = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await fetchProperties();
-  //       setProperties(res);
-  //       setTotalItems(res.length);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   handleFetchProperties();
-  // }, [page, pageSize]);
-
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
