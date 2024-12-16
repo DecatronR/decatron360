@@ -63,62 +63,6 @@ const Properties = () => {
     fetchInitialData();
   }, [page, pageSize]);
 
-  const handleToggleFavorite = async (propertyId) => {
-    console.log("Toggling favorite for:", propertyId);
-    const userId = sessionStorage.getItem("userId");
-    if (!userId) {
-      console.error("User ID not found.");
-      return;
-    }
-
-    try {
-      const property = properties.find((prop) => prop._id === propertyId);
-      console.log("Property to toggle favorite:", property);
-
-      if (!property) {
-        console.error("Property not found.");
-        return;
-      }
-
-      if (property.isFavorite) {
-        // Remove from favorites
-        if (!property.favoriteId) {
-          console.error("Favorite ID not found.");
-          return;
-        }
-
-        const deleteRes = await deleteFavoriteProperties(property.favoriteId); // Use favoriteId
-        console.log("Delete favorite res:", deleteRes.responseCode);
-
-        if (deleteRes.responseCode === 200) {
-          setProperties((prevProperties) =>
-            prevProperties.map((prop) =>
-              prop._id === propertyId
-                ? { ...prop, isFavorite: false, favoriteId: null }
-                : prop
-            )
-          );
-        }
-      } else {
-        // Add to favorites
-        const addRes = await addFavoriteProperties(userId, propertyId);
-        console.log("Add favorite res:", addRes.responseCode);
-
-        if (addRes.responseCode === 201 && addRes.favoriteId) {
-          setProperties((prevProperties) =>
-            prevProperties.map((prop) =>
-              prop._id === propertyId
-                ? { ...prop, isFavorite: true, favoriteId: addRes.favoriteId }
-                : prop
-            )
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error toggling favorite status:", error);
-    }
-  };
-
   const handlePageChange = (newPage) => {
     setPage(newPage);
   };
