@@ -48,7 +48,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             }
           >
             {isFavorite ? (
-              <FaHeart className="text-red-500 text-xl transition duration-300" />
+              <FaHeart className="text-red-500 text-2xl transition duration-300" />
             ) : (
               <FaRegHeart className="text-white text-2xl transition duration-300" />
             )}

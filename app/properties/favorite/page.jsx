@@ -14,6 +14,7 @@ const FavoritePropertiesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState({});
 
+  console.log("Is favorite: ", isFavorite);
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
     if (id) {
@@ -77,16 +78,12 @@ const FavoritePropertiesPage = () => {
           return;
         }
 
-        const deleteRes = await deleteFavoriteProperties(property.favoriteId); // Use favoriteId
+        const deleteRes = await deleteFavoriteProperties(property.favoriteId);
         console.log("Delete favorite res:", deleteRes.responseCode);
 
         if (deleteRes.responseCode === 200) {
           setProperties((prevProperties) =>
-            prevProperties.map((prop) =>
-              prop._id === propertyId
-                ? { ...prop, isFavorite: false, favoriteId: null }
-                : prop
-            )
+            prevProperties.filter((prop) => prop._id !== propertyId)
           );
         }
       } else {
@@ -123,7 +120,7 @@ const FavoritePropertiesPage = () => {
               <FavoritePropertyCard
                 key={property._id}
                 property={property}
-                isFavorite={isFavorite[property._id]}
+                isFavorite={!!isFavorite[property._id]}
                 onToggleFavorite={() => handleToggleFavorite(property._id)}
                 isToggling={isTogglingFavorite[property._id]}
               />
