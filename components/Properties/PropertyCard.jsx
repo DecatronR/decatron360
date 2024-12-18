@@ -32,9 +32,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           )}
 
           {/* Top Tags */}
-          <div className="absolute top-4 left-4 bg-black bg-opacity-100 text-white px-3 py-1 rounded-full text-sm font-semibold">
+          <div className="absolute top-4 left-4 bg-black bg-opacity-90 text-white px-2 py-0.5 rounded-full text-[12px] font-medium">
             {property.Price && formatPrice(property.Price)}
           </div>
+
           <div
             className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
@@ -54,22 +55,21 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             />
           </div>
 
-          {/* Bottom Tags */}
-          <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center gap-4">
+          <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center gap-2">
             {/* Listed By Role */}
-            <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+            <div className="bg-green-600 text-white px-2 py-0.5 rounded-full text-[10px] font-medium uppercase shadow-md">
               {property.listedBy === "Owner" ? "Owner" : "Agent"}
             </div>
 
             {/* Sold Out */}
-            {property.isSoldOut && (
-              <div className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+            {property.isSoldOut === "1" && (
+              <div className="bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-medium uppercase shadow-md">
                 Sold Out
               </div>
             )}
 
             {/* For Rent / For Sale */}
-            <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase shadow-lg">
+            <div className="bg-blue-600 text-white px-2 py-0.5 rounded-full text-[10px] font-medium uppercase shadow-md">
               {property.listingType === "Rent" ? "For Rent" : "For Sale"}
             </div>
           </div>
