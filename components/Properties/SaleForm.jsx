@@ -541,20 +541,21 @@ const SaleForm = () => {
               name="inspectionFee"
               placeholder="NGN 0.00"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
-              value={fields.inspectionFee}
+              value={fields.inspectionFee || ""} // Ensure it always has a string value
               onChange={(e) => {
-                const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
+                const numericValue = e.target.value.replace(/[^0-9.]/g, "");
                 setFields((prevFields) => ({
                   ...prevFields,
-                  inspectionFee: numericPrice,
+                  inspectionFee: numericValue, // Allow empty strings during editing
                 }));
               }}
               onBlur={(e) => {
-                const formattedPrice = formatPrice(fields.inspectionFee);
+                const numericValue = parseFloat(fields.inspectionFee) || 0;
+                const formattedPrice =
+                  numericValue > 0 ? formatPrice(numericValue) : ""; // Format valid values
                 setFields((prevFields) => ({
                   ...prevFields,
-                  inspectionFee: formattedPrice,
+                  inspectionFee: formattedPrice, // Always a string, even if empty
                 }));
               }}
             />

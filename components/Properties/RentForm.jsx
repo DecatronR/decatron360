@@ -41,7 +41,7 @@ const RentForm = () => {
     NoOfKitchens: "",
     NoOfParkingSpace: "null",
     Price: "",
-    inspectionFee: "",
+    inspectionFee: "0.00",
     virtualTour: "",
     video: "",
     photo: [],
@@ -539,7 +539,6 @@ const RentForm = () => {
               name="inspectionFee"
               placeholder="NGN 0.00"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
               value={fields.inspectionFee}
               onChange={(e) => {
                 const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
