@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import ButtonSpinner from "../ButtonSpinner";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
+import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 
 const ScheduleInspectionForm = ({ propertyId, agentId }) => {
   const router = useRouter();
@@ -23,6 +24,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState({});
   const [slotIds, setSlotIds] = useState({});
+  const [inspectionFee, setInspectionFee] = useState();
 
   useEffect(() => {
     if (!user) return;
@@ -33,6 +35,19 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
     };
     handleFetchUser();
   }, []);
+
+  useEffect(() => {
+    const handleFetchPropertyData = async () => {
+      const propertyDetails = await fetchPropertyData(propertyId);
+
+      const sanitizedInspectionFee = parseFloat(
+        propertyDetails.data.inspectionFee.replace(/[^0-9.]/g, "")
+      );
+      setInspectionFee(sanitizedInspectionFee);
+    };
+
+    handleFetchPropertyData();
+  }, [propertyId]);
 
   useEffect(() => {
     const handleFetchAgentSchedule = async () => {
@@ -104,19 +119,29 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
       sessionStorage.setItem("agentId", agentId);
     } else {
       console.error("Selected slot is unavailable or not found.");
+      setIsButtonLoading(false);
+      return;
     }
 
     // Check if the user is logged in
     if (!user) {
-      // Redirect to login page if the user is not logged in
-      router.push(
-        `/auth/login?redirect=${encodeURIComponent(
-          `/inspection/booking/${propertyId}`
-        )}`
-      );
+      // Redirect to login page, with the appropriate redirect based on the inspection fee
+      const redirectPage =
+        inspectionFee && !isNaN(inspectionFee) && inspectionFee > 0
+          ? `/inspection/payment-booking/${propertyId}`
+          : `/inspection/non-payment-booking/${propertyId}`;
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectPage)}`);
+      setIsButtonLoading(false);
+      return;
+    }
+
+    // Determine the route based on inspection fee
+    if (inspectionFee && !isNaN(inspectionFee) && inspectionFee > 0) {
+      // Redirect to the payment booking page
+      router.push(`/inspection/payment-booking/${propertyId}`);
     } else {
-      // Redirect to the inspection booking page if the user is logged in
-      router.push(`/inspection/booking/${propertyId}`);
+      // Redirect to the non-payment page
+      router.push(`/inspection/non-payment-booking/${propertyId}`);
     }
 
     setIsButtonLoading(false);

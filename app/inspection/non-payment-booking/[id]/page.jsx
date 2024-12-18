@@ -3,24 +3,16 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Spinner from "@/components/Spinner";
 import { useSnackbar } from "notistack";
-import { formatCurrency } from "@/utils/helpers/formatCurrency";
-import { formatTime } from "@/utils/helpers/formatTime";
-import { PaystackButton } from "react-paystack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
-import { bookInspection } from "@/utils/api/inspection/bookInspection";
-import { scheduleBooked } from "utils/api/scheduler/scheduleBooked";
 
-const InspectionBooking = () => {
-  const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+const NonPaymentInspectionBooking = () => {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const { id: propertyId } = useParams();
   const [user, setUser] = useState(null);
   const [property, setProperty] = useState(null);
-  const [agentId, setAgentId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [inspectionData, setInspectionData] = useState(null);
   const [isInspectionConfirmed, setIsInspectionConfirmed] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -63,121 +55,27 @@ const InspectionBooking = () => {
 
   // Save edited data to state
   const handleSave = () => {
-    setInspectionData({
-      ...inspectionData,
-      date: editedDate,
-      time: editedTime,
-    });
     setIsEditing(false);
   };
 
-  const validateBookingData = (
-    userId,
-    propertyId,
-    agentId,
-    bookingDateTime
-  ) => {
-    if (!userId) {
-      console.log("User ID is missing.");
-      return false;
-    }
-    if (!propertyId) {
-      console.log("Property ID is missing.");
-      return false;
-    }
-    if (!agentId) {
-      console.log("Agent ID is missing.");
-      return false;
-    }
-    if (!bookingDateTime) {
-      console.log("Booking date/time is missing.");
-      return false;
-    }
-    return true;
-  };
-
-  const handleBookInspection = async () => {
-    const userId = sessionStorage.getItem("userId");
-    const agentId = sessionStorage.getItem("agentId");
-    const bookingDateTime = new Date(
-      `${editedDate}T${editedTime}:00`
-    ).toISOString();
-
-    const isValid = validateBookingData(
-      userId,
-      propertyId,
-      agentId,
-      bookingDateTime
-    );
-    if (!isValid) return;
-
-    try {
-      const bookingId = await bookInspection(
-        userId,
-        propertyId,
-        agentId,
-        bookingDateTime
+  const handleConfirmBooking = () => {
+    if (!isInspectionConfirmed || !isTermsAccepted) {
+      enqueueSnackbar(
+        "Please confirm the inspection details and accept the terms.",
+        {
+          variant: "warning",
+        }
       );
-      console.log("Booking successful with ID:", bookingId);
-      return bookingId;
-    } catch (error) {
-      console.error("Failed to book inspection", error);
-      throw new Error("Booking failed");
+      return;
     }
+
+    enqueueSnackbar("Inspection successfully confirmed!", {
+      variant: "success",
+    });
+    router.push("/inspection/success");
   };
 
-  const handleBookedSlot = async () => {
-    const bookedSlotId = sessionStorage.getItem("bookedSlotId");
-    try {
-      await scheduleBooked(bookedSlotId);
-    } catch (error) {
-      console.error(
-        "Failed to schedule book inspection on agent calender: ",
-        error
-      );
-    }
-  };
-
-  const handlePaymentSuccess = async () => {
-    try {
-      const res = await handleBookInspection();
-      await handleBookedSlot();
-      console.log("Booking id: ", res);
-      enqueueSnackbar("Your inspection has been successfully booked!", {
-        variant: "success",
-      });
-      router.push("/inspection/success");
-    } catch (error) {
-      enqueueSnackbar("Failed to book inspection after payment", {
-        variant: "error",
-      });
-    }
-  };
-
-  const componentProps = {
-    email: user?.email,
-    amount: (10000 + 1500) * 100,
-    metadata: {
-      name: user?.name,
-      phone: user?.phone,
-    },
-    publicKey,
-    text: "Confirm and Pay",
-    onSuccess: handlePaymentSuccess,
-    onClose: () =>
-      enqueueSnackbar("You cancelled your inspection booking.", {
-        variant: "warning",
-      }),
-  };
-
-  const {
-    inspectionFee = 10000,
-    serviceCharge = 1500,
-    propertyTitle,
-    state,
-    lga,
-    neighbourhood,
-  } = property
+  const { propertyTitle, state, lga, neighbourhood } = property
     ? {
         propertyTitle: property.data.title,
         state: property.data.state,
@@ -225,7 +123,7 @@ const InspectionBooking = () => {
                     className="border rounded-md p-2 w-full"
                   />
                 ) : (
-                  formatTime(editedTime) || "Loading..."
+                  editedTime || "Loading..."
                 )}
               </p>
             </div>
@@ -241,23 +139,6 @@ const InspectionBooking = () => {
                 Edit
               </button>
             )}
-          </div>
-
-          {/* Price Breakdown */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Price Breakdown</h2>
-            <div className="flex justify-between mb-3">
-              <span className="text-gray-600">Inspection Fee</span>
-              <span className="font-bold">{formatCurrency(inspectionFee)}</span>
-            </div>
-            <div className="flex justify-between mb-3">
-              <span className="text-gray-600">Service Charge</span>
-              <span className="font-bold">{formatCurrency(serviceCharge)}</span>
-            </div>
-            <div className="border-t mt-4 pt-4 flex justify-between font-semibold text-lg">
-              <span>Total</span>
-              <span>{formatCurrency(inspectionFee + serviceCharge)}</span>
-            </div>
           </div>
 
           {/* Confirmation Checkboxes */}
@@ -288,21 +169,22 @@ const InspectionBooking = () => {
             </label>
           </div>
 
-          {/* Paystack Payment Button */}
-          <PaystackButton
-            {...componentProps}
+          {/* Confirm Booking Button */}
+          <button
+            onClick={handleConfirmBooking}
             disabled={!isTermsAccepted || !isInspectionConfirmed}
             className={`w-full py-3 px-4 text-white rounded-lg ${
               !isTermsAccepted || !isInspectionConfirmed
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-primary-600 hover:bg-primary-700"
             }`}
-          />
+          >
+            Confirm Booking
+          </button>
         </div>
       </div>
-      )
     </>
   );
 };
 
-export default InspectionBooking;
+export default NonPaymentInspectionBooking;
