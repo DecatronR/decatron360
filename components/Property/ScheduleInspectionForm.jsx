@@ -41,7 +41,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
       const propertyDetails = await fetchPropertyData(propertyId);
 
       const sanitizedInspectionFee = parseFloat(
-        propertyDetails.data.inspectionFee.replace(/[^0-9.]/g, "")
+        propertyDetails.data?.inspectionFee?.replace(/[^0-9.]/g, "")
       );
       setInspectionFee(sanitizedInspectionFee);
     };
