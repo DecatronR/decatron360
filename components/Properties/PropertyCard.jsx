@@ -62,7 +62,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             </div>
 
             {/* Sold Out */}
-            {property.isSoldOut && (
+            {property.isSoldOut === "1" && (
               <div className="bg-red-600 text-white px-2 py-0.5 rounded-full text-[10px] font-medium uppercase shadow-md">
                 Sold Out
               </div>
