@@ -155,14 +155,14 @@ const PropertyDetails = ({ property, agentId }) => {
             </li> */}
             <li className="flex items-center">
               <FontAwesomeIcon icon={faBed} className="text-indigo-600 mr-2" />
-              Bedrooms: {property.NoOfBedRooms}
+              Bedrooms: {property.bedrooms}
             </li>
             <li className="flex items-center">
               <FontAwesomeIcon
                 icon={faShower}
                 className="text-indigo-600 mr-2"
               />
-              Bathroom: {property.NoOfKitchens}
+              Bathroom: {property.bathrooms}
             </li>
             {/* <li className="flex items-center">
               <FontAwesomeIcon icon={faCar} className="text-indigo-600 mr-2" />
