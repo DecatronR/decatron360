@@ -36,10 +36,10 @@ const SaleForm = () => {
     neighbourhood: "",
     size: "",
     propertyDetails: "",
-    NoOfLivingRooms: "null",
-    NoOfBedRooms: "",
-    NoOfKitchens: "",
-    NoOfParkingSpace: "null",
+    livingrooms: "null",
+    bedrooms: "",
+    bathrooms: "",
+    parkingSpace: "null",
     price: "",
     inspectionFee: "",
     virtualTour: "",
@@ -218,10 +218,10 @@ const SaleForm = () => {
     formData.append("neighbourhood", fields.neighbourhood);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
-    formData.append("NoOfLivingRooms", fields.NoOfLivingRooms);
-    formData.append("NoOfBedRooms", fields.NoOfBedRooms);
-    formData.append("NoOfKitchens", fields.NoOfKitchens);
-    formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
+    formData.append("livingrooms", fields.livingrooms);
+    formData.append("bedrooms", fields.bedrooms);
+    formData.append("bathrooms", fields.bathrooms);
+    formData.append("parkingSpace", fields.parkingSpace);
     formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
     formData.append("virtualTour", fields.virtualTour);
@@ -450,11 +450,11 @@ const SaleForm = () => {
             </label>
             <input
               type="number"
-              id="NoOfBedRooms"
-              name="NoOfBedRooms"
+              id="bedrooms"
+              name="bedrooms"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.NoOfBedRooms}
+              value={fields.bedrooms}
               onChange={handleChange}
             />
           </div>
@@ -467,11 +467,11 @@ const SaleForm = () => {
             </label>
             <input
               type="number"
-              id="NoOfKitchens"
-              name="NoOfKitchens"
+              id="bathrooms"
+              name="bathrooms"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.NoOfKitchens}
+              value={fields.bathrooms}
               onChange={handleChange}
             />
           </div>
