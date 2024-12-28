@@ -525,7 +525,7 @@ const PropertyEditForm = ({ propertyId }) => {
 
         <div className="w-1/2">
           <label
-            htmlFor="price"
+            htmlFor="inspectionFee"
             className="block text-gray-800 font-medium mb-3"
           >
             Inspection Fee
