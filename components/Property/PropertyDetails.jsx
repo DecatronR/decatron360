@@ -139,7 +139,7 @@ const PropertyDetails = ({ property, agentId }) => {
             <strong>Usage Type:</strong> {property.usageType}
           </p>
           <p>
-            <strong>Price:</strong> {property.Price}
+            <strong>Price:</strong> {property.price}
           </p>
         </div>
 

@@ -40,7 +40,7 @@ const SaleForm = () => {
     NoOfBedRooms: "",
     NoOfKitchens: "",
     NoOfParkingSpace: "null",
-    Price: "",
+    price: "",
     inspectionFee: "",
     virtualTour: "",
     video: "",
@@ -222,7 +222,7 @@ const SaleForm = () => {
     formData.append("NoOfBedRooms", fields.NoOfBedRooms);
     formData.append("NoOfKitchens", fields.NoOfKitchens);
     formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
-    formData.append("Price", fields.Price);
+    formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
@@ -505,24 +505,24 @@ const SaleForm = () => {
             </label>
             <input
               type="text"
-              id="Price"
-              name="Price"
+              id="price"
+              name="price"
               placeholder="NGN 0.00"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.Price}
+              value={fields.price}
               onChange={(e) => {
                 const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
                 setFields((prevFields) => ({
                   ...prevFields,
-                  Price: numericPrice,
+                  price: numericPrice,
                 }));
               }}
               onBlur={(e) => {
-                const formattedPrice = formatPrice(fields.Price);
+                const formattedPrice = formatPrice(fields.price);
                 setFields((prevFields) => ({
                   ...prevFields,
-                  Price: formattedPrice,
+                  price: formattedPrice,
                 }));
               }}
             />

@@ -33,7 +33,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 
           {/* Top Tags */}
           <div className="absolute top-4 left-4 bg-black bg-opacity-90 text-white px-2 py-0.5 rounded-full text-[12px] font-medium">
-            {property.Price && formatPrice(property.Price)}
+            {property.price && formatPrice(property.price)}
           </div>
 
           <div
