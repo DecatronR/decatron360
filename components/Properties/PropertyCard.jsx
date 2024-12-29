@@ -88,10 +88,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           </div>
           <div className="flex items-center text-gray-600 text-xs space-x-2 mb-2">
             <p className="flex items-center">
-              <FaBed className="mr-1" /> {property.NoOfBedRooms} Beds
+              <FaBed className="mr-1" /> {property.bedrooms} Beds
             </p>
             <p className="flex items-center">
-              <FaBath className="mr-1" /> {property.NoOfKitchens} Baths
+              <FaBath className="mr-1" /> {property.bathrooms} Baths
             </p>
             <p className="flex items-center">
               <FaRulerCombined className="mr-1" /> {property.size} sqft

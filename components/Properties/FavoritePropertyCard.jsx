@@ -35,7 +35,7 @@ const FavoritePropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 
         {/* Top Tags */}
         <div className="absolute top-4 left-4 bg-black bg-opacity-100 text-white px-3 py-1 rounded-full text-sm font-semibold">
-          {property.data.Price && formatPrice(property.data.Price)}
+          {property.data.Price && formatPrice(property.data.price)}
         </div>
         <button
           className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-200 transition duration-300"
@@ -86,10 +86,10 @@ const FavoritePropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
         </div>
         <div className="flex items-center text-gray-600 text-xs space-x-2 mb-2">
           <p className="flex items-center">
-            <FaBed className="mr-1" /> {property.data.NoOfBedRooms} Beds
+            <FaBed className="mr-1" /> {property.data.bedrooms} Beds
           </p>
           <p className="flex items-center">
-            <FaBath className="mr-1" /> {property.data.NoOfKitchens} Baths
+            <FaBath className="mr-1" /> {property.data.bathrooms} Baths
           </p>
           <p className="flex items-center">
             <FaRulerCombined className="mr-1" /> {property.data.size} sqft
