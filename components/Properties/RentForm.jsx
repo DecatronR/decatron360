@@ -36,11 +36,11 @@ const RentForm = () => {
     neighbourhood: "",
     size: "",
     propertyDetails: "",
-    NoOfLivingRooms: "null",
-    NoOfBedRooms: "",
-    NoOfKitchens: "",
-    NoOfParkingSpace: "null",
-    Price: "",
+    livingrooms: "null",
+    bedrooms: "",
+    bathrooms: "",
+    parkingSpace: "null",
+    price: "",
     inspectionFee: "",
     virtualTour: "",
     video: "",
@@ -216,11 +216,11 @@ const RentForm = () => {
     formData.append("neighbourhood", fields.neighbourhood);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
-    formData.append("NoOfLivingRooms", fields.NoOfLivingRooms);
-    formData.append("NoOfBedRooms", fields.NoOfBedRooms);
-    formData.append("NoOfKitchens", fields.NoOfKitchens);
-    formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
-    formData.append("Price", fields.Price);
+    formData.append("livingrooms", fields.livingrooms);
+    formData.append("bedrooms", fields.bedrooms);
+    formData.append("bathrooms", fields.bathrooms);
+    formData.append("parkingSpace", fields.parkingSpace);
+    formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
@@ -448,11 +448,11 @@ const RentForm = () => {
             </label>
             <input
               type="number"
-              id="NoOfBedRooms"
-              name="NoOfBedRooms"
+              id="bedrooms"
+              name="bedrooms"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.NoOfBedRooms}
+              value={fields.bedrooms}
               onChange={handleChange}
             />
           </div>
@@ -465,11 +465,11 @@ const RentForm = () => {
             </label>
             <input
               type="number"
-              id="NoOfKitchens"
-              name="NoOfKitchens"
+              id="bathrooms"
+              name="bathrooms"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.NoOfKitchens}
+              value={fields.bathrooms}
               onChange={handleChange}
             />
           </div>
@@ -503,12 +503,12 @@ const RentForm = () => {
             </label>
             <input
               type="text"
-              id="Price"
-              name="Price"
+              id="price"
+              name="price"
               placeholder="NGN 0.00"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
               required
-              value={fields.Price}
+              value={fields.price}
               onChange={(e) => {
                 const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
                 setFields((prevFields) => ({
@@ -517,10 +517,10 @@ const RentForm = () => {
                 }));
               }}
               onBlur={(e) => {
-                const formattedPrice = formatPrice(fields.Price);
+                const formattedPrice = formatPrice(fields.price);
                 setFields((prevFields) => ({
                   ...prevFields,
-                  Price: formattedPrice,
+                  price: formattedPrice,
                 }));
               }}
             />
@@ -528,7 +528,7 @@ const RentForm = () => {
 
           <div className="w-1/2">
             <label
-              htmlFor="price"
+              htmlFor="inspectionFee"
               className="block text-gray-800 font-medium mb-3"
             >
               Inspection Fee

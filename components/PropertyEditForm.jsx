@@ -43,11 +43,11 @@ const PropertyEditForm = ({ propertyId }) => {
         neighbourhood: propertyData?.data?.neighbourhood || "",
         size: propertyData?.data?.size || "",
         propertyDetails: propertyData?.data?.propertyDetails || "",
-        NoOfLivingRooms: propertyData?.data?.NoOfLivingRooms || "",
-        NoOfBedRooms: propertyData?.data?.NoOfBedRooms || "",
-        NoOfKitchens: propertyData?.data?.NoOfKitchens || "",
-        NoOfParkingSpace: propertyData?.data?.NoOfParkingSpace || "",
-        Price: propertyData?.data?.Price || "",
+        livingrooms: propertyData?.data?.livingrooms || "",
+        bedrooms: propertyData?.data?.bedrooms || "",
+        bathrooms: propertyData?.data?.bathrooms || "",
+        parkingSpace: propertyData?.data?.parkingSpace || "",
+        price: propertyData?.data?.price || "",
         virtualTour: propertyData?.data?.virtualTour || "",
         inspectionFee: propertyData?.data?.inspectionFee || "",
         video: propertyData?.data?.video || "",
@@ -197,11 +197,11 @@ const PropertyEditForm = ({ propertyId }) => {
     formData.append("neighbourhood", fields.neighbourhood);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
-    formData.append("NoOfLivingRooms", fields.NoOfLivingRooms);
-    formData.append("NoOfBedRooms", fields.NoOfBedRooms);
-    formData.append("NoOfKitchens", fields.NoOfKitchens);
-    formData.append("NoOfParkingSpace", fields.NoOfParkingSpace);
-    formData.append("Price", fields.Price);
+    formData.append("livingRooms", fields.livingRooms);
+    formData.append("bedrooms", fields.bedrooms);
+    formData.append("bathrooms", fields.bathrooms);
+    formData.append("parkingSpace", fields.parkingSpace);
+    formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
@@ -445,11 +445,11 @@ const PropertyEditForm = ({ propertyId }) => {
           </label>
           <input
             type="number"
-            id="NoOfBedRooms"
-            name="NoOfBedRooms"
+            id="bedrooms"
+            name="bedrooms"
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
-            value={fields.NoOfBedRooms}
+            value={fields.bedrooms}
             onChange={handleChange}
           />
         </div>
@@ -462,11 +462,11 @@ const PropertyEditForm = ({ propertyId }) => {
           </label>
           <input
             type="number"
-            id="NoOfKitchens"
-            name="NoOfKitchens"
+            id="bathrooms"
+            name="bathrooms"
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
-            value={fields.NoOfKitchens}
+            value={fields.bathrooms}
             onChange={handleChange}
           />
         </div>
@@ -500,24 +500,24 @@ const PropertyEditForm = ({ propertyId }) => {
           </label>
           <input
             type="text"
-            id="Price"
-            name="Price"
+            id="price"
+            name="price"
             placeholder="NGN 0.00"
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             required
-            value={fields.Price}
+            value={fields.price}
             onChange={(e) => {
               const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
               setFields((prevFields) => ({
                 ...prevFields,
-                Price: numericPrice,
+                price: numericPrice,
               }));
             }}
             onBlur={(e) => {
               const formattedPrice = formatPrice(fields.Price);
               setFields((prevFields) => ({
                 ...prevFields,
-                Price: formattedPrice,
+                price: formattedPrice,
               }));
             }}
           />
@@ -525,7 +525,7 @@ const PropertyEditForm = ({ propertyId }) => {
 
         <div className="w-1/2">
           <label
-            htmlFor="price"
+            htmlFor="inspectionFee"
             className="block text-gray-800 font-medium mb-3"
           >
             Inspection Fee
