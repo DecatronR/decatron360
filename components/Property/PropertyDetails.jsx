@@ -130,6 +130,9 @@ const PropertyDetails = ({ property, agentId }) => {
             {property.propertySubType} */}
           </p>
           <p>
+            <strong>Title Document:</strong> {property?.titleDocument}
+          </p>
+          <p>
             <strong>Listing Type:</strong> {property.listingType}
           </p>
           <p>
