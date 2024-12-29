@@ -7,6 +7,7 @@ import {
   FaMapMarkerAlt,
   FaRulerCombined,
   FaHeart,
+  FaRegHeart,
 } from "react-icons/fa";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
@@ -35,25 +36,26 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           <div className="absolute top-4 left-4 bg-black bg-opacity-90 text-white px-2 py-0.5 rounded-full text-[12px] font-medium">
             {property.price && formatPrice(property.price)}
           </div>
+          <button
+            className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-200 transition duration-300"
 
           <div
             className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
             onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (typeof onToggleFavorite === "function") {
-                onToggleFavorite(property._id);
-              } else {
-                console.error("onToggleFavorite is not a function");
-              }
+              e.preventDefault(); // Prevent navigation on click
+              e.stopPropagation(); // Stop click from bubbling to the parent
+              onToggleFavorite();
             }}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
           >
-            <FaHeart
-              className={`text-2xm transition duration-300 ${
-                isFavorite ? "text-red-500" : "text-gray-400"
-              }`}
-            />
-          </div>
+            {isFavorite ? (
+              <FaHeart className="text-red-500 text-2xl transition duration-300" />
+            ) : (
+              <FaRegHeart className="text-white text-2xl transition duration-300" />
+            )}
+          </button>
 
           <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center gap-2">
             {/* Listed By Role */}

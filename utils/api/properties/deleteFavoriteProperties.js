@@ -1,12 +1,16 @@
 import axios from "axios";
 
-export const fetchFavoriteProperties = async (userId) => {
+export const deleteFavoriteProperties = async (id) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
+  if (!token) {
+    console.error("No token found in session storage");
+    return;
+  }
   try {
     const res = await axios.post(
-      `${baseUrl}/favorite/getMyFavorites`,
-      { userId },
+      `${baseUrl}/favorite/deleteData`,
+      { id },
       {
         withCredentials: true,
         headers: {
@@ -14,9 +18,9 @@ export const fetchFavoriteProperties = async (userId) => {
         },
       }
     );
-    return res.data.data;
+    return res.data;
   } catch (error) {
-    console.error("Error fetching favourite properties:", error);
+    console.error("Error deleting to favourite properties:", error);
     throw error;
   }
 };
