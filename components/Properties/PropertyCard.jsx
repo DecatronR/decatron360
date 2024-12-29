@@ -36,11 +36,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
           <div className="absolute top-4 left-4 bg-black bg-opacity-90 text-white px-2 py-0.5 rounded-full text-[12px] font-medium">
             {property.price && formatPrice(property.price)}
           </div>
-          <button
-            className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-200 transition duration-300"
 
-          <div
-            className="absolute top-4 right-4 bg-white p-1 rounded-full cursor-pointer hover:bg-gray-200 transition duration-300"
+          {/* Favorite Button */}
+          <button
+            className="absolute top-4 right-4 bg-transaprent p-1 rounded-full cursor-pointer hover:bg-white transition duration-300"
             onClick={(e) => {
               e.preventDefault(); // Prevent navigation on click
               e.stopPropagation(); // Stop click from bubbling to the parent
