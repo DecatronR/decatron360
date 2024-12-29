@@ -458,7 +458,7 @@ const PropertyEditForm = ({ propertyId }) => {
       <div className="flex gap-4">
         <div className="w-1/2">
           <label
-            htmlFor="beds"
+            htmlFor="bedrooms"
             className="block text-gray-800 font-medium mb-3"
           >
             Beds
@@ -475,7 +475,7 @@ const PropertyEditForm = ({ propertyId }) => {
         </div>
         <div className="w-1/2">
           <label
-            htmlFor="baths"
+            htmlFor="bathrooms"
             className="block text-gray-800 font-medium mb-3"
           >
             Baths

@@ -149,11 +149,15 @@ const SaleForm = () => {
   };
 
   const formatPrice = (price) => {
+    if (typeof price !== "string") {
+      price = String(price); // Convert to string if it's not already
+    }
+
     const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ""));
     return new Intl.NumberFormat("en-NG", {
       style: "currency",
       currency: "NGN",
-    }).format(numericPrice);
+    }).format(numericPrice || 0); // Fallback to 0 if parsing fails
   };
 
   const fetchData = useCallback(async (url, setter) => {
@@ -464,7 +468,7 @@ const SaleForm = () => {
         <div className="flex gap-4">
           <div className="w-1/2">
             <label
-              htmlFor="beds"
+              htmlFor="bedrooms"
               className="block text-gray-800 font-medium mb-3"
             >
               Beds
@@ -481,7 +485,7 @@ const SaleForm = () => {
           </div>
           <div className="w-1/2">
             <label
-              htmlFor="baths"
+              htmlFor="bathrooms"
               className="block text-gray-800 font-medium mb-3"
             >
               Baths
