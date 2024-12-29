@@ -72,7 +72,7 @@ const RentForm = () => {
   //fetch user role
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
-    const handleFetcUserRole = async () => {
+    const handleFetchUserRole = async () => {
       try {
         const res = await fetchUserData(id);
         setUserRole(res.role);
@@ -80,7 +80,7 @@ const RentForm = () => {
         console.log("Failed to fetch user role");
       }
     };
-    handleFetcUserRole();
+    handleFetchUserRole();
   }, []);
 
   const handleChange = (e) => {
