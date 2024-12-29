@@ -42,6 +42,7 @@ const SaleForm = () => {
     parkingSpace: "null",
     price: "",
     inspectionFee: "",
+    titleDocument: "",
     virtualTour: "",
     video: "",
     photo: [],
@@ -224,6 +225,7 @@ const SaleForm = () => {
     formData.append("parkingSpace", fields.parkingSpace);
     formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
+    formData.append("titleDocument", fields.titleDocument);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
 
@@ -367,6 +369,25 @@ const SaleForm = () => {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="mb-6">
+          <label
+            htmlFor="titleDocument"
+            className="block text-gray-800 font-medium mb-3"
+          >
+            Title Document
+          </label>
+          <input
+            type="text"
+            id="titleDocument"
+            name="titleDocument"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            placeholder="e.g. C of O, Deed of Assignment"
+            required
+            value={fields.titleDocument}
+            onChange={handleChange}
+          />
         </div>
 
         <div className="mb-6">
