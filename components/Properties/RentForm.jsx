@@ -7,6 +7,7 @@ import Spinner from "../Spinner";
 import ButtonSpinner from "../ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const RentForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -18,6 +19,8 @@ const RentForm = () => {
   const [lga, setLga] = useState([]);
   const [propertyCondition, setPropertyCondition] = useState([]);
   const [propertyUsage, setPropertyUsage] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [userRole, setUserRole] = useState();
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,6 +51,7 @@ const RentForm = () => {
     photo: [],
   });
 
+  //prefill userId
   useEffect(() => {
     const loadUserId = async () => {
       const id = sessionStorage.getItem("userId");
@@ -63,6 +67,20 @@ const RentForm = () => {
     };
 
     loadUserId();
+  }, []);
+
+  //fetch user role
+  useEffect(() => {
+    const id = sessionStorage.getItem("userId");
+    const handleFetchUserRole = async () => {
+      try {
+        const res = await fetchUserData(id);
+        setUserRole(res.role);
+      } catch (error) {
+        console.log("Failed to fetch user role");
+      }
+    };
+    handleFetchUserRole();
   }, []);
 
   const handleChange = (e) => {
@@ -171,9 +189,7 @@ const RentForm = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(`Successfully fetched data from ${url}: `, res);
       const data = res.data;
-      console.log("Data: ", data);
       setter(data);
     } catch (err) {
       console.log(`Issue fetching data from ${url}`);
@@ -197,6 +213,8 @@ const RentForm = () => {
           `${baseUrl}/propertyUsage/fetchPropertyUsage`,
           setPropertyUsage
         ),
+        //fetch users list for admin to select
+        fetchData(`${baseUrl}/users/getusers`, setUsers),
       ]);
     };
 
@@ -273,6 +291,34 @@ const RentForm = () => {
         <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
           Add Property For Rent
         </h2>
+
+        {userRole === "admin" && (
+          <div className="mb-6">
+            <label
+              htmlFor="userID"
+              className="block text-gray-800 font-medium mb-3"
+            >
+              User
+            </label>
+            <select
+              id="userID"
+              name="userID"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              required
+              value={fields.userID}
+              onChange={handleChange}
+            >
+              <option disabled value="">
+                Select User
+              </option>
+              {users.map((type) => (
+                <option key={type._id} value={type._id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="mb-6">
           <label
@@ -538,7 +584,7 @@ const RentForm = () => {
                 const numericPrice = e.target.value.replace(/[^0-9.]/g, "");
                 setFields((prevFields) => ({
                   ...prevFields,
-                  Price: numericPrice,
+                  price: numericPrice,
                 }));
               }}
               onBlur={(e) => {

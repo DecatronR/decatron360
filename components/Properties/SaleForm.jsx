@@ -7,6 +7,7 @@ import Spinner from "../Spinner";
 import ButtonSpinner from "../ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const SaleForm = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -18,6 +19,8 @@ const SaleForm = () => {
   const [lga, setLga] = useState([]);
   const [propertyCondition, setPropertyCondition] = useState([]);
   const [propertyUsage, setPropertyUsage] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [userRole, setUserRole] = useState();
   const [uploadedImages, setUploadedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +68,20 @@ const SaleForm = () => {
     loadUserId();
   }, []);
 
+  //fetch user role
+  useEffect(() => {
+    const id = sessionStorage.getItem("userId");
+    const handleFetchUserRole = async () => {
+      try {
+        const res = await fetchUserData(id);
+        setUserRole(res.role);
+      } catch (error) {
+        console.log("Failed to fetch user role");
+      }
+    };
+    handleFetchUserRole();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -87,8 +104,6 @@ const SaleForm = () => {
       }));
     }
   };
-
-  const handlePriceChange = () => {};
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -199,6 +214,8 @@ const SaleForm = () => {
           `${baseUrl}/propertyUsage/fetchPropertyUsage`,
           setPropertyUsage
         ),
+        //fetch users list for admin to select
+        fetchData(`${baseUrl}/users/getusers`, setUsers),
       ]);
     };
 
@@ -276,6 +293,33 @@ const SaleForm = () => {
           Add Property For Sale
         </h2>
 
+        {userRole === "admin" && (
+          <div className="mb-6">
+            <label
+              htmlFor="userID"
+              className="block text-gray-800 font-medium mb-3"
+            >
+              User
+            </label>
+            <select
+              id="userID"
+              name="userID"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              required
+              value={fields.userID}
+              onChange={handleChange}
+            >
+              <option disabled value="">
+                Select User
+              </option>
+              {users.map((type) => (
+                <option key={type._id} value={type._id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <div className="mb-6">
           <label
             htmlFor="propertyType"
