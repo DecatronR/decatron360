@@ -5,6 +5,8 @@ import Spinner from "@/components/Spinner";
 import { useSnackbar } from "notistack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
+import { bookInspection } from "utils/api/inspection/bookInspection";
+import { scheduleBooked } from "utils/api/scheduler/scheduleBooked";
 
 const NonPaymentInspectionBooking = () => {
   const router = useRouter();
@@ -55,24 +57,95 @@ const NonPaymentInspectionBooking = () => {
 
   // Save edited data to state
   const handleSave = () => {
+    setInspectionData({
+      ...inspectionData,
+      date: editedDate,
+      time: editedTime,
+    });
     setIsEditing(false);
   };
 
-  const handleConfirmBooking = () => {
-    if (!isInspectionConfirmed || !isTermsAccepted) {
-      enqueueSnackbar(
-        "Please confirm the inspection details and accept the terms.",
-        {
-          variant: "warning",
-        }
-      );
-      return;
+  const validateBookingData = (
+    userId,
+    propertyId,
+    agentId,
+    bookingDateTime
+  ) => {
+    if (!userId) {
+      console.log("User ID is missing.");
+      return false;
     }
+    if (!propertyId) {
+      console.log("Property ID is missing.");
+      return false;
+    }
+    if (!agentId) {
+      console.log("Agent ID is missing.");
+      return false;
+    }
+    if (!bookingDateTime) {
+      console.log("Booking date/time is missing.");
+      return false;
+    }
+    return true;
+  };
 
-    enqueueSnackbar("Inspection successfully confirmed!", {
-      variant: "success",
-    });
-    router.push("/inspection/success");
+  const handleBookInspection = async () => {
+    const userId = sessionStorage.getItem("userId");
+    const agentId = sessionStorage.getItem("agentId");
+    const bookingDateTime = new Date(
+      `${editedDate}T${editedTime}:00`
+    ).toISOString();
+
+    const isValid = validateBookingData(
+      userId,
+      propertyId,
+      agentId,
+      bookingDateTime
+    );
+    if (!isValid) return;
+
+    try {
+      const bookingId = await bookInspection(
+        userId,
+        propertyId,
+        agentId,
+        bookingDateTime
+      );
+      console.log("Booking successful with ID:", bookingId);
+      return bookingId;
+    } catch (error) {
+      console.error("Failed to book inspection", error);
+      throw new Error("Booking failed");
+    }
+  };
+
+  const handleBookedSlot = async () => {
+    const bookedSlotId = sessionStorage.getItem("bookedSlotId");
+    try {
+      await scheduleBooked(bookedSlotId);
+    } catch (error) {
+      console.error(
+        "Failed to schedule book inspection on agent calender: ",
+        error
+      );
+    }
+  };
+
+  const handleConfirmBooking = async () => {
+    try {
+      const res = await handleBookInspection();
+      await handleBookedSlot();
+      console.log("Booking id: ", res);
+      enqueueSnackbar("Your inspection has been successfully booked!", {
+        variant: "success",
+      });
+      router.push("/inspection/success");
+    } catch (error) {
+      enqueueSnackbar("Failed to book inspection after payment", {
+        variant: "error",
+      });
+    }
   };
 
   const { propertyTitle, state, lga, neighbourhood } = property

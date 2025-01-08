@@ -24,6 +24,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [availableDates, setAvailableDates] = useState({});
   const [slotIds, setSlotIds] = useState({});
+  const [displayInspectionFee, setDisplayInspectionFee] = useState();
   const [inspectionFee, setInspectionFee] = useState();
 
   useEffect(() => {
@@ -43,7 +44,8 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
       const sanitizedInspectionFee = parseFloat(
         propertyDetails.data?.inspectionFee?.replace(/[^0-9.]/g, "")
       );
-      setInspectionFee(sanitizedInspectionFee);
+      setDisplayInspectionFee(propertyDetails.data?.inspectionFee); //for display purpose
+      setInspectionFee(sanitizedInspectionFee); // for computation purpose
     };
 
     handleFetchPropertyData();
@@ -209,6 +211,19 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
             className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
           />
         </label>
+        {inspectionFee > 0 && (
+          <label className="block">
+            <span className="text-gray-700">Inspection Fee</span>
+            <input
+              type="text"
+              name="inspectionFee"
+              value={displayInspectionFee}
+              disabled
+              className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:outline-none bg-gray-100 text-gray-500 sm:text-sm px-4 py-2 cursor-not-allowed opacity-70"
+            />
+          </label>
+        )}
+
         <label className="block">
           <span className="text-gray-700">Preferred Date & Time</span>
           <DatePicker
