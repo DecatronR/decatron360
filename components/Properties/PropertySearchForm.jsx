@@ -14,7 +14,6 @@ const PropertySearchForm = () => {
     const handleFetchPropertyTypes = async () => {
       try {
         const res = await fetchPropertyTypes();
-        console.log("Property types for search: ", res);
         setPropertyTypes(res);
       } catch (error) {
         console.log(error);

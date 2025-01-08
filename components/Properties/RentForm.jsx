@@ -55,7 +55,6 @@ const RentForm = () => {
   useEffect(() => {
     const loadUserId = async () => {
       const id = sessionStorage.getItem("userId");
-      console.log("userId sale: ", id);
       if (id) {
         setFields((prevFields) => ({
           ...prevFields,
@@ -254,7 +253,6 @@ const RentForm = () => {
       formData.append(`photo`, photo);
     });
 
-    console.log("Creating new property listing with formData: ", formData);
     setIsButtonLoading(true);
     const userId = sessionStorage.getItem("userId");
     try {

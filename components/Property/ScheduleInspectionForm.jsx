@@ -76,8 +76,6 @@ const ScheduleInspectionForm = ({ propertyId, agentId }) => {
         return acc;
       }, {});
 
-      console.log("Formatted Availability:", formattedAvailability);
-      console.log("Slot IDs:", slotIds);
       setAvailableDates(formattedAvailability);
       setSlotIds(slotIds);
     };

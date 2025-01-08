@@ -27,10 +27,8 @@ const PropertyPage = () => {
       if (!id) return;
       try {
         const res = await fetchPropertyData(id);
-        console.log("property agent id: ", res);
         setProperty(res);
         setAgentId(res.data.userID);
-        console.log("Agent Id: ", res.data.userID);
       } catch (error) {
         console.error("Error fetching property:", error);
       } finally {
@@ -47,10 +45,9 @@ const PropertyPage = () => {
     const handleFetchAgent = async () => {
       try {
         const res = await fetchUserData(agentId);
-        console.log("Agent data: ", res);
         setAgentData(res);
       } catch (error) {
-        console.log("Failed to fethc agent data");
+        console.log("Failed to fetch agent data");
       }
     };
     handleFetchAgent();
@@ -61,7 +58,6 @@ const PropertyPage = () => {
       if (agentId) {
         try {
           const res = await fetchUserRatingAndReviews(agentId);
-          console.log("agent ratingss: ", res.ratings);
           setAgentRating(res.averageRating || 0);
         } catch (error) {
           console.log("Issues fetching agent rating: ", error);

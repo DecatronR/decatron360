@@ -11,7 +11,6 @@ const AgentProperties = ({ agentProperties }) => {
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    console.log("agent property arrived: ", agentProperties);
     setTotalItems(agentProperties.length);
     setLoading(false);
   }, [agentProperties]);

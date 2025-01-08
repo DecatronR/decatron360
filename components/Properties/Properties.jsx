@@ -23,13 +23,11 @@ const Properties = () => {
       try {
         // Fetch all properties (display to all users)
         const allProperties = await fetchProperties();
-        console.log("Properties fetched:", allProperties);
 
         const userId = sessionStorage.getItem("userId");
         if (userId) {
           // Fetch user's favorite properties
           const favoritesResponse = await fetchFavoriteProperties(userId);
-          console.log("Favorite properties fetched:", favoritesResponse);
 
           const updatedProperties = allProperties.map((property) => {
             const favorite = favoritesResponse.find(

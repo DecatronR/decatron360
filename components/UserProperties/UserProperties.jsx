@@ -11,7 +11,6 @@ const UserProperties = ({ userProperties }) => {
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    console.log("user property arrived: ", userProperties);
     setTotalItems(userProperties.length);
     setLoading(false);
   }, [userProperties]);

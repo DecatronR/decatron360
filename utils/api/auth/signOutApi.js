@@ -6,7 +6,6 @@ export const signOutApi = async () => {
     const res = await axios.get(`${baseUrl}/auth/logout`, {
       withCredentials: true,
     });
-    console.log("response: ", res);
     return res.data;
   } catch (error) {
     throw error;

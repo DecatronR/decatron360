@@ -32,7 +32,6 @@ const PaymentInspectionBooking = () => {
     const fetchUserAndPropertyData = async () => {
       const userId = sessionStorage.getItem("userId");
       if (!userId) {
-        console.log("Please log in first.");
         return;
       }
 
@@ -90,19 +89,15 @@ const PaymentInspectionBooking = () => {
     bookingDateTime
   ) => {
     if (!userId) {
-      console.log("User ID is missing.");
       return false;
     }
     if (!propertyId) {
-      console.log("Property ID is missing.");
       return false;
     }
     if (!agentId) {
-      console.log("Agent ID is missing.");
       return false;
     }
     if (!bookingDateTime) {
-      console.log("Booking date/time is missing.");
       return false;
     }
     return true;
@@ -130,7 +125,6 @@ const PaymentInspectionBooking = () => {
         agentId,
         bookingDateTime
       );
-      console.log("Booking successful with ID:", bookingId);
       return bookingId;
     } catch (error) {
       console.error("Failed to book inspection", error);
@@ -154,7 +148,6 @@ const PaymentInspectionBooking = () => {
     try {
       const res = await handleBookInspection();
       await handleBookedSlot();
-      console.log("Booking id: ", res);
       enqueueSnackbar("Your inspection has been successfully booked!", {
         variant: "success",
       });

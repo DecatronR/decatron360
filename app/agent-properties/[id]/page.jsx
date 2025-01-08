@@ -16,7 +16,6 @@ const AgentPropertiesPage = async () => {
       if (id) {
         try {
           const res = await fetchUserData(id);
-          console.log("agent data: ", res);
           setAgentData(res);
         } catch (error) {
           console.log("Issues fetching agent details: ", error);
@@ -33,7 +32,6 @@ const AgentPropertiesPage = async () => {
       if (id) {
         try {
           const res = await fetchUserProperties(id);
-          console.log("agent properties: ", res);
           setAgentProperties(res);
         } catch (error) {
           console.log("Issue with fetching agent properties: ", error);

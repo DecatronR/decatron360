@@ -22,7 +22,6 @@ const InspectionFeedbackForm = ({ inspectionData }) => {
     try {
       const reviewerId = sessionStorage.getItem("userId");
 
-      console.log("agentId: ", agentId);
       await rateAndReviewUser(agentId, rating, reviewerId, review);
       enqueueSnackbar("Successfully submitted feedback", {
         variant: "success",
