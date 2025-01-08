@@ -2,7 +2,7 @@ import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Hero = () => {
   return (
-    <section className="relative bg-primary-500 py-24 lg:py-32 text-white z-0">
+    <section className="relative bg-primary-500 py-24 lg:py-24 text-white z-0">
       {/* Background overlay */}
       <div className="absolute inset-0 bg-black opacity-20 z-0"></div>
 
