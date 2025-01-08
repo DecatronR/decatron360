@@ -13,7 +13,7 @@ const Hero = () => {
             className="text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight"
             style={{ fontFamily: "Nasaliation, sans-serif" }}
           >
-            The easy way to buy real estate
+            The easy way to buy and sell real estate
           </h1>
         </div>
 
