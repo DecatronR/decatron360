@@ -34,20 +34,20 @@ const categories = [
   },
   {
     title: "Offplan",
-    icon: <FaBuilding size={40} />,
+    icon: <FaBuilding size={20} />,
     link: "/categories/offplan",
   },
-  { title: "Shops", icon: <FaStore size={40} />, link: "/categories/shops" },
+  { title: "Shops", icon: <FaStore size={20} />, link: "/categories/shops" },
   {
     title: "Warehouses",
-    icon: <FaWarehouse size={40} />,
+    icon: <FaWarehouse size={20} />,
     link: "/categories/warehouses",
   },
-  { title: "Abuja", icon: <FaCity size={40} />, link: "/categories/abuja" },
-  { title: "Lagos", icon: <FaCity size={40} />, link: "/categories/lagos" },
+  { title: "Abuja", icon: <FaCity size={20} />, link: "/categories/abuja" },
+  { title: "Lagos", icon: <FaCity size={20} />, link: "/categories/lagos" },
   {
     title: "Portharcourt",
-    icon: <FaCity size={40} />,
+    icon: <FaCity size={20} />,
     link: "/categories/portharcourt",
   },
 ];
