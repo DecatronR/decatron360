@@ -19,17 +19,17 @@ import Spinner from "./Spinner";
 const categories = [
   {
     title: "Duplex",
-    icon: <FaBuilding size={40} />,
+    icon: <FaBuilding size={20} />,
     link: "/categories/duplex",
   },
   {
     title: "Bungalows",
-    icon: <FaHome size={40} />,
+    icon: <FaHome size={20} />,
     link: "/categories/bungalows",
   },
   {
     title: "Newly Built",
-    icon: <FaHome size={40} />,
+    icon: <FaHome size={20} />,
     link: "/categories/newly-built",
   },
   {
