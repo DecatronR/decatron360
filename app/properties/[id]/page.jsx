@@ -1,6 +1,7 @@
 "use client";
 
 import FavoriteButton from "../../../components/Property/FavoriteButton";
+import AgentRequestButton from "components/Property/AgentRequestButton";
 import PropertyDetails from "../../../components/Property/PropertyDetails";
 import PropertyImages from "../../../components/Property/PropertyImages";
 import ShareButtons from "../../../components/Property/ShareButtons";
@@ -106,6 +107,7 @@ const PropertyPage = () => {
                 </Link>
                 <div className="space-y-4">
                   <FavoriteButton property={property} />
+                  <AgentRequestButton />
                   <ShareButtons property={property} />
                 </div>
                 {agentId && (
