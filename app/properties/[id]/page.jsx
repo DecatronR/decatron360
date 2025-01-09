@@ -22,6 +22,23 @@ const PropertyPage = () => {
   const [agentData, setAgentData] = useState("");
   const [agentRating, setAgentRating] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState();
+
+  useEffect(() => {
+    const handleFetchUser = async () => {
+      try {
+        const userId = sessionStorage.getItem("userId");
+        if (!userId) return;
+
+        const userData = await fetchUserData(userId);
+        setUserRole(userData.role);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    handleFetchUser();
+  }, []);
 
   useEffect(() => {
     const handleFetchPropertyData = async () => {
@@ -107,7 +124,8 @@ const PropertyPage = () => {
                 </Link>
                 <div className="space-y-4">
                   <FavoriteButton property={property} />
-                  <AgentRequestButton />
+                  {userRole === "agent" && <AgentRequestButton />}
+
                   <ShareButtons property={property} />
                 </div>
                 {agentId && (
