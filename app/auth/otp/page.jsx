@@ -52,7 +52,6 @@ const Otp = () => {
   const handleResendOtp = async () => {
     try {
       const res = await axios.get(`${baseUrl}/auth/resendOTP`);
-      console.log("OTP resent", res.data);
     } catch (error) {
       console.log("Error resending OTP", error);
     }
@@ -67,7 +66,6 @@ const Otp = () => {
           { email: email, otp: otpValue },
           { withCredentials: true }
         );
-        console.log("OTP confirmed", res.data);
       } catch (error) {
         console.log("Error confirming OTP", error);
       }

@@ -19,9 +19,6 @@ const PropertyDetails = ({ property, agentId }) => {
   const [isPropertyLister, setIsPropertyLister] = useState(false);
   const [propertyData, setPropertyData] = useState(null);
 
-  console.log("property in Property details: ", property);
-  console.log("property Id in Property details: ", property._id);
-
   // checking if the logged in user is the user who listed the property
   useEffect(() => {
     const storedUserId = sessionStorage.getItem("userId");

@@ -13,7 +13,6 @@ const InspectionFeedbackPage = () => {
     const handleFetchInspectionData = async () => {
       try {
         const res = await fetchBookingData(id);
-        console.log("Inspection data: ", res);
         setInspectionData(res);
       } catch (error) {
         console.log("Failed to fetch inspection data");

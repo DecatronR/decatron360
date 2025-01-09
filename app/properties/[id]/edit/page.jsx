@@ -6,9 +6,6 @@ import PropertyEditForm from "@/components/PropertyEditForm";
 const PropertyEditPage = () => {
   const { id } = useParams();
 
-  useEffect(() => {
-    console.log("property id in edit PAGE: ", id);
-  }, []);
   return (
     <section className="bg-blue-50 min-h-screen flex items-center">
       <div className="container mx-auto max-w-3xl p-6">

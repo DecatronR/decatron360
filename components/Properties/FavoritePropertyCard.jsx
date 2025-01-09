@@ -15,7 +15,6 @@ const FavoritePropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
     return `${price.toLocaleString()}`;
   };
 
-  console.log("Favorite card favorite status: ", isFavorite);
   return (
     <div
       className="relative cursor-pointer rounded-lg shadow-lg bg-white transition hover:shadow-2xl transform hover:scale-[1.02] duration-300 max-h-80 overflow-hidden"

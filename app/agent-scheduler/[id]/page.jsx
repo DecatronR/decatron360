@@ -43,7 +43,6 @@ const AgentScheduler = () => {
     const handleFetchAgentSchedule = async () => {
       try {
         const res = await fetchAgentSchedule(userId);
-        console.log("user schedule: ", res);
 
         const available = {};
         const booked = {};
@@ -114,15 +113,12 @@ const AgentScheduler = () => {
       })
     );
 
-    console.log("availability: ", availability);
-
     try {
       setIsButtonLoading(true);
       const res = await updateSchedule(userId, availability);
       enqueueSnackbar("Successfully updated schedule!", {
         variant: "success",
       });
-      console.log("Availability created successfully:", res);
     } catch (error) {
       console.error("Failed to to update schedule:", error);
       if (error.response && error.response.data) {

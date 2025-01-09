@@ -14,7 +14,6 @@ const FavoritePropertiesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isTogglingFavorite, setIsTogglingFavorite] = useState({});
 
-  console.log("Is favorite: ", isFavorite);
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
     if (id) {
@@ -38,7 +37,6 @@ const FavoritePropertiesPage = () => {
           const detailedProperties = await Promise.all(
             favoriteIds.map((id) => fetchPropertyData(id))
           );
-          console.log("fetched favorite properties: ", detailedProperties);
 
           setProperties(detailedProperties);
           setIsFavorite(
@@ -55,7 +53,6 @@ const FavoritePropertiesPage = () => {
   }, [userId]);
 
   const handleToggleFavorite = async (propertyId) => {
-    console.log("Toggling favorite for:", propertyId);
     const userId = sessionStorage.getItem("userId");
     if (!userId) {
       console.error("User ID not found.");
@@ -64,7 +61,6 @@ const FavoritePropertiesPage = () => {
 
     try {
       const property = properties.find((prop) => prop._id === propertyId);
-      console.log("Property to toggle favorite:", property);
 
       if (!property) {
         console.error("Property not found.");
@@ -79,7 +75,6 @@ const FavoritePropertiesPage = () => {
         }
 
         const deleteRes = await deleteFavoriteProperties(property.favoriteId);
-        console.log("Delete favorite res:", deleteRes.responseCode);
 
         if (deleteRes.responseCode === 200) {
           setProperties((prevProperties) =>
@@ -89,7 +84,6 @@ const FavoritePropertiesPage = () => {
       } else {
         // Add to favorites
         const addRes = await addFavoriteProperties(userId, propertyId);
-        console.log("Add favorite res:", addRes.responseCode);
 
         if (addRes.responseCode === 201 && addRes.favoriteId) {
           setProperties((prevProperties) =>

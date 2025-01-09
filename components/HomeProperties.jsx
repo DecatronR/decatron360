@@ -19,13 +19,11 @@ const HomeProperties = () => {
       try {
         // Fetch all properties (display to all users)
         const allProperties = await fetchProperties();
-        console.log("Properties fetched:", allProperties);
 
         const userId = sessionStorage.getItem("userId");
         if (userId) {
           // Fetch user's favorite properties
           const favoritesResponse = await fetchFavoriteProperties(userId);
-          console.log("Favorite properties fetched:", favoritesResponse);
 
           const updatedProperties = allProperties.map((property) => {
             const favorite = favoritesResponse.find(
@@ -60,7 +58,6 @@ const HomeProperties = () => {
   }, []);
 
   const handleToggleFavorite = async (propertyId) => {
-    console.log("Toggling favorite for:", propertyId);
     const userId = sessionStorage.getItem("userId");
     if (!userId) {
       console.error("User ID not found.");
@@ -69,7 +66,6 @@ const HomeProperties = () => {
 
     try {
       const property = properties.find((prop) => prop._id === propertyId);
-      console.log("Property to toggle favorite:", property);
 
       if (!property) {
         console.error("Property not found.");
@@ -84,7 +80,6 @@ const HomeProperties = () => {
         }
 
         const deleteRes = await deleteFavoriteProperties(property.favoriteId); // Use favoriteId
-        console.log("Delete favorite res:", deleteRes.responseCode);
 
         if (deleteRes.responseCode === 200) {
           setProperties((prevProperties) =>
@@ -98,7 +93,6 @@ const HomeProperties = () => {
       } else {
         // Add to favorites
         const addRes = await addFavoriteProperties(userId, propertyId);
-        console.log("Add favorite res:", addRes.responseCode);
 
         if (addRes.responseCode === 201 && addRes.favoriteId) {
           setProperties((prevProperties) =>
