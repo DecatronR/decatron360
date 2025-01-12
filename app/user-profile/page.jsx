@@ -6,6 +6,7 @@ import UserAbout from "@/components/UserProfile/UserAbout";
 import UserPropertiesCarousel from "@/components/UserProfile/UserPropertiesCarousel";
 import UserReviewsCarousel from "@/components/UserProfile/UserReviewsCarousel";
 import UserRating from "@/components/UserProfile/UserRating";
+import OwnerRequests from "components/UserProfile/OwnerRequests";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
@@ -22,6 +23,25 @@ const UserProfilePage = () => {
   const isEmailVerified = true;
   const isPhoneVerified = false;
   const isIdentityVerified = false;
+
+  const [requests, setRequests] = useState([
+    { id: 1, name: "Emeka James" },
+    { id: 2, name: "Olumide Oyemade" },
+    { id: 3, name: "Charlie Chaplain" },
+    { id: 1, name: "Emeka James" },
+    { id: 2, name: "Olumide Oyemade" },
+    { id: 3, name: "Charlie Chaplain" },
+  ]);
+
+  const handleAccept = (id) => {
+    console.log(`Accepted request with id: ${id}`);
+    setRequests(requests.filter((request) => request.id !== id));
+  };
+
+  const handleReject = (id) => {
+    console.log(`Rejected request with id: ${id}`);
+    setRequests(requests.filter((request) => request.id !== id));
+  };
 
   useEffect(() => {
     const id = sessionStorage.getItem("userId");
@@ -98,6 +118,11 @@ const UserProfilePage = () => {
                 isEmailVerified={isEmailVerified}
                 isPhoneVerified={isPhoneVerified}
                 isIdentityVerified={isIdentityVerified}
+              />
+              <OwnerRequests
+                requests={requests}
+                onAccept={handleAccept}
+                onReject={handleReject}
               />
             </div>
           </div>
