@@ -28,9 +28,15 @@ const UserProfilePage = () => {
     { id: 1, name: "Emeka James" },
     { id: 2, name: "Olumide Oyemade" },
     { id: 3, name: "Charlie Chaplain" },
-    { id: 1, name: "Emeka James" },
-    { id: 2, name: "Olumide Oyemade" },
-    { id: 3, name: "Charlie Chaplain" },
+    { id: 4, name: "Emeka James" },
+    { id: 5, name: "Olumide Oyemade" },
+    { id: 6, name: "Charlie Chaplain" },
+    { id: 7, name: "Emeka James" },
+    { id: 8, name: "Olumide Oyemade" },
+    { id: 9, name: "Charlie Chaplain" },
+    { id: 10, name: "Emeka James" },
+    { id: 11, name: "Olumide Oyemade" },
+    { id: 12, name: "Charlie Chaplain" },
   ]);
 
   const handleAccept = (id) => {
@@ -105,15 +111,15 @@ const UserProfilePage = () => {
     <div className="bg-gray-100 min-h-screen py-8">
       <div className="flex flex-col md:flex-row max-w-6xl mx-auto">
         {/* Left Column: Profile Info */}
-        <div className="w-full md:w-1/3">
-          <div className="md:sticky md:top-8">
+        <div className="w-full md:w-1/3 md:max-h-[calc(100vh-4rem)] overflow-hidden">
+          <div className="md:sticky md:top-8 flex flex-col h-full">
             <UserProfilePhoto
               userId={userId}
               userData={userData}
               onUserDataUpdate={handleFetchUserData}
             />
             <UserRating userRating={userRating} />
-            <div className="mt-6">
+            <div className="mt-6 flex-1 overflow-y-auto">
               <UserVerificationStatus
                 isEmailVerified={isEmailVerified}
                 isPhoneVerified={isPhoneVerified}
