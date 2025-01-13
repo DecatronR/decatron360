@@ -1,7 +1,7 @@
 "use client";
 
 import FavoriteButton from "../../../components/Property/FavoriteButton";
-import AgentRequestButton from "components/Property/AgentRequestButton";
+import AgencyRequestButton from "components/Property/AgencyRequestButton";
 import PropertyDetails from "../../../components/Property/PropertyDetails";
 import PropertyImages from "../../../components/Property/PropertyImages";
 import ShareButtons from "../../../components/Property/ShareButtons";
@@ -144,7 +144,7 @@ const PropertyPage = () => {
                   <FavoriteButton property={property} />
 
                   {userRole === "agent" && listerRole === "owner" && (
-                    <AgentRequestButton />
+                    <AgencyRequestButton />
                   )}
                   <ShareButtons property={property} />
                 </div>
