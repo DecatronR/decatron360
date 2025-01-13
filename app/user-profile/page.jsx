@@ -7,6 +7,7 @@ import UserPropertiesCarousel from "@/components/UserProfile/UserPropertiesCarou
 import UserReviewsCarousel from "@/components/UserProfile/UserReviewsCarousel";
 import UserRating from "@/components/UserProfile/UserRating";
 import OwnerRequests from "components/UserProfile/OwnerRequests";
+import AgentRequests from "components/UserProfile/AgentRequests";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
@@ -39,6 +40,17 @@ const UserProfilePage = () => {
     { id: 12, name: "Charlie Chaplain" },
   ]);
 
+  const sampleRequests = [
+    { id: 1, propertyName: "Greenwood Apartments - Unit 4B" },
+    { id: 2, propertyName: "Downtown Plaza - Office 201" },
+    { id: 3, propertyName: "Seaside Villa - Room 102" },
+    { id: 4, propertyName: "Hilltop Condos - Suite 3C" },
+    { id: 5, propertyName: "Greenwood Apartments - Unit 4B" },
+    { id: 6, propertyName: "Downtown Plaza - Office 201" },
+    { id: 7, propertyName: "Seaside Villa - Room 102" },
+    { id: 8, propertyName: "Hilltop Condos - Suite 3C" },
+  ];
+
   const handleAccept = (id) => {
     console.log(`Accepted request with id: ${id}`);
     setRequests(requests.filter((request) => request.id !== id));
@@ -47,6 +59,10 @@ const UserProfilePage = () => {
   const handleReject = (id) => {
     console.log(`Rejected request with id: ${id}`);
     setRequests(requests.filter((request) => request.id !== id));
+  };
+
+  const handleCancel = (id) => {
+    console.log(`Canceled request with id: ${id}`);
   };
 
   useEffect(() => {
@@ -130,6 +146,10 @@ const UserProfilePage = () => {
                 onAccept={handleAccept}
                 onReject={handleReject}
               />
+              {/* <AgentRequests
+                requests={sampleRequests}
+                onCancel={handleCancel}
+              /> */}
             </div>
           </div>
         </div>
