@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { fetchOwnerAgencyRequest } from "utils/api/agencyRequest/fetchOwnerAgencyRequests";
 import StarRatings from "react-star-ratings";
+import Swal from "sweetalert2";
+import { fetchOwnerAgencyRequest } from "utils/api/agencyRequest/fetchOwnerAgencyRequests";
 
-const OwnerRequests = ({ onAccept, onReject }) => {
+const OwnerRequests = () => {
   const [requests, setRequests] = useState([]);
 
   useEffect(() => {
@@ -19,6 +20,65 @@ const OwnerRequests = ({ onAccept, onReject }) => {
     };
     handleFetchAgencyRequest();
   }, []);
+
+  const handleAccept = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to accept this agent as a realtor for your property ",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+      });
+
+      if (result.isConfirmed) {
+        //add sold out API call here
+
+        Swal.fire(
+          "Accepted",
+          "You have accepted this agent as a realtor for your property",
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Failed to accept agent as realtor for your property:",
+        error
+      );
+      Swal.fire(
+        "Failed",
+        "Failed to accept agent as realtor for your property",
+        "error"
+      );
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want to reject this agent request to be a realtor for your property.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+      });
+
+      if (result.isConfirmed) {
+        await deletePropertyListing(property._id);
+
+        Swal.fire("Deleted!", "Your property has been deleted.", "success");
+      }
+    } catch (error) {
+      console.error("Failed to delete property:", error);
+      Swal.fire("Failed", "Failed to delete property!", "error");
+    }
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mt-4">
@@ -52,14 +112,14 @@ const OwnerRequests = ({ onAccept, onReject }) => {
               <div className="flex space-x-3">
                 <button
                   className="bg-green-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-green-600"
-                  onClick={() => onAccept(request.id)}
+                  onClick={() => handleAccept(request.id)}
                   aria-label="Accept"
                 >
                   <CheckIcon className="h-4 w-4" />
                 </button>
                 <button
                   className="bg-red-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600"
-                  onClick={() => onReject(request.id)}
+                  onClick={() => handleReject(request.id)}
                   aria-label="Reject"
                 >
                   <XMarkIcon className="h-4 w-4" />

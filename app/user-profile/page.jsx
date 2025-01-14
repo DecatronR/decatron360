@@ -25,21 +25,6 @@ const UserProfilePage = () => {
   const isPhoneVerified = false;
   const isIdentityVerified = false;
 
-  const [requests, setRequests] = useState([
-    { id: 1, name: "Emeka James" },
-    { id: 2, name: "Olumide Oyemade" },
-    { id: 3, name: "Charlie Chaplain" },
-    { id: 4, name: "Emeka James" },
-    { id: 5, name: "Olumide Oyemade" },
-    { id: 6, name: "Charlie Chaplain" },
-    { id: 7, name: "Emeka James" },
-    { id: 8, name: "Olumide Oyemade" },
-    { id: 9, name: "Charlie Chaplain" },
-    { id: 10, name: "Emeka James" },
-    { id: 11, name: "Olumide Oyemade" },
-    { id: 12, name: "Charlie Chaplain" },
-  ]);
-
   const sampleRequests = [
     { id: 1, propertyName: "Greenwood Apartments - Unit 4B" },
     { id: 2, propertyName: "Downtown Plaza - Office 201" },
@@ -50,16 +35,6 @@ const UserProfilePage = () => {
     { id: 7, propertyName: "Seaside Villa - Room 102" },
     { id: 8, propertyName: "Hilltop Condos - Suite 3C" },
   ];
-
-  const handleAccept = (id) => {
-    console.log(`Accepted request with id: ${id}`);
-    setRequests(requests.filter((request) => request.id !== id));
-  };
-
-  const handleReject = (id) => {
-    console.log(`Rejected request with id: ${id}`);
-    setRequests(requests.filter((request) => request.id !== id));
-  };
 
   const handleCancel = (id) => {
     console.log(`Canceled request with id: ${id}`);
@@ -141,13 +116,7 @@ const UserProfilePage = () => {
                 isPhoneVerified={isPhoneVerified}
                 isIdentityVerified={isIdentityVerified}
               />
-              {userData.role === "owner" && (
-                <OwnerRequests
-                  requests={requests}
-                  onAccept={handleAccept}
-                  onReject={handleReject}
-                />
-              )}
+              {userData.role === "owner" && <OwnerRequests />}
               {userData.role === "agent" && (
                 <AgentRequests
                   requests={sampleRequests}
