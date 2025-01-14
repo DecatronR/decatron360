@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { fetchAgentAgencyRequest } from "utils/api/agencyRequest/fetchAgentAgencyRequests";
 import { truncateText } from "utils/helpers/truncateText";
+import { deleteAgencyRequest } from "utils/api/agencyRequest/deleteAgencyRequest";
 
 const AgentRequests = ({ onCancel }) => {
   const [requests, setRequests] = useState([]);
@@ -36,8 +37,10 @@ const AgentRequests = ({ onCancel }) => {
       });
 
       if (result.isConfirmed) {
-        //add delete api here
-
+        await deleteAgencyRequest(id);
+        setRequests((prevRequests) =>
+          prevRequests.filter((req) => req.id !== id)
+        );
         Swal.fire("Deleted!", "Your property has been deleted.", "success");
       }
     } catch (error) {
