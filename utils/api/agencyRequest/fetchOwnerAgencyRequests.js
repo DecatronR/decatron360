@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchOwnerAgencyRequest = async (requestId) => {
+export const fetchOwnerAgencyRequest = async (ownerId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -10,7 +10,7 @@ export const fetchOwnerAgencyRequest = async (requestId) => {
   try {
     const res = await axios.post(
       `${baseUrl}/agencyRequest/ownerRequest`,
-      { requestId },
+      { ownerId },
       {
         withCredentials: true,
         headers: {

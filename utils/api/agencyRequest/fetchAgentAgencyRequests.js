@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchAgentAgencyRequest = async (requestId) => {
+export const fetchAgentAgencyRequest = async (requestAgentId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -10,7 +10,7 @@ export const fetchAgentAgencyRequest = async (requestId) => {
   try {
     const res = await axios.post(
       `${baseUrl}/agencyRequest/agentRequest`,
-      { requestId },
+      { requestAgentId },
       {
         withCredentials: true,
         headers: {

@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { fetchAgentAgencyRequest } from "utils/api/agencyRequest/fetchAgentAgencyRequests";
 
 const AgentRequests = ({ requests, onCancel }) => {
+  //   const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    const handleFetchAgencyRequest = async () => {
+      try {
+        const userId = sessionStorage.getItem("userId");
+        const res = await fetchAgentAgencyRequest(userId);
+        console.log("Agency requests for agent: ", res);
+      } catch (error) {
+        console.log("Failed to fetch agent's agency requests");
+      }
+    };
+    handleFetchAgencyRequest();
+  }, []);
+
+  //map through it to render the property name and location
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mt-4">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">My Requests</h2>
