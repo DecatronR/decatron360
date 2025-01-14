@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Swal from "sweetalert2";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { fetchAgentAgencyRequest } from "utils/api/agencyRequest/fetchAgentAgencyRequests";
 import { truncateText } from "utils/helpers/truncateText";
