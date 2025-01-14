@@ -91,7 +91,7 @@ const OwnerRequests = () => {
           requests.map((request) => (
             <div
               key={request.id}
-              className="flex items-center justify-between border-b pb-1 hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-between border-b pb-1 hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <Link href={`/agent-profile/${request.agentId}`}>
                 <div className="flex flex-col">
@@ -102,7 +102,7 @@ const OwnerRequests = () => {
                   {/* Agent Rating */}
                   <div className="mt-1">
                     <StarRatings
-                      rating={request.agentProp.rating || 0} // Dynamically fetch rating
+                      rating={request.agentProp.rating || 0}
                       starRatedColor="gold"
                       numberOfStars={5}
                       starDimension="20px"

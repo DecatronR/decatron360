@@ -18,7 +18,7 @@ export const fetchAgentAgencyRequest = async (requestAgentId) => {
         },
       }
     );
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Failed to fetch agent's agency request:", error);
     throw error;
