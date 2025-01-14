@@ -18,7 +18,7 @@ export const fetchOwnerAgencyRequest = async (ownerId) => {
         },
       }
     );
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Failed to fetch owner's agency request:", error);
     throw error;

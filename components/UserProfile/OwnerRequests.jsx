@@ -1,7 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { fetchOwnerAgencyRequest } from "utils/api/agencyRequest/fetchOwnerAgencyRequests";
+import StarRatings from "react-star-ratings";
 
-const OwnerRequests = ({ requests, onAccept, onReject }) => {
+const OwnerRequests = ({ onAccept, onReject }) => {
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    const handleFetchAgencyRequest = async () => {
+      try {
+        const userId = sessionStorage.getItem("userId");
+        const res = await fetchOwnerAgencyRequest(userId);
+        setRequests(res);
+        console.log("Owner requests for agent: ", res);
+      } catch (error) {
+        console.log("Failed to fetch agent's agency requests");
+      }
+    };
+    handleFetchAgencyRequest();
+  }, []);
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mt-4">
       <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -14,9 +32,23 @@ const OwnerRequests = ({ requests, onAccept, onReject }) => {
               key={request.id}
               className="flex items-center justify-between border-b pb-1 hover:bg-gray-50 transition-colors"
             >
-              <span className="text-gray-700 text-sm font-medium">
-                {request.name}
-              </span>
+              <div className="flex flex-col">
+                {/* Agent Name */}
+                <span className="text-gray-700 text-sm font-medium">
+                  {request.agentProp.agentName}
+                </span>
+                {/* Agent Rating */}
+                <div className="mt-1">
+                  <StarRatings
+                    rating={request.agentProp.rating || 0} // Dynamically fetch rating
+                    starRatedColor="gold"
+                    numberOfStars={5}
+                    starDimension="20px"
+                    starSpacing="2px"
+                    name="rating"
+                  />
+                </div>
+              </div>
               <div className="flex space-x-3">
                 <button
                   className="bg-green-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-green-600"
