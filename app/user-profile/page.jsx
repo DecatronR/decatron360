@@ -141,15 +141,19 @@ const UserProfilePage = () => {
                 isPhoneVerified={isPhoneVerified}
                 isIdentityVerified={isIdentityVerified}
               />
-              <OwnerRequests
-                requests={requests}
-                onAccept={handleAccept}
-                onReject={handleReject}
-              />
-              {/* <AgentRequests
-                requests={sampleRequests}
-                onCancel={handleCancel}
-              /> */}
+              {userData.role === "owner" && (
+                <OwnerRequests
+                  requests={requests}
+                  onAccept={handleAccept}
+                  onReject={handleReject}
+                />
+              )}
+              {userData.role === "agent" && (
+                <AgentRequests
+                  requests={sampleRequests}
+                  onCancel={handleCancel}
+                />
+              )}
             </div>
           </div>
         </div>

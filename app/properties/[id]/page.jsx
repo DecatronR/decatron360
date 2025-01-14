@@ -144,7 +144,10 @@ const PropertyPage = () => {
                   <FavoriteButton property={property} />
 
                   {userRole === "agent" && listerRole === "owner" && (
-                    <AgencyRequestButton />
+                    <AgencyRequestButton
+                      propertyId={id}
+                      ownerId={property.data.userID}
+                    />
                   )}
                   <ShareButtons property={property} />
                 </div>
