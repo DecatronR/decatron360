@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { fetchAgentAgencyRequest } from "utils/api/agencyRequest/fetchAgentAgencyRequests";
 import { truncateText } from "utils/helpers/truncateText";
@@ -19,6 +20,30 @@ const AgentRequests = ({ onCancel }) => {
     };
     handleFetchAgencyRequest();
   }, []);
+
+  const handleCancelRequest = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Do you really want cancel you request to be an agent for this property.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+      });
+
+      if (result.isConfirmed) {
+        //add delete api here
+
+        Swal.fire("Deleted!", "Your property has been deleted.", "success");
+      }
+    } catch (error) {
+      console.error("Failed to delete property:", error);
+      Swal.fire("Failed", "Failed to delete property!", "error");
+    }
+  };
 
   const mapStatus = (status) => {
     switch (status) {
@@ -45,23 +70,27 @@ const AgentRequests = ({ onCancel }) => {
                 key={request.id}
                 className="flex items-center justify-between border-b pb-1 hover:bg-gray-50 transition-colors cursor-pointer"
               >
-                <div className="flex flex-col">
-                  {/* Property Name */}
-                  <span className="text-gray-700 text-sm font-medium">
-                    {truncateText(request.agentProp.propertyName, 30)}
-                  </span>
-                  {/* Property Location */}
-                  <span className="text-gray-500 text-xs">
-                    Location: {truncateText(request.agentProp.location, 30)}
-                  </span>
-                  {/* Request Status */}
-                  <span className={`text-xs font-semibold ${statusInfo.color}`}>
-                    {statusInfo.text}
-                  </span>
-                </div>
+                <Link href={`/properties/${request.propertyListingId}`}>
+                  <div className="flex flex-col">
+                    {/* Property Name */}
+                    <span className="text-gray-700 text-sm font-medium">
+                      {truncateText(request.agentProp.propertyName, 30)}
+                    </span>
+                    {/* Property Location */}
+                    <span className="text-gray-500 text-xs">
+                      Location: {truncateText(request.agentProp.location, 30)}
+                    </span>
+                    {/* Request Status */}
+                    <span
+                      className={`text-xs font-semibold ${statusInfo.color}`}
+                    >
+                      {statusInfo.text}
+                    </span>
+                  </div>
+                </Link>
                 <button
                   className="bg-red-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600"
-                  onClick={() => onCancel(request.id)}
+                  onClick={() => handleCancelRequest(request.id)}
                   aria-label="Cancel"
                 >
                   <XMarkIcon className="h-4 w-4" />

@@ -71,7 +71,7 @@ const OwnerRequests = () => {
       });
 
       if (result.isConfirmed) {
-        await deletePropertyListing(property._id);
+        //add a way to change the status of the request to show rejected
 
         Swal.fire("Deleted!", "Your property has been deleted.", "success");
       }

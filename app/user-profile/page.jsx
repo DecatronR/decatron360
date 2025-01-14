@@ -25,21 +25,6 @@ const UserProfilePage = () => {
   const isPhoneVerified = false;
   const isIdentityVerified = false;
 
-  const sampleRequests = [
-    {
-      id: 1,
-      propertyName: "Greenwood Apartments - Unit 4B",
-      status: "Pending",
-    },
-    { id: 2, propertyName: "Downtown Plaza - Office 201", status: "Approved" },
-    { id: 3, propertyName: "Seaside Villa - Room 102" },
-    { id: 4, propertyName: "Hilltop Condos - Suite 3C" },
-    { id: 5, propertyName: "Greenwood Apartments - Unit 4B" },
-    { id: 6, propertyName: "Downtown Plaza - Office 201" },
-    { id: 7, propertyName: "Seaside Villa - Room 102" },
-    { id: 8, propertyName: "Hilltop Condos - Suite 3C" },
-  ];
-
   const handleCancel = (id) => {
     console.log(`Canceled request with id: ${id}`);
   };
@@ -121,12 +106,7 @@ const UserProfilePage = () => {
                 isIdentityVerified={isIdentityVerified}
               />
               {userData.role === "owner" && <OwnerRequests />}
-              {userData.role === "agent" && (
-                <AgentRequests
-                  requests={sampleRequests}
-                  onCancel={handleCancel}
-                />
-              )}
+              {userData.role === "agent" && <AgentRequests />}
             </div>
           </div>
         </div>
