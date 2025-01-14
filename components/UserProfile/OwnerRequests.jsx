@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import StarRatings from "react-star-ratings";
 import Swal from "sweetalert2";
@@ -92,23 +93,25 @@ const OwnerRequests = () => {
               key={request.id}
               className="flex items-center justify-between border-b pb-1 hover:bg-gray-50 transition-colors"
             >
-              <div className="flex flex-col">
-                {/* Agent Name */}
-                <span className="text-gray-700 text-sm font-medium">
-                  {request.agentProp.agentName}
-                </span>
-                {/* Agent Rating */}
-                <div className="mt-1">
-                  <StarRatings
-                    rating={request.agentProp.rating || 0} // Dynamically fetch rating
-                    starRatedColor="gold"
-                    numberOfStars={5}
-                    starDimension="20px"
-                    starSpacing="2px"
-                    name="rating"
-                  />
+              <Link href={`/agent-profile/${request.agentId}`}>
+                <div className="flex flex-col">
+                  {/* Agent Name */}
+                  <span className="text-gray-700 text-sm font-medium">
+                    {request.agentProp.agentName}
+                  </span>
+                  {/* Agent Rating */}
+                  <div className="mt-1">
+                    <StarRatings
+                      rating={request.agentProp.rating || 0} // Dynamically fetch rating
+                      starRatedColor="gold"
+                      numberOfStars={5}
+                      starDimension="20px"
+                      starSpacing="2px"
+                      name="rating"
+                    />
+                  </div>
                 </div>
-              </div>
+              </Link>
               <div className="flex space-x-3">
                 <button
                   className="bg-green-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-green-600"
