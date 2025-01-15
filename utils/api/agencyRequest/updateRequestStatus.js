@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const createAgencyRequest = async (id, status) => {
+export const updateRequestStatus = async (id, status) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {

@@ -4,6 +4,7 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import StarRatings from "react-star-ratings";
 import Swal from "sweetalert2";
 import { fetchOwnerAgencyRequest } from "utils/api/agencyRequest/fetchOwnerAgencyRequests";
+import { updateRequestStatus } from "utils/api/agencyRequest/updateRequestStatus";
 
 const OwnerRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -36,7 +37,7 @@ const OwnerRequests = () => {
       });
 
       if (result.isConfirmed) {
-        //add sold out API call here
+        await updateRequestStatus(id, "1"); //status 1 means accept
 
         Swal.fire(
           "Accepted",
@@ -71,7 +72,7 @@ const OwnerRequests = () => {
       });
 
       if (result.isConfirmed) {
-        //add a way to change the status of the request to show rejected
+        await updateRequestStatus(id, "2"); //status 2 means decline
 
         Swal.fire("Deleted!", "Your property has been deleted.", "success");
       }
@@ -113,20 +114,40 @@ const OwnerRequests = () => {
                 </div>
               </Link>
               <div className="flex space-x-3">
-                <button
-                  className="bg-green-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-green-600"
-                  onClick={() => handleAccept(request.id)}
-                  aria-label="Accept"
-                >
-                  <CheckIcon className="h-4 w-4" />
-                </button>
-                <button
-                  className="bg-red-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600"
-                  onClick={() => handleReject(request.id)}
-                  aria-label="Reject"
-                >
-                  <XMarkIcon className="h-4 w-4" />
-                </button>
+                {request.status === "0" ? (
+                  // Show Accept and Reject buttons if the status is "0"
+                  <>
+                    <button
+                      className="bg-green-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-green-600"
+                      onClick={() => handleAccept(request.id)}
+                      aria-label="Accept"
+                    >
+                      <CheckIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                      className="bg-red-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600"
+                      onClick={() => handleReject(request.id)}
+                      aria-label="Reject"
+                    >
+                      <XMarkIcon className="h-4 w-4" />
+                    </button>
+                  </>
+                ) : request.status === "1" ? (
+                  // Show "Accepted" text if the status is "1"
+                  <span className="text-green-600 text-xs font-semibold">
+                    Accepted
+                  </span>
+                ) : request.status === "2" ? (
+                  // Show "Rejected" text if the status is "2"
+                  <span className="text-red-600 text-xs font-semibold">
+                    Declined
+                  </span>
+                ) : (
+                  //
+                  <span className="text-gray-600 text-xs font-semibold">
+                    Unknown Status
+                  </span>
+                )}
               </div>
             </div>
           ))

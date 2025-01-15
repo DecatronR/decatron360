@@ -23,6 +23,14 @@ const AgentRequests = ({ onCancel }) => {
     handleFetchAgencyRequest();
   }, []);
 
+  const handleUpdateRequestStatus = async (id) => {
+    try {
+      const res = await updateRequestStatus();
+    } catch (error) {
+      console.log("");
+    }
+  };
+
   const handleCancelRequest = async (id) => {
     try {
       const result = await Swal.fire({
@@ -92,16 +100,15 @@ const AgentRequests = ({ onCancel }) => {
                     </span>
                   </div>
                 </Link>
-                {request.status === "0" &&
-                  request.status === "2" && ( // only display delete request button when the request has not been accepted
-                    <button
-                      className="bg-red-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600"
-                      onClick={() => handleCancelRequest(request.id)}
-                      aria-label="Cancel"
-                    >
-                      <XMarkIcon className="h-4 w-4" />
-                    </button>
-                  )}
+                {(request.status === "0" || request.status === "2") && ( // only display delete request button when the request has not been accepted
+                  <button
+                    className="bg-red-500 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-105 hover:bg-red-600"
+                    onClick={() => handleCancelRequest(request.id)}
+                    aria-label="Cancel"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             );
           })
