@@ -428,7 +428,6 @@ const SaleForm = () => {
             name="titleDocument"
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
             placeholder="e.g. C of O, Deed of Assignment"
-            required
             value={fields.titleDocument}
             onChange={handleChange}
           />
@@ -518,7 +517,6 @@ const SaleForm = () => {
               id="bedrooms"
               name="bedrooms"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
               value={fields.bedrooms}
               onChange={handleChange}
             />
@@ -535,7 +533,6 @@ const SaleForm = () => {
               id="bathrooms"
               name="bathrooms"
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-              required
               value={fields.bathrooms}
               onChange={handleChange}
             />
