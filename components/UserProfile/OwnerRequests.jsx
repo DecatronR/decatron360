@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import StarRatings from "react-star-ratings";
 import Swal from "sweetalert2";
+import { formatDistanceToNow } from "date-fns";
 import { fetchOwnerAgencyRequest } from "utils/api/agencyRequest/fetchOwnerAgencyRequests";
 import { updateRequestStatus } from "utils/api/agencyRequest/updateRequestStatus";
 
@@ -111,6 +112,11 @@ const OwnerRequests = () => {
                       name="rating"
                     />
                   </div>
+                  <span className="text-gray-500 text-xs">
+                    {formatDistanceToNow(new Date(request.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
                 </div>
               </Link>
               <div className="flex space-x-3">

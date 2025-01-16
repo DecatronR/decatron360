@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import { formatDistanceToNow } from "date-fns";
 import { fetchAgentAgencyRequest } from "utils/api/agencyRequest/fetchAgentAgencyRequests";
 import { truncateText } from "utils/helpers/truncateText";
 import { deleteAgencyRequest } from "utils/api/agencyRequest/deleteAgencyRequest";
@@ -22,14 +23,6 @@ const AgentRequests = ({ onCancel }) => {
     };
     handleFetchAgencyRequest();
   }, []);
-
-  const handleUpdateRequestStatus = async (id) => {
-    try {
-      const res = await updateRequestStatus();
-    } catch (error) {
-      console.log("");
-    }
-  };
 
   const handleCancelRequest = async (id) => {
     try {
@@ -97,6 +90,11 @@ const AgentRequests = ({ onCancel }) => {
                       className={`text-xs font-semibold ${statusInfo.color}`}
                     >
                       {statusInfo.text}
+                    </span>
+                    <span className="text-gray-500 text-xs">
+                      {formatDistanceToNow(new Date(request.createdAt), {
+                        addSuffix: true,
+                      })}
                     </span>
                   </div>
                 </Link>

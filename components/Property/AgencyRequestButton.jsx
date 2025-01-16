@@ -89,7 +89,7 @@ const AgentRequestButton = ({ propertyId, ownerId }) => {
       type="button"
       onClick={handleSubmitRequest}
       disabled={false}
-      className={`w-full py-2 px-4 rounded-md shadow-lg flex items-center justify-center font-medium transition-transform duration-300 ${
+      className={`w-full py-2 px-4 rounded-md shadow-lg flex items-center justify-center font-medium transition-transform duration-300 cursor-pointer ${
         isAgent
           ? "bg-red-500 hover:bg-red-600 text-white"
           : "bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white"
