@@ -55,7 +55,7 @@ const UserProfilePhoto = ({ userId, userData, onUserDataUpdate }) => {
       }
     } catch (error) {
       console.error("Failed to update user data: ", error);
-      enqueueSnackbar("Failed to update user profile photo!", {
+      enqueueSnackbar(`Failed to update user profile photo! ${error}`, {
         variant: "error",
       });
     }
