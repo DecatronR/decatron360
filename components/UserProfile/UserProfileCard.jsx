@@ -1,9 +1,6 @@
 "use client";
 import Image from "next/image";
-import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import StarRatings from "react-star-ratings"; // Import the library
+import StarRatings from "react-star-ratings";
 
 const UserProfileCard = ({ userData, userRating }) => {
   const handleImageChange = (e) => {
