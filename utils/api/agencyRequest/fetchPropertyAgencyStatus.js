@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const updateRequestStatus = async (id, status) => {
+export const fetchPropertyAgencyStatus = async (propertyListingId, agentId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -9,8 +9,8 @@ export const updateRequestStatus = async (id, status) => {
   }
   try {
     const res = await axios.post(
-      `${baseUrl}/agencyRequest/agencyUpdateStatus`,
-      { id, status },
+      `${baseUrl}/agencyRequest//agencyPropertyStatus`,
+      { propertyListingId, agentId },
       {
         withCredentials: true,
         headers: {
@@ -20,7 +20,7 @@ export const updateRequestStatus = async (id, status) => {
     );
     return res.data;
   } catch (error) {
-    console.error("Failed to update agency request status:", error);
+    console.error("Failed to fetch property agency status:", error);
     throw error;
   }
 };
