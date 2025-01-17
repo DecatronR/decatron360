@@ -1,11 +1,27 @@
 "use client";
-
+import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { FaUserCheck, FaUserPlus } from "react-icons/fa";
 import { createAgencyRequest } from "utils/api/agencyRequest/createAgencyRequest";
+import { fetchPropertyAgencyStatus } from "utils/api/agencyRequest/fetchPropertyAgencyStatus";
 
 const AgentRequestButton = ({ propertyId, ownerId }) => {
+  const [agencyPropertyStatus, setAgencyPropertyStatus] = useState();
   const isAgent = false; // Set dynamically based on state
+
+  useEffect(() => {
+    const handlePropertyRequestStatus = async () => {
+      const userId = sessionStorage.getItem("userId");
+      try {
+        const res = await fetchPropertyAgencyStatus(propertyId, userId);
+        console.log("property agency status: ", res);
+        setAgencyPropertyStatus(res);
+      } catch (error) {
+        console.log("Failed to fetch property agency status", error);
+      }
+    };
+    handlePropertyRequestStatus();
+  }, []);
 
   const handleCreateAgencyRequest = async () => {
     const userId = sessionStorage.getItem("userId");

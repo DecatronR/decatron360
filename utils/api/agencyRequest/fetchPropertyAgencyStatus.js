@@ -18,7 +18,7 @@ export const fetchPropertyAgencyStatus = async (propertyListingId, agentId) => {
         },
       }
     );
-    return res.data;
+    return res;
   } catch (error) {
     console.error("Failed to fetch property agency status:", error);
     throw error;
