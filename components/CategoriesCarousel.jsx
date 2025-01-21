@@ -8,6 +8,7 @@ import {
   FaHome,
   FaWarehouse,
   FaStore,
+  FaBriefcase,
   FaBuilding,
   FaCity,
   FaAngleLeft,
@@ -37,11 +38,15 @@ const categories = [
     icon: <FaBuilding size={20} />,
     link: "/properties/categories/off-plan",
   },
-  { title: "Shops", icon: <FaStore size={20} />, link: "/categories/shops" },
   {
-    title: "Warehouses",
-    icon: <FaWarehouse size={20} />,
-    link: "/properties/categories/warehouses",
+    title: "Shops",
+    icon: <FaStore size={20} />,
+    link: "properties/categories/shops",
+  },
+  {
+    title: "Offices",
+    icon: <FaBriefcase size={20} />,
+    link: "properties/categories/office-spaces",
   },
   {
     title: "Abuja",
