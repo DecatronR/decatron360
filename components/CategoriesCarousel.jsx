@@ -6,64 +6,54 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
   FaHome,
-  FaWarehouse,
   FaStore,
+  FaBriefcase,
   FaBuilding,
   FaCity,
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
-import Spinner from "./Spinner";
 
 // Category Data
 const categories = [
   {
-    title: "Duplex",
+    title: "Duplexes",
     icon: <FaBuilding size={20} />,
-    link: "/categories/duplex",
+    link: "/properties/categories/duplexes",
   },
   {
     title: "Bungalows",
     icon: <FaHome size={20} />,
-    link: "/categories/bungalows",
+    link: "/properties/categories/bungalows",
   },
   {
     title: "Newly Built",
     icon: <FaHome size={20} />,
-    link: "/categories/newly-built",
+    link: "/properties/categories/newly-built",
   },
   {
-    title: "Offplan",
+    title: "Off-Plan",
     icon: <FaBuilding size={20} />,
-    link: "/categories/offplan",
+    link: "/properties/categories/off-plan",
   },
-  { title: "Shops", icon: <FaStore size={20} />, link: "/categories/shops" },
   {
-    title: "Warehouses",
-    icon: <FaWarehouse size={20} />,
-    link: "/categories/warehouses",
+    title: "Shops",
+    icon: <FaStore size={20} />,
+    link: "properties/categories/shops",
   },
-  { title: "Abuja", icon: <FaCity size={20} />, link: "/categories/abuja" },
-  { title: "Lagos", icon: <FaCity size={20} />, link: "/categories/lagos" },
   {
-    title: "Portharcourt",
+    title: "Offices",
+    icon: <FaBriefcase size={20} />,
+    link: "properties/categories/office-spaces",
+  },
+  {
+    title: "Abuja",
     icon: <FaCity size={20} />,
-    link: "/categories/portharcourt",
+    link: "properties/categories/abuja",
   },
 ];
 
 const CategoriesCarousel = () => {
-  const [loading, setLoading] = useState(true);
-
-  // Simulate loading data
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   // Slider settings
   const settings = {
     dots: false,
@@ -91,22 +81,8 @@ const CategoriesCarousel = () => {
     ],
   };
 
-  // Render loading state or carousel based on loading state
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <span className="text-gray-500">
-          <Spinner />
-        </span>
-      </div>
-    );
-  }
-
   return (
     <div className="my-8">
-      {/* <h2 className="text-3xl font-bold mb-4 text-center text-primary-500">
-        Categories
-      </h2> */}
       <Slider {...settings}>
         {categories.map((category, index) => (
           <div key={index} className="flex flex-col items-center p-4">
