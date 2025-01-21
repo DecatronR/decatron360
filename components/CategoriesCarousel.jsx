@@ -6,7 +6,6 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
   FaHome,
-  FaWarehouse,
   FaStore,
   FaBriefcase,
   FaBuilding,
@@ -14,7 +13,6 @@ import {
   FaAngleLeft,
   FaAngleRight,
 } from "react-icons/fa";
-import Spinner from "./Spinner";
 
 // Category Data
 const categories = [
@@ -56,17 +54,6 @@ const categories = [
 ];
 
 const CategoriesCarousel = () => {
-  const [loading, setLoading] = useState(true);
-
-  // Simulate loading data
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
-
-  //   return () => clearTimeout(timer);
-  // }, []);
-
   // Slider settings
   const settings = {
     dots: false,
@@ -94,22 +81,8 @@ const CategoriesCarousel = () => {
     ],
   };
 
-  // Render loading state or carousel based on loading state
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-40">
-  //       <span className="text-gray-500">
-  //         <Spinner />
-  //       </span>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="my-8">
-      {/* <h2 className="text-3xl font-bold mb-4 text-center text-primary-500">
-        Categories
-      </h2> */}
       <Slider {...settings}>
         {categories.map((category, index) => (
           <div key={index} className="flex flex-col items-center p-4">
