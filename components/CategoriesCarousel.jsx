@@ -33,9 +33,9 @@ const categories = [
     link: "/properties/categories/newly-built",
   },
   {
-    title: "Offplan",
+    title: "Off-Plan",
     icon: <FaBuilding size={20} />,
-    link: "/properties/categories/offplan",
+    link: "/properties/categories/off-plan",
   },
   { title: "Shops", icon: <FaStore size={20} />, link: "/categories/shops" },
   {
