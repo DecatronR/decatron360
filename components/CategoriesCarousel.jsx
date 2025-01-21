@@ -18,7 +18,7 @@ import Spinner from "./Spinner";
 // Category Data
 const categories = [
   {
-    title: "Duplex",
+    title: "Duplexes",
     icon: <FaBuilding size={20} />,
     link: "/properties/categories/duplexes",
   },
