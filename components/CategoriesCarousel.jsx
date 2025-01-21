@@ -59,13 +59,13 @@ const CategoriesCarousel = () => {
   const [loading, setLoading] = useState(true);
 
   // Simulate loading data
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   // Slider settings
   const settings = {
@@ -95,15 +95,15 @@ const CategoriesCarousel = () => {
   };
 
   // Render loading state or carousel based on loading state
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-40">
-        <span className="text-gray-500">
-          <Spinner />
-        </span>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex justify-center items-center h-40">
+  //       <span className="text-gray-500">
+  //         <Spinner />
+  //       </span>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="my-8">
