@@ -20,35 +20,33 @@ const categories = [
   {
     title: "Duplex",
     icon: <FaBuilding size={20} />,
-    link: "/categories/duplex",
+    link: "/properties/categories/duplexes",
   },
   {
     title: "Bungalows",
     icon: <FaHome size={20} />,
-    link: "/categories/bungalows",
+    link: "/properties/categories/bungalows",
   },
   {
     title: "Newly Built",
     icon: <FaHome size={20} />,
-    link: "/categories/newly-built",
+    link: "/properties/categories/newly-built",
   },
   {
     title: "Offplan",
     icon: <FaBuilding size={20} />,
-    link: "/categories/offplan",
+    link: "/properties/categories/offplan",
   },
   { title: "Shops", icon: <FaStore size={20} />, link: "/categories/shops" },
   {
     title: "Warehouses",
     icon: <FaWarehouse size={20} />,
-    link: "/categories/warehouses",
+    link: "/properties/categories/warehouses",
   },
-  { title: "Abuja", icon: <FaCity size={20} />, link: "/categories/abuja" },
-  { title: "Lagos", icon: <FaCity size={20} />, link: "/categories/lagos" },
   {
-    title: "Portharcourt",
+    title: "Abuja",
     icon: <FaCity size={20} />,
-    link: "/categories/portharcourt",
+    link: "properties/categories/abuja",
   },
 ];
 
