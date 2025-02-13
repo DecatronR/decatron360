@@ -15,7 +15,10 @@ const OwnerRequests = () => {
       try {
         const userId = sessionStorage.getItem("userId");
         const res = await fetchOwnerAgencyRequest(userId);
-        setRequests(res);
+
+        //filtered out declined request from list
+        const filteredRequest = res.filter((request) => request.status != "2");
+        setRequests(filteredRequest);
         console.log("Owner requests for agent: ", res);
       } catch (error) {
         console.log("Failed to fetch agent's agency requests");
