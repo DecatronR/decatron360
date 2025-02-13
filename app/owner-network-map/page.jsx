@@ -1,58 +1,82 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import TreeGraph from "components/RelationshipMap/TreeGraph";
+import TreeGraph from "components/TreeGraph/OwnerTreeGraph";
 import * as d3 from "d3";
+import {
+  ShieldCheck,
+  ShieldX,
+  Users,
+  Home,
+  UserCheck,
+  CalendarCheck,
+} from "lucide-react";
+import StarRatings from "react-star-ratings";
 
 const data = {
   name: "Property Manager 1",
   image: "/images/manager.png",
+  role: "propertyManager",
   rating: 4.5,
   verified: true,
+  roleSpecificData: 4, //role specific data for property managers would be number of listings
   children: [
     {
       name: "Agent A",
       image: "/images/agentA.png",
+      role: "agent",
       rating: 4.0,
       verified: true,
+      roleSpecificData: 5, //role specific data for agents would be number of clients
       children: [
         {
           name: "Client 1",
           image: "/images/client1.png",
+          role: "client",
           rating: 3.5,
           verified: false,
+          roleSpecificData: 12,
         },
         {
           name: "Client 2",
           image: "/images/client2.png",
+          role: "client",
           rating: 4.2,
           verified: true,
+          roleSpecificData: 7,
         },
       ],
     },
     {
       name: "Agent B",
       image: "/images/agentB.png",
+      role: "agent",
       rating: 3.8,
       verified: false,
+      roleSpecificData: 21,
       children: [
         {
           name: "Client 3",
           image: "/images/client3.png",
+          role: "client",
+          role: "client",
           rating: 4.7,
           verified: true,
+          roleSpecificData: 2,
         },
         {
           name: "Client 4",
           image: "/images/client4.png",
+          role: "client",
           rating: 3.9,
           verified: false,
+          roleSpecificData: 15, //role specific data for clients would be number of inspections
         },
       ],
     },
   ],
 };
 
-const NetworkMap = () => {
+const OwnerNetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
 
@@ -79,6 +103,12 @@ const NetworkMap = () => {
     { role: "Client", color: "orange" },
   ];
 
+  const roleIcons = {
+    propertyManager: <Home className="w-5 h-5 text-blue-500" />,
+    agent: <UserCheck className="w-5 h-5 text-green-500" />,
+    client: <CalendarCheck className="w-5 h-5 text-orange-500" />,
+  };
+
   return (
     <section className="flex flex-col h-screen overflow-hidden min-w-0">
       {/* Legend */}
@@ -97,57 +127,70 @@ const NetworkMap = () => {
       {/* Main Content */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        {/* Sidebar */}
-        <div className="w-1/4 bg-gray-100 p-6 overflow-y-auto shadow-lg">
-          <h3 className="text-xl font-semibold text-primary-500">
-            User Details
+        <div className="w-1/4 bg-gray-50 p-8 pl-10 overflow-y-auto shadow-lg border-r border-gray-200">
+          {/* Header */}
+          <h3 className="text-lg font-semibold text-primary-600 flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary-500" /> User Details
           </h3>
+
           {selectedNode ? (
-            <div className="mt-4 flex flex-col items-center">
+            <div className="mt-4 space-y-4">
               {/* User Image */}
               <img
                 src={selectedNode.image}
                 alt={selectedNode.name}
-                className="w-24 h-24 rounded-full shadow-md"
+                className="w-24 h-24 rounded-full shadow-md border border-gray-200"
               />
 
               {/* User Name */}
-              <p className="text-lg font-bold mt-3">{selectedNode.name}</p>
+              <p className="text-lg font-bold">{selectedNode.name}</p>
 
               {/* Star Rating */}
-              <div className="flex items-center mt-2">
-                {[...Array(5)].map((_, index) => (
-                  <span key={index}>
-                    {index < Math.round(selectedNode.rating) ? (
-                      <span className="text-yellow-500 text-xl">★</span>
-                    ) : (
-                      <span className="text-gray-300 text-xl">★</span>
-                    )}
-                  </span>
-                ))}
-              </div>
+              <StarRatings
+                rating={selectedNode.rating}
+                starRatedColor="#FFD700"
+                numberOfStars={5}
+                starDimension="20px"
+                starSpacing="2px"
+              />
 
               {/* Verification Status */}
-              <div className="flex items-center gap-2 mt-3">
-                <span
-                  className={`w-3 h-3 rounded-full ${
-                    selectedNode.verified ? "bg-green-500" : "bg-gray-400"
-                  }`}
-                ></span>
-                <span className="text-sm">
-                  {selectedNode.verified ? "Verified" : "Unverified"}
-                </span>
+              <div className="flex items-center gap-2 text-sm font-medium">
+                {selectedNode.verified ? (
+                  <ShieldCheck className="w-5 h-5 text-green-500" />
+                ) : (
+                  <ShieldX className="w-5 h-5 text-gray-400" />
+                )}
+                <span>{selectedNode.verified ? "Verified" : "Unverified"}</span>
               </div>
 
               {/* Connection Info */}
               {selectedNode.children && (
-                <p className="text-sm text-gray-600 mt-2">
-                  {selectedNode.children.length} connections
-                </p>
+                <div className="flex items-center gap-2 text-gray-600 text-sm">
+                  <Users className="w-5 h-5 text-blue-500" />
+                  <span>{selectedNode.children.length} Connections</span>
+                </div>
               )}
+
+              {/* Role Specific Data */}
+              <div className="flex items-center gap-2 text-gray-600 text-sm">
+                {roleIcons[selectedNode.role] || (
+                  <Users className="w-5 h-5 text-gray-500" />
+                )}
+                <span>
+                  {selectedNode.roleSpecificData}{" "}
+                  {selectedNode.role === "propertyManager"
+                    ? "Properties"
+                    : selectedNode.role === "agent"
+                    ? "Clients"
+                    : "Inspections"}
+                </span>
+              </div>
             </div>
           ) : (
-            <p className="text-gray-500">Click on a user to view details</p>
+            <p className="text-gray-500 mt-4">
+              Click on a user to view details
+            </p>
           )}
         </div>
 
@@ -164,4 +207,4 @@ const NetworkMap = () => {
   );
 };
 
-export default NetworkMap;
+export default OwnerNetworkMap;

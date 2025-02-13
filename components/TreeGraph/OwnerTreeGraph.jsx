@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const TreeGraph = ({ data, onNodeClick }) => {
+const OwnerTreeGraph = ({ data, onNodeClick }) => {
   const svgRef = useRef();
 
   const roleColors = {
@@ -90,4 +90,4 @@ const TreeGraph = ({ data, onNodeClick }) => {
   return <svg ref={svgRef}></svg>;
 };
 
-export default TreeGraph;
+export default OwnerTreeGraph;
