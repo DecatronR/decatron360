@@ -43,10 +43,10 @@ const Dashboard = () => {
   };
 
   return (
-    <section className="flex h-screen overflow-hidden">
+    <section className="flex h-screen overflow-hidden min-w-0">
       {/* Sidebar */}
       <div className="w-1/4 bg-gray-100 p-6 overflow-y-auto shadow-lg">
-        <h3 className="text-xl font-semibold text-primary-500">Node Details</h3>
+        <h3 className="text-xl font-semibold text-primary-500">User Details</h3>
         {selectedNode ? (
           <div className="mt-4">
             <p className="text-lg font-bold">{selectedNode.name}</p>
@@ -57,18 +57,14 @@ const Dashboard = () => {
             )}
           </div>
         ) : (
-          <p className="text-gray-500">Click on a node to view details</p>
+          <p className="text-gray-500">Click on a user to view details</p>
         )}
       </div>
       {/* Main Content */}
-      <div className="w-3/4 flex justify-center items-center bg-white">
-        <svg ref={svgRef} className="w-full h-full">
-          <g>
-            <TreeGraph
-              data={data}
-              onNodeClick={handleNodeClick}
-              animate={true}
-            />
+      <div className="flex-1 flex justify-center items-center bg-white overflow-auto">
+        <svg ref={svgRef} className="w-full h-full overflow-visible">
+          <g transform="translate(50,50)">
+            <TreeGraph data={data} onNodeClick={handleNodeClick} />
           </g>
         </svg>
       </div>
