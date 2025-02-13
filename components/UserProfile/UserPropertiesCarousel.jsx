@@ -1,10 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
 const UserPropertiesCarousel = ({ userProperties, userId }) => {
@@ -63,6 +60,17 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
                     </div>
                   )}
                 </Link>
+                {/* Share Button */}
+                <button
+                  onClick={() => handleShare(property._id)}
+                  className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition"
+                  title="Share Property"
+                >
+                  <FontAwesomeIcon
+                    icon={faShareAlt}
+                    className="text-gray-600"
+                  />
+                </button>
                 <div className="p-4">
                   <Link href={`/properties/${property._id}`}>
                     <h3 className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-primary-500">
