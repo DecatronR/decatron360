@@ -18,18 +18,6 @@ const data = {
       name: "Agent C",
       children: [{ name: "Client 5" }, { name: "Client 6" }],
     },
-    {
-      name: "Agent A",
-      children: [{ name: "Client 1" }, { name: "Client 2" }],
-    },
-    {
-      name: "Agent B",
-      children: [{ name: "Client 3" }, { name: "Client 4" }],
-    },
-    {
-      name: "Agent C",
-      children: [{ name: "Client 5" }, { name: "Client 6" }],
-    },
   ],
 };
 
@@ -55,10 +43,10 @@ const Dashboard = () => {
   };
 
   return (
-    <section className="flex h-screen overflow-hidden min-w-0">
+    <section className="flex h-screen overflow-hidden">
       {/* Sidebar */}
       <div className="w-1/4 bg-gray-100 p-6 overflow-y-auto shadow-lg">
-        <h3 className="text-xl font-semibold text-primary-500">User Details</h3>
+        <h3 className="text-xl font-semibold text-primary-500">Node Details</h3>
         {selectedNode ? (
           <div className="mt-4">
             <p className="text-lg font-bold">{selectedNode.name}</p>
@@ -69,14 +57,18 @@ const Dashboard = () => {
             )}
           </div>
         ) : (
-          <p className="text-gray-500">Click on a user to view details</p>
+          <p className="text-gray-500">Click on a node to view details</p>
         )}
       </div>
       {/* Main Content */}
-      <div className="flex-1 flex justify-center items-center bg-white overflow-auto">
-        <svg ref={svgRef} className="w-full h-full overflow-visible">
+      <div className="w-3/4 flex justify-center items-center bg-white">
+        <svg ref={svgRef} className="w-full h-full">
           <g>
-            <TreeGraph data={data} onNodeClick={handleNodeClick} />
+            <TreeGraph
+              data={data}
+              onNodeClick={handleNodeClick}
+              animate={true}
+            />
           </g>
         </svg>
       </div>
