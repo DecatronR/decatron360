@@ -15,7 +15,10 @@ const AgentRequests = ({ onCancel }) => {
       try {
         const userId = sessionStorage.getItem("userId");
         const res = await fetchAgentAgencyRequest(userId);
-        setRequests(res);
+
+        //filtered out declined request from list
+        const filteredRequests = res.filter((request) => request.status != "2");
+        setRequests(filteredRequests);
         console.log("Agency requests for agent: ", res);
       } catch (error) {
         console.log("Failed to fetch agent's agency requests");
