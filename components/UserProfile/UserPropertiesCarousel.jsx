@@ -1,10 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-} from "@fortawesome/free-solid-svg-icons";
+import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
 const UserPropertiesCarousel = ({ userProperties, userId }) => {
@@ -31,6 +28,10 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
     currentIndex + itemsPerPage
   );
 
+  const handleShare = (propertyId) => {
+    console.log(`Sharing property ${propertyId}`);
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -44,7 +45,7 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
             {userProperties.map((property) => (
               <div
                 key={property._id}
-                className="min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
+                className="relative min-w-[90%] sm:min-w-[45%] lg:min-w-[30%] rounded-lg overflow-hidden shadow-sm transition-transform transform hover:scale-105 duration-200"
               >
                 <Link href={`/properties/${property._id}`}>
                   {/* Display property image or a placeholder */}
@@ -63,6 +64,23 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
                     </div>
                   )}
                 </Link>
+
+                {/* Share Button - Styled to match PropertyCard */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShare(property._id);
+                  }}
+                  className="absolute top-4 right-4 bg-black bg-opacity-60 p-2 rounded-full shadow-md hover:bg-white transition duration-300"
+                  title="Share Property"
+                >
+                  <FontAwesomeIcon
+                    icon={faShareAlt}
+                    className="text-white text-lg hover:text-gray-700 transition duration-300"
+                  />
+                </button>
+
                 <div className="p-4">
                   <Link href={`/properties/${property._id}`}>
                     <h3 className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-primary-500">

@@ -1,6 +1,7 @@
 "use client";
 
 import FavoriteButton from "../../../components/Property/FavoriteButton";
+import AgencyRequestButton from "components/Property/AgencyRequestButton";
 import PropertyDetails from "../../../components/Property/PropertyDetails";
 import PropertyImages from "../../../components/Property/PropertyImages";
 import ShareButtons from "../../../components/Property/ShareButtons";
@@ -21,6 +22,24 @@ const PropertyPage = () => {
   const [agentData, setAgentData] = useState("");
   const [agentRating, setAgentRating] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState();
+  const [listerRole, setListerRole] = useState();
+
+  useEffect(() => {
+    const handleFetchUser = async () => {
+      try {
+        const userId = sessionStorage.getItem("userId");
+        if (!userId) return;
+
+        const res = await fetchUserData(userId);
+        setUserRole(res.role);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    handleFetchUser();
+  }, []);
 
   useEffect(() => {
     const handleFetchPropertyData = async () => {
@@ -40,6 +59,23 @@ const PropertyPage = () => {
       handleFetchPropertyData();
     }
   }, [id, property]);
+
+  //Introducing lister for the first time, because, we are not making it possible for property owners to list properties themselves
+  const handleFetchListerRole = async () => {
+    try {
+      const res = await fetchUserData(agentId);
+      console.log("lister role: ", res.role);
+      setListerRole(res.role);
+    } catch (error) {
+      console.log("Failed to fetch lister role");
+    }
+  };
+
+  useEffect(() => {
+    if (agentId) {
+      handleFetchListerRole();
+    }
+  }, [agentId]);
 
   useEffect(() => {
     const handleFetchAgent = async () => {
@@ -106,6 +142,13 @@ const PropertyPage = () => {
                 </Link>
                 <div className="space-y-4">
                   <FavoriteButton property={property} />
+
+                  {userRole === "agent" && listerRole === "owner" && (
+                    <AgencyRequestButton
+                      propertyId={id}
+                      ownerId={property.data.userID}
+                    />
+                  )}
                   <ShareButtons property={property} />
                 </div>
                 {agentId && (
