@@ -5,27 +5,36 @@ import * as d3 from "d3";
 const TreeGraph = ({ data }) => {
   const svgRef = useRef();
 
+  const roleColors = {
+    "Property Manager": "blue",
+    Agent: "green",
+    Client: "orange",
+  };
+
+  const determineRole = (depth) => {
+    if (depth === 0) return "Property Manager";
+    if (depth === 1) return "Agent";
+    return "Client";
+  };
+
   useEffect(() => {
     const width = 800;
     const height = 600;
 
-    // Clear previous SVG
     d3.select(svgRef.current).selectAll("*").remove();
 
-    // Create an SVG element
     const svg = d3
       .select(svgRef.current)
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(50, 50)"); // Margin
+      .attr("transform", "translate(50, 50)");
 
-    // Create tree layout
     const treeLayout = d3.tree().size([width - 100, height - 200]);
     const root = d3.hierarchy(data);
     treeLayout(root);
 
-    // Create links (paths between nodes)
+    // Links (connecting lines)
     svg
       .selectAll("path")
       .data(root.links())
@@ -35,14 +44,14 @@ const TreeGraph = ({ data }) => {
         "d",
         d3
           .linkHorizontal()
-          .x((d) => d.y) // Flips X and Y for a vertical tree
+          .x((d) => d.y)
           .y((d) => d.x)
       )
       .attr("fill", "none")
       .attr("stroke", "#555")
       .attr("stroke-width", 2);
 
-    // Create nodes (circles)
+    // Nodes (images & text)
     const nodes = svg
       .selectAll("g.node")
       .data(root.descendants())
@@ -50,19 +59,29 @@ const TreeGraph = ({ data }) => {
       .append("g")
       .attr("transform", (d) => `translate(${d.y},${d.x})`);
 
+    // Add images
+
+    nodes
+      .append("image")
+      .attr("xlink:href", (d) => d.data.image)
+      .attr("x", -15)
+      .attr("y", -15)
+      .attr("width", 30)
+      .attr("height", 30)
+      .attr("clip-path", (d) => `url(#clip-${d.data.name.replace(/\s/g, "")})`);
+
     nodes
       .append("circle")
-      .attr("r", 10)
-      .attr("fill", (d) =>
-        d.depth === 0 ? "blue" : d.depth === 1 ? "green" : "orange"
-      );
+      .attr("r", 18) // Slightly larger than image to act as an outline
+      .attr("stroke", (d) => roleColors[determineRole(d.depth)])
+      .attr("stroke-width", 3)
+      .attr("fill", "none");
 
-    // Add labels
+    // Add text labels
     nodes
       .append("text")
-      .attr("dy", 4)
-      .attr("x", (d) => (d.children ? -15 : 15))
-      .attr("text-anchor", (d) => (d.children ? "end" : "start"))
+      .attr("dy", 35)
+      .attr("text-anchor", "middle")
       .text((d) => d.data.name)
       .attr("font-size", "12px");
   }, [data]);
