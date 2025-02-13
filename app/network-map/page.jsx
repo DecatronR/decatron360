@@ -21,7 +21,7 @@ const data = {
   ],
 };
 
-const Dashboard = () => {
+const NetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
 
@@ -72,4 +72,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default NetworkMap;

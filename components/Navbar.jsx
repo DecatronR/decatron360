@@ -200,7 +200,6 @@ const Navbar = () => {
                         </Link>
                       </div>
                     </div>
-
                     {/* Dropdown Menu Items */}
                     <Link
                       href="/properties/favorite"
@@ -229,6 +228,16 @@ const Navbar = () => {
                     >
                       My Inspections
                     </Link>
+                    <Link
+                      //add uniqueness with id for each user
+                      href={`/network-map`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      role="menuitem"
+                      tabIndex="-1"
+                      onClick={() => setIsProfileMenuOpen(false)}
+                    >
+                      Network Map
+                    </Link>{" "}
                     <button
                       onClick={() => {
                         setIsProfileMenuOpen(false);
