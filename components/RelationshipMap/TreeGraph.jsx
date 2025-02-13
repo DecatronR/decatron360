@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const TreeGraph = ({ data }) => {
+const TreeGraph = ({ data, onNodeClick }) => {
   const svgRef = useRef();
 
   const roleColors = {
@@ -57,10 +57,11 @@ const TreeGraph = ({ data }) => {
       .data(root.descendants())
       .enter()
       .append("g")
-      .attr("transform", (d) => `translate(${d.y},${d.x})`);
+      .attr("transform", (d) => `translate(${d.y},${d.x})`)
+      .style("cursor", "pointer")
+      .on("click", (event, d) => onNodeClick(d.data)); // Make nodes interactive
 
     // Add images
-
     nodes
       .append("image")
       .attr("xlink:href", (d) => d.data.image)
@@ -84,7 +85,7 @@ const TreeGraph = ({ data }) => {
       .attr("text-anchor", "middle")
       .text((d) => d.data.name)
       .attr("font-size", "12px");
-  }, [data]);
+  }, [data, onNodeClick]);
 
   return <svg ref={svgRef}></svg>;
 };
