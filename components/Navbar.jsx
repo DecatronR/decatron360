@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/images/logo-white.png";
@@ -14,13 +14,33 @@ const Navbar = () => {
   const userId = user?.id;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogin = () => {
     router.replace("/auth/login");
   };
 
   return (
-    <nav className="bg-primary-500 border-b border-primary-600 shadow-lg z-50">
+    <nav
+      className={`sticky top-0 z-50 border-b border-primary-500 shadow-lg transition-all duration-300 ${
+        isScrolled
+          ? "bg-primary-500 bg-opacity-90 backdrop-blur-md"
+          : "bg-primary-500"
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu button */}
@@ -58,22 +78,22 @@ const Navbar = () => {
             </Link>
             <div className="hidden md:ml-6 md:block">
               <div className="flex space-x-4">
-                <Link
+                {/* <Link
                   href="/"
                   className={`${
                     pathname === "/" ? "bg-primary-600" : ""
                   } text-white hover:bg-primary-600 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Home
-                </Link>
-                <Link
+                </Link> */}
+                {/* <Link
                   href="/properties"
                   className={`${
                     pathname === "/properties" ? "bg-primary-600" : ""
                   } text-white hover:bg-primary-600 hover:text-white rounded-md px-3 py-2 transition`}
                 >
                   Properties
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
