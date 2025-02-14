@@ -11,20 +11,18 @@ import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoritePro
 const HomeProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(8); // Initial visible properties
 
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
 
       try {
-        // Fetch all properties (display to all users)
         const allProperties = await fetchProperties();
-
         const userId = sessionStorage.getItem("userId");
-        if (userId) {
-          // Fetch user's favorite properties
-          const favoritesResponse = await fetchFavoriteProperties(userId);
 
+        if (userId) {
+          const favoritesResponse = await fetchFavoriteProperties(userId);
           const updatedProperties = allProperties.map((property) => {
             const favorite = favoritesResponse.find(
               (fav) => fav.propertyListingId === property._id
@@ -32,18 +30,21 @@ const HomeProperties = () => {
             return {
               ...property,
               isFavorite: !!favorite,
-              favoriteId: favorite ? favorite._id : null, // Save the favorite object ID
+              favoriteId: favorite ? favorite._id : null,
             };
           });
 
+          updatedProperties.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+
           setProperties(updatedProperties);
         } else {
-          // For non-logged-in users, set isFavorite to false
           setProperties(
             allProperties.map((property) => ({
               ...property,
               isFavorite: false,
-              favoriteId: null, // No favorite object ID for non-logged-in users
+              favoriteId: null,
             }))
           );
         }
@@ -66,21 +67,17 @@ const HomeProperties = () => {
 
     try {
       const property = properties.find((prop) => prop._id === propertyId);
-
       if (!property) {
         console.error("Property not found.");
         return;
       }
 
       if (property.isFavorite) {
-        // Remove from favorites
         if (!property.favoriteId) {
           console.error("Favorite ID not found.");
           return;
         }
-
-        const deleteRes = await deleteFavoriteProperties(property.favoriteId); // Use favoriteId
-
+        const deleteRes = await deleteFavoriteProperties(property.favoriteId);
         if (deleteRes.responseCode === 200) {
           setProperties((prevProperties) =>
             prevProperties.map((prop) =>
@@ -91,9 +88,7 @@ const HomeProperties = () => {
           );
         }
       } else {
-        // Add to favorites
         const addRes = await addFavoriteProperties(userId, propertyId);
-
         if (addRes.responseCode === 201 && addRes.favoriteId) {
           setProperties((prevProperties) =>
             prevProperties.map((prop) =>
@@ -109,9 +104,9 @@ const HomeProperties = () => {
     }
   };
 
-  const recentProperties = properties
-    ?.sort(() => Math.random() - Math.random())
-    .slice(0, 16);
+  const handleLoadMore = () => {
+    setVisibleCount((prevCount) => prevCount + 8);
+  };
 
   return (
     <>
@@ -124,11 +119,11 @@ const HomeProperties = () => {
             <div className="flex justify-center items-center py-2">
               <Spinner />
             </div>
-          ) : recentProperties.length === 0 ? (
+          ) : properties.length === 0 ? (
             <p className="text-center">No Properties Found</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {recentProperties.map((property) => (
+              {properties.slice(0, visibleCount).map((property) => (
                 <PropertyCard
                   key={property._id}
                   property={property}
@@ -141,14 +136,14 @@ const HomeProperties = () => {
         </div>
       </section>
 
-      {!loading && (
-        <section className="m-auto max-w-lg my-10 px-6">
-          <Link
-            href="/properties"
-            className="block bg-primary-500 text-white text-center py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:bg-primary-600"
+      {!loading && properties.length > visibleCount && (
+        <section className="m-auto max-w-xs my-10 px-6">
+          <button
+            onClick={handleLoadMore}
+            className="block w-full bg-primary-500 text-white text-center py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:bg-primary-600"
           >
-            See All Properties
-          </Link>
+            See more
+          </button>
         </section>
       )}
     </>
