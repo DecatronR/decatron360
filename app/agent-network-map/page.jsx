@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import TreeGraph from "components/TreeGraph/AgentTreeGraph";
+import AgentTreeGraph from "components/TreeGraph/AgentTreeGraph";
 import * as d3 from "d3";
 import {
   ShieldCheck,
@@ -196,7 +196,7 @@ const AgentNetworkMap = () => {
             preserveAspectRatio="xMidYMid meet"
           >
             <g transform="translate(50,50)">
-              <TreeGraph data={data} onNodeClick={handleNodeClick} />
+              <AgentTreeGraph data={data} onNodeClick={handleNodeClick} />
             </g>
           </svg>
         </div>

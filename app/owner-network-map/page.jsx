@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import TreeGraph from "components/TreeGraph/OwnerTreeGraph";
+import OwnerTreeGraph from "components/TreeGraph/OwnerTreeGraph";
 import * as d3 from "d3";
 import {
   ShieldCheck,
@@ -223,7 +223,7 @@ const OwnerNetworkMap = () => {
             preserveAspectRatio="xMidYMid meet"
           >
             <g transform="translate(50,50)">
-              <TreeGraph data={data} onNodeClick={handleNodeClick} />
+              <OwnerTreeGraph data={data} onNodeClick={handleNodeClick} />
             </g>
           </svg>
         </div>
