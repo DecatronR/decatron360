@@ -6,6 +6,7 @@ import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { HousePlus } from "lucide-react";
+import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Navbar = () => {
   const router = useRouter();
@@ -16,19 +17,36 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showSearchInNavbar, setShowSearchInNavbar] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
+      const scrollY = window.scrollY;
+      if (scrollY > 10) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
+      }
+      if (scrollY > 250) {
+        setShowSearchInNavbar(true);
+      } else {
+        setShowSearchInNavbar(false);
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const scrollY = window.scrollY;
+  //     setShowSearchInNavbar(scrollY > 250); // Show search bar when scrolled past 100px
+  //   };
+
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   const handleLogin = () => {
     router.replace("/auth/login");
@@ -79,7 +97,8 @@ const Navbar = () => {
             </Link>
             <div className="hidden md:ml-6 md:block">
               <div className="flex space-x-4">
-                {/* <PropertySearchForm /> */}
+                {/* Only show PropertySearchForm in navbar when user scrolls */}
+                {showSearchInNavbar && <PropertySearchForm />}
               </div>
             </div>
           </div>
