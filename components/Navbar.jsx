@@ -5,7 +5,7 @@ import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { HousePlus } from "lucide-react";
+import { HousePlus, ChevronDown } from "lucide-react";
 import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Navbar = () => {
