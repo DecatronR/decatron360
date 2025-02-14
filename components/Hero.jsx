@@ -1,3 +1,4 @@
+import { SlidersHorizontal } from "lucide-react"; // Importing filter icon
 import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Hero = () => {
@@ -17,9 +18,21 @@ const Hero = () => {
           </h1>
         </div>
 
-        {/* PropertySearchForm */}
-        <div className="relative z-10 w-full max-w-3xl">
-          <PropertySearchForm />
+        {/* PropertySearchForm with Filter Button */}
+        <div className="relative z-10 w-full max-w-3xl flex items-center gap-3 bg-white shadow-lg rounded-full px-4 py-2 border border-gray-300">
+          {/* Search Form takes up most of the space */}
+          <div className="flex-grow">
+            <PropertySearchForm />
+          </div>
+
+          {/* Filter Button */}
+          <button
+            className="p-2 bg-gray-100 text-primary-500 rounded-full shadow-md hover:bg-gray-200 transition-all"
+            aria-label="Filter properties"
+            onClick={""}
+          >
+            <SlidersHorizontal size={24} />
+          </button>
         </div>
       </div>
     </section>

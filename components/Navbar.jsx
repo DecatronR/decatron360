@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { HousePlus, ChevronDown } from "lucide-react";
+import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Navbar = () => {
   const router = useRouter();
@@ -14,13 +16,40 @@ const Navbar = () => {
   const userId = user?.id;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [showSearchInNavbar, setShowSearchInNavbar] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      if (scrollY > 10) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+      if (scrollY > 250) {
+        setShowSearchInNavbar(true);
+      } else {
+        setShowSearchInNavbar(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogin = () => {
     router.replace("/auth/login");
   };
 
   return (
-    <nav className="bg-primary-500 border-b border-primary-600 shadow-lg z-50">
+    <nav
+      className={`sticky top-0 z-50 border-b border-primary-500 shadow-lg transition-all duration-300 ${
+        isScrolled
+          ? "bg-primary-500 bg-opacity-90 backdrop-blur-md"
+          : "bg-primary-500"
+      }`}
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Mobile menu button */}
@@ -56,27 +85,12 @@ const Navbar = () => {
             <Link className="flex flex-shrink-0 items-center" href="/">
               <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
             </Link>
-            <div className="hidden md:ml-6 md:block">
-              <div className="flex space-x-4">
-                <Link
-                  href="/"
-                  className={`${
-                    pathname === "/" ? "bg-primary-600" : ""
-                  } text-white hover:bg-primary-600 hover:text-white rounded-md px-3 py-2 transition`}
-                >
-                  Home
-                </Link>
-                <Link
-                  href="/properties"
-                  className={`${
-                    pathname === "/properties" ? "bg-primary-600" : ""
-                  } text-white hover:bg-primary-600 hover:text-white rounded-md px-3 py-2 transition`}
-                >
-                  Properties
-                </Link>
-              </div>
-            </div>
           </div>
+          {showSearchInNavbar && (
+            <div className="flex-grow flex justify-center">
+              <PropertySearchForm />
+            </div>
+          )}
 
           {/* Right side menu (Login button when not authenticated) */}
           {!user && (
@@ -84,15 +98,15 @@ const Navbar = () => {
               <div className="flex space-x-4">
                 <button
                   onClick={handleLogin}
-                  className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 transition"
+                  className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-full px-4 py-2 transition"
                 >
                   <span>Login</span>
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="flex items-center text-gray-700 bg-gray-200 hover:bg-white rounded-md px-4 py-2 transition"
+                  className="flex items-center text-gray-700 bg-gray-200 hover:bg-white rounded-full px-4 py-2 transition"
                 >
-                  <span>Sign Up</span>
+                  <span>Sign up</span>
                 </button>
               </div>
             </div>
@@ -102,49 +116,11 @@ const Navbar = () => {
           {user && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Add Property Button */}
-              <button
-                onClick={() => router.push("/properties/select-listing-type")}
-                className="hidden md:flex items-center text-white bg-green-600 hover:bg-green-700 rounded-md px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
-              >
-                <svg
-                  className="mr-2 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                Add Property
+              <button className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4 sm:px-4 sm:py-2">
+                <HousePlus size={18} className="inline-block" />
+                <span className="hidden sm:inline">Add Property</span>
               </button>
 
-              <Link href="/messages" className="relative group">
-                <button
-                  type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 transition"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-                    />
-                  </svg>
-                </button>
-              </Link>
               <div className="relative ml-3">
                 <button
                   type="button"
@@ -230,7 +206,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       //add uniqueness with id for each user
-                      href={`/network-map`}
+                      href={`/owner-network-map`}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       role="menuitem"
                       tabIndex="-1"
@@ -277,28 +253,6 @@ const Navbar = () => {
             >
               Properties
             </Link>
-            {user && (
-              <button
-                onClick={() => router.push("/properties/select-listing-type")}
-                className="flex items-center justify-center w-full rounded-md bg-green-600 text-white px-4 py-2 text-base font-medium hover:bg-green-700 transition shadow-lg transform hover:scale-105"
-              >
-                <svg
-                  className="mr-2 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                Add Property
-              </button>
-            )}
             {!user && (
               <div className="space-y-1 px-2 pb-3 pt-2">
                 <button

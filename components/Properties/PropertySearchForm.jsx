@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchPropertyTypes } from "utils/api/propertyListing/fetchPropertyTypes";
+import { Search } from "lucide-react";
 
 const PropertySearchForm = () => {
   const router = useRouter();
@@ -29,7 +30,6 @@ const PropertySearchForm = () => {
       router.push("/properties");
     } else {
       const query = `?location=${location}&propertyType=${propertyType}`;
-
       router.push(`/properties/search-results${query}`);
     }
   };
@@ -37,45 +37,56 @@ const PropertySearchForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-3 mx-auto max-w-2xl w-full flex flex-col md:flex-row items-center"
+      className="flex items-center bg-white shadow-lg rounded-full px-4 py-2 border border-gray-300 w-full max-w-lg"
     >
-      <div className="w-full md:w-3/5 md:pr-2 mb-4 md:mb-0">
-        <label htmlFor="location" className="sr-only">
-          Location
-        </label>
-        <input
-          type="text"
-          id="location"
-          placeholder="Enter Keywords or Location"
-          className="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring focus:ring-primary-500"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+      {/* Mobile Responsive Wrapper */}
+      <div className="flex w-full gap-2">
+        {/* Location Input - 50% width */}
+        <div className="flex-1">
+          <label htmlFor="location" className="sr-only">
+            Location
+          </label>
+          <input
+            type="text"
+            id="location"
+            placeholder="Where?"
+            className="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="hidden md:block w-px h-6 bg-gray-300"></div>
+
+        {/* Property Type Dropdown - 50% width */}
+        <div className="flex-1">
+          <label htmlFor="property-type" className="sr-only">
+            Property Type
+          </label>
+          <select
+            id="property-type"
+            className="w-full bg-transparent text-gray-800 focus:outline-none cursor-pointer"
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+          >
+            <option value="All">All</option>
+            {propertyTypes?.length > 0 &&
+              propertyTypes.map((type) => (
+                <option key={type.id} value={type.propertyType}>
+                  {type.propertyType}
+                </option>
+              ))}
+          </select>
+        </div>
       </div>
-      <div className="w-full md:w-2/5 md:pl-2">
-        <label htmlFor="property-type" className="sr-only">
-          Property Type
-        </label>
-        <select
-          id="property-type"
-          className="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring focus:ring-primary-500"
-          value={propertyType}
-          onChange={(e) => setPropertyType(e.target.value)}
-        >
-          <option value="All">All</option>
-          {propertyTypes?.length > 0 &&
-            propertyTypes.map((type) => (
-              <option key={type.id} value={type.propertyType}>
-                {type.propertyType}
-              </option>
-            ))}
-        </select>
-      </div>
+
+      {/* Search Button */}
       <button
         type="submit"
-        className="md:ml-4 mt-4 md:mt-0 w-full md:w-auto px-6 py-3 rounded-lg bg-primary-600 text-white hover:bg-primary-600 focus:outline-none focus:ring focus:ring-primary-500"
+        className="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 transition-all ml-2"
       >
-        Search
+        <Search size={16} />
       </button>
     </form>
   );
