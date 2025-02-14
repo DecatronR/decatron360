@@ -5,6 +5,7 @@ import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Navbar = () => {
   const router = useRouter();
@@ -78,22 +79,7 @@ const Navbar = () => {
             </Link>
             <div className="hidden md:ml-6 md:block">
               <div className="flex space-x-4">
-                {/* <Link
-                  href="/"
-                  className={`${
-                    pathname === "/" ? "bg-primary-600" : ""
-                  } text-white hover:bg-primary-600 hover:text-white rounded-md px-3 py-2 transition`}
-                >
-                  Home
-                </Link> */}
-                {/* <Link
-                  href="/properties"
-                  className={`${
-                    pathname === "/properties" ? "bg-primary-600" : ""
-                  } text-white hover:bg-primary-600 hover:text-white rounded-md px-3 py-2 transition`}
-                >
-                  Properties
-                </Link> */}
+                {/* <PropertySearchForm /> */}
               </div>
             </div>
           </div>
@@ -104,15 +90,15 @@ const Navbar = () => {
               <div className="flex space-x-4">
                 <button
                   onClick={handleLogin}
-                  className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 transition"
+                  className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-full px-4 py-2 transition"
                 >
                   <span>Login</span>
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="flex items-center text-gray-700 bg-gray-200 hover:bg-white rounded-md px-4 py-2 transition"
+                  className="flex items-center text-gray-700 bg-gray-200 hover:bg-white rounded-full px-4 py-2 transition"
                 >
-                  <span>Sign Up</span>
+                  <span>Sign up</span>
                 </button>
               </div>
             </div>
@@ -124,7 +110,7 @@ const Navbar = () => {
               {/* Add Property Button */}
               <button
                 onClick={() => router.push("/properties/select-listing-type")}
-                className="hidden md:flex items-center text-white bg-green-600 hover:bg-green-700 rounded-md px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
+                className="hidden md:flex items-center text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
               >
                 <svg
                   className="mr-2 h-5 w-5"
@@ -142,29 +128,6 @@ const Navbar = () => {
                 </svg>
                 Add Property
               </button>
-
-              <Link href="/messages" className="relative group">
-                <button
-                  type="button"
-                  className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 transition"
-                >
-                  <span className="sr-only">View notifications</span>
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-                    />
-                  </svg>
-                </button>
-              </Link>
               <div className="relative ml-3">
                 <button
                   type="button"

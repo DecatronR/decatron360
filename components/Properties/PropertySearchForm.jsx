@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchPropertyTypes } from "utils/api/propertyListing/fetchPropertyTypes";
+import { FaSearch } from "react-icons/fa"; // Import search icon
 
 const PropertySearchForm = () => {
   const router = useRouter();
@@ -29,7 +30,6 @@ const PropertySearchForm = () => {
       router.push("/properties");
     } else {
       const query = `?location=${location}&propertyType=${propertyType}`;
-
       router.push(`/properties/search-results${query}`);
     }
   };
@@ -37,28 +37,34 @@ const PropertySearchForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-3 mx-auto max-w-2xl w-full flex flex-col md:flex-row items-center"
+      className="flex items-center gap-2 bg-white shadow-lg rounded-full px-4 py-2 border border-gray-300 w-full max-w-lg"
     >
-      <div className="w-full md:w-3/5 md:pr-2 mb-4 md:mb-0">
+      {/* Location Input */}
+      <div className="flex-1">
         <label htmlFor="location" className="sr-only">
           Location
         </label>
         <input
           type="text"
           id="location"
-          placeholder="Enter Keywords or Location"
-          className="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring focus:ring-primary-500"
+          placeholder="Where?"
+          className="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
         />
       </div>
-      <div className="w-full md:w-2/5 md:pl-2">
+
+      {/* Divider */}
+      <div className="w-px h-6 bg-gray-300"></div>
+
+      {/* Property Type Dropdown */}
+      <div>
         <label htmlFor="property-type" className="sr-only">
           Property Type
         </label>
         <select
           id="property-type"
-          className="w-full px-4 py-3 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring focus:ring-primary-500"
+          className="bg-transparent text-gray-800 focus:outline-none cursor-pointer"
           value={propertyType}
           onChange={(e) => setPropertyType(e.target.value)}
         >
@@ -71,11 +77,16 @@ const PropertySearchForm = () => {
             ))}
         </select>
       </div>
+
+      {/* Divider */}
+      <div className="w-px h-6 bg-gray-300"></div>
+
+      {/* Search Button */}
       <button
         type="submit"
-        className="md:ml-4 mt-4 md:mt-0 w-full md:w-auto px-6 py-3 rounded-lg bg-primary-600 text-white hover:bg-primary-600 focus:outline-none focus:ring focus:ring-primary-500"
+        className="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 transition-all"
       >
-        Search
+        <FaSearch size={16} />
       </button>
     </form>
   );
