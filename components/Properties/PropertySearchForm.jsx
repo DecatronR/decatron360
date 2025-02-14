@@ -37,54 +37,54 @@ const PropertySearchForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center gap-2 bg-white shadow-lg rounded-full px-4 py-2 border border-gray-300 w-full max-w-lg"
+      className="flex items-center bg-white shadow-lg rounded-full px-4 py-2 border border-gray-300 w-full max-w-lg"
     >
-      {/* Location Input */}
-      <div className="flex-1">
-        <label htmlFor="location" className="sr-only">
-          Location
-        </label>
-        <input
-          type="text"
-          id="location"
-          placeholder="Where?"
-          className="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
+      {/* Mobile Responsive Wrapper */}
+      <div className="flex w-full gap-2">
+        {/* Location Input - 50% width */}
+        <div className="flex-1">
+          <label htmlFor="location" className="sr-only">
+            Location
+          </label>
+          <input
+            type="text"
+            id="location"
+            placeholder="Where?"
+            className="w-full bg-transparent text-gray-800 placeholder-gray-500 focus:outline-none"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="hidden md:block w-px h-6 bg-gray-300"></div>
+
+        {/* Property Type Dropdown - 50% width */}
+        <div className="flex-1">
+          <label htmlFor="property-type" className="sr-only">
+            Property Type
+          </label>
+          <select
+            id="property-type"
+            className="w-full bg-transparent text-gray-800 focus:outline-none cursor-pointer"
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+          >
+            <option value="All">All</option>
+            {propertyTypes?.length > 0 &&
+              propertyTypes.map((type) => (
+                <option key={type.id} value={type.propertyType}>
+                  {type.propertyType}
+                </option>
+              ))}
+          </select>
+        </div>
       </div>
-
-      {/* Divider */}
-      <div className="w-px h-6 bg-gray-300"></div>
-
-      {/* Property Type Dropdown */}
-      <div>
-        <label htmlFor="property-type" className="sr-only">
-          Property Type
-        </label>
-        <select
-          id="property-type"
-          className="bg-transparent text-gray-800 focus:outline-none cursor-pointer"
-          value={propertyType}
-          onChange={(e) => setPropertyType(e.target.value)}
-        >
-          <option value="All">All</option>
-          {propertyTypes?.length > 0 &&
-            propertyTypes.map((type) => (
-              <option key={type.id} value={type.propertyType}>
-                {type.propertyType}
-              </option>
-            ))}
-        </select>
-      </div>
-
-      {/* Divider */}
-      <div className="w-px h-6 bg-gray-300"></div>
 
       {/* Search Button */}
       <button
         type="submit"
-        className="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 transition-all"
+        className="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 transition-all ml-2"
       >
         <Search size={16} />
       </button>
