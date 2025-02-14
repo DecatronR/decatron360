@@ -9,6 +9,8 @@ import {
   Home,
   UserCheck,
   CalendarCheck,
+  Menu,
+  X,
 } from "lucide-react";
 import StarRatings from "react-star-ratings";
 
@@ -26,7 +28,7 @@ const data = {
       role: "propertyManager",
       rating: 4.2,
       verified: true,
-      roleSpecificData: 2, //role specific data for property managers would be number of listings
+      roleSpecificData: 2,
       children: [
         {
           name: "Client 1",
@@ -46,39 +48,13 @@ const data = {
         },
       ],
     },
-    {
-      name: "Property Manager 2",
-      image: "/images/propertyManager2.png",
-      role: "propertyManager",
-      rating: 4.0,
-      verified: false,
-      roleSpecificData: 1,
-      children: [
-        {
-          name: "Client 3",
-          image: "/images/client3.png",
-          role: "client",
-          rating: 3.5,
-          verified: true,
-          roleSpecificData: 9, //role specific data for property managers would be number of inspections
-        },
-      ],
-    },
-    {
-      name: "Property Manager 3",
-      image: "/images/propertyManager3.png",
-      role: "propertyManager",
-      rating: 4.7,
-      verified: true,
-      roleSpecificData: 10,
-      children: [],
-    },
   ],
 };
 
 const AgentNetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -95,6 +71,7 @@ const AgentNetworkMap = () => {
 
   const handleNodeClick = (node) => {
     setSelectedNode(node);
+    setIsSidebarOpen(true);
   };
 
   const legend = [
@@ -112,7 +89,7 @@ const AgentNetworkMap = () => {
   return (
     <section className="flex flex-col h-screen overflow-hidden min-w-0">
       {/* Legend */}
-      <div className="flex items-center gap-4 bg-gray-200 p-4 shadow-md">
+      <div className="flex flex-wrap items-center gap-4 bg-gray-200 p-4 shadow-md">
         {legend.map(({ role, color }) => (
           <div key={role} className="flex items-center gap-2">
             <span
@@ -124,10 +101,38 @@ const AgentNetworkMap = () => {
         ))}
       </div>
 
+      {/* Mobile Sidebar Toggle Button */}
+      {/* <button
+        onClick={() => setIsSidebarOpen(true)}
+        className="md:hidden fixed top-4 left-4 bg-gray-800 text-white p-2 rounded-lg shadow-lg z-50"
+      >
+        <Menu className="w-6 h-6" />
+      </button> */}
+
+      {/* Overlay for Mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 flex-col md:flex-row">
         {/* Sidebar */}
-        <div className="w-1/4 bg-gray-50 p-8 pl-10 overflow-y-auto shadow-lg border-r border-gray-200">
+        <div
+          className={`fixed md:relative w-3/4 md:w-1/4 bg-gray-50 p-6 shadow-lg border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 z-50 md:z-auto h-full`}
+        >
+          {/* Close Button (X) for Mobile */}
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="absolute top-4 right-4 bg-gray-800 text-white p-2 rounded-full md:hidden"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           <h3 className="text-lg font-semibold text-primary-600 flex items-center gap-2">
             <Users className="w-5 h-5 text-primary-500" /> User Details
           </h3>
@@ -188,7 +193,12 @@ const AgentNetworkMap = () => {
 
         {/* Tree Graph */}
         <div className="flex-1 flex justify-center items-center bg-white overflow-auto">
-          <svg ref={svgRef} className="w-full h-full overflow-visible">
+          <svg
+            ref={svgRef}
+            className="w-full h-full overflow-visible"
+            viewBox="0 0 800 600"
+            preserveAspectRatio="xMidYMid meet"
+          >
             <g transform="translate(50,50)">
               <TreeGraph data={data} onNodeClick={handleNodeClick} />
             </g>
