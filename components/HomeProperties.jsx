@@ -11,7 +11,7 @@ import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoritePro
 const HomeProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(4); // Initial visible properties
+  const [visibleCount, setVisibleCount] = useState(8); // Initial visible properties
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -105,7 +105,7 @@ const HomeProperties = () => {
   };
 
   const handleLoadMore = () => {
-    setVisibleCount((prevCount) => prevCount + 4);
+    setVisibleCount((prevCount) => prevCount + 8);
   };
 
   return (
