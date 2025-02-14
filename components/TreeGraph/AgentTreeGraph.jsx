@@ -68,7 +68,8 @@ const AgentTreeGraph = ({ data, onNodeClick }) => {
       .attr("x", -15)
       .attr("y", -15)
       .attr("width", 30)
-      .attr("height", 30);
+      .attr("height", 30)
+      .attr("clip-path", (d) => `url(#clip-${d.data.name.replace(/\s/g, "")})`);
 
     nodes
       .append("circle")
