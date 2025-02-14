@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { fetchPropertyTypes } from "utils/api/propertyListing/fetchPropertyTypes";
-import { FaSearch } from "react-icons/fa"; // Import search icon
+import { Search } from "lucide-react";
 
 const PropertySearchForm = () => {
   const router = useRouter();
@@ -86,7 +86,7 @@ const PropertySearchForm = () => {
         type="submit"
         className="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 transition-all"
       >
-        <FaSearch size={16} />
+        <Search size={16} />
       </button>
     </form>
   );

@@ -5,7 +5,7 @@ import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import PropertySearchForm from "./Properties/PropertySearchForm";
+import { HousePlus } from "lucide-react";
 
 const Navbar = () => {
   const router = useRouter();
@@ -108,26 +108,11 @@ const Navbar = () => {
           {user && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Add Property Button */}
-              <button
-                onClick={() => router.push("/properties/select-listing-type")}
-                className="hidden md:flex items-center text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
-              >
-                <svg
-                  className="mr-2 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
+              <button className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
+                <HousePlus size={18} className="inline-block" />
                 Add Property
               </button>
+
               <div className="relative ml-3">
                 <button
                   type="button"
