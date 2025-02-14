@@ -36,6 +36,10 @@ const HomeProperties = () => {
             };
           });
 
+          updatedProperties.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+
           setProperties(updatedProperties);
         } else {
           // For non-logged-in users, set isFavorite to false
@@ -109,10 +113,6 @@ const HomeProperties = () => {
     }
   };
 
-  const recentProperties = properties
-    ?.sort(() => Math.random() - Math.random())
-    .slice(0, 16);
-
   return (
     <>
       <section className="px-4 py-6">
@@ -124,11 +124,11 @@ const HomeProperties = () => {
             <div className="flex justify-center items-center py-2">
               <Spinner />
             </div>
-          ) : recentProperties.length === 0 ? (
+          ) : properties.length === 0 ? (
             <p className="text-center">No Properties Found</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {recentProperties.map((property) => (
+              {properties.map((property) => (
                 <PropertyCard
                   key={property._id}
                   property={property}
