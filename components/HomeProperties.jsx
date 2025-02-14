@@ -142,12 +142,12 @@ const HomeProperties = () => {
       </section>
 
       {!loading && (
-        <section className="m-auto max-w-lg my-10 px-6">
+        <section className="m-auto max-w-xs my-10 px-6">
           <Link
             href="/properties"
             className="block bg-primary-500 text-white text-center py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:bg-primary-600"
           >
-            See All Properties
+            See more
           </Link>
         </section>
       )}
