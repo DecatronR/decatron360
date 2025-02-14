@@ -38,16 +38,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const scrollY = window.scrollY;
-  //     setShowSearchInNavbar(scrollY > 250); // Show search bar when scrolled past 100px
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
-
   const handleLogin = () => {
     router.replace("/auth/login");
   };
@@ -95,13 +85,12 @@ const Navbar = () => {
             <Link className="flex flex-shrink-0 items-center" href="/">
               <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
             </Link>
-            <div className="hidden md:ml-6 md:block">
-              <div className="flex space-x-4">
-                {/* Only show PropertySearchForm in navbar when user scrolls */}
-                {showSearchInNavbar && <PropertySearchForm />}
-              </div>
-            </div>
           </div>
+          {showSearchInNavbar && (
+            <div className="flex-grow flex justify-center">
+              <PropertySearchForm />
+            </div>
+          )}
 
           {/* Right side menu (Login button when not authenticated) */}
           {!user && (
@@ -127,9 +116,9 @@ const Navbar = () => {
           {user && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Add Property Button */}
-              <button className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
+              <button className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4 sm:px-2 sm:py-2">
                 <HousePlus size={18} className="inline-block" />
-                Add Property
+                <span className="hidden sm:inline">Add Property</span>
               </button>
 
               <div className="relative ml-3">
@@ -264,28 +253,6 @@ const Navbar = () => {
             >
               Properties
             </Link>
-            {user && (
-              <button
-                onClick={() => router.push("/properties/select-listing-type")}
-                className="flex items-center justify-center w-full rounded-md bg-green-600 text-white px-4 py-2 text-base font-medium hover:bg-green-700 transition shadow-lg transform hover:scale-105"
-              >
-                <svg
-                  className="mr-2 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                Add Property
-              </button>
-            )}
             {!user && (
               <div className="space-y-1 px-2 pb-3 pt-2">
                 <button
