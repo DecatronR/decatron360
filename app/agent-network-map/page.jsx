@@ -101,14 +101,6 @@ const AgentNetworkMap = () => {
         ))}
       </div>
 
-      {/* Mobile Sidebar Toggle Button */}
-      {/* <button
-        onClick={() => setIsSidebarOpen(true)}
-        className="md:hidden fixed top-4 left-4 bg-gray-800 text-white p-2 rounded-lg shadow-lg z-50"
-      >
-        <Menu className="w-6 h-6" />
-      </button> */}
-
       {/* Overlay for Mobile */}
       {isSidebarOpen && (
         <div
@@ -192,7 +184,12 @@ const AgentNetworkMap = () => {
         </div>
 
         {/* Tree Graph */}
-        <div className="flex-1 flex justify-center items-center bg-white overflow-auto">
+        <div className="flex-1 flex justify-center items-center bg-white overflow-auto relative">
+          {!isSidebarOpen && (
+            <div className="md:hidden absolute top-4 left-1/2 transform -translate-x-1/2 text-center p-4 bg-gray-100 text-gray-500 shadow-md rounded-lg">
+              Click on a user to view details
+            </div>
+          )}
           <svg
             ref={svgRef}
             className="w-full h-full overflow-visible"
