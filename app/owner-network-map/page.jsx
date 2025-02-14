@@ -9,6 +9,7 @@ import {
   Home,
   UserCheck,
   CalendarCheck,
+  X,
 } from "lucide-react";
 import StarRatings from "react-star-ratings";
 
@@ -79,6 +80,7 @@ const data = {
 const OwnerNetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -95,6 +97,7 @@ const OwnerNetworkMap = () => {
 
   const handleNodeClick = (node) => {
     setSelectedNode(node);
+    setIsSidebarOpen(true);
   };
 
   const legend = [
@@ -124,28 +127,42 @@ const OwnerNetworkMap = () => {
         ))}
       </div>
 
+      {/* Overlay for Mobile */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <div className="w-1/4 bg-gray-50 p-8 pl-10 overflow-y-auto shadow-lg border-r border-gray-200">
-          {/* Header */}
+        <div
+          className={`fixed md:relative w-3/4 md:w-1/4 bg-gray-50 p-6 shadow-lg border-r border-gray-200 transform transition-transform duration-300 ease-in-out ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 z-50 md:z-auto h-full`}
+        >
+          {/* Close Button (X) for Mobile */}
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="absolute top-4 right-4 bg-gray-800 text-white p-2 rounded-full md:hidden"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           <h3 className="text-lg font-semibold text-primary-600 flex items-center gap-2">
             <Users className="w-5 h-5 text-primary-500" /> User Details
           </h3>
 
           {selectedNode ? (
             <div className="mt-4 space-y-4">
-              {/* User Image */}
               <img
                 src={selectedNode.image}
                 alt={selectedNode.name}
                 className="w-24 h-24 rounded-full shadow-md border border-gray-200"
               />
-
-              {/* User Name */}
               <p className="text-lg font-bold">{selectedNode.name}</p>
-
-              {/* Star Rating */}
               <StarRatings
                 rating={selectedNode.rating}
                 starRatedColor="#FFD700"
@@ -165,12 +182,10 @@ const OwnerNetworkMap = () => {
               </div>
 
               {/* Connection Info */}
-              {selectedNode.children && (
-                <div className="flex items-center gap-2 text-gray-600 text-sm">
-                  <Users className="w-5 h-5 text-blue-500" />
-                  <span>{selectedNode.children.length} Connections</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 text-gray-600 text-sm">
+                <Users className="w-5 h-5 text-blue-500" />
+                <span>{selectedNode.children?.length || 0} Connections</span>
+              </div>
 
               {/* Role Specific Data */}
               <div className="flex items-center gap-2 text-gray-600 text-sm">
@@ -195,8 +210,18 @@ const OwnerNetworkMap = () => {
         </div>
 
         {/* Tree Graph */}
-        <div className="flex-1 flex justify-center items-center bg-white overflow-auto">
-          <svg ref={svgRef} className="w-full h-full overflow-visible">
+        <div className="flex-1 flex justify-center items-center bg-white overflow-auto relative">
+          {!isSidebarOpen && (
+            <div className="md:hidden absolute top-4 left-1/2 transform -translate-x-1/2 text-center p-4 bg-gray-100 text-gray-500 shadow-md rounded-lg">
+              Click on a user to view details
+            </div>
+          )}
+          <svg
+            ref={svgRef}
+            className="w-full h-full overflow-visible"
+            viewBox="0 0 800 600"
+            preserveAspectRatio="xMidYMid meet"
+          >
             <g transform="translate(50,50)">
               <TreeGraph data={data} onNodeClick={handleNodeClick} />
             </g>

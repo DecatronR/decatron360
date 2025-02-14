@@ -9,7 +9,6 @@ import {
   Home,
   UserCheck,
   CalendarCheck,
-  Menu,
   X,
 } from "lucide-react";
 import StarRatings from "react-star-ratings";
