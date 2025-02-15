@@ -5,9 +5,9 @@ import ClientLayout from "@/components/ClientLayout";
 
 export const metadata = {
   title: "Decatron",
-  description: "Creating a leap in value",
+  description: "Real estate transactions like shopping online",
   keywords:
-    "properties, real estate, houses, homes, apartments, rent, buy, sell",
+    "properties, real estate, houses, homes, apartments, rent, buy, sell, shortlet, abuja properties, nigeria real estate",
 };
 
 export default function RootLayout({ children }) {
