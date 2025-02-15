@@ -1,11 +1,11 @@
 "use client";
 import { ClipLoader } from "react-spinners";
 
-const ButtonSpinner = ({ loading }) => {
+const ButtonSpinner = ({ loading, color = "#fff" }) => {
   return (
     <div className="flex items-center justify-center">
       <ClipLoader
-        color="#ffff"
+        color={color}
         loading={loading}
         size={20}
         aria-label="Loading Spinner"

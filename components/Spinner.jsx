@@ -2,13 +2,13 @@
 import React from "react";
 import ClipLoader from "react-spinners/ClipLoader";
 
-const Spinner = ({ loading }) => {
+const Spinner = ({ loading, size = "60" }) => {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <ClipLoader
         color="#5a47fb"
         loading={loading}
-        size={60}
+        size={size}
         aria-label="Loading Spinner"
         cssOverride={{
           display: "block",

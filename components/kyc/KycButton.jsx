@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Spinner from "components/Spinner";
 
 const KycButton = () => {
   const testClientId = process.env.NEXT_PUBLIC_QOREID_TEST_CLIENT_ID;
@@ -8,14 +9,27 @@ const KycButton = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
+  //   console.log("Test client id: ", testClientId);
+  //   console.log("Flow Id: ", workFlowId);
+
   useEffect(() => {
-    // Load the script dynamically
     const script = document.createElement("script");
     script.src = "https://dashboard.qoreid.com/qoreid-sdk/qoreid.js";
     script.async = true;
+
     script.onload = () => {
       console.log("QoreID script loaded");
+      if (window.QoreID) {
+        console.log("QoreID is available:", window.QoreID);
+        window.QoreID.init(); // Ensure initialization
+      } else {
+        console.error("QoreID is still undefined after script load");
+      }
       setIsLoaded(true);
+    };
+
+    script.onerror = (error) => {
+      console.error("Failed to load QoreID script", error);
     };
 
     document.body.appendChild(script);
@@ -24,6 +38,8 @@ const KycButton = () => {
       document.body.removeChild(script);
     };
   }, []);
+
+  console.log("QoreID SDK:", window.QoreID);
 
   return (
     <div>
