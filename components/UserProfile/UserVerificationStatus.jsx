@@ -1,6 +1,6 @@
 import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
-import KycButton from "components/kyc/KycButton";
+import KycButton from "components/Kyc/KycButton";
 
 const UserVerificationStatus = ({
   isEmailVerified,

@@ -28,16 +28,6 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-SPP14R22ER');
           `}
         </Script>
-
-        {/* Qore ID Script - Loads Early */}
-        <Script
-          src="https://dashboard.qoreid.com/qoreid-sdk/qoreid.js"
-          strategy="beforeInteractive"
-          onLoad={() => {
-            console.log("QoreID script loaded");
-            window.dispatchEvent(new Event("qoreid-loaded"));
-          }}
-        />
       </head>
       <body className="min-h-screen flex flex-col">
         <ClientLayout>{children}</ClientLayout>
