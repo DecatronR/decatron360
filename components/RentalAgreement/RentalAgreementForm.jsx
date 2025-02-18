@@ -3,7 +3,9 @@ import React, { useState } from "react";
 
 const RentalAgreementForm = () => {
   const [fields, setFields] = useState({
-    witnessName: "",
+    firstName: "",
+    middleName: "",
+    surname: "",
     witnessEmail: "",
     witnessPhone: "",
     renewalOption: "",
@@ -22,9 +24,9 @@ const RentalAgreementForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 bg-white p-6 rounded-lg shadow-lg"
+      className="space-y-6 bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto"
     >
-      <h2 className="text-xl font-semibold text-gray-800">
+      <h2 className="text-xl font-semibold text-gray-800 text-center">
         Witness & Renewal Information
       </h2>
 
@@ -33,14 +35,34 @@ const RentalAgreementForm = () => {
         <label className="block text-gray-800 font-medium mb-3">
           Witness Full Name
         </label>
-        <input
-          type="text"
-          name="witnessName"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-          value={fields.witnessName}
-          onChange={handleChange}
-          required
-        />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <input
+            type="text"
+            name="firstName"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="First Name"
+            value={fields.firstName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="text"
+            name="middleName"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="Middle Name (Optional)"
+            value={fields.middleName}
+            onChange={handleChange}
+          />
+          <input
+            type="text"
+            name="surname"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="Surname"
+            value={fields.surname}
+            onChange={handleChange}
+            required
+          />
+        </div>
       </div>
 
       {/* Witness Contact Details */}
@@ -48,11 +70,11 @@ const RentalAgreementForm = () => {
         <label className="block text-gray-800 font-medium mb-3">
           Witness Contact Details
         </label>
-        <div className="flex space-x-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="email"
             name="witnessEmail"
-            className="border rounded-lg w-1/2 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
             placeholder="Email"
             value={fields.witnessEmail}
             onChange={handleChange}
@@ -62,7 +84,7 @@ const RentalAgreementForm = () => {
           <input
             type="text"
             name="witnessPhone"
-            className="border rounded-lg w-1/2 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
             placeholder="Phone Number"
             value={fields.witnessPhone}
             onChange={handleChange}
