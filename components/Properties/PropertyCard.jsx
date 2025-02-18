@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import {
   FaBath,
   FaBed,
@@ -10,16 +10,41 @@ import {
   FaRegHeart,
   FaShareAlt,
 } from "react-icons/fa";
+import { useSnackbar } from "notistack";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
+  const { enqueueSnackbar } = useSnackbar();
+  const [isCopied, setIsCopied] = useState(false);
+
+  const shareUrl = `${window.location.origin}/properties/${property._id}`; //get the dynamic data like property Id and also the referral link
+
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };
 
-  const handleShareBtn = () => {
-    console.log("Share button triggered");
-  };
+  const handleShareBtn = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
 
+    if (navigator.share) {
+      navigator
+        .share({
+          title: property.title,
+          text: "Check out this property!",
+          url: shareUrl,
+        })
+        .catch((error) => console.log("Error sharing:", error));
+    } else {
+      // Clipboard for desktop
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setIsCopied(true);
+        enqueueSnackbar("Property link copied to clipboard!", {
+          variant: "success",
+        }); // Trigger the Snackbar
+        setTimeout(() => setIsCopied(false), 2000); // reset notification after 2 seconds
+      });
+    }
+  };
   return (
     <Link href={`/properties/${property._id}`} passHref>
       <div className="relative cursor-pointer rounded-lg shadow-lg bg-white transition hover:shadow-xl transform hover:scale-105 duration-300 overflow-hidden">
