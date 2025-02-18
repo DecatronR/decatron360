@@ -3,15 +3,11 @@ import React, { useState } from "react";
 
 const RentalAgreementForm = () => {
   const [fields, setFields] = useState({
-    tenantName: "",
-    landlordName: "",
-    propertyAddress: "",
-    rentAmount: "",
-    depositAmount: "",
-    leaseDuration: "",
-    startDate: "",
-    endDate: "",
-    terms: "",
+    witnessName: "",
+    witnessEmail: "",
+    witnessPhone: "",
+    renewalOption: "",
+    renewalNoticePeriod: "",
   });
 
   const handleChange = (e) => {
@@ -28,193 +24,111 @@ const RentalAgreementForm = () => {
       onSubmit={handleSubmit}
       className="space-y-6 bg-white p-6 rounded-lg shadow-lg"
     >
-      <h2 className="text-xl font-semibold text-gray-800">Rental Agreement</h2>
+      <h2 className="text-xl font-semibold text-gray-800">
+        Witness & Renewal Information
+      </h2>
 
-      <div className="mb-6 bg-blue-50 p-4 rounded-lg">
-        <label className="block text-gray-800 font-medium mb-3">Name</label>
-        <div className="flex space-x-4">
-          <input
-            type="text"
-            name="firstName"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.firstName}
-            onChange={handleChange}
-            required
-          />
-
-          <input
-            type="text"
-            name="middleName"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.middleName}
-            onChange={handleChange}
-            required
-          />
-
-          <input
-            type="text"
-            name="lastName"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.lastName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-      </div>
-
+      {/* Witness Full Name */}
       <div className="mb-6 bg-blue-50 p-4 rounded-lg">
         <label className="block text-gray-800 font-medium mb-3">
-          Contact Details
+          Witness Full Name
+        </label>
+        <input
+          type="text"
+          name="witnessName"
+          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+          value={fields.witnessName}
+          onChange={handleChange}
+          required
+        />
+      </div>
+
+      {/* Witness Contact Details */}
+      <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+        <label className="block text-gray-800 font-medium mb-3">
+          Witness Contact Details
         </label>
         <div className="flex space-x-4">
           <input
-            type="text"
-            name="phoneNumber"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.firstName}
+            type="email"
+            name="witnessEmail"
+            className="border rounded-lg w-1/2 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="Email"
+            value={fields.witnessEmail}
             onChange={handleChange}
             required
           />
 
           <input
             type="text"
-            name="email"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.email}
+            name="witnessPhone"
+            className="border rounded-lg w-1/2 py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="Phone Number"
+            value={fields.witnessPhone}
             onChange={handleChange}
             required
           />
         </div>
       </div>
 
-      <div>
-        <label className="block text-gray-800 font-medium mb-2">
-          Landlord Name
+      {/* Renewal Option */}
+      <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+        <label className="block text-gray-800 font-medium mb-3">
+          Would the tenant like to renew the lease when it expires?
         </label>
-        <input
-          type="text"
-          name="landlordName"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-          value={fields.landlordName}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-gray-800 font-medium mb-2">
-          Property Address
-        </label>
-        <input
-          type="text"
-          name="propertyAddress"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-          value={fields.propertyAddress}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div className="flex gap-4">
-        <div className="w-1/2">
-          <label className="block text-gray-800 font-medium mb-2">
-            Rent Amount
+        <div className="flex gap-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="renewalOption"
+              value="yes"
+              className="w-5 h-5"
+              checked={fields.renewalOption === "yes"}
+              onChange={handleChange}
+            />
+            <span className="text-gray-700">Yes</span>
           </label>
-          <input
-            type="text"
-            name="rentAmount"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            placeholder="NGN 0.00"
-            value={fields.rentAmount}
-            onChange={(e) => {
-              const numericValue = e.target.value.replace(/[^0-9.]/g, "");
-              setFields({ ...fields, rentAmount: numericValue });
-            }}
-            required
-          />
-        </div>
 
-        <div className="w-1/2">
-          <label className="block text-gray-800 font-medium mb-2">
-            Deposit Amount
+          <label className="flex items-center space-x-2">
+            <input
+              type="radio"
+              name="renewalOption"
+              value="no"
+              className="w-5 h-5"
+              checked={fields.renewalOption === "no"}
+              onChange={handleChange}
+            />
+            <span className="text-gray-700">No</span>
           </label>
-          <input
-            type="text"
-            name="depositAmount"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            placeholder="NGN 0.00"
-            value={fields.depositAmount}
-            onChange={(e) => {
-              const numericValue = e.target.value.replace(/[^0-9.]/g, "");
-              setFields({ ...fields, depositAmount: numericValue });
-            }}
-            required
-          />
         </div>
       </div>
 
-      <div className="flex gap-4">
-        <div className="w-1/2">
-          <label className="block text-gray-800 font-medium mb-2">
-            Lease Duration (months)
+      {/* Renewal Notice Period */}
+      {fields.renewalOption === "yes" && (
+        <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+          <label className="block text-gray-800 font-medium mb-3">
+            Renewal Notice Period (in months)
           </label>
           <input
             type="number"
-            name="leaseDuration"
+            name="renewalNoticePeriod"
             className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.leaseDuration}
+            placeholder="Enter number of months"
+            value={fields.renewalNoticePeriod}
             onChange={handleChange}
+            min="1"
             required
           />
         </div>
+      )}
 
-        <div className="w-1/2">
-          <label className="block text-gray-800 font-medium mb-2">
-            Start Date
-          </label>
-          <input
-            type="date"
-            name="startDate"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-            value={fields.startDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-gray-800 font-medium mb-2">End Date</label>
-        <input
-          type="date"
-          name="endDate"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-          value={fields.endDate}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div>
-        <label className="block text-gray-800 font-medium mb-2">
-          Additional Terms
-        </label>
-        <textarea
-          name="terms"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300"
-          rows="4"
-          placeholder="Enter any additional terms here..."
-          value={fields.terms}
-          onChange={handleChange}
-        ></textarea>
-      </div>
-
-      <div className="flex justify-end gap-4">
+      {/* Submit Button */}
+      <div className="flex justify-end">
         <button
           type="submit"
           className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
         >
-          Submit Agreement
+          Submit
         </button>
       </div>
     </form>
