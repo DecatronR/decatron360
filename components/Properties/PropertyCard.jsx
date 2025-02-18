@@ -55,9 +55,9 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               }
             >
               {isFavorite ? (
-                <FaHeart className="text-red-500 text-xl transition duration-300" />
+                <FaHeart className="text-red-500 text-sm transition duration-300" />
               ) : (
-                <FaRegHeart className="text-gray-500 text-xl transition duration-300" />
+                <FaRegHeart className="text-gray-500 text-sm transition duration-300" />
               )}
             </button>
 
@@ -67,7 +67,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               onClick={handleShareBtn}
               title="Share Property"
             >
-              <FaShareAlt className="text-gray-500 text-xl hover:text-gray-700 transition duration-300" />
+              <FaShareAlt className="text-gray-500 text-sm hover:text-gray-700 transition duration-300" />
             </button>
           </div>
 
