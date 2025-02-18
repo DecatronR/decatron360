@@ -126,7 +126,7 @@ const RentalAgreementForm = () => {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
+          className="bg-primary-500 text-white px-6 py-3 rounded-full transition hover:bg-primary-600"
         >
           Submit
         </button>
