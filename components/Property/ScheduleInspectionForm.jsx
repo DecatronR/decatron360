@@ -10,7 +10,7 @@ import ButtonSpinner from "../ButtonSpinner";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 
-const ScheduleInspectionForm = ({ propertyId, agentId }) => {
+const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   const router = useRouter();
   const { user } = useAuth();
   const [formData, setFormData] = useState({

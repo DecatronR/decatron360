@@ -25,13 +25,16 @@ const PropertyPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState();
   const [listerRole, setListerRole] = useState();
+  const [referralCode, setReferralCode] = useState();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const referralCode = params.get("ref");
-    console.log("Referral code: ", referralCode);
+
     if (referralCode && !sessionStorage.getItem("referralCode")) {
       sessionStorage.setItem("referralCode", referralCode);
+
+      setReferralCode(sessionStorage.getItem("referralCode") || "");
 
       // Ensure the referral code stays in the URL even across different tabs
       const newUrl = new URL(window.location.href);
@@ -73,51 +76,28 @@ const PropertyPage = () => {
     if (!property) {
       handleFetchPropertyData();
     }
-  }, [id, property]);
+  }, [id]);
 
   //Introducing lister for the first time, because, we are not making it possible for property owners to list properties themselves
-  const handleFetchListerRole = async () => {
-    try {
-      const res = await fetchUserData(agentId);
-      console.log("lister role: ", res.role);
-      setListerRole(res.role);
-    } catch (error) {
-      console.log("Failed to fetch lister role");
-    }
-  };
 
   useEffect(() => {
-    if (agentId) {
-      handleFetchListerRole();
-    }
-  }, [agentId]);
+    if (!agentId) return;
 
-  useEffect(() => {
-    const handleFetchAgent = async () => {
+    const fetchAgentData = async () => {
       try {
-        const res = await fetchUserData(agentId);
-        setAgentData(res);
+        const [agentRes, ratingRes] = await Promise.all([
+          fetchUserData(agentId),
+          fetchUserRatingAndReviews(agentId),
+        ]);
+        setAgentData(agentRes);
+        setListerRole(agentRes.role);
+        setAgentRating(ratingRes.averageRating || 0);
       } catch (error) {
-        console.log("Failed to fetch agent data");
+        console.error("Failed to fetch agent data or rating:", error);
       }
     };
-    handleFetchAgent();
-  }, [agentId]);
 
-  useEffect(() => {
-    const handleFetchAgentRating = async () => {
-      if (agentId) {
-        try {
-          const res = await fetchUserRatingAndReviews(agentId);
-          setAgentRating(res.averageRating || 0);
-        } catch (error) {
-          console.log("Issues fetching agent rating: ", error);
-        }
-      } else {
-        console.log("Could not fetch agent reviews, user id not found");
-      }
-    };
-    handleFetchAgentRating();
+    fetchAgentData();
   }, [agentId]);
 
   if (!property && !isLoading) {
@@ -167,7 +147,11 @@ const PropertyPage = () => {
                   <ShareButtons property={property} />
                 </div>
                 {agentId && (
-                  <ScheduleInspectionForm propertyId={id} agentId={agentId} />
+                  <ScheduleInspectionForm
+                    propertyId={id}
+                    agentId={agentId}
+                    referralCode={referralCode}
+                  />
                 )}
               </aside>
             </div>
