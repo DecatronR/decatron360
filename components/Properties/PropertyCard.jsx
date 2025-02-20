@@ -33,8 +33,6 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
     referralCode ? `?ref=${referralCode}` : ""
   }`;
 
-  console.log("Share url: ", shareUrl);
-
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
   };

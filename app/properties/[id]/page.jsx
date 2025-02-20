@@ -7,6 +7,7 @@ import PropertyImages from "../../../components/Property/PropertyImages";
 import ShareButtons from "../../../components/Property/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
@@ -24,6 +25,20 @@ const PropertyPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState();
   const [listerRole, setListerRole] = useState();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const referralCode = params.get("ref");
+    console.log("Referral code: ", referralCode);
+    if (referralCode && !sessionStorage.getItem("referralCode")) {
+      sessionStorage.setItem("referralCode", referralCode);
+
+      // Ensure the referral code stays in the URL even across different tabs
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set("ref", referralCode);
+      window.history.replaceState(null, "", newUrl);
+    }
+  }, []);
 
   useEffect(() => {
     const handleFetchUser = async () => {
