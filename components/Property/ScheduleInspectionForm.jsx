@@ -65,7 +65,9 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
         }
 
         if (!rawAvailability || rawAvailability.length === 0) {
-          enqueueSnackbar("No available slots found.", { variant: "warning" });
+          enqueueSnackbar("No available inspection slots found.", {
+            variant: "warning",
+          });
           return;
         }
 

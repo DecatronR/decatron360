@@ -8,6 +8,7 @@ import ShareButtons from "../../../components/Property/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
@@ -18,6 +19,7 @@ import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndRevi
 
 const PropertyPage = () => {
   const { id } = useParams();
+  const searchParams = useSearchParams();
   const [property, setProperty] = useState(null);
   const [agentId, setAgentId] = useState("");
   const [agentData, setAgentData] = useState("");
@@ -28,17 +30,24 @@ const PropertyPage = () => {
   const [referralCode, setReferralCode] = useState();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const referralCode = params.get("ref");
+    const searchParams = new URLSearchParams(window.location.search);
+    const refCode = searchParams.get("ref");
 
-    if (referralCode && !sessionStorage.getItem("referralCode")) {
-      sessionStorage.setItem("referralCode", referralCode);
+    if (refCode && !sessionStorage.getItem("referralCode")) {
+      sessionStorage.setItem("referralCode", refCode);
+    }
 
-      setReferralCode(sessionStorage.getItem("referralCode") || "");
+    setReferralCode(sessionStorage.getItem("referralCode") || "");
 
-      // Ensure the referral code stays in the URL even across different tabs
+    console.log(
+      "Referral Code in Component:",
+      sessionStorage.getItem("referralCode")
+    );
+
+    // Ensure the referral code stays in the URL even across different tabs
+    if (refCode) {
       const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set("ref", referralCode);
+      newUrl.searchParams.set("ref", refCode);
       window.history.replaceState(null, "", newUrl);
     }
   }, []);
