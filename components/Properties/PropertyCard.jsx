@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaBath,
   FaBed,
@@ -11,12 +11,29 @@ import {
   FaShareAlt,
 } from "react-icons/fa";
 import { useSnackbar } from "notistack";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [isCopied, setIsCopied] = useState(false);
+  const [referralCode, setReferralCode] = useState();
 
-  const shareUrl = `${window.location.origin}/properties/${property._id}`; //get the dynamic data like property Id and also the referral link
+  useEffect(() => {
+    const handleFetchUserData = async () => {
+      const userId = sessionStorage.getItem("userId");
+
+      const res = await fetchUserData(userId);
+      setReferralCode(res.referralCode);
+    };
+
+    handleFetchUserData();
+  }, []);
+
+  const shareUrl = `${window.location.origin}/properties/${property._id}${
+    referralCode ? `?ref=${referralCode}` : ""
+  }`;
+
+  console.log("Share url: ", shareUrl);
 
   const formatPrice = (price) => {
     return `${price.toLocaleString()}`;
