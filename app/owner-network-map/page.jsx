@@ -12,75 +12,91 @@ import {
   X,
 } from "lucide-react";
 import StarRatings from "react-star-ratings";
+import { fetchUserTreeData } from "utils/api/relationship/fetchUserTreeData";
 
-const data = {
-  name: "Property Manager 1",
-  image: "/images/manager.png",
-  role: "propertyManager",
-  rating: 4.5,
-  verified: true,
-  roleSpecificData: 4, //role specific data for property managers would be number of listings
-  children: [
-    {
-      name: "Agent A",
-      image: "/images/agentA.png",
-      role: "agent",
-      rating: 4.0,
-      verified: true,
-      roleSpecificData: 5, //role specific data for agents would be number of clients
-      children: [
-        {
-          name: "Client 1",
-          image: "/images/client1.png",
-          role: "client",
-          rating: 3.5,
-          verified: false,
-          roleSpecificData: 12,
-        },
-        {
-          name: "Client 2",
-          image: "/images/client2.png",
-          role: "client",
-          rating: 4.2,
-          verified: true,
-          roleSpecificData: 7,
-        },
-      ],
-    },
-    {
-      name: "Agent B",
-      image: "/images/agentB.png",
-      role: "agent",
-      rating: 3.8,
-      verified: false,
-      roleSpecificData: 21,
-      children: [
-        {
-          name: "Client 3",
-          image: "/images/client3.png",
-          role: "client",
-          role: "client",
-          rating: 4.7,
-          verified: true,
-          roleSpecificData: 2,
-        },
-        {
-          name: "Client 4",
-          image: "/images/client4.png",
-          role: "client",
-          rating: 3.9,
-          verified: false,
-          roleSpecificData: 15, //role specific data for clients would be number of inspections
-        },
-      ],
-    },
-  ],
-};
+// const data = {
+//   name: "Property Manager 1",
+//   image: "/images/manager.png",
+//   role: "propertyManager",
+//   rating: 4.5,
+//   verified: true,
+//   roleSpecificData: 4, //role specific data for property managers would be number of listings
+//   children: [
+//     {
+//       name: "Agent A",
+//       image: "/images/agentA.png",
+//       role: "agent",
+//       rating: 4.0,
+//       verified: true,
+//       roleSpecificData: 5, //role specific data for agents would be number of clients
+//       children: [
+//         {
+//           name: "Client 1",
+//           image: "/images/client1.png",
+//           role: "client",
+//           rating: 3.5,
+//           verified: false,
+//           roleSpecificData: 12,
+//         },
+//         {
+//           name: "Client 2",
+//           image: "/images/client2.png",
+//           role: "client",
+//           rating: 4.2,
+//           verified: true,
+//           roleSpecificData: 7,
+//         },
+//       ],
+//     },
+//     {
+//       name: "Agent B",
+//       image: "/images/agentB.png",
+//       role: "agent",
+//       rating: 3.8,
+//       verified: false,
+//       roleSpecificData: 21,
+//       children: [
+//         {
+//           name: "Client 3",
+//           image: "/images/client3.png",
+//           role: "client",
+//           role: "client",
+//           rating: 4.7,
+//           verified: true,
+//           roleSpecificData: 2,
+//         },
+//         {
+//           name: "Client 4",
+//           image: "/images/client4.png",
+//           role: "client",
+//           rating: 3.9,
+//           verified: false,
+//           roleSpecificData: 15, //role specific data for clients would be number of inspections
+//         },
+//       ],
+//     },
+//   ],
+// };
 
 const OwnerNetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userTreeData, setUserTreeData] = useState({});
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem("userId");
+    const handleFetchUserTree = async () => {
+      try {
+        const res = await fetchUserTreeData(userId);
+        console.log("User tree data: ", res);
+        setUserTreeData(res);
+      } catch (error) {
+        console.log("Failed to fetch user tree data: ", error);
+      }
+    };
+    handleFetchUserTree();
+  }, []);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -223,7 +239,10 @@ const OwnerNetworkMap = () => {
             preserveAspectRatio="xMidYMid meet"
           >
             <g transform="translate(50,50)">
-              <OwnerTreeGraph data={data} onNodeClick={handleNodeClick} />
+              <OwnerTreeGraph
+                data={userTreeData}
+                onNodeClick={handleNodeClick}
+              />
             </g>
           </svg>
         </div>

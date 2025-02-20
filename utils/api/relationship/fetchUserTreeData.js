@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchUserTreeData = async (userId) => {
+export const fetchUserTreeData = async (id) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   try {
@@ -14,7 +14,7 @@ export const fetchUserTreeData = async (userId) => {
         },
       }
     );
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error("Error fetching favourite properties:", error);
     throw error;
