@@ -56,13 +56,21 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
 
   useEffect(() => {
     const handleFetchAgentSchedule = async () => {
+      console.log("Referall code ....: ", referralCode);
       try {
+        if (referralCode === undefined) return; // Ensure referralCode is checked first
+        //when I am sure the referral code returns the required dat, uncommend the conditional statement
+        //////////////////////
         let rawAvailability;
-        if (referralCode) {
-          rawAvailability = await fetchRefreeSchedule(referralCode);
-        } else {
-          rawAvailability = await fetchAgentSchedule(agentId);
-        }
+        // if (referralCode) {
+        rawAvailability = await fetchRefreeSchedule(referralCode);
+        console.log("availability from refree: ", rawAvailability);
+        // } else if (agentId) {
+        //   rawAvailability = await fetchAgentSchedule(agentId);
+        // } else {
+        //   return;
+        // }
+        //////////////////////////
 
         if (!rawAvailability || rawAvailability.length === 0) {
           enqueueSnackbar("No available inspection slots found.", {
