@@ -9,10 +9,13 @@ import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import ButtonSpinner from "../ButtonSpinner";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
+import { fetchRefreeSchedule } from "utils/api/relationship/fetchRefreeSchedule";
+import { useSnackbar } from "notistack";
 
 const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   const router = useRouter();
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -53,35 +56,45 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
 
   useEffect(() => {
     const handleFetchAgentSchedule = async () => {
-      const rawAvailability = await fetchAgentSchedule(agentId);
-
-      // Transform the data into the required format
-      const formattedAvailability = rawAvailability.reduce((acc, slot) => {
-        if (slot.isAvailable === "0") {
-          // Only add available slots
-          const formattedDate = format(new Date(slot.date), "yyyy-MM-dd");
-          const formattedTime = `${slot.time.padStart(2, "0")}:00`; // Format time as HH:mm
-
-          // Initialize the date key if it doesn't exist
-          if (!acc[formattedDate]) {
-            acc[formattedDate] = [];
-          }
-
-          // Add the time to the date's array
-          acc[formattedDate].push(formattedTime);
-
-          slotIds[formattedDate] = slotIds[formattedDate] || {};
-          slotIds[formattedDate][formattedTime] = slot._id;
+      try {
+        let rawAvailability;
+        if (referralCode) {
+          rawAvailability = await fetchRefreeSchedule(referralCode);
+        } else {
+          rawAvailability = await fetchAgentSchedule(agentId);
         }
-        return acc;
-      }, {});
 
-      setAvailableDates(formattedAvailability);
-      setSlotIds(slotIds);
+        if (!rawAvailability || rawAvailability.length === 0) {
+          enqueueSnackbar("No available slots found.", { variant: "warning" });
+          return;
+        }
+
+        // Create new objects for state updates
+        const newSlotIds = {};
+        const formattedAvailability = rawAvailability.reduce((acc, slot) => {
+          if (slot.isAvailable === "0") {
+            const formattedDate = format(new Date(slot.date), "yyyy-MM-dd");
+            const formattedTime = `${slot.time.padStart(2, "0")}:00`;
+
+            acc[formattedDate] = acc[formattedDate] || [];
+            acc[formattedDate].push(formattedTime);
+
+            newSlotIds[formattedDate] = newSlotIds[formattedDate] || {};
+            newSlotIds[formattedDate][formattedTime] = slot._id;
+          }
+          return acc;
+        }, {});
+
+        // Batch state updates together
+        setAvailableDates(formattedAvailability);
+        setSlotIds(newSlotIds);
+      } catch (error) {
+        enqueueSnackbar("Error fetching schedule", { variant: "error" });
+      }
     };
 
     handleFetchAgentSchedule();
-  }, [agentId]);
+  }, [agentId, referralCode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
