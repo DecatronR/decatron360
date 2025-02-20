@@ -6,7 +6,7 @@ export const fetchUserTreeData = async (userId) => {
   try {
     const res = await axios.post(
       `${baseUrl}/users/userTree`,
-      { userId },
+      { id },
       {
         withCredentials: true,
         headers: {
@@ -14,7 +14,7 @@ export const fetchUserTreeData = async (userId) => {
         },
       }
     );
-    return res.data.data;
+    return res.data;
   } catch (error) {
     console.error("Error fetching favourite properties:", error);
     throw error;

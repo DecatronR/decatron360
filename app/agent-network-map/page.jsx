@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import StarRatings from "react-star-ratings";
+import { fetchUserTreeData } from "utils/api/relationship/fetchUserTreeData";
 
 const data = {
   name: "Agent A",
@@ -54,6 +55,20 @@ const AgentNetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userTreeData, setUserTreeData] = useState({});
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem("userId");
+    const handleFetchUserTree = () => {
+      try {
+        const res = fetchUserTreeData(userId);
+        console.log("User tree data: ", res);
+        setUserTreeData(res);
+      } catch (error) {
+        console.log("Failed to fetch user tree data: ", error);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!svgRef.current) return;
