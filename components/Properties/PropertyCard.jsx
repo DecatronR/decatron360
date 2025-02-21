@@ -11,19 +11,22 @@ import {
   FaShareAlt,
 } from "react-icons/fa";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
   const [isCopied, setIsCopied] = useState(false);
   const [referralCode, setReferralCode] = useState();
 
   useEffect(() => {
     const handleFetchUserData = async () => {
       const userId = sessionStorage.getItem("userId");
+      if (!userId) return;
 
       const res = await fetchUserData(userId);
-      setReferralCode(res.referralCode);
+      setReferralCode(res?.referralCode);
     };
 
     handleFetchUserData();
@@ -33,33 +36,57 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
     referralCode ? `?ref=${referralCode}` : ""
   }`;
 
-  const formatPrice = (price) => {
-    return `${price.toLocaleString()}`;
+  const formatPrice = (price) => `${price.toLocaleString()}`;
+
+  const handleAuthCheck = (callback) => {
+    const userId = sessionStorage.getItem("userId");
+
+    if (!userId) {
+      enqueueSnackbar("You need to log in to perform this action", {
+        variant: "warning",
+        action: (key) => (
+          <button
+            onClick={() => {
+              router.push("/auth/login");
+              enqueueSnackbar.closeSnackbar(key);
+            }}
+            className="text-primary-500 font-semibold underline"
+          >
+            Login
+          </button>
+        ),
+      });
+      return false;
+    }
+
+    return callback();
   };
 
   const handleShareBtn = (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (navigator.share) {
-      navigator
-        .share({
-          title: property.title,
-          text: "Check out this property!",
-          url: shareUrl,
-        })
-        .catch((error) => console.log("Error sharing:", error));
-    } else {
-      // Clipboard for desktop
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        setIsCopied(true);
-        enqueueSnackbar("Property link copied to clipboard!", {
-          variant: "success",
-        }); // Trigger the Snackbar
-        setTimeout(() => setIsCopied(false), 2000); // reset notification after 2 seconds
-      });
-    }
+    handleAuthCheck(() => {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: property.title,
+            text: "Check out this property!",
+            url: shareUrl,
+          })
+          .catch((error) => console.log("Error sharing:", error));
+      } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          setIsCopied(true);
+          enqueueSnackbar("Property link copied to clipboard!", {
+            variant: "success",
+          });
+          setTimeout(() => setIsCopied(false), 2000);
+        });
+      }
+    });
   };
+
   return (
     <Link href={`/properties/${property._id}`} passHref>
       <div className="relative cursor-pointer rounded-lg shadow-lg bg-white transition hover:shadow-xl transform hover:scale-105 duration-300 overflow-hidden">
@@ -88,7 +115,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onToggleFavorite();
+                handleAuthCheck(() => onToggleFavorite());
               }}
               aria-label={
                 isFavorite ? "Remove from favorites" : "Add to favorites"
