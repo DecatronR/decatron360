@@ -1,14 +1,11 @@
-import FeaturedProperties from "@/components/FeaturedProperties";
-import Hero from "@/components/Hero";
-import HomeProperties from "@/components/HomeProperties";
-import InfoBoxes from "@/components/InfoBoxes";
-import CategoriesCarousel from "@/components/CategoriesCarousel";
+import Hero from "components/Home/Hero";
+import HomeProperties from "components/Home/HomeProperties";
+import CategoriesCarousel from "components/ui/CategoriesCarousel";
 
 const HomePage = () => {
   return (
     <>
       <Hero />
-      {/* <InfoBoxes /> */}
       <CategoriesCarousel />
       <HomeProperties />
     </>

@@ -8,7 +8,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { createSchedule } from "utils/api/scheduler/createSchedule";
 import { updateSchedule } from "utils/api/scheduler/updateSchedule";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
-import ButtonSpinner from "components/ButtonSpinner";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
 // import "@fullcalendar/common/main.css";
 

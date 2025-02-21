@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { fromAddress, setDefaults } from "react-geocode";
 import Map, { Marker } from "react-map-gl";
-import Spinner from "./Spinner";
+import Spinner from "./ui/Spinner";
 
 const PropertyMap = ({ property }) => {
   const [lat, setLat] = useState(null);

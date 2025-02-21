@@ -1,8 +1,8 @@
 "use client";
-import PropertyCard from "./Properties/PropertyCard";
+import PropertyCard from "../Properties/PropertyCard";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Spinner from "./Spinner";
+import Spinner from "../ui/Spinner";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
 import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";

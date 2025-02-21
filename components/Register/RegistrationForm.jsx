@@ -5,7 +5,7 @@ import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useSnackbar } from "notistack";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
-import ButtonSpinner from "components/ButtonSpinner";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
 const Registration = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
