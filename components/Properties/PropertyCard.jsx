@@ -42,7 +42,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
     const userId = sessionStorage.getItem("userId");
 
     if (!userId) {
-      enqueueSnackbar("You need to log in to perform this action", {
+      enqueueSnackbar("Please login to perform this action", {
         variant: "warning",
         action: (key) => (
           <button
@@ -50,7 +50,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               router.push("/auth/login");
               enqueueSnackbar.closeSnackbar(key);
             }}
-            className="text-primary-500 font-semibold underline"
+            className="text-primary-500 font-semibold underline mr-4"
           >
             Login
           </button>
