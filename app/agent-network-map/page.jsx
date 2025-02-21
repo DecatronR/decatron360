@@ -12,48 +12,64 @@ import {
   X,
 } from "lucide-react";
 import StarRatings from "react-star-ratings";
+import { fetchUserTreeData } from "utils/api/relationship/fetchUserTreeData";
 
-const data = {
-  name: "Agent A",
-  image: "/images/agentA.png",
-  role: "agent",
-  rating: 4.5,
-  verified: true,
-  roleSpecificData: 3,
-  children: [
-    {
-      name: "Property Manager 1",
-      image: "/images/propertyManager1.png",
-      role: "propertyManager",
-      rating: 4.2,
-      verified: true,
-      roleSpecificData: 2,
-      children: [
-        {
-          name: "Client 1",
-          image: "/images/client1.png",
-          role: "client",
-          rating: 3.8,
-          verified: false,
-          roleSpecificData: 12,
-        },
-        {
-          name: "Client 2",
-          image: "/images/client2.png",
-          role: "client",
-          rating: 4.0,
-          verified: true,
-          roleSpecificData: 7,
-        },
-      ],
-    },
-  ],
-};
+// const data = {
+//   name: "Agent A",
+//   image: "/images/agentA.png",
+//   role: "agent",
+//   rating: 4.5,
+//   verified: true,
+//   roleSpecificData: 3,
+//   children: [
+//     {
+//       name: "Property Manager 1",
+//       image: "/images/propertyManager1.png",
+//       role: "propertyManager",
+//       rating: 4.2,
+//       verified: true,
+//       roleSpecificData: 2,
+//       children: [
+//         {
+//           name: "Client 1",
+//           image: "/images/client1.png",
+//           role: "client",
+//           rating: 3.8,
+//           verified: false,
+//           roleSpecificData: 12,
+//         },
+//         {
+//           name: "Client 2",
+//           image: "/images/client2.png",
+//           role: "client",
+//           rating: 4.0,
+//           verified: true,
+//           roleSpecificData: 7,
+//         },
+//       ],
+//     },
+//   ],
+// };
 
 const AgentNetworkMap = () => {
   const svgRef = useRef(null);
   const [selectedNode, setSelectedNode] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userTreeData, setUserTreeData] = useState({});
+
+  useEffect(() => {
+    const userId = sessionStorage.getItem("userId");
+    const handleFetchUserTree = async () => {
+      try {
+        const res = await fetchUserTreeData(userId);
+        console.log("User tree data: ", res);
+        setUserTreeData(res);
+      } catch (error) {
+        console.log("Failed to fetch user tree data: ", error);
+      }
+    };
+    handleFetchUserTree();
+  }, []);
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -196,7 +212,10 @@ const AgentNetworkMap = () => {
             preserveAspectRatio="xMidYMid meet"
           >
             <g transform="translate(50,50)">
-              <AgentTreeGraph data={data} onNodeClick={handleNodeClick} />
+              <AgentTreeGraph
+                data={userTreeData}
+                onNodeClick={handleNodeClick}
+              />
             </g>
           </svg>
         </div>

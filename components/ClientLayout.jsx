@@ -17,13 +17,14 @@ export default function ClientLayout({ children }) {
         classes={{
           variantSuccess: "bg-green-500 text-white",
           variantError: "bg-red-500 text-white",
-          variantWarning: "bg-yellow-500 text-black",
+          variantWarning: "bg-yellow-500 text-white",
           variantInfo: "bg-blue-500 text-white",
         }}
         anchorOrigin={{
           vertical: "bottom",
           horizontal: "right",
         }}
+        style={{ borderRadius: "25px" }}
       >
         <Analytics />
         <Navbar />

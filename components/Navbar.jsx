@@ -204,16 +204,29 @@ const Navbar = () => {
                     >
                       My Inspections
                     </Link>
-                    <Link
-                      //add uniqueness with id for each user
-                      href={`/owner-network-map`}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                      tabIndex="-1"
-                      onClick={() => setIsProfileMenuOpen(false)}
-                    >
-                      Network Map
-                    </Link>{" "}
+                    {[
+                      "owner",
+                      "propertyManager",
+                      "caretaker",
+                      "agent",
+                    ].includes(user.role) && (
+                      <Link
+                        href={
+                          ["owner", "propertyManager", "caretaker"].includes(
+                            user.role
+                          )
+                            ? "/owner-network-map"
+                            : "/agent-network-map"
+                        }
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        Network Map
+                      </Link>
+                    )}
+
                     <button
                       onClick={() => {
                         setIsProfileMenuOpen(false);

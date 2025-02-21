@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaBath,
   FaBed,
@@ -10,14 +10,81 @@ import {
   FaRegHeart,
   FaShareAlt,
 } from "react-icons/fa";
+import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
-  const formatPrice = (price) => {
-    return `${price.toLocaleString()}`;
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+  const [isCopied, setIsCopied] = useState(false);
+  const [referralCode, setReferralCode] = useState();
+
+  useEffect(() => {
+    const handleFetchUserData = async () => {
+      const userId = sessionStorage.getItem("userId");
+      if (!userId) return;
+
+      const res = await fetchUserData(userId);
+      setReferralCode(res?.referralCode);
+    };
+
+    handleFetchUserData();
+  }, []);
+
+  const shareUrl = `${window.location.origin}/properties/${property._id}${
+    referralCode ? `?ref=${referralCode}` : ""
+  }`;
+
+  const formatPrice = (price) => `${price.toLocaleString()}`;
+
+  const handleAuthCheck = (callback) => {
+    const userId = sessionStorage.getItem("userId");
+
+    if (!userId) {
+      enqueueSnackbar("Please login to perform this action", {
+        variant: "warning",
+        action: (key) => (
+          <button
+            onClick={() => {
+              router.push("/auth/login");
+              enqueueSnackbar.closeSnackbar(key);
+            }}
+            className="text-primary-500 font-semibold underline mr-4"
+          >
+            Login
+          </button>
+        ),
+      });
+      return false;
+    }
+
+    return callback();
   };
 
-  const handleShareBtn = () => {
-    console.log("Share button triggered");
+  const handleShareBtn = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    handleAuthCheck(() => {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: property.title,
+            text: "Check out this property!",
+            url: shareUrl,
+          })
+          .catch((error) => console.log("Error sharing:", error));
+      } else {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          setIsCopied(true);
+          enqueueSnackbar("Property link copied to clipboard!", {
+            variant: "success",
+          });
+          setTimeout(() => setIsCopied(false), 2000);
+        });
+      }
+    });
   };
 
   return (
@@ -48,16 +115,16 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                onToggleFavorite();
+                handleAuthCheck(() => onToggleFavorite());
               }}
               aria-label={
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }
             >
               {isFavorite ? (
-                <FaHeart className="text-red-500 text-xl transition duration-300" />
+                <FaHeart className="text-red-500 text-sm transition duration-300" />
               ) : (
-                <FaRegHeart className="text-gray-500 text-xl transition duration-300" />
+                <FaRegHeart className="text-gray-500 text-sm transition duration-300" />
               )}
             </button>
 
@@ -67,7 +134,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               onClick={handleShareBtn}
               title="Share Property"
             >
-              <FaShareAlt className="text-gray-500 text-xl hover:text-gray-700 transition duration-300" />
+              <FaShareAlt className="text-gray-500 text-sm hover:text-gray-700 transition duration-300" />
             </button>
           </div>
 

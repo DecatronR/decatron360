@@ -9,6 +9,7 @@ import { PaystackButton } from "react-paystack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { bookInspection } from "@/utils/api/inspection/bookInspection";
+import { referralBookInspection } from "utils/api/inspection/referralBookInspection";
 import { scheduleBooked } from "utils/api/scheduler/scheduleBooked";
 
 const PaymentInspectionBooking = () => {
@@ -18,7 +19,6 @@ const PaymentInspectionBooking = () => {
   const { id: propertyId } = useParams();
   const [user, setUser] = useState(null);
   const [property, setProperty] = useState(null);
-  const [agentId, setAgentId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [inspectionData, setInspectionData] = useState(null);
   const [isInspectionConfirmed, setIsInspectionConfirmed] = useState(false);
@@ -103,6 +103,27 @@ const PaymentInspectionBooking = () => {
     return true;
   };
 
+  const validateReferralBookingData = (
+    userId,
+    propertyId,
+    referralCode,
+    bookingDateTime
+  ) => {
+    if (!userId) {
+      return false;
+    }
+    if (!propertyId) {
+      return false;
+    }
+    if (!referralCode) {
+      return false;
+    }
+    if (!bookingDateTime) {
+      return false;
+    }
+    return true;
+  };
+
   const handleBookInspection = async () => {
     const userId = sessionStorage.getItem("userId");
     const agentId = sessionStorage.getItem("agentId");
@@ -132,6 +153,35 @@ const PaymentInspectionBooking = () => {
     }
   };
 
+  const handleReferaralBookInspection = async () => {
+    const userId = sessionStorage.getItem("userId");
+    const referralCode = sessionStorage.getItem("referralCode");
+    const bookingDateTime = new Date(
+      `${editedDate}T${editedTime}:00`
+    ).toISOString();
+
+    const isValid = validateReferralBookingData(
+      userId,
+      propertyId,
+      referralCode,
+      bookingDateTime
+    );
+    if (!isValid) return;
+
+    try {
+      const bookingId = await referralBookInspection(
+        userId,
+        propertyId,
+        referralCode,
+        bookingDateTime
+      );
+      return bookingId;
+    } catch (error) {
+      console.error("Failed to book inspection", error);
+      throw new Error("Booking failed");
+    }
+  };
+
   const handleBookedSlot = async () => {
     const bookedSlotId = sessionStorage.getItem("bookedSlotId");
     try {
@@ -146,11 +196,21 @@ const PaymentInspectionBooking = () => {
 
   const handlePaymentSuccess = async () => {
     try {
-      const res = await handleBookInspection();
+      const referralCode = sessionStorage.getItem("referralCode");
+
+      if (referralCode) {
+        await handleReferaralBookInspection();
+        enqueueSnackbar("Inspection successfully booked with your referrer!", {
+          variant: "success",
+        });
+      } else {
+        await handleBookInspection();
+        enqueueSnackbar(
+          "Inspection successfully booked with the lister of this property!",
+          { variant: "success" }
+        );
+      }
       await handleBookedSlot();
-      enqueueSnackbar("Your inspection has been successfully booked!", {
-        variant: "success",
-      });
       router.push("/inspection/success");
     } catch (error) {
       enqueueSnackbar("Failed to book inspection after payment", {
