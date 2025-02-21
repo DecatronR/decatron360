@@ -7,8 +7,6 @@ import PropertyImages from "../../../components/Property/PropertyImages";
 import ShareButtons from "../../../components/Property/ShareButtons";
 import Spinner from "@/components/Spinner";
 import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AgentProfileCard from "@/components/AgentProfile/AgentProfileCard";
@@ -19,7 +17,6 @@ import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndRevi
 
 const PropertyPage = () => {
   const { id } = useParams();
-  const searchParams = useSearchParams();
   const [property, setProperty] = useState(null);
   const [agentId, setAgentId] = useState("");
   const [agentData, setAgentData] = useState("");

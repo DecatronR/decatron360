@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const fetchRefreeSchedule = async (referralCode) => {
+export const fetchReferrerSchedule = async (referralCode) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   try {

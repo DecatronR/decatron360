@@ -9,7 +9,7 @@ import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import ButtonSpinner from "../ButtonSpinner";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
-import { fetchRefreeSchedule } from "utils/api/relationship/fetchRefreeSchedule";
+import { fetchReferrerSchedule } from "utils/api/scheduler/fetchReferrerSchedule";
 import { useSnackbar } from "notistack";
 
 const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
@@ -62,7 +62,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
 
         let rawAvailability;
         if (referralCode) {
-          rawAvailability = await fetchRefreeSchedule(referralCode);
+          rawAvailability = await fetchReferrerSchedule(referralCode);
           console.log("availability from refree: ", rawAvailability);
         } else if (agentId) {
           rawAvailability = await fetchAgentSchedule(agentId);
