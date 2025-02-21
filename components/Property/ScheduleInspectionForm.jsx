@@ -264,7 +264,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
         <button
           type="submit"
           disabled={isButtonLoading}
-          className={`w-full py-2 px-4 rounded-md shadow-md ${
+          className={`w-full py-2 px-4 rounded-full shadow-md ${
             isButtonLoading
               ? "bg-gray-400"
               : "bg-indigo-600 hover:bg-indigo-700"
