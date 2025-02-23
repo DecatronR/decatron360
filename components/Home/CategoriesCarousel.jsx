@@ -84,7 +84,7 @@ const CategoriesCarousel = () => {
     swipe: true,
     touchMove: true,
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 6 } },
+      { breakpoint: 1024, settings: { slidesToShow: 7 } },
       { breakpoint: 768, settings: { slidesToShow: 4 } },
       { breakpoint: 480, settings: { slidesToShow: 4 } },
     ],
@@ -101,7 +101,7 @@ const CategoriesCarousel = () => {
                   {category.icon}
                 </div>
                 {/* Responsive Text Size */}
-                <span className="mt-2 text-center font-semibold text-sm md:text-base lg:text-lg hover:text-primary-500">
+                <span className="mt-2 text-center font-semibold text-sm md:text-sm lg:text-sm hover:text-primary-500">
                   {category.title}
                 </span>
               </div>
