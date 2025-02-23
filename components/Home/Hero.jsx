@@ -1,5 +1,5 @@
 import { SlidersHorizontal } from "lucide-react"; // Importing filter icon
-import PropertySearchForm from "./Properties/PropertySearchForm";
+import PropertySearchForm from "../Properties/PropertySearchForm";
 
 const Hero = () => {
   return (

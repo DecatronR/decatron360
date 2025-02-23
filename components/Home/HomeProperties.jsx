@@ -1,8 +1,9 @@
 "use client";
-import PropertyCard from "./Properties/PropertyCard";
+import PropertyCard from "../Properties/PropertyCard";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Spinner from "./Spinner";
+import Spinner from "../ui/Spinner";
+import HomePropertiesSkeleton from "components/ui/HomePropertiesSkeleton";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
 import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
@@ -117,7 +118,7 @@ const HomeProperties = () => {
           </h2>
           {loading ? (
             <div className="flex justify-center items-center py-2">
-              <Spinner />
+              <HomePropertiesSkeleton />
             </div>
           ) : properties.length === 0 ? (
             <p className="text-center">No Properties Found</p>

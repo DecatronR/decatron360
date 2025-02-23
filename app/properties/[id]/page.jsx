@@ -5,7 +5,7 @@ import AgencyRequestButton from "components/Property/AgencyRequestButton";
 import PropertyDetails from "../../../components/Property/PropertyDetails";
 import PropertyImages from "../../../components/Property/PropertyImages";
 import ShareButtons from "../../../components/Property/ShareButtons";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";

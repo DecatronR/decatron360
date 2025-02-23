@@ -10,7 +10,7 @@ import { useParams } from "next/navigation";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 
 const AgentProfilePage = () => {
   const { id } = useParams();

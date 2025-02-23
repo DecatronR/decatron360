@@ -5,7 +5,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
-import ButtonSpinner from "components/ButtonSpinner";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
 const LoginForm = () => {
   const { signIn } = useAuth();

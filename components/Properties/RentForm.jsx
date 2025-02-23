@@ -3,8 +3,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import Spinner from "../Spinner";
-import ButtonSpinner from "../ButtonSpinner";
+import Spinner from "../ui/Spinner";
+import ButtonSpinner from "../ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 import { fetchUserData } from "utils/api/user/fetchUserData";

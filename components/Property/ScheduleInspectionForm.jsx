@@ -6,7 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
-import ButtonSpinner from "../ButtonSpinner";
+import ButtonSpinner from "../ui/ButtonSpinner";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchReferrerSchedule } from "utils/api/scheduler/fetchReferrerSchedule";

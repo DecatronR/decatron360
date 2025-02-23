@@ -11,7 +11,7 @@ import AgentRequests from "components/UserProfile/AgentRequests";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
-import Spinner from "components/Spinner";
+import Spinner from "components/ui/Spinner";
 
 const UserProfilePage = () => {
   const [userId, setUserId] = useState("");
