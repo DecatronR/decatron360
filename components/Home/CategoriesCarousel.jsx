@@ -1,59 +1,78 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import {
-  FaHome,
-  FaStore,
-  FaBriefcase,
-  FaBuilding,
-  FaCity,
-  FaAngleLeft,
-  FaAngleRight,
-} from "react-icons/fa";
-
-// Category Data
-const categories = [
-  {
-    title: "Duplexes",
-    icon: <FaBuilding size={20} />,
-    link: "/properties/categories/duplexes",
-  },
-  {
-    title: "Bungalows",
-    icon: <FaHome size={20} />,
-    link: "/properties/categories/bungalows",
-  },
-  {
-    title: "Newly Built",
-    icon: <FaHome size={20} />,
-    link: "/properties/categories/newly-built",
-  },
-  {
-    title: "Off-Plan",
-    icon: <FaBuilding size={20} />,
-    link: "/properties/categories/off-plan",
-  },
-  {
-    title: "Shops",
-    icon: <FaStore size={20} />,
-    link: "properties/categories/shops",
-  },
-  {
-    title: "Offices",
-    icon: <FaBriefcase size={20} />,
-    link: "properties/categories/office-spaces",
-  },
-  {
-    title: "Abuja",
-    icon: <FaCity size={20} />,
-    link: "properties/categories/abuja",
-  },
-];
+  Building,
+  Home,
+  Store,
+  Briefcase,
+  Landmark,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 const CategoriesCarousel = () => {
+  const [iconSize, setIconSize] = useState(20);
+
+  // Adjust icon size based on screen width
+  useEffect(() => {
+    const updateIconSize = () => {
+      if (window.innerWidth < 480) {
+        setIconSize(16);
+      } else if (window.innerWidth < 768) {
+        setIconSize(18);
+      } else {
+        setIconSize(20);
+      }
+    };
+
+    updateIconSize();
+    window.addEventListener("resize", updateIconSize);
+    return () => window.removeEventListener("resize", updateIconSize);
+  }, []);
+
+  // Category Data
+  const categories = [
+    {
+      title: "Duplexes",
+      icon: <Building size={iconSize} />,
+      link: "/properties/categories/duplexes",
+    },
+    {
+      title: "Bungalows",
+      icon: <Home size={iconSize} />,
+      link: "/properties/categories/bungalows",
+    },
+    {
+      title: "Newly Built",
+      icon: <Home size={iconSize} />,
+      link: "/properties/categories/newly-built",
+    },
+    {
+      title: "Off-Plan",
+      icon: <Building size={iconSize} />,
+      link: "/properties/categories/off-plan",
+    },
+    {
+      title: "Shops",
+      icon: <Store size={iconSize} />,
+      link: "/properties/categories/shops",
+    },
+    {
+      title: "Offices",
+      icon: <Briefcase size={iconSize} />,
+      link: "/properties/categories/office-spaces",
+    },
+    {
+      title: "Abuja",
+      icon: <Landmark size={iconSize} />,
+      link: "/properties/categories/abuja",
+    },
+  ];
+
   // Slider settings
   const settings = {
     dots: false,
@@ -61,37 +80,28 @@ const CategoriesCarousel = () => {
     speed: 500,
     slidesToShow: 8,
     slidesToScroll: 1,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    draggable: false,
-    swipe: false,
+    draggable: true,
+    swipe: true,
+    touchMove: true,
     responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 6 } },
+      { breakpoint: 768, settings: { slidesToShow: 4 } },
+      { breakpoint: 480, settings: { slidesToShow: 4 } },
     ],
   };
 
   return (
-    <div className="my-8">
+    <div className="relative my-8">
       <Slider {...settings}>
         {categories.map((category, index) => (
           <div key={index} className="flex flex-col items-center p-4">
             <Link href={category.link} passHref>
               <div className="flex flex-col items-center cursor-pointer transition-transform transform hover:scale-105">
-                <div className="bg-white rounded-full shadow-md p-4 flex justify-center items-center">
+                <div className="bg-white rounded-full shadow-md p-3 flex justify-center items-center">
                   {category.icon}
                 </div>
-                <span className="mt-2 text-center text-gray-800 font-semibold hover:text-primary-500">
+                {/* Responsive Text Size */}
+                <span className="mt-2 text-center font-semibold text-sm md:text-base lg:text-lg hover:text-primary-500">
                   {category.title}
                 </span>
               </div>
@@ -99,33 +109,22 @@ const CategoriesCarousel = () => {
           </div>
         ))}
       </Slider>
+
+      {/* Custom Arrows */}
+      <button
+        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
+        onClick={() => document.querySelector(".slick-prev")?.click()}
+      >
+        <ChevronLeft size={iconSize} />
+      </button>
+
+      <button
+        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
+        onClick={() => document.querySelector(".slick-next")?.click()}
+      >
+        <ChevronRight size={iconSize} />
+      </button>
     </div>
-  );
-};
-
-const PrevArrow = (props) => {
-  const { className, style, onClick } = props;
-  return (
-    <button
-      className={`${className} text-white bg-primary-500 rounded-full shadow-md`}
-      style={{ ...style, display: "block", left: "15px", zIndex: 1 }}
-      onClick={onClick}
-    >
-      <FaAngleLeft size={24} />
-    </button>
-  );
-};
-
-const NextArrow = (props) => {
-  const { className, style, onClick } = props;
-  return (
-    <button
-      className={`${className} text-primary-500 bg-white rounded-full shadow-md`}
-      style={{ ...style, display: "block", right: "10px", zIndex: 1 }}
-      onClick={onClick}
-    >
-      <FaAngleRight size={24} />
-    </button>
   );
 };
 

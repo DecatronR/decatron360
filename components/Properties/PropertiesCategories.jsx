@@ -2,62 +2,13 @@
 
 import Pagination from "@/components/Pagination";
 import PropertyCard from "./PropertyCard";
-import Spinner from "@/components/Spinner";
-import { useEffect, useState } from "react";
-import { fetchProperties } from "@/utils/api/properties/fetchProperties";
-import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
+import Spinner from "components/ui/Spinner";
+import { useState } from "react";
 
 const PropertiesCategories = ({ properties, loading }) => {
-  //   const [properties, setProperties] = useState([]);
-  //   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(6);
   const [totalItems, setTotalItems] = useState(0);
-
-  //   useEffect(() => {
-  //     const fetchInitialData = async () => {
-  //       setLoading(true);
-
-  //       try {
-  //         // Fetch all properties (display to all users)
-  //         const allProperties = await fetchProperties();
-
-  //         const userId = sessionStorage.getItem("userId");
-  //         if (userId) {
-  //           // Fetch user's favorite properties
-  //           const favoritesResponse = await fetchFavoriteProperties(userId);
-
-  //           const updatedProperties = allProperties.map((property) => {
-  //             const favorite = favoritesResponse.find(
-  //               (fav) => fav.propertyListingId === property._id
-  //             );
-  //             return {
-  //               ...property,
-  //               isFavorite: !!favorite,
-  //               favoriteId: favorite ? favorite._id : null, // Save the favorite object ID
-  //             };
-  //           });
-
-  //           setProperties(updatedProperties);
-  //         } else {
-  //           // For non-logged-in users, set isFavorite to false
-  //           setProperties(
-  //             allProperties.map((property) => ({
-  //               ...property,
-  //               isFavorite: false,
-  //               favoriteId: null, // No favorite object ID for non-logged-in users
-  //             }))
-  //           );
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching data:", error);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     };
-
-  //     fetchInitialData();
-  //   }, [page, pageSize]);
 
   const handlePageChange = (newPage) => {
     setPage(newPage);
