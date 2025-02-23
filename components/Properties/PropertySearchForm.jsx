@@ -37,7 +37,7 @@ const PropertySearchForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex items-center bg-white shadow-lg rounded-full px-4 py-2 border border-gray-300 w-full max-w-lg"
+      className="flex items-center bg-white shadow-lg rounded-full px-3 py-1 md:px-4 md:py-2 border border-gray-300 w-full max-w-lg"
     >
       {/* Mobile Responsive Wrapper */}
       <div className="flex w-full gap-2">
