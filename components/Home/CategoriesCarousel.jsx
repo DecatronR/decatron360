@@ -115,14 +115,14 @@ const CategoriesCarousel = () => {
         className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
         onClick={() => document.querySelector(".slick-prev")?.click()}
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={iconSize} />
       </button>
 
       <button
         className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
         onClick={() => document.querySelector(".slick-next")?.click()}
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={iconSize} />
       </button>
     </div>
   );
