@@ -112,14 +112,14 @@ const CategoriesCarousel = () => {
 
       {/* Custom Arrows */}
       <button
-        className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
+        className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
         onClick={() => document.querySelector(".slick-prev")?.click()}
       >
         <ChevronLeft size={iconSize} />
       </button>
 
       <button
-        className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
+        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
         onClick={() => document.querySelector(".slick-next")?.click()}
       >
         <ChevronRight size={iconSize} />
