@@ -2,14 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
-  FaBath,
-  FaBed,
-  FaMapMarkerAlt,
-  FaRulerCombined,
-  FaHeart,
-  FaRegHeart,
-  FaShareAlt,
-} from "react-icons/fa";
+  Bath,
+  BedSingle,
+  MapPin,
+  Ruler,
+  Heart,
+  HeartOff,
+  Share2,
+} from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { fetchUserData } from "utils/api/user/fetchUserData";
@@ -122,9 +122,15 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               }
             >
               {isFavorite ? (
-                <FaHeart className="text-red-500 text-sm transition duration-300" />
+                <Heart
+                  className="text-red-500 text-sm transition duration-300"
+                  size={16}
+                />
               ) : (
-                <FaRegHeart className="text-gray-500 text-sm transition duration-300" />
+                <HeartOff
+                  className="text-gray-500 text-sm transition duration-300"
+                  size={16}
+                />
               )}
             </button>
 
@@ -134,7 +140,10 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
               onClick={handleShareBtn}
               title="Share Property"
             >
-              <FaShareAlt className="text-gray-500 text-sm hover:text-gray-700 transition duration-300" />
+              <Share2
+                className="text-gray-500 text-sm hover:text-gray-700 transition duration-300"
+                size={16}
+              />
             </button>
           </div>
 
@@ -167,19 +176,19 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 
           <div className="flex items-center text-gray-600 text-xs space-x-3 mt-2">
             <p className="flex items-center">
-              <FaBed className="mr-1" /> {property.bedrooms} Beds
+              <BedSingle className="mr-1" size={16} /> {property.bedrooms} Beds
             </p>
             <p className="flex items-center">
-              <FaBath className="mr-1" /> {property.bathrooms} Baths
+              <Bath className="mr-1" size={16} /> {property.bathrooms} Baths
             </p>
             <p className="flex items-center">
-              <FaRulerCombined className="mr-1" /> {property.size} sqft
+              <Ruler className="mr-1" size={16} /> {property.size} sqft
             </p>
           </div>
 
           <div className="flex justify-between items-center text-gray-700 mt-2">
             <p className="flex items-center text-orange-600 text-xs font-medium">
-              <FaMapMarkerAlt className="mr-1" />
+              <MapPin className="mr-1" size={16} />
               {property.neighbourhood}, {property.state}
             </p>
           </div>

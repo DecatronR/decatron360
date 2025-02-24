@@ -16,6 +16,8 @@ export const fetchUserProperties = async (userId) => {
       }
     );
 
+    console.log("User props: ", res.data);
+
     return res.data;
   } catch (error) {
     console.error("Issue fetching user properties:", error);
