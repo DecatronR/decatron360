@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import UserProperties from "@/components/UserProperties/UserProperties";
 import UserPropertySearchForm from "@/components/UserProperties/UserPropertiesSearchForm";
 import { fetchUserProperties } from "@/utils/api/user/fetchUserProperties";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 import { useParams } from "next/navigation";
 
 const UserPropertiesPage = async () => {
@@ -11,6 +12,7 @@ const UserPropertiesPage = async () => {
 
   useEffect(() => {
     const handleFetchUserProperties = async () => {
+      const res = await fetchUserData(id);
       if (id) {
         try {
           const res = await fetchUserProperties(id);
@@ -25,6 +27,7 @@ const UserPropertiesPage = async () => {
     };
     handleFetchUserProperties();
   }, [id]);
+
   return (
     <>
       <section className="bg-primary-500 py-4">
