@@ -78,7 +78,7 @@ const AgentTreeGraph = ({ data, onNodeClick }) => {
       .append("circle")
       .attr("r", 18)
       .attr("stroke", (d) => roleColors[determineRole(d.depth)])
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 7)
       .attr("fill", "none");
 
     // Add text labels
