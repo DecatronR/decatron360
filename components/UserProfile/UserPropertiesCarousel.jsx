@@ -1,12 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShareAlt } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
+import { fetchUserData } from "utils/api/user/fetchUserData";
+import { Share2 } from "lucide-react";
 
 const UserPropertiesCarousel = ({ userProperties, userId }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3;
+  const [referralCode, setReferralCode] = useState();
 
   const handlePrev = () => {
     setCurrentIndex(
@@ -28,8 +31,43 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
     currentIndex + itemsPerPage
   );
 
-  const handleShare = (propertyId) => {
-    console.log(`Sharing property ${propertyId}`);
+  useEffect(() => {
+    const handleFetchUserData = async () => {
+      const userId = sessionStorage.getItem("userId");
+      if (!userId) return;
+
+      const res = await fetchUserData(userId);
+      setReferralCode(res?.referralCode);
+    };
+
+    handleFetchUserData();
+  }, []);
+
+  const handleShareBtn = (e, property) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const shareUrl = `${window.location.origin}/properties/${property._id}${
+      referralCode ? `?ref=${referralCode}` : ""
+    }`;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: property.title,
+          text: "Check out this property!",
+          url: shareUrl,
+        })
+        .catch((error) => console.log("Error sharing:", error));
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        setIsCopied(true);
+        enqueueSnackbar("Property link copied to clipboard!", {
+          variant: "success",
+        });
+        setTimeout(() => setIsCopied(false), 2000);
+      });
+    }
   };
 
   return (
@@ -67,20 +105,15 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
 
                 {/* Share Button - Styled to match PropertyCard */}
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleShare(property._id);
-                  }}
-                  className="absolute top-4 right-4 bg-black bg-opacity-60 p-2 rounded-full shadow-md hover:bg-white transition duration-300"
+                  onClick={(e) => handleShareBtn(e, property)}
+                  className="absolute top-4 right-4 bg-black bg-opacity-60 p-2 rounded-full shadow-md hover:bg-white text-gray-500 transition duration-300"
                   title="Share Property"
                 >
-                  <FontAwesomeIcon
-                    icon={faShareAlt}
-                    className="text-white text-lg hover:text-gray-700 transition duration-300"
+                  <Share2
+                    className="text-white text-lg hover:text-gray-700 transition duration-200"
+                    size={16}
                   />
                 </button>
-
                 <div className="p-4">
                   <Link href={`/properties/${property._id}`}>
                     <h3 className="font-semibold text-sm text-gray-800 cursor-pointer hover:text-primary-500">
