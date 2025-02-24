@@ -116,7 +116,10 @@ const Navbar = () => {
           {user && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Add Property Button */}
-              <button className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4 sm:px-4 sm:py-2">
+              <button
+                onClick={() => router.push("/properties/add/for-rent")}
+                className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4 sm:px-4 sm:py-2"
+              >
                 <HousePlus size={18} className="inline-block" />
                 <span className="hidden sm:inline">Add Property</span>
               </button>
