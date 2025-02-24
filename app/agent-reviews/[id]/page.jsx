@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import AgentReview from "@/components/AgentReview/AgentReview";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 
 const AgentReviewPage = () => {
   const { id } = useParams(); // Ensure `id` matches your dynamic route

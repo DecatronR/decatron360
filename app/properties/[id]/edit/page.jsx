@@ -1,7 +1,6 @@
 "use client";
-import { useEffect } from "react";
 import { useParams } from "next/navigation";
-import PropertyEditForm from "@/components/PropertyEditForm";
+import PropertyEditForm from "components/Properties/PropertyEditForm";
 
 const PropertyEditPage = () => {
   const { id } = useParams();

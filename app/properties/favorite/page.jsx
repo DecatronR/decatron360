@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 import { addFavoriteProperties } from "@/utils/api/properties/addFavoriteProperties";
 import FavoritePropertyCard from "components/Properties/FavoritePropertyCard";
 import { fetchFavoriteProperties } from "@/utils/api/properties/fetchFavoriteProperties";

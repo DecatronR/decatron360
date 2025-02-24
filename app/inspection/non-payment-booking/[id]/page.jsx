@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 import { useSnackbar } from "notistack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";

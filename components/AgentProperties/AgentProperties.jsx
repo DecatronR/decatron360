@@ -1,7 +1,7 @@
 "use client";
 import Pagination from "@/components/Pagination";
 import PropertyCard from "../Properties/PropertyCard";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 import { useEffect, useState } from "react";
 
 const AgentProperties = ({ agentProperties }) => {

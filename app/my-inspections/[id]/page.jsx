@@ -1,7 +1,7 @@
 "use client";
 import { useParams } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 import MyInspections from "@/components/Inspection/MyInspections";
 import { fetchUserBookings } from "@/utils/api/inspection/fetchUserBookings";
 import { fetchAgentBookings } from "utils/api/inspection/fetchAgentBookings";

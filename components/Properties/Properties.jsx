@@ -2,12 +2,10 @@
 
 import Pagination from "@/components/Pagination";
 import PropertyCard from "./PropertyCard";
-import Spinner from "@/components/Spinner";
+import Spinner from "components/ui/Spinner";
 import { useEffect, useState } from "react";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
-import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
 import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
-import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoriteProperties";
 
 const Properties = () => {
   const [properties, setProperties] = useState([]);
