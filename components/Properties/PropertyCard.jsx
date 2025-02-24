@@ -89,7 +89,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
 
   return (
     <Link href={`/properties/${property._id}`} passHref>
-      <div className="relative cursor-pointer rounded-lg shadow-lg bg-white transition hover:shadow-xl transform hover:scale-105 duration-300 overflow-hidden">
+      <div className="relative cursor-pointer rounded-md shadow-lg bg-white transition hover:shadow-xl transform hover:scale-105 duration-300 overflow-hidden">
         <div className="relative">
           {property?.photos?.length > 0 && (
             <Image
