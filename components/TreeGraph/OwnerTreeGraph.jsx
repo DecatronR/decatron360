@@ -69,13 +69,16 @@ const OwnerTreeGraph = ({ data, onNodeClick }) => {
       .attr("y", -15)
       .attr("width", 30)
       .attr("height", 30)
-      .attr("clip-path", (d) => `url(#clip-${d.data.name.replace(/\s/g, "")})`);
+      .attr(
+        "clip-path",
+        (d) => `url(#clip-${d.data.name?.replace(/\s/g, "")})`
+      );
 
     nodes
       .append("circle")
       .attr("r", 18) // Slightly larger than image to act as an outline
       .attr("stroke", (d) => roleColors[determineRole(d.depth)])
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 7)
       .attr("fill", "none");
 
     // Add text labels
