@@ -14,7 +14,24 @@ const contractStages = [
 
 const Dashboard = () => {
   const [currentStage, setCurrentStage] = useState(0);
-  const progressPercentage = (currentStage / (contractStages.length - 1)) * 100;
+  const [showCommentBox, setShowCommentBox] = useState(false);
+  const [comment, setComment] = useState("");
+  const [comments, setComments] = useState([]); // Track messages
+
+  const toggleCommentBox = () => {
+    setShowCommentBox(!showCommentBox);
+  };
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
+  const handleSubmitComment = () => {
+    if (comment.trim()) {
+      setComments([...comments, { text: comment, timestamp: new Date() }]);
+      setComment("");
+    }
+  };
 
   return (
     <div className="p-8 space-y-8 bg-gray-50 min-h-screen">
@@ -24,75 +41,105 @@ const Dashboard = () => {
         </h1>
       </header>
 
-      {/* Card Container */}
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-800">
-          Your Rental Agreement
-        </h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Track the progress of your rental agreement seamlessly.
-        </p>
-
-        {/* Progress Indicators */}
-        <div className="flex items-center justify-between mt-6">
-          {contractStages.map((stage, index) => (
-            <div key={index} className="flex flex-col items-center flex-1">
-              <div
-                style={{ backgroundColor: stage.color }}
-                className={`w-8 h-8 rounded-full transition-opacity duration-300 ${
-                  currentStage >= index ? "opacity-100" : "opacity-50"
-                }`}
-              ></div>
-              <span className="mt-2 text-xs text-gray-700 text-center">
-                {stage.label}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-6">
-          <div
-            className="h-2 rounded-full transition-all duration-500"
-            style={{
-              width: `${progressPercentage}%`,
-              backgroundColor: contractStages[currentStage].color,
-            }}
-          ></div>
-        </div>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-8">
-          {/* <button
-            onClick={() => setCurrentStage(Math.max(0, currentStage - 1))}
-            disabled={currentStage === 0}
-            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-              currentStage === 0
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-primary-500 hover:bg-primary-600 text-white"
-            }`}
-          >
-            Previous
-          </button>
-
-          <button
-            onClick={() =>
-              setCurrentStage(
-                Math.min(contractStages.length - 1, currentStage + 1)
-              )
-            }
-            disabled={currentStage === contractStages.length - 1}
-            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-              currentStage === contractStages.length - 1
-                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                : "bg-primary-500 hover:bg-primary-600 text-white"
-            }`}
-          >
-            Next
-          </button> */}
-        </div>
+      <div className="bg-white shadow-md rounded-lg p-6 relative flex flex-col transition-all duration-500">
+        {/* Progress Tracker */}
         <div>
-          <TemplateWrapper />
+          <h2 className="text-xl font-semibold text-gray-800">
+            Your Rental Agreement
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Track the progress of your rental agreement seamlessly.
+          </p>
+
+          <div className="flex items-center justify-between mt-6">
+            {contractStages.map((stage, index) => (
+              <div key={index} className="flex flex-col items-center flex-1">
+                <div
+                  style={{ backgroundColor: stage.color }}
+                  className={`w-8 h-8 rounded-full transition-opacity duration-300 ${
+                    currentStage >= index ? "opacity-100" : "opacity-50"
+                  }`}
+                ></div>
+                <span className="mt-2 text-xs text-gray-700 text-center">
+                  {stage.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="w-full bg-gray-200 rounded-full h-2 mt-6">
+            <div
+              className="h-2 rounded-full transition-all duration-500"
+              style={{
+                width: `${(currentStage / (contractStages.length - 1)) * 100}%`,
+                backgroundColor: contractStages[currentStage].color,
+              }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Main Content - Template & Comment Box */}
+        <div className="flex flex-row gap-4 mt-6">
+          {/* Template Wrapper - Stays Within Layout */}
+          <div
+            className={`flex-1 min-h-[300px] ${
+              showCommentBox ? "w-2/3" : "w-full"
+            }`}
+          >
+            <TemplateWrapper />
+          </div>
+
+          {/* Comment Box - Renders in the same row, limited height */}
+          {showCommentBox && (
+            <div className="w-1/3 bg-gray-100 shadow-md rounded-md p-4 flex flex-col max-h-30">
+              <h3 className="text-lg font-medium text-gray-800 mb-3">
+                Modification Requests
+              </h3>
+              <div className="flex-1 overflow-y-auto max-h-30 space-y-2 border p-2 rounded-md bg-white">
+                {comments.length > 0 ? (
+                  comments.map((msg, index) => (
+                    <div
+                      key={index}
+                      className="bg-blue-100 p-2 rounded-md text-gray-700 text-sm"
+                    >
+                      <p>{msg.text}</p>
+                      <span className="text-xs text-gray-500 block mt-1">
+                        {msg.timestamp.toLocaleTimeString()}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-sm">No messages yet.</p>
+                )}
+              </div>
+              <textarea
+                className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                rows={2}
+                placeholder="Describe the required modifications..."
+                value={comment}
+                onChange={handleCommentChange}
+              ></textarea>
+              <button
+                onClick={handleSubmitComment}
+                className="mt-3 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition"
+              >
+                Submit Request
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-6 flex justify-center gap-4">
+          <button className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition">
+            Proceed to Sign
+          </button>
+          <button
+            onClick={toggleCommentBox}
+            className="px-6 py-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition"
+          >
+            Request Modification
+          </button>
         </div>
       </div>
     </div>
