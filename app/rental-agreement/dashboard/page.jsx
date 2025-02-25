@@ -7,7 +7,6 @@ const contractStages = [
   { label: "Under Review", color: "#007bff" },
   { label: "Modification Requested", color: "#ffc107" },
   { label: "Owner Review", color: "#fd7e14" },
-  { label: "Finalizing", color: "#6f42c1" },
   { label: "Awaiting Signature", color: "#dc3545" },
   { label: "Completed", color: "#218838" },
 ];
@@ -34,33 +33,33 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-8 space-y-8 bg-gray-50 min-h-screen">
+    <div className="p-4 sm:p-8 space-y-8 bg-gray-50 min-h-screen">
       <header>
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
           Rental Agreement Dashboard
         </h1>
       </header>
 
-      <div className="bg-white shadow-md rounded-lg p-6 relative flex flex-col transition-all duration-500">
+      <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 relative flex flex-col transition-all duration-500">
         {/* Progress Tracker */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
             Your Rental Agreement
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             Track the progress of your rental agreement seamlessly.
           </p>
 
-          <div className="flex items-center justify-between mt-6">
+          <div className="flex flex-wrap justify-center sm:justify-between mt-6 gap-2 sm:gap-0">
             {contractStages.map((stage, index) => (
               <div key={index} className="flex flex-col items-center flex-1">
                 <div
                   style={{ backgroundColor: stage.color }}
-                  className={`w-8 h-8 rounded-full transition-opacity duration-300 ${
+                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full transition-opacity duration-300 ${
                     currentStage >= index ? "opacity-100" : "opacity-50"
                   }`}
                 ></div>
-                <span className="mt-2 text-xs text-gray-700 text-center">
+                <span className="mt-2 text-xs sm:text-sm text-gray-700 text-center">
                   {stage.label}
                 </span>
               </div>
@@ -79,23 +78,23 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content - Template & Comment Box */}
-        <div className="flex flex-row gap-4 mt-6">
+        <div className="flex flex-col lg:flex-row gap-4 mt-6">
           {/* Template Wrapper - Stays Within Layout */}
           <div
-            className={`flex-1 min-h-[300px] ${
+            className={`w-full lg:${
               showCommentBox ? "w-2/3" : "w-full"
-            }`}
+            } min-h-[300px]`}
           >
             <TemplateWrapper />
           </div>
 
-          {/* Comment Box - Renders in the same row, limited height */}
+          {/* Comment Box - Responsive behavior */}
           {showCommentBox && (
-            <div className="w-1/3 bg-gray-100 shadow-md rounded-md p-4 flex flex-col max-h-30">
+            <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 flex flex-col max-h-[1000px]">
               <h3 className="text-lg font-medium text-gray-800 mb-3">
                 Modification Requests
               </h3>
-              <div className="flex-1 overflow-y-auto max-h-30 space-y-2 border p-2 rounded-md bg-white">
+              <div className="flex-1 overflow-y-auto max-h-[700px] space-y-2 border p-2 rounded-md bg-white">
                 {comments.length > 0 ? (
                   comments.map((msg, index) => (
                     <div
@@ -130,13 +129,13 @@ const Dashboard = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-6 flex justify-center gap-4">
-          <button className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition">
+        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+          <button className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition">
             Proceed to Sign
           </button>
           <button
             onClick={toggleCommentBox}
-            className="px-6 py-2 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition"
+            className="px-6 py-2 w-full sm:w-auto bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition"
           >
             Request Modification
           </button>

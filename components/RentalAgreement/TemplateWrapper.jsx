@@ -61,7 +61,7 @@ const TemplateWrapper = () => {
         )}
 
         {/* Option 2: Proceed to sign button */}
-        <div style={{ marginTop: "20px" }}>
+        {/* <div style={{ marginTop: "20px" }}>
           <button
             onClick={handleProceedToSign}
             style={{
@@ -79,7 +79,7 @@ const TemplateWrapper = () => {
           >
             Proceed to sign
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
