@@ -21,7 +21,7 @@ const PropertiesAbuja = () => {
 
         // Filter properties to include only those in Abuja
         const abujaProperties = allProperties.filter(
-          (property) => property.state === "Abuja"
+          (property) => property.state === "FCT-Abuja"
         );
 
         const userId = sessionStorage.getItem("userId");
