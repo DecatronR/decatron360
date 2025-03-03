@@ -19,6 +19,8 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSearchInNavbar, setShowSearchInNavbar] = useState(false);
 
+  const shouldShowSearch = pathname === "/" && showSearchInNavbar;
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
@@ -65,7 +67,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {showSearchInNavbar && (
+          {shouldShowSearch && (
             <div className="flex-grow flex justify-center">
               <PropertySearchForm />
             </div>

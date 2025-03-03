@@ -1,5 +1,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import {
   Search,
@@ -26,63 +27,95 @@ const MobileNavbar = () => {
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-2 md:hidden">
       <div className="flex justify-around items-center text-gray-600">
         {/* Common Explore Button */}
-        <button className="flex flex-col items-center">
+        <Link className="flex flex-col items-center" href="/" role="menuitem">
           <Search className="h-6 w-6" />
           <span className="text-xs">Explore</span>
-        </button>
+        </Link>
 
         {user ? (
           isPrivilegedUser ? (
             <>
               {/* Inspections */}
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href={`/my-inspections/${user.id}`}
+                role="menuitem"
+              >
                 <ClipboardList className="h-6 w-6" />
                 <span className="text-xs">Inspections</span>
-              </button>
+              </Link>
 
               {/* Availability */}
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href={`/agent-scheduler/${user.id}`}
+                role="menuitem"
+              >
                 <CalendarDays className="h-6 w-6" />
                 <span className="text-xs">Availability</span>
-              </button>
+              </Link>
 
               {/* Networks */}
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href={
+                  ["owner", "propertyManager", "caretaker"].includes(user.role)
+                    ? "/owner-network-map"
+                    : "/agent-network-map"
+                }
+                role="menuitem"
+              >
                 <GitBranch className="h-6 w-6" />
                 <span className="text-xs">Networks</span>
-              </button>
+              </Link>
 
               {/* Profile */}
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href="/user-profile"
+                role="menuitem"
+              >
                 <User className="h-6 w-6" />
                 <span className="text-xs">Profile</span>
-              </button>
+              </Link>
             </>
           ) : (
             <>
               {/* Default User Menu */}
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href="/properties/favorite"
+                role="menuitem"
+              >
                 <Heart className="h-6 w-6" />
                 <span className="text-xs">Favorites</span>
-              </button>
+              </Link>
 
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href={`/my-inspections/${user.id}`}
+                role="menuitem"
+              >
                 <ClipboardList className="h-6 w-6" />
                 <span className="text-xs">Inspections</span>
-              </button>
+              </Link>
 
-              <button className="flex flex-col items-center">
+              <Link
+                className="flex flex-col items-center"
+                href="/user-profile"
+                role="menuitem"
+              >
                 <User className="h-6 w-6" />
                 <span className="text-xs">Profile</span>
-              </button>
+              </Link>
             </>
           )
         ) : (
           // Show Login Button for non-logged-in users
-          <button className="flex flex-col items-center" onClick={handleLogin}>
+          <Link className="flex flex-col items-center" href="/auth/login">
             <LogIn className="h-6 w-6" />
             <span className="text-xs">Login</span>
-          </button>
+          </Link>
         )}
       </div>
     </div>
