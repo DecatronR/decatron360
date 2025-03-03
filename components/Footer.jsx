@@ -20,7 +20,7 @@ const Footer = () => {
             className="h-auto w-20 mb-4 object-cover"
           />
           <p className="text-gray-400 mb-4 text-sm">
-            Real estate transactions like shopping online
+            Real estate transactions like online shopping
           </p>
           <div className="flex space-x-4">
             <a
