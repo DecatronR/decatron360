@@ -44,12 +44,14 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 border-b border-primary-500 shadow-lg transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b border-primary-500 transition-all duration-300 ${
         isScrolled
           ? "bg-primary-500 bg-opacity-90 backdrop-blur-md"
           : "bg-primary-500"
       }`}
     >
+      <div className="absolute inset-0 bg-black opacity-20 z-0"></div>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           {/* Logo and navigation links */}
