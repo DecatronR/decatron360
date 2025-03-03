@@ -92,7 +92,7 @@ const CategoriesCarousel = () => {
   };
 
   return (
-    <div className="relative my-8 overflow-hidden max-w-screen px-4 mx-6">
+    <div className="relative my-8 overflow-hidden max-w-screen px-4 lg:mx-8 mx-0">
       <Slider {...settings}>
         {categories.map((category, index) => (
           <div key={index} className="flex flex-col items-center p-2">
