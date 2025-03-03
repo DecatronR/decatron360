@@ -27,10 +27,10 @@ const MobileNavbar = () => {
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-2 md:hidden">
       <div className="flex justify-around items-center text-gray-600">
         {/* Common Explore Button */}
-        <button className="flex flex-col items-center">
+        <Link className="flex flex-col items-center" href="/" role="menuitem">
           <Search className="h-6 w-6" />
           <span className="text-xs">Explore</span>
-        </button>
+        </Link>
 
         {user ? (
           isPrivilegedUser ? (
