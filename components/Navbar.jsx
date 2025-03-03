@@ -52,40 +52,23 @@ const Navbar = () => {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          {/* Mobile menu button */}
-          <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
-            <button
-              type="button"
-              id="mobile-dropdown-button"
-              className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
-              onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-            >
-              <span className="sr-only">Open main menu</span>
-              <svg
-                className="block h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                />
-              </svg>
-            </button>
-          </div>
-
           {/* Logo and navigation links */}
-          <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
+          {/* <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
             <Link className="flex flex-shrink-0 items-center" href="/">
               <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
             </Link>
+          </div> */}
+          <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
+            {(!isScrolled || window.innerWidth >= 768) && (
+              <Link
+                className="flex flex-shrink-0 items-center md:block"
+                href="/"
+              >
+                <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
+              </Link>
+            )}
           </div>
+
           {showSearchInNavbar && (
             <div className="flex-grow flex justify-center">
               <PropertySearchForm />
@@ -248,46 +231,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
-      {/* Mobile menu */}
-      {isMobileMenuOpen && (
-        <div id="mobile-menu">
-          <div className="space-y-1 px-2 pb-3 pt-2">
-            <Link
-              href="/"
-              className={`${
-                pathname === "/" ? "bg-primary-600" : ""
-              } text-white block rounded-md px-3 py-2 text-base font-medium transition`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/properties"
-              className={`${
-                pathname === "/properties" ? "bg-primary-600" : ""
-              } text-white block rounded-md px-3 py-2 text-base font-medium transition`}
-            >
-              Properties
-            </Link>
-            {!user && (
-              <div className="space-y-1 px-2 pb-3 pt-2">
-                <button
-                  onClick={handleLogin}
-                  className="block w-full text-white bg-gray-700 hover:bg-gray-800 rounded-md px-4 py-2 text-base font-medium transition"
-                >
-                  Login
-                </button>
-                <button
-                  onClick={() => router.push("/auth/register")}
-                  className="block w-full text-gray-700 bg-gray-200 hover:bg-white rounded-md px-4 py-2 text-base font-medium transition"
-                >
-                  Sign Up
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </nav>
   );
 };
