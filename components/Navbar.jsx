@@ -5,7 +5,7 @@ import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { HousePlus, ChevronDown } from "lucide-react";
+import { HousePlus } from "lucide-react";
 import PropertySearchForm from "./Properties/PropertySearchForm";
 
 const Navbar = () => {
@@ -44,20 +44,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 border-b border-primary-500 shadow-lg transition-all duration-300 ${
+      className={`sticky top-0 z-50 border-b border-primary-500 transition-all duration-300 ${
         isScrolled
           ? "bg-primary-500 bg-opacity-90 backdrop-blur-md"
           : "bg-primary-500"
       }`}
     >
+      <div className="absolute inset-0 bg-black opacity-20 z-0"></div>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          {/* Logo and navigation links */}
-          {/* <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
-            <Link className="flex flex-shrink-0 items-center" href="/">
-              <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
-            </Link>
-          </div> */}
           <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
             {(!isScrolled || window.innerWidth >= 768) && (
               <Link
@@ -97,11 +93,11 @@ const Navbar = () => {
 
           {/* Right side menu (Profile and logout when authenticated) */}
           {user && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
+            <div className="hidden sm:flex absolute inset-y-0 right-0 items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Add Property Button */}
               <button
                 onClick={() => router.push("/properties/add/for-rent")}
-                className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4 sm:px-4 sm:py-2"
+                className="hidden sm:flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
               >
                 <HousePlus size={18} className="inline-block" />
                 <span className="hidden sm:inline">Add Property</span>
@@ -125,6 +121,7 @@ const Navbar = () => {
                     height={40}
                   />
                 </button>
+
                 {isProfileMenuOpen && (
                   <div
                     className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
