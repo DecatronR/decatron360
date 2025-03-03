@@ -1,4 +1,6 @@
-import { SlidersHorizontal } from "lucide-react"; // Importing filter icon
+import { SlidersHorizontal } from "lucide-react";
+<style>@import url('https://fonts.cdnfonts.com/css/nasalization-2');</style>;
+
 import PropertySearchForm from "../Properties/PropertySearchForm";
 
 const Hero = () => {
@@ -10,11 +12,15 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center relative z-10">
         <div className="text-center mb-10">
           {/* Hook statement */}
-          <h1
+          {/* <h1
             className="text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight"
             style={{ fontFamily: "Nasaliation, sans-serif" }}
           >
             Real estate transactions like shopping online
+          </h1> */}
+
+          <h1 className="font-raleway text-3xl lg:text-4xl font-extrabold">
+            Real estate transactions like online shopping
           </h1>
         </div>
 

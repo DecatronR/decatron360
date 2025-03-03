@@ -14,6 +14,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <link
+          href="https://fonts.cdnfonts.com/css/nasalization"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.cdnfonts.com/css/raleway-5"
+          rel="stylesheet"
+        />
+
         {/* Google Analytics script */}
         <Script
           async
