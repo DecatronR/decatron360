@@ -20,7 +20,7 @@ const MobileNavbar = () => {
     router.replace("/auth/login");
   };
 
-  const privilegedRoles = ["agent", "owner", "property manager"];
+  const privilegedRoles = ["agent", "owner", "property manager", "admin"];
   const isPrivilegedUser = user && privilegedRoles.includes(user.role);
 
   return (
