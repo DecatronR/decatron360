@@ -1,8 +1,9 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { Eye, EyeOff } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 import ButtonSpinner from "components/ui/ButtonSpinner";
@@ -22,7 +23,6 @@ const Registration = () => {
   const [roles, setRoles] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [inspectionData, setInspectionData] = useState(null);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   useEffect(() => {
@@ -31,251 +31,158 @@ const Registration = () => {
         const res = await fetchRoles();
         setRoles(res);
       } catch (error) {
-        console.log("");
+        console.log("Error fetching roles");
       }
     };
     handleFetchRoles();
   }, []);
 
-  useEffect(() => {
-    const data = JSON.parse(sessionStorage.getItem("inspectionData"));
-    setInspectionData(data);
-    setFormData((prevState) => ({
-      name: prevState.name || data?.name || "",
-      email: prevState.email || data?.email || "",
-      role: prevState.role || data?.role || "",
-      phone: prevState.phone || data?.phone || "",
-      password: prevState.password || "",
-      confirmpassword: prevState.confirmpassword || "",
-    }));
-  }, []);
-
   const handleChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.name]: event.target.value,
-    });
+    setFormData({ ...formData, [event.target.name]: event.target.value });
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword((prevState) => !prevState);
-  };
+  const toggleShowPassword = () => setShowPassword((prev) => !prev);
+  const toggleShowConfirmPassword = () =>
+    setShowConfirmPassword((prev) => !prev);
 
-  const toggleShowConfirmPassword = () => {
-    setShowConfirmPassword((prevState) => !prevState);
-  };
-
-  const onRegistration = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsButtonLoading(true);
     try {
       const response = await axios.post(`${baseUrl}/auth/register`, formData);
-
       if (response.status === 201) {
         enqueueSnackbar("Please complete OTP verification!", {
           variant: "success",
         });
+        router.replace("/auth/otp");
       } else {
-        enqueueSnackbar(`Registration failed`, {
-          variant: "error",
-        });
+        enqueueSnackbar("Registration failed", { variant: "error" });
       }
     } catch (error) {
       enqueueSnackbar(`Registration failed: ${error.message}`, {
         variant: "error",
       });
+    } finally {
+      setIsButtonLoading(false);
     }
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setIsButtonLoading(true);
-
-    sessionStorage.setItem("email", formData.email);
-    sessionStorage.setItem("password", formData.password);
-    onRegistration();
-    router.replace("/auth/otp");
-    setIsButtonLoading(false);
-  };
-
-  const handleLoginClick = (event) => {
-    event.preventDefault();
-    router.replace("/auth/login");
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-2xl p-6 bg-white rounded shadow-lg">
-        <h2 className="text-2xl font-bold text-center text-gray-700 mb-4">
-          Create Your Account
+    <div className="flex items-center justify-center min-h-screen bg-white p-6">
+      <div className="w-full max-w-md p-6 bg-white border border-gray-300 rounded-lg shadow-xl">
+        <h2 className="text-2xl font-semibold text-center text-gray-900">
+          Sign up
         </h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Two-column section for Name and Email */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                autoComplete="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
-              />
-            </div>
-          </div>
+        <p className="text-center text-sm text-gray-600 mb-6">
+          Join Decatron today
+        </p>
 
-          {/* Role and Phone fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="role"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Role
-              </label>
-              <select
-                id="role"
-                name="role"
-                required
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
-              >
-                <option disabled value="">
-                  Select Role
-                </option>
-                {roles &&
-                  roles.map((role) => (
-                    <option key={role.id} value={role.slug}>
-                      {role.roleName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Phone Number
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="phone"
-                autoComplete="phone"
-                required
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            placeholder="Name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+          />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+          />
+          <select
+            id="role"
+            name="role"
+            required
+            value={formData.role}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+          >
+            <option disabled value="">
+              Select Role
+            </option>
+            {roles.map((role) => (
+              <option key={role.id} value={role.slug}>
+                {role.roleName}
+              </option>
+            ))}
+          </select>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            required
+            placeholder="Phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+          />
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            />
+            <button
+              type="button"
+              onClick={toggleShowPassword}
+              className="absolute inset-y-0 right-4 flex items-center"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5 text-gray-500" />
+              ) : (
+                <Eye className="w-5 h-5 text-gray-500" />
+              )}
+            </button>
           </div>
-
-          {/* Password and Confirm Password */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
-                />
-                <button
-                  type="button"
-                  onClick={toggleShowPassword}
-                  className="absolute inset-y-0 right-0 flex items-center px-3"
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="w-5 h-5" />
-                  ) : (
-                    <EyeIcon className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="confirmpassword"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirm Password
-              </label>
-              <div className="relative">
-                <input
-                  id="confirmpassword"
-                  name="confirmpassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  required
-                  value={formData.confirmpassword}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-primary-400 focus:border-primary-400"
-                />
-                <button
-                  type="button"
-                  onClick={toggleShowConfirmPassword}
-                  className="absolute inset-y-0 right-0 flex items-center px-3"
-                >
-                  {showConfirmPassword ? (
-                    <EyeSlashIcon className="w-5 h-5" />
-                  ) : (
-                    <EyeIcon className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
+          <div className="relative">
+            <input
+              id="confirmpassword"
+              name="confirmpassword"
+              type={showConfirmPassword ? "text" : "password"}
+              required
+              placeholder="Confirm Password"
+              value={formData.confirmpassword}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            />
+            <button
+              type="button"
+              onClick={toggleShowConfirmPassword}
+              className="absolute inset-y-0 right-4 flex items-center"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="w-5 h-5 text-gray-500" />
+              ) : (
+                <Eye className="w-5 h-5 text-gray-500" />
+              )}
+            </button>
           </div>
-
           <button
             type="submit"
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-md shadow-sm hover:bg-primary-600"
+            className="w-full px-4 py-3 text-white bg-primary-500 rounded-full hover:bg-primary-600"
           >
             {isButtonLoading ? <ButtonSpinner /> : "Sign up"}
           </button>
         </form>
-        <div className="mt-4 text-sm text-center text-gray-500">
+        <div className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
-          <button
-            onClick={handleLoginClick}
-            className="text-primary-500 hover:underline"
-          >
-            Log in
-          </button>
+          <a href="/auth/login" className="text-primary-500 hover:underline">
+            Sign in
+          </a>
         </div>
       </div>
     </div>

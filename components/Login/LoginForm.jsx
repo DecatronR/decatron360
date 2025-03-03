@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-white">
+    <div className="flex items-center justify-center min-h-screen bg-white p-6">
       <div className="w-full max-w-md p-6 bg-white border border-gray-300 rounded-lg shadow-xl">
         <h2 className="text-2xl font-semibold text-center text-gray-900">
           Sign in
@@ -47,21 +47,6 @@ const LoginForm = () => {
         <p className="text-center text-sm text-gray-600 mb-6">
           Welcome back to Decatron
         </p>
-
-        {/* <button className="flex items-center justify-center w-full px-4 py-2 mb-4 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100">
-          <Image
-            src="/google-icon.svg"
-            alt="Google"
-            width={20}
-            height={20}
-            className="mr-2"
-          />
-          Continue with Google
-        </button> */}
-
-        {/* <div className="relative text-center my-4">
-          <span className="px-4 text-sm text-gray-500 bg-white">or</span>
-        </div> */}
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
@@ -73,7 +58,7 @@ const LoginForm = () => {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[primary-500]"
             />
           </div>
           <div className="relative">
@@ -85,7 +70,7 @@ const LoginForm = () => {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
             />
             <button
               type="button"
@@ -93,15 +78,15 @@ const LoginForm = () => {
               className="absolute inset-y-0 right-4 flex items-center"
             >
               {showPassword ? (
-                <EyeSlashIcon className="w-5 h-5 text-gray-500" />
+                <EyeOff className="w-5 h-5 text-gray-500" />
               ) : (
-                <EyeIcon className="w-5 h-5 text-gray-500" />
+                <Eye className="w-5 h-5 text-gray-500" />
               )}
             </button>
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-3 text-white bg-black rounded-lg hover:bg-gray-900"
+            className="w-full px-4 py-3 text-white bg-primary-500 rounded-full hover:bg-primary-600"
           >
             {isButtonLoading ? <ButtonSpinner /> : "Sign in"}
           </button>
@@ -109,7 +94,7 @@ const LoginForm = () => {
 
         <div className="text-center text-sm text-gray-600 mt-4">
           Don’t have an account?{" "}
-          <a href="/auth/register" className="text-black hover:underline">
+          <a href="/auth/register" className="text-primary-500 hover:underline">
             Sign up
           </a>
         </div>
