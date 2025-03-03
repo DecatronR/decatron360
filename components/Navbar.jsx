@@ -54,12 +54,6 @@ const Navbar = () => {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          {/* Logo and navigation links */}
-          {/* <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
-            <Link className="flex flex-shrink-0 items-center" href="/">
-              <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
-            </Link>
-          </div> */}
           <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
             {(!isScrolled || window.innerWidth >= 768) && (
               <Link
