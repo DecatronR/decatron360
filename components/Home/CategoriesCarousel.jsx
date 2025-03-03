@@ -76,32 +76,32 @@ const CategoriesCarousel = () => {
   // Slider settings
   const settings = {
     dots: false,
-    infinite: true,
+    infinite: true, // Prevents layout shifts
     speed: 500,
-    slidesToShow: 8,
-    slidesToScroll: 1,
+    slidesToShow: 7.5,
+    slidesToScroll: 2,
     draggable: true,
     swipe: true,
     touchMove: true,
     responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 7 } },
-      { breakpoint: 768, settings: { slidesToShow: 4 } },
-      { breakpoint: 480, settings: { slidesToShow: 4 } },
+      { breakpoint: 1280, settings: { slidesToShow: 6.5, slidesToScroll: 2 } },
+      { breakpoint: 1024, settings: { slidesToShow: 5.5, slidesToScroll: 2 } },
+      { breakpoint: 768, settings: { slidesToShow: 4.5, slidesToScroll: 2 } },
+      { breakpoint: 480, settings: { slidesToShow: 3.5, slidesToScroll: 2 } },
     ],
   };
 
   return (
-    <div className="relative my-8">
+    <div className="relative my-8 overflow-hidden max-w-screen px-4 mx-6">
       <Slider {...settings}>
         {categories.map((category, index) => (
-          <div key={index} className="flex flex-col items-center p-4">
+          <div key={index} className="flex flex-col items-center p-2">
             <Link href={category.link} passHref>
               <div className="flex flex-col items-center cursor-pointer transition-transform transform hover:scale-105">
                 <div className="bg-white rounded-full shadow-md p-3 flex justify-center items-center">
                   {category.icon}
                 </div>
-                {/* Responsive Text Size */}
-                <span className="mt-2 text-center font-semibold text-sm md:text-sm lg:text-sm hover:text-primary-500">
+                <span className="mt-2 text-center font-semibold text-sm hover:text-primary-500">
                   {category.title}
                 </span>
               </div>
@@ -112,14 +112,14 @@ const CategoriesCarousel = () => {
 
       {/* Custom Arrows */}
       <button
-        className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
+        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
         onClick={() => document.querySelector(".slick-prev")?.click()}
       >
         <ChevronLeft size={iconSize} />
       </button>
 
       <button
-        className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
+        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-md p-2 rounded-full z-10"
         onClick={() => document.querySelector(".slick-next")?.click()}
       >
         <ChevronRight size={iconSize} />
