@@ -1,12 +1,66 @@
 import { useState } from "react";
-
-const Media = ({
-  fields,
-  handleChange,
-  handleImageChange,
-  handleImageRemove,
-}) => {
+import { XIcon } from "lucide-react";
+const Media = ({ fields, handleChange }) => {
   const [previewUrls, setPreviewUrls] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = [];
+    const newPreviewUrls = [];
+
+    for (
+      let i = 0;
+      i < files.length && uploadedImages.length + newImages.length < 7;
+      i++
+    ) {
+      const file = files[i];
+
+      // Check file size (e.g., 2MB)
+      if (file.size > 5 * 1024 * 1024) {
+        enqueueSnackbar(`${file.name} is too large, maximum file size is 5MB`, {
+          variant: "error",
+        });
+        continue;
+      }
+
+      // Check file type (e.g., only allow image/jpeg or image/png)
+      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
+        enqueueSnackbar(
+          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`,
+          { variant: "error" }
+        );
+        continue;
+      }
+
+      newImages.push(file);
+      newPreviewUrls.push(URL.createObjectURL(file));
+    }
+
+    setUploadedImages([...uploadedImages, ...newImages]);
+    setPreviewUrls([...previewUrls, ...newPreviewUrls]);
+
+    // Update the actual files in fields
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: [...prevFields.photo, ...newImages],
+    }));
+  };
+
+  const handleImageRemove = (index) => {
+    // Revoke the URL to free memory
+    URL.revokeObjectURL(previewUrls[index]);
+
+    // Remove the image from preview and fields
+    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+
+    // Update the fields.photo array to remove the corresponding file
+    setFields((prevFields) => ({
+      ...prevFields,
+      photo: prevFields.photo.filter((_, i) => i !== index),
+    }));
+  };
 
   return (
     <div className="shadow-md rounded-lg p-6 bg-white max-w-md mx-auto md:max-w-full">
@@ -81,7 +135,7 @@ const Media = ({
                     className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs"
                     onClick={() => handleImageRemove(index)}
                   >
-                    ✕
+                    <XIcon size={10} />
                   </button>
                 </div>
               ))}
