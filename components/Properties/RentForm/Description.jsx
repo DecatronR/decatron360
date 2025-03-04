@@ -4,14 +4,14 @@ import { fetchPropertyConditions } from "utils/api/propertyListing/fetchProperty
 import { fetchPropertyUsage } from "utils/api/propertyListing/fetchPropertyUsage";
 
 const SelectField = ({ label, id, name, value, options, onChange }) => (
-  <div className="w-full mb-6">
-    <label htmlFor={id} className="block text-gray-800 font-medium mb-3">
+  <div className="w-full">
+    <label htmlFor={id} className="text-sm text-gray-600">
       {label}
     </label>
     <select
       id={id}
       name={name}
-      className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+      className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
       required
       value={value || ""}
       onChange={onChange}
@@ -36,15 +36,15 @@ const SelectField = ({ label, id, name, value, options, onChange }) => (
 );
 
 const InputField = ({ label, id, name, value, placeholder, onChange }) => (
-  <div className="w-full mb-6">
-    <label htmlFor={id} className="block text-gray-800 font-medium mb-3">
+  <div className="w-full">
+    <label htmlFor={id} className="text-sm text-gray-600">
       {label}
     </label>
     <input
       type="text"
       id={id}
       name={name}
-      className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+      className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
       placeholder={placeholder}
       required
       value={value}
@@ -71,60 +71,78 @@ const Description = ({ fields, handleChange }) => {
       fetchPropertyUsage(),
     ])
       .then(([types, conditions, usage]) => {
-        if (types.status === "fulfilled") {
-          console.log("Property Types:", types.value); // Debugging
-          setPropertyTypes([...types.value]);
-        }
-        if (conditions.status === "fulfilled") {
-          console.log("Property Conditions:", conditions.value); // Debugging
+        if (types.status === "fulfilled") setPropertyTypes([...types.value]);
+        if (conditions.status === "fulfilled")
           setPropertyCondition([...conditions.value]);
-        }
-        if (usage.status === "fulfilled") {
-          console.log("Property Usage:", usage.value); // Debugging
-          setPropertyUsage([...usage.value]);
-        }
+        if (usage.status === "fulfilled") setPropertyUsage([...usage.value]);
       })
       .catch((err) => console.error("Error fetching property data:", err));
   }, []);
 
   return (
-    <div>
-      <SelectField
-        label="Property Type"
-        id="propertyType"
-        name="propertyType"
-        value={fields.propertyType}
-        options={propertyTypes}
-        onChange={handleChange}
-      />
+    <div className="shadow-md rounded-xl p-6 bg-white">
+      <label className="block text-lg font-semibold text-gray-900">
+        Property Description
+      </label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div className="col-span-1 md:col-span-2">
+          <SelectField
+            label="Property Type"
+            id="propertyType"
+            name="propertyType"
+            value={fields.propertyType}
+            options={propertyTypes}
+            onChange={handleChange}
+          />
+        </div>
 
-      <InputField
-        label="Listing Name"
-        id="title"
-        name="title"
-        placeholder="e.g. Beautiful Apartment In Miami"
-        value={fields.title}
-        onChange={handleChange}
-      />
+        <div className="col-span-1 md:col-span-2">
+          <InputField
+            label="Listing Name"
+            id="title"
+            name="title"
+            placeholder="e.g. Beautiful Apartment In Miami"
+            value={fields.title}
+            onChange={handleChange}
+          />
+        </div>
 
-      <div className="flex gap-4">
-        <SelectField
-          label="Property Condition"
-          id="propertyCondition"
-          name="propertyCondition"
-          value={fields.propertyCondition}
-          options={propertyCondition}
-          onChange={handleChange}
-        />
+        <div className="col-span-1 md:col-span-2">
+          <SelectField
+            label="Property Condition"
+            id="propertyCondition"
+            name="propertyCondition"
+            value={fields.propertyCondition}
+            options={propertyCondition}
+            onChange={handleChange}
+          />
+        </div>
 
-        <SelectField
-          label="Property Usage"
-          id="usageType"
-          name="usageType"
-          value={fields.usageType}
-          options={propertyUsage}
-          onChange={handleChange}
-        />
+        <div className="col-span-1 md:col-span-2">
+          <SelectField
+            label="Property Usage"
+            id="usageType"
+            name="usageType"
+            value={fields.usageType}
+            options={propertyUsage}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          <label htmlFor="propertyDetails" className="text-sm text-gray-600">
+            Description
+          </label>
+          <textarea
+            id="propertyDetails"
+            name="propertyDetails"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            rows="4"
+            placeholder="Add an optional description of your property"
+            value={fields.propertyDetails}
+            onChange={handleChange}
+          ></textarea>
+        </div>
       </div>
     </div>
   );

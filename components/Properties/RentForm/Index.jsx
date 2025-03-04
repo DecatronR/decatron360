@@ -20,7 +20,8 @@ const RentForm = () => {
   const [mounted, setMounted] = useState(false);
   const [users, setUsers] = useState([]);
   const [userRole, setUserRole] = useState();
-
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
 
@@ -239,9 +240,9 @@ const RentForm = () => {
       <form
         data-testid="rent-form"
         onSubmit={handleSubmit}
-        className="space-y-6 bg-white shadow-lg rounded-xl p-8 max-w-3xl mx-auto border border-gray-200"
+        className="space-y-6 bg-white shadow-lg rounded-none sm:rounded-xl p-6 max-w-3xl w-full mx-auto border border-gray-200 sm:p-6"
       >
-        <h2 className="text-2xl text-center font-bold mb-10 text-gray-900">
+        <h2 className="text-2xl text-center font-bold mb-10 text-gray-900 sm:text-xl">
           Add Property For Rent
         </h2>
 
@@ -249,14 +250,14 @@ const RentForm = () => {
           <div className="mb-6">
             <label
               htmlFor="userID"
-              className="block text-gray-700 font-semibold mb-2"
+              className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base"
             >
               User
             </label>
             <select
               id="userID"
               name="userID"
-              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm sm:text-base"
               required
               value={fields.userID}
               onChange={handleChange}
@@ -273,24 +274,24 @@ const RentForm = () => {
           </div>
         )}
 
-        {/* Wrapping sections inside card-style divs */}
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        {/* Responsive Section Wrappers */}
+        <div className="bg-gray-50  rounded-lg shadow-sm ">
           <Description fields={fields} handleChange={handleChange} />
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-50 rounded-lg shadow-sm ">
           <Location fields={fields} handleChange={handleChange} />
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-50 rounded-lg shadow-sm ">
           <Features fields={fields} handleChange={handleChange} />
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-50 rounded-lg shadow-sm">
           <Pricing fields={fields} />
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <div className="bg-gray-50 rounded-lg shadow-sm">
           <Media
             fields={fields}
             handleChange={handleChange}
@@ -299,13 +300,13 @@ const RentForm = () => {
           />
         </div>
 
-        {/* Improved button design */}
-        <div className="flex justify-end gap-4 mt-6">
+        {/* Buttons */}
+        <div className="flex justify-end gap-4 mt-6 sm:flex-col sm:items-center">
           <button
             type="submit"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg transition hover:bg-primary-700 shadow-md flex items-center justify-center"
+            className="bg-primary-600 text-white px-6 py-3 rounded-full transition hover:bg-primary-700 shadow-md flex items-center justify-center w-full sm:w-auto"
           >
-            {isbuttonLoading ? <ButtonSpinner /> : "Add Property"}
+            {isbuttonLoading ? <ButtonSpinner /> : "Submit"}
           </button>
         </div>
       </form>
