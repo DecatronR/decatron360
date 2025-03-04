@@ -15,6 +15,7 @@ import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 import ProceedToRent from "components/Property/ProceedToRent";
+import { fetchUserBookings } from "utils/api/inspection/fetchUserBookings";
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -26,6 +27,7 @@ const PropertyPage = () => {
   const [userRole, setUserRole] = useState();
   const [listerRole, setListerRole] = useState();
   const [referralCode, setReferralCode] = useState();
+  const [userBookings, setUserBookings] = useState([]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -107,6 +109,26 @@ const PropertyPage = () => {
     fetchAgentData();
   }, [agentId]);
 
+  //fetch user bookings to check if the user has booked inspection in the past for this property
+  useEffect(() => {
+    const handleFetchUserBookings = async () => {
+      const userId = sessionStorage.getItem("userId");
+      if (!userId) return;
+      try {
+        const res = await fetchUserBookings(userId);
+        setUserBookings(res);
+      } catch (error) {
+        console.log("Failed to fetch user bookings");
+      }
+    };
+
+    handleFetchUserBookings();
+  }, []);
+
+  const hasBookedInspection = userBookings.some(
+    (booking) => booking.propertyID === id
+  );
+
   if (!property && !isLoading) {
     return (
       <h1 className="text-center text-2xl font-bold mt-10">
@@ -153,14 +175,16 @@ const PropertyPage = () => {
                   )}
                   <ShareButtons property={property} />
                 </div>
-                {agentId && (
-                  // <ScheduleInspectionForm
-                  //   propertyId={id}
-                  //   agentId={agentId}
-                  //   referralCode={referralCode}
-                  // />
-                  <ProceedToRent />
-                )}
+                {agentId &&
+                  (hasBookedInspection ? (
+                    <ProceedToRent />
+                  ) : (
+                    <ScheduleInspectionForm
+                      propertyId={id}
+                      agentId={agentId}
+                      referralCode={referralCode}
+                    />
+                  ))}
               </aside>
             </div>
           </div>
