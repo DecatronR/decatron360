@@ -14,14 +14,11 @@ import Media from "./Media";
 import { fetchAllUser } from "utils/api/user/fetchAllUsers";
 
 const RentForm = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
   const [users, setUsers] = useState([]);
   const [userRole, setUserRole] = useState();
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
 
@@ -36,6 +33,7 @@ const RentForm = () => {
     state: "",
     lga: "",
     neighbourhood: "",
+    houseNoStreet: "",
     size: "",
     propertyDetails: "",
     livingrooms: "null",
@@ -44,7 +42,9 @@ const RentForm = () => {
     parkingSpace: "null",
     price: "",
     inspectionFee: "",
-    titleDocument: "",
+    cautionFee: "",
+    agencyFee: "",
+    latePaymentFee: "",
     virtualTour: "",
     video: "",
     photo: [],
@@ -118,64 +118,6 @@ const RentForm = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = [];
-    const newPreviewUrls = [];
-
-    for (
-      let i = 0;
-      i < files.length && uploadedImages.length + newImages.length < 7;
-      i++
-    ) {
-      const file = files[i];
-
-      // Check file size (e.g., 2MB)
-      if (file.size > 5 * 1024 * 1024) {
-        enqueueSnackbar(`${file.name} is too large, maximum file size is 5MB`, {
-          variant: "error",
-        });
-        continue;
-      }
-
-      // Check file type (e.g., only allow image/jpeg or image/png)
-      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
-        enqueueSnackbar(
-          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`,
-          { variant: "error" }
-        );
-        continue;
-      }
-
-      newImages.push(file);
-      newPreviewUrls.push(URL.createObjectURL(file));
-    }
-
-    setUploadedImages([...uploadedImages, ...newImages]);
-    setPreviewUrls([...previewUrls, ...newPreviewUrls]);
-
-    // Update the actual files in fields
-    setFields((prevFields) => ({
-      ...prevFields,
-      photo: [...prevFields.photo, ...newImages],
-    }));
-  };
-
-  const handleImageRemove = (index) => {
-    // Revoke the URL to free memory
-    URL.revokeObjectURL(previewUrls[index]);
-
-    // Remove the image from preview and fields
-    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
-    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
-
-    // Update the fields.photo array to remove the corresponding file
-    setFields((prevFields) => ({
-      ...prevFields,
-      photo: prevFields.photo.filter((_, i) => i !== index),
-    }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -192,6 +134,7 @@ const RentForm = () => {
     formData.append("state", fields.state);
     formData.append("lga", fields.lga);
     formData.append("neighbourhood", fields.neighbourhood);
+    formData.append("houseNoStreet", fields.houseNoStreet);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
     formData.append("livingrooms", fields.livingrooms);
@@ -200,7 +143,9 @@ const RentForm = () => {
     formData.append("parkingSpace", fields.parkingSpace);
     formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
-    formData.append("titleDocument", fields.titleDocument);
+    formData.append("cautionFee", fields.cautionFee);
+    formData.append("agencyFee", fields.agencyFee);
+    formData.append("latePaymentFee", fields.latePaymentFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
 
@@ -292,12 +237,7 @@ const RentForm = () => {
         </div>
 
         <div className="bg-gray-50 rounded-lg shadow-sm">
-          <Media
-            fields={fields}
-            handleChange={handleChange}
-            handleImageChange={handleImageChange}
-            handleImageRemove={handleImageRemove}
-          />
+          <Media fields={fields} handleChange={handleChange} />
         </div>
 
         {/* Buttons */}

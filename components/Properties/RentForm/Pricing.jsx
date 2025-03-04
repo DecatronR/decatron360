@@ -106,6 +106,8 @@ const Pricing = ({ fields, setFields }) => {
             onBlur={() => handleBlur("transactionCommission")}
           />
         </div>
+
+        {/* Monthly Late Payment Fee Input */}
         <div>
           <label
             htmlFor="transactionCommission"
