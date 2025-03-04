@@ -237,7 +237,11 @@ const RentForm = () => {
         </div>
 
         <div className="bg-gray-50 rounded-lg shadow-sm">
-          <Media fields={fields} handleChange={handleChange} />
+          <Media
+            fields={fields}
+            handleChange={handleChange}
+            setFields={setFields}
+          />
         </div>
 
         {/* Buttons */}
