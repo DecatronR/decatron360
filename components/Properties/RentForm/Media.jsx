@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { XIcon } from "lucide-react";
+
 const Media = ({ fields, handleChange }) => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -16,7 +17,6 @@ const Media = ({ fields, handleChange }) => {
     ) {
       const file = files[i];
 
-      // Check file size (e.g., 2MB)
       if (file.size > 5 * 1024 * 1024) {
         enqueueSnackbar(`${file.name} is too large, maximum file size is 5MB`, {
           variant: "error",
@@ -24,7 +24,6 @@ const Media = ({ fields, handleChange }) => {
         continue;
       }
 
-      // Check file type (e.g., only allow image/jpeg or image/png)
       if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
         enqueueSnackbar(
           `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`,
@@ -40,7 +39,6 @@ const Media = ({ fields, handleChange }) => {
     setUploadedImages([...uploadedImages, ...newImages]);
     setPreviewUrls([...previewUrls, ...newPreviewUrls]);
 
-    // Update the actual files in fields
     setFields((prevFields) => ({
       ...prevFields,
       photo: [...prevFields.photo, ...newImages],
@@ -48,14 +46,11 @@ const Media = ({ fields, handleChange }) => {
   };
 
   const handleImageRemove = (index) => {
-    // Revoke the URL to free memory
     URL.revokeObjectURL(previewUrls[index]);
 
-    // Remove the image from preview and fields
     setPreviewUrls(previewUrls.filter((_, i) => i !== index));
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
 
-    // Update the fields.photo array to remove the corresponding file
     setFields((prevFields) => ({
       ...prevFields,
       photo: prevFields.photo.filter((_, i) => i !== index),
@@ -64,40 +59,41 @@ const Media = ({ fields, handleChange }) => {
 
   return (
     <div className="shadow-md rounded-lg p-6 bg-white max-w-md mx-auto md:max-w-full">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-        {/* Virtual Tour */}
-        <div>
-          <label
-            htmlFor="virtualTour"
-            className="text-sm text-gray-600 block mb-1"
-          >
-            Virtual Tour
-          </label>
-          <input
-            type="text"
-            id="virtualTour"
-            name="virtualTour"
-            className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
-            value={fields.virtualTour}
-            onChange={handleChange}
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        {/* Virtual Tour & Video - Stacked on Mobile, Side-by-Side on Desktop */}
+        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="virtualTour"
+              className="text-sm text-gray-600 block mb-1"
+            >
+              Virtual Tour
+            </label>
+            <input
+              type="text"
+              id="virtualTour"
+              name="virtualTour"
+              className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
+              value={fields.virtualTour}
+              onChange={handleChange}
+            />
+          </div>
 
-        {/* Video */}
-        <div>
-          <label htmlFor="video" className="text-sm text-gray-600 block mb-1">
-            Video
-          </label>
-          <input
-            type="text"
-            id="video"
-            name="video"
-            className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            placeholder="https://www.youtube.com/watch?v=video-id"
-            value={fields.video}
-            onChange={handleChange}
-          />
+          <div>
+            <label htmlFor="video" className="text-sm text-gray-600 block mb-1">
+              Video
+            </label>
+            <input
+              type="text"
+              id="video"
+              name="video"
+              className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              placeholder="https://www.youtube.com/watch?v=video-id"
+              value={fields.video}
+              onChange={handleChange}
+            />
+          </div>
         </div>
 
         {/* Images */}
