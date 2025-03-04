@@ -1,8 +1,8 @@
+"use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
-import Spinner from "../ui/Spinner";
-import ButtonSpinner from "../ui/ButtonSpinner";
+import Spinner from "components/ui/Spinner";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 import { fetchUserData } from "utils/api/user/fetchUserData";
@@ -11,21 +11,14 @@ import Location from "./Location";
 import Features from "./Features";
 import Pricing from "./Pricing";
 import Media from "./Media";
+import { fetchAllUser } from "utils/api/user/fetchAllUsers";
 
 const RentForm = () => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
-  const [propertyTypes, setPropertyTypes] = useState([]);
-  const [states, setStates] = useState([]);
-  const [lga, setLga] = useState([]);
-  const [propertyCondition, setPropertyCondition] = useState([]);
-  const [propertyUsage, setPropertyUsage] = useState([]);
   const [users, setUsers] = useState([]);
   const [userRole, setUserRole] = useState();
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [previewUrls, setPreviewUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
 
@@ -40,6 +33,7 @@ const RentForm = () => {
     state: "",
     lga: "",
     neighbourhood: "",
+    houseNoStreet: "",
     size: "",
     propertyDetails: "",
     livingrooms: "null",
@@ -48,7 +42,9 @@ const RentForm = () => {
     parkingSpace: "null",
     price: "",
     inspectionFee: "",
-    titleDocument: "",
+    cautionFee: "",
+    agencyFee: "",
+    latePaymentFee: "",
     virtualTour: "",
     video: "",
     photo: [],
@@ -69,6 +65,20 @@ const RentForm = () => {
     };
 
     loadUserId();
+  }, []);
+
+  //fech all users
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetchAllUser();
+        setUsers(res);
+      } catch (error) {
+        console.error("Failed to fetch all users:", error);
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   //fetch user role
@@ -108,121 +118,6 @@ const RentForm = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = [];
-    const newPreviewUrls = [];
-
-    for (
-      let i = 0;
-      i < files.length && uploadedImages.length + newImages.length < 7;
-      i++
-    ) {
-      const file = files[i];
-
-      // Check file size (e.g., 2MB)
-      if (file.size > 5 * 1024 * 1024) {
-        enqueueSnackbar(`${file.name} is too large, maximum file size is 5MB`, {
-          variant: "error",
-        });
-        continue;
-      }
-
-      // Check file type (e.g., only allow image/jpeg or image/png)
-      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
-        enqueueSnackbar(
-          `${file.name} is not a supported format. Only jpeg, jpg and png are allowed.`,
-          { variant: "error" }
-        );
-        continue;
-      }
-
-      newImages.push(file);
-      newPreviewUrls.push(URL.createObjectURL(file));
-    }
-
-    setUploadedImages([...uploadedImages, ...newImages]);
-    setPreviewUrls([...previewUrls, ...newPreviewUrls]);
-
-    // Update the actual files in fields
-    setFields((prevFields) => ({
-      ...prevFields,
-      photo: [...prevFields.photo, ...newImages],
-    }));
-  };
-
-  const handleImageRemove = (index) => {
-    // Revoke the URL to free memory
-    URL.revokeObjectURL(previewUrls[index]);
-
-    // Remove the image from preview and fields
-    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
-    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
-
-    // Update the fields.photo array to remove the corresponding file
-    setFields((prevFields) => ({
-      ...prevFields,
-      photo: prevFields.photo.filter((_, i) => i !== index),
-    }));
-  };
-
-  const formatPrice = (price) => {
-    if (typeof price !== "string") {
-      price = String(price); // Convert to string if it's not already
-    }
-
-    const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ""));
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-    }).format(numericPrice || 0); // Fallback to 0 if parsing fails
-  };
-
-  const fetchData = useCallback(async (url, setter) => {
-    const token = sessionStorage.getItem("token");
-    if (!token) {
-      console.error("No token found in session storage");
-      return;
-    }
-    try {
-      const res = await axios.get(url, {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = res.data;
-      setter(data);
-    } catch (err) {
-      console.log(`Issue fetching data from ${url}`);
-    }
-  }, []);
-
-  useEffect(() => {
-    const fetchAllData = async () => {
-      await Promise.all([
-        fetchData(
-          `${baseUrl}/propertyType/fetchPropertyType`,
-          setPropertyTypes
-        ),
-        fetchData(`${baseUrl}/state/fetchState`, setStates),
-        fetchData(`${baseUrl}/lga/fetchLGA`, setLga),
-        fetchData(
-          `${baseUrl}/propertyCondition/fetchPropertyCondition`,
-          setPropertyCondition
-        ),
-        fetchData(
-          `${baseUrl}/propertyUsage/fetchPropertyUsage`,
-          setPropertyUsage
-        ),
-        //fetch users list for admin to select
-        fetchData(`${baseUrl}/users/getusers`, setUsers),
-      ]);
-    };
-
-    fetchAllData();
-  }, [fetchData]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -239,6 +134,7 @@ const RentForm = () => {
     formData.append("state", fields.state);
     formData.append("lga", fields.lga);
     formData.append("neighbourhood", fields.neighbourhood);
+    formData.append("houseNoStreet", fields.houseNoStreet);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
     formData.append("livingrooms", fields.livingrooms);
@@ -247,7 +143,9 @@ const RentForm = () => {
     formData.append("parkingSpace", fields.parkingSpace);
     formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
-    formData.append("titleDocument", fields.titleDocument);
+    formData.append("cautionFee", fields.cautionFee);
+    formData.append("agencyFee", fields.agencyFee);
+    formData.append("latePaymentFee", fields.latePaymentFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
 
@@ -287,9 +185,9 @@ const RentForm = () => {
       <form
         data-testid="rent-form"
         onSubmit={handleSubmit}
-        className="space-y-6 bg-white shadow-md rounded-lg p-6"
+        className="space-y-6 bg-white shadow-lg rounded-none sm:rounded-xl p-6 max-w-3xl w-full mx-auto border border-gray-200 sm:p-6"
       >
-        <h2 className="text-4xl text-center font-bold mb-8 text-gray-800">
+        <h2 className="text-2xl text-center font-bold mb-10 text-gray-900 sm:text-xl">
           Add Property For Rent
         </h2>
 
@@ -297,14 +195,14 @@ const RentForm = () => {
           <div className="mb-6">
             <label
               htmlFor="userID"
-              className="block text-gray-800 font-medium mb-3"
+              className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base"
             >
               User
             </label>
             <select
               id="userID"
               name="userID"
-              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm sm:text-base"
               required
               value={fields.userID}
               onChange={handleChange}
@@ -320,17 +218,35 @@ const RentForm = () => {
             </select>
           </div>
         )}
-        <Description fields={fields} handleChange={handleChange} />
-        <Location fields={fields} handleChange={handleChange} />
-        <Features fields={fields} handleChange={handleChange} />
-        <Pricing fields={fields} handleChange={handleChange} />
-        <Media fields={fields} handleChange={handleChange} />
-        <div className="flex justify-end gap-4">
+
+        {/* Responsive Section Wrappers */}
+        <div className="bg-gray-50  rounded-lg shadow-sm ">
+          <Description fields={fields} handleChange={handleChange} />
+        </div>
+
+        <div className="bg-gray-50 rounded-lg shadow-sm ">
+          <Location fields={fields} handleChange={handleChange} />
+        </div>
+
+        <div className="bg-gray-50 rounded-lg shadow-sm ">
+          <Features fields={fields} handleChange={handleChange} />
+        </div>
+
+        <div className="bg-gray-50 rounded-lg shadow-sm">
+          <Pricing fields={fields} />
+        </div>
+
+        <div className="bg-gray-50 rounded-lg shadow-sm">
+          <Media fields={fields} handleChange={handleChange} />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex justify-end gap-4 mt-6 sm:flex-col sm:items-center">
           <button
             type="submit"
-            className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
+            className="bg-primary-600 text-white px-6 py-3 rounded-full transition hover:bg-primary-700 shadow-md flex items-center justify-center w-full sm:w-auto"
           >
-            {isbuttonLoading ? <ButtonSpinner /> : "Add Property"}
+            {isbuttonLoading ? <ButtonSpinner /> : "Submit"}
           </button>
         </div>
       </form>

@@ -1,99 +1,147 @@
-const Description = ({ fields, handleChange }) => {
-  return (
-    <div>
-      <div className="mb-6">
-        <label
-          htmlFor="propertyType"
-          className="block text-gray-800 font-medium mb-3"
-        >
-          Property Type
-        </label>
-        <select
-          id="propertyType"
-          name="propertyType"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-          required
-          value={fields.propertyType}
-          onChange={handleChange}
-        >
-          <option disabled value="">
-            Select Property Type
+import React, { useState, useEffect } from "react";
+import { fetchPropertyTypes } from "utils/api/propertyListing/fetchPropertyTypes";
+import { fetchPropertyConditions } from "utils/api/propertyListing/fetchPropertyConditions";
+import { fetchPropertyUsage } from "utils/api/propertyListing/fetchPropertyUsage";
+
+const SelectField = ({ label, id, name, value, options, onChange }) => (
+  <div className="w-full">
+    <label htmlFor={id} className="text-sm text-gray-600">
+      {label}
+    </label>
+    <select
+      id={id}
+      name={name}
+      className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+      required
+      value={value || ""}
+      onChange={onChange}
+    >
+      <option disabled value="">
+        Select {label}
+      </option>
+      {options.length > 0 ? (
+        options.map((option) => (
+          <option key={option._id} value={option._slug || ""}>
+            {option.propertyType ||
+              option.propertyCondition ||
+              option.propertyUsage ||
+              "Unnamed"}
           </option>
-          {propertyTypes.map((type) => (
-            <option key={type._id} value={type._slug}>
-              {type.propertyType}
-            </option>
-          ))}
-        </select>
-      </div>
+        ))
+      ) : (
+        <option disabled>No options available</option>
+      )}
+    </select>
+  </div>
+);
 
-      <div className="mb-6">
-        <label htmlFor="title" className="block text-gray-800 font-medium mb-3">
-          Listing Name
-        </label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-          placeholder="e.g. Beautiful Apartment In Miami"
-          required
-          value={fields.title}
-          onChange={handleChange}
-        />
-      </div>
+const InputField = ({ label, id, name, value, placeholder, onChange }) => (
+  <div className="w-full">
+    <label htmlFor={id} className="text-sm text-gray-600">
+      {label}
+    </label>
+    <input
+      type="text"
+      id={id}
+      name={name}
+      className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+      placeholder={placeholder}
+      required
+      value={value}
+      onChange={onChange}
+    />
+  </div>
+);
 
-      <div className="flex gap-4">
-        <div className="w-1/2">
-          <label
-            htmlFor="property_condition"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Property Condition
-          </label>
-          <select
-            id="propertyCondition"
-            name="propertyCondition"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            required
-            value={fields.propertyCondition}
+const Description = ({ fields, handleChange }) => {
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [propertyCondition, setPropertyCondition] = useState([]);
+  const [propertyUsage, setPropertyUsage] = useState([]);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in session storage");
+      return;
+    }
+
+    Promise.allSettled([
+      fetchPropertyTypes(),
+      fetchPropertyConditions(),
+      fetchPropertyUsage(),
+    ])
+      .then(([types, conditions, usage]) => {
+        if (types.status === "fulfilled") setPropertyTypes([...types.value]);
+        if (conditions.status === "fulfilled")
+          setPropertyCondition([...conditions.value]);
+        if (usage.status === "fulfilled") setPropertyUsage([...usage.value]);
+      })
+      .catch((err) => console.error("Error fetching property data:", err));
+  }, []);
+
+  return (
+    <div className="shadow-md rounded-xl p-6 bg-white">
+      <label className="block text-lg font-semibold text-gray-900">
+        Property Description
+      </label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div className="col-span-1 md:col-span-2">
+          <SelectField
+            label="Property Type"
+            id="propertyType"
+            name="propertyType"
+            value={fields.propertyType}
+            options={propertyTypes}
             onChange={handleChange}
-          >
-            <option disabled value="">
-              Select Condition
-            </option>
-            {propertyCondition.map((type) => (
-              <option key={type._id} value={type._slug}>
-                {type.propertyCondition}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
-        <div className="w-1/2">
-          <label
-            htmlFor="usage_type"
-            className="block text-gray-800 font-medium mb-3"
-          >
-            Property Usage
-          </label>
-          <select
+        <div className="col-span-1 md:col-span-2">
+          <InputField
+            label="Listing Name"
+            id="title"
+            name="title"
+            placeholder="e.g. Beautiful Apartment In Miami"
+            value={fields.title}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          <SelectField
+            label="Property Condition"
+            id="propertyCondition"
+            name="propertyCondition"
+            value={fields.propertyCondition}
+            options={propertyCondition}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          <SelectField
+            label="Property Usage"
             id="usageType"
             name="usageType"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            required
             value={fields.usageType}
+            options={propertyUsage}
             onChange={handleChange}
-          >
-            <option disabled value="">
-              Select Usage Type
-            </option>
-            {propertyUsage.map((type) => (
-              <option key={type._id} value={type._slug}>
-                {type.propertyUsage}
-              </option>
-            ))}
-          </select>
+          />
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          <label htmlFor="propertyDetails" className="text-sm text-gray-600">
+            Description
+          </label>
+          <textarea
+            id="propertyDetails"
+            name="propertyDetails"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+            rows="4"
+            placeholder="Add an optional description of your property"
+            value={fields.propertyDetails}
+            onChange={handleChange}
+          ></textarea>
         </div>
       </div>
     </div>
