@@ -8,7 +8,7 @@ export const fetchPropertyTypes = async () => {
     });
     return res.data;
   } catch (error) {
-    console.error("Error fetching favourite properties:", error);
+    console.error("Error fetching property types:", error);
     throw error;
   }
 };

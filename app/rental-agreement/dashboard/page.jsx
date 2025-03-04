@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const contractStages = [
   { label: "Draft", color: "#28a745" },
@@ -10,12 +11,16 @@ const contractStages = [
   { label: "Awaiting Signature", color: "#dc3545" },
   { label: "Completed", color: "#218838" },
 ];
+//fetch lister details
+//fetch logged in user details
+//fethh property details
 
 const Dashboard = () => {
   const [currentStage, setCurrentStage] = useState(0);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState([]); // Track messages
+  const [comments, setComments] = useState([]);
+  const [userData, setUserData] = useState();
 
   const toggleCommentBox = () => {
     setShowCommentBox(!showCommentBox);
@@ -24,6 +29,39 @@ const Dashboard = () => {
   const handleCommentChange = (event) => {
     setComment(event.target.value);
   };
+
+  useEffect(() => {
+    const handleFetchTenantData = async () => {
+      const userId = sessionStorage.getItem("userId");
+      try {
+        const res = fetchUserData(userId);
+        setUserData(res);
+      } catch (error) {
+        console.log("Failed to fetch user: ", error); //use snack bar to display that user needs to be logged in to fetch details
+      }
+    };
+    handleFetchTenantData();
+  }, []);
+
+  useEffect(() => {
+    const handleFetchPropertyData = () => {
+      try {
+        // const res =
+      } catch (error) {
+        console.log("Failed to fetch owner data: ", error);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleFetchOwnerData = () => {
+      try {
+        // const res =
+      } catch (error) {
+        console.log("Failed to fetch owner data: ", error);
+      }
+    };
+  }, []);
 
   const handleSubmitComment = () => {
     if (comment.trim()) {

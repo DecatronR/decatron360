@@ -11,13 +11,6 @@ const TemplateWrapper = () => {
     setIsBrowser(typeof window !== "undefined");
   }, []);
 
-  const handleProceedToSign = () => {
-    // Handle the "Proceed to sign" logic here
-    console.log("Proceeding to sign...");
-    // For example, redirecting to another page or triggering a sign action
-    // window.location.href = "/sign";  // Example of redirect
-  };
-
   return (
     <div
       style={{
@@ -59,27 +52,6 @@ const TemplateWrapper = () => {
             </PDFViewer>
           </div>
         )}
-
-        {/* Option 2: Proceed to sign button */}
-        {/* <div style={{ marginTop: "20px" }}>
-          <button
-            onClick={handleProceedToSign}
-            style={{
-              padding: "10px 20px",
-              backgroundColor: "#5a47fb", // Matching primary color
-              color: "#fff",
-              border: "none",
-              borderRadius: "25px",
-              fontSize: "16px",
-              cursor: "pointer",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#432cde")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#5a47fb")}
-          >
-            Proceed to sign
-          </button>
-        </div> */}
       </div>
     </div>
   );
