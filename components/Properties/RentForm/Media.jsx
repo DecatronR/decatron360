@@ -1,4 +1,8 @@
-const Media = () => {
+import { useState } from "react";
+
+const Media = ({ fields, handleChange, handleImageChange }) => {
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   return (
     <div>
       <div className="mb-6">

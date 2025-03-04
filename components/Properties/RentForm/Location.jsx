@@ -1,9 +1,36 @@
-import React, { useState } from "react ";
+import React, { useState, useEffect, useCallback } from "react";
+import { fetchStates } from "utils/api/propertyListing/fetchStates";
+import { fetchLga } from "utils/api/propertyListing/fetchLga";
 
 const Location = ({ fields, handleChange }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const [states, setStates] = useState([]);
   const [lga, setLga] = useState([]);
+
+  const fetchData = useCallback(async (fetchFunction, setter) => {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+      console.error("No token found in session storage");
+      return;
+    }
+    try {
+      const data = await fetchFunction();
+      setter(data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      await Promise.allSettled([
+        fetchData(fetchStates, setStates),
+        fetchData(fetchLga, setLga),
+      ]);
+    };
+
+    fetchAllData();
+  }, [fetchData]);
+
   return (
     <div>
       <div className="mb-6 bg-blue-50 p-4 rounded-lg">

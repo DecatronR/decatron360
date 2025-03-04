@@ -1,4 +1,16 @@
-const Pricing = () => {
+const Pricing = ({ fields }) => {
+  const formatPrice = (price) => {
+    if (typeof price !== "string") {
+      price = String(price); // Convert to string if it's not already
+    }
+
+    const numericPrice = parseFloat(price.replace(/[^0-9.]/g, ""));
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    }).format(numericPrice || 0); // Fallback to 0 if parsing fails
+  };
+
   return (
     <div>
       <div className="w-1/2">

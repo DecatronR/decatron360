@@ -1,4 +1,4 @@
-const Features = () => {
+const Features = ({ fields, handleChange }) => {
   return (
     <div>
       <div className="w-1/2">
