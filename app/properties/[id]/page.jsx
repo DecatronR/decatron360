@@ -14,6 +14,7 @@ import ScheduleInspectionForm from "../../../components/Property/ScheduleInspect
 import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
+import ProceedToRent from "components/Property/ProceedToRent";
 
 const PropertyPage = () => {
   const { id } = useParams();
@@ -153,11 +154,12 @@ const PropertyPage = () => {
                   <ShareButtons property={property} />
                 </div>
                 {agentId && (
-                  <ScheduleInspectionForm
-                    propertyId={id}
-                    agentId={agentId}
-                    referralCode={referralCode}
-                  />
+                  // <ScheduleInspectionForm
+                  //   propertyId={id}
+                  //   agentId={agentId}
+                  //   referralCode={referralCode}
+                  // />
+                  <ProceedToRent />
                 )}
               </aside>
             </div>
