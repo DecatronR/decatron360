@@ -1,4 +1,4 @@
-import RentForm from "components/Properties/RentForm";
+import RentForm from "components/Properties/RentForm/Index";
 
 const PropertyAddPage = () => {
   return (
