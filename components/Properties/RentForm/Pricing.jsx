@@ -106,6 +106,24 @@ const Pricing = ({ fields, setFields }) => {
             onBlur={() => handleBlur("transactionCommission")}
           />
         </div>
+        <div>
+          <label
+            htmlFor="transactionCommission"
+            className="text-sm text-gray-600"
+          >
+            Monthly Late Payment Fee
+          </label>
+          <input
+            type="text"
+            id="latePaymentFee"
+            name="latePaymentFee"
+            placeholder="NGN 0.00"
+            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
+            value={fields.latePaymentFee || ""}
+            onChange={handleChange}
+            onBlur={() => handleBlur("transactionCommission")}
+          />
+        </div>
       </div>
     </div>
   );
