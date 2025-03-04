@@ -116,6 +116,7 @@ const PropertyPage = () => {
       if (!userId) return;
       try {
         const res = await fetchUserBookings(userId);
+        console.log("User bookings: ", res);
         setUserBookings(res);
       } catch (error) {
         console.log("Failed to fetch user bookings");
@@ -126,7 +127,7 @@ const PropertyPage = () => {
   }, []);
 
   const hasBookedInspection = userBookings.some(
-    (booking) => booking.propertyID === id
+    (booking) => booking.booking.propertyID === id
   );
 
   if (!property && !isLoading) {
