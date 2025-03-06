@@ -56,9 +56,8 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
 
   useEffect(() => {
     const handleFetchAgentSchedule = async () => {
-      console.log("Referall code ....: ", referralCode);
       try {
-        if (referralCode === undefined) return; // Ensure referralCode is checked first
+        if (referralCode === undefined) return;
 
         let rawAvailability;
         if (referralCode) {

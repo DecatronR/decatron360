@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 
 const contractStages = [
   { label: "Draft", color: "#28a745" },
@@ -12,9 +13,6 @@ const contractStages = [
   { label: "Awaiting Signature", color: "#dc3545" },
   { label: "Completed", color: "#218838" },
 ];
-//fetch lister details
-//fetch logged in user details
-//fethh property details
 
 const Dashboard = () => {
   const { id } = useParams();
@@ -22,47 +20,58 @@ const Dashboard = () => {
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const [userData, setUserData] = useState();
+  const [propertyData, setPropertyData] = useState({});
+  const [ownerId, setOwnerId] = useState(null);
+  const [ownerData, setOwnerData] = useState({});
+  const [tenantData, setTenantData] = useState({});
 
-  const toggleCommentBox = () => {
-    setShowCommentBox(!showCommentBox);
-  };
+  const toggleCommentBox = () => setShowCommentBox(!showCommentBox);
 
-  const handleCommentChange = (event) => {
-    setComment(event.target.value);
-  };
+  const handleCommentChange = (event) => setComment(event.target.value);
+
+  useEffect(() => {
+    const handleFetchPropertyData = async () => {
+      try {
+        const res = await fetchPropertyData(id);
+        setPropertyData(res);
+        setOwnerId(res.data.userID);
+        console.log("property data: ", res);
+      } catch (error) {
+        console.log("Failed to fetch property data: ", error);
+      }
+    };
+
+    if (id) handleFetchPropertyData();
+  }, [id]);
+
+  useEffect(() => {
+    const handleFetchOwnerData = async () => {
+      try {
+        if (!ownerId) return;
+        const res = await fetchUserData(ownerId);
+        setOwnerData(res);
+        console.log("owner data: ", res);
+      } catch (error) {
+        console.log("Failed to fetch owner data: ", error);
+      }
+    };
+
+    handleFetchOwnerData();
+  }, [ownerId]);
 
   useEffect(() => {
     const handleFetchTenantData = async () => {
       const userId = sessionStorage.getItem("userId");
+      if (!userId) return;
       try {
-        const res = fetchUserData(userId);
-        setUserData(res);
+        const res = await fetchUserData(userId);
+        setTenantData(res);
       } catch (error) {
-        console.log("Failed to fetch user: ", error); //use snack bar to display that user needs to be logged in to fetch details
+        console.log("Failed to fetch user | tenant data:", error);
       }
     };
+
     handleFetchTenantData();
-  }, []);
-
-  useEffect(() => {
-    const handleFetchPropertyData = () => {
-      try {
-        // const res =
-      } catch (error) {
-        console.log("Failed to fetch owner data: ", error);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleFetchOwnerData = () => {
-      try {
-        // const res =
-      } catch (error) {
-        console.log("Failed to fetch owner data: ", error);
-      }
-    };
   }, []);
 
   const handleSubmitComment = () => {
@@ -73,53 +82,16 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-4 sm:p-8 space-y-8 bg-gray-50 min-h-screen">
-      <header>
+    <div className="py-4 sm:p-8 space-y-8 bg-gray-50 min-h-screen">
+      <header className="px-4 sm:px-8">
         <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center">
           Rental Agreement Dashboard
         </h1>
       </header>
 
-      <div className="bg-white shadow-md rounded-lg p-4 sm:p-6 relative flex flex-col transition-all duration-500">
-        {/* Progress Tracker */}
-        <div>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
-            Your Rental Agreement
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Track the progress of your rental agreement seamlessly.
-          </p>
-
-          <div className="flex flex-wrap justify-center sm:justify-between mt-6 gap-2 sm:gap-0">
-            {contractStages.map((stage, index) => (
-              <div key={index} className="flex flex-col items-center flex-1">
-                <div
-                  style={{ backgroundColor: stage.color }}
-                  className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full transition-opacity duration-300 ${
-                    currentStage >= index ? "opacity-100" : "opacity-50"
-                  }`}
-                ></div>
-                <span className="mt-2 text-xs sm:text-sm text-gray-700 text-center">
-                  {stage.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="w-full bg-gray-200 rounded-full h-2 mt-6">
-            <div
-              className="h-2 rounded-full transition-all duration-500"
-              style={{
-                width: `${(currentStage / (contractStages.length - 1)) * 100}%`,
-                backgroundColor: contractStages[currentStage].color,
-              }}
-            ></div>
-          </div>
-        </div>
-
+      <div className="bg-white shadow-md rounded-lg p-0 sm:p-6 relative flex flex-col transition-all duration-500">
         {/* Main Content - Template & Comment Box */}
-        <div className="flex flex-col lg:flex-row gap-4 mt-6">
-          {/* Template Wrapper - Stays Within Layout */}
+        <div className="flex flex-col lg:flex-row gap-4 mt-0 sm:mt-6">
           <div
             className={`w-full lg:${
               showCommentBox ? "w-2/3" : "w-full"
@@ -128,9 +100,8 @@ const Dashboard = () => {
             <TemplateWrapper />
           </div>
 
-          {/* Comment Box - Responsive behavior */}
           {showCommentBox && (
-            <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 flex flex-col max-h-[1000px]">
+            <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]">
               <h3 className="text-lg font-medium text-gray-800 mb-3">
                 Modification Requests
               </h3>
@@ -169,7 +140,7 @@ const Dashboard = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-2 sm:py-4">
           <button className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition">
             Proceed to Sign
           </button>
