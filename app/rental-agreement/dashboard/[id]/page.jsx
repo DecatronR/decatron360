@@ -140,7 +140,7 @@ const Dashboard = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-2 sm:py-4">
+        <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-4 sm:py-4">
           <button className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition">
             Proceed to Sign
           </button>
