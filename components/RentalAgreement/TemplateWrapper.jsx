@@ -66,7 +66,7 @@ const TemplateWrapper = () => {
         }}
       >
         {/* Display PDF in an iframe only in the browser */}
-        {isBrowser && pdfUrl ? (
+        {/* {isBrowser && pdfUrl ? (
           <iframe
             src={pdfUrl}
             width="100%"
@@ -76,6 +76,25 @@ const TemplateWrapper = () => {
               borderRadius: "8px",
             }}
           />
+        ) : (
+          <p>Generating Rental Agreement...</p>
+        )} */}
+
+        {isBrowser && pdfUrl ? (
+          <object
+            data={pdfUrl}
+            type="application/pdf"
+            width="100%"
+            height="700px"
+            style={{ border: "none", borderRadius: "8px" }}
+          >
+            <p>
+              Your browser does not support PDFs.{" "}
+              <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+                Download it instead
+              </a>
+            </p>
+          </object>
         ) : (
           <p>Generating Rental Agreement...</p>
         )}
