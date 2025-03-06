@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import FavoriteButton from "../../../components/Property/FavoriteButton";
 import AgencyRequestButton from "components/Property/AgencyRequestButton";
 import PropertyDetails from "../../../components/Property/PropertyDetails";
@@ -15,8 +15,10 @@ import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 import ProceedToRent from "components/Property/ProceedToRent";
+import { fetchUserBookings } from "utils/api/inspection/fetchUserBookings";
 
 const PropertyPage = () => {
+  const router = useRouter();
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [agentId, setAgentId] = useState("");
@@ -26,6 +28,8 @@ const PropertyPage = () => {
   const [userRole, setUserRole] = useState();
   const [listerRole, setListerRole] = useState();
   const [referralCode, setReferralCode] = useState();
+  const [userBookings, setUserBookings] = useState([]);
+  const [showScheduleForm, setShowScheduleForm] = useState(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -107,6 +111,34 @@ const PropertyPage = () => {
     fetchAgentData();
   }, [agentId]);
 
+  //fetch user bookings to check if the user has booked inspection in the past for this property
+  useEffect(() => {
+    const handleFetchUserBookings = async () => {
+      const userId = sessionStorage.getItem("userId");
+      if (!userId) return;
+      try {
+        const res = await fetchUserBookings(userId);
+        setUserBookings(res);
+      } catch (error) {
+        console.log("Failed to fetch user bookings");
+      }
+    };
+
+    handleFetchUserBookings();
+  }, []);
+
+  const hasBookedInspection = userBookings.some(
+    (booking) => booking.booking.propertyID === id
+  );
+
+  const handleInspectAgain = () => {
+    setShowScheduleForm(true);
+  };
+
+  const handleProceedToRent = () => {
+    router.push(`/rental-agreement/dashboard/${id}`);
+  };
+
   if (!property && !isLoading) {
     return (
       <h1 className="text-center text-2xl font-bold mt-10">
@@ -153,14 +185,27 @@ const PropertyPage = () => {
                   )}
                   <ShareButtons property={property} />
                 </div>
-                {agentId && (
-                  // <ScheduleInspectionForm
-                  //   propertyId={id}
-                  //   agentId={agentId}
-                  //   referralCode={referralCode}
-                  // />
-                  <ProceedToRent />
-                )}
+                {agentId &&
+                  (hasBookedInspection ? (
+                    showScheduleForm ? (
+                      <ScheduleInspectionForm
+                        propertyId={id}
+                        agentId={agentId}
+                        referralCode={referralCode}
+                      />
+                    ) : (
+                      <ProceedToRent
+                        onProceed={handleProceedToRent}
+                        onBookInspection={handleInspectAgain}
+                      />
+                    )
+                  ) : (
+                    <ScheduleInspectionForm
+                      propertyId={id}
+                      agentId={agentId}
+                      referralCode={referralCode}
+                    />
+                  ))}
               </aside>
             </div>
           </div>

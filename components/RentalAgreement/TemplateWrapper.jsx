@@ -5,10 +5,22 @@ import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementT
 
 const TemplateWrapper = () => {
   const [isBrowser, setIsBrowser] = useState(false);
+  const [padding, setPadding] = useState("20px");
 
   useEffect(() => {
     // Check if the code is running in the browser
     setIsBrowser(typeof window !== "undefined");
+  }, []);
+
+  useEffect(() => {
+    const updatePadding = () => {
+      setPadding(window.innerWidth < 768 ? "0px" : "20px");
+    };
+
+    updatePadding(); // Run on initial load
+    window.addEventListener("resize", updatePadding);
+
+    return () => window.removeEventListener("resize", updatePadding);
   }, []);
 
   return (
@@ -19,7 +31,7 @@ const TemplateWrapper = () => {
         alignItems: "center",
         height: "100vh",
         backgroundColor: "#f4f7fa", // Soft background color
-        padding: "20px",
+        padding: padding,
       }}
     >
       <div
@@ -29,7 +41,7 @@ const TemplateWrapper = () => {
           borderRadius: "8px", // Rounded corners for smooth look
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Light shadow for depth
           padding: "20px",
-          maxWidth: "90%",
+          maxWidth: "100%",
           width: "800px", // Limit width to prevent stretching
         }}
       >
