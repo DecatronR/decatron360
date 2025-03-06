@@ -1,15 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { pdf } from "@react-pdf/renderer";
+import { PDFViewer } from "@react-pdf/renderer";
 import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
 
 const TemplateWrapper = () => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [padding, setPadding] = useState("20px");
-  const [pdfUrl, setPdfUrl] = useState(null);
 
   useEffect(() => {
-    // Check if running in the browser
+    // Check if the code is running in the browser
     setIsBrowser(typeof window !== "undefined");
   }, []);
 
@@ -24,25 +23,6 @@ const TemplateWrapper = () => {
     return () => window.removeEventListener("resize", updatePadding);
   }, []);
 
-  useEffect(() => {
-    const generatePdf = async () => {
-      try {
-        const blob = await pdf(<RentalAgreementTemplate />).toBlob();
-        const url = URL.createObjectURL(blob);
-        setPdfUrl(url);
-      } catch (error) {
-        console.error("Error generating PDF:", error);
-      }
-    };
-
-    generatePdf();
-
-    return () => {
-      // Cleanup the object URL to prevent memory leaks
-      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
-    };
-  }, []);
-
   return (
     <div
       style={{
@@ -51,7 +31,7 @@ const TemplateWrapper = () => {
         alignItems: "center",
         height: "100vh",
         backgroundColor: "#f4f7fa", // Soft background color
-        padding,
+        padding: padding,
       }}
     >
       <div
@@ -65,38 +45,24 @@ const TemplateWrapper = () => {
           width: "800px", // Limit width to prevent stretching
         }}
       >
-        {/* Display PDF in an iframe only in the browser */}
-        {/* {isBrowser && pdfUrl ? (
-          <iframe
-            src={pdfUrl}
-            width="100%"
-            height="700px"
+        {/* Option 1: Display PDF in a viewer only in the browser */}
+        {isBrowser && (
+          <div
             style={{
-              border: "none",
-              borderRadius: "8px",
+              marginBottom: "20px", // Space below the PDF viewer
             }}
-          />
-        ) : (
-          <p>Generating Rental Agreement...</p>
-        )} */}
-
-        {isBrowser && pdfUrl ? (
-          <object
-            data={pdfUrl}
-            type="application/pdf"
-            width="100%"
-            height="700px"
-            style={{ border: "none", borderRadius: "8px" }}
           >
-            <p>
-              Your browser does not support PDFs.{" "}
-              <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-                Download it instead
-              </a>
-            </p>
-          </object>
-        ) : (
-          <p>Generating Rental Agreement...</p>
+            <PDFViewer
+              width="100%"
+              height="700px"
+              style={{
+                border: "none", // Remove the border
+                borderRadius: "8px", // Smooth edges for the viewer
+              }}
+            >
+              <RentalAgreementTemplate />
+            </PDFViewer>
+          </div>
         )}
       </div>
     </div>

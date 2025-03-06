@@ -65,6 +65,7 @@ const Dashboard = () => {
       if (!userId) return;
       try {
         const res = await fetchUserData(userId);
+        console.log("Tenant data: ", res);
         setTenantData(res);
       } catch (error) {
         console.log("Failed to fetch user | tenant data:", error);
@@ -97,7 +98,11 @@ const Dashboard = () => {
               showCommentBox ? "w-2/3" : "w-full"
             } min-h-[300px]`}
           >
-            <TemplateWrapper />
+            <TemplateWrapper
+              propertyData={propertyData}
+              ownerData={ownerData}
+              tenantData={tenantData}
+            />
           </div>
 
           {showCommentBox && (
