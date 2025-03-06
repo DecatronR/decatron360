@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 
@@ -16,6 +17,7 @@ const contractStages = [
 //fethh property details
 
 const Dashboard = () => {
+  const { id } = useParams();
   const [currentStage, setCurrentStage] = useState(0);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState("");

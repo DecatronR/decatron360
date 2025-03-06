@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import FavoriteButton from "../../../components/Property/FavoriteButton";
 import AgencyRequestButton from "components/Property/AgencyRequestButton";
 import PropertyDetails from "../../../components/Property/PropertyDetails";
@@ -18,6 +18,7 @@ import ProceedToRent from "components/Property/ProceedToRent";
 import { fetchUserBookings } from "utils/api/inspection/fetchUserBookings";
 
 const PropertyPage = () => {
+  const router = useRouter();
   const { id } = useParams();
   const [property, setProperty] = useState(null);
   const [agentId, setAgentId] = useState("");
@@ -28,6 +29,7 @@ const PropertyPage = () => {
   const [listerRole, setListerRole] = useState();
   const [referralCode, setReferralCode] = useState();
   const [userBookings, setUserBookings] = useState([]);
+  const [showScheduleForm, setShowScheduleForm] = useState(false);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -130,6 +132,14 @@ const PropertyPage = () => {
     (booking) => booking.booking.propertyID === id
   );
 
+  const handleInspectAgain = () => {
+    setShowScheduleForm(true);
+  };
+
+  const handleProceedToRent = () => {
+    router.push(`/rental-agreement/dashboard/${id}`);
+  };
+
   if (!property && !isLoading) {
     return (
       <h1 className="text-center text-2xl font-bold mt-10">
@@ -178,7 +188,18 @@ const PropertyPage = () => {
                 </div>
                 {agentId &&
                   (hasBookedInspection ? (
-                    <ProceedToRent />
+                    showScheduleForm ? (
+                      <ScheduleInspectionForm
+                        propertyId={id}
+                        agentId={agentId}
+                        referralCode={referralCode}
+                      />
+                    ) : (
+                      <ProceedToRent
+                        onProceed={handleProceedToRent}
+                        onBookInspection={handleInspectAgain}
+                      />
+                    )
                   ) : (
                     <ScheduleInspectionForm
                       propertyId={id}
