@@ -16,9 +16,21 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   text: { fontSize: 12, marginBottom: 5 },
+  boldText: { fontSize: 12, fontWeight: "bold", color: "#19738D" },
 });
 
-const PDFRender = () => (
+const PDFRender = ({
+  ownerName,
+  tenantName,
+  propertyHouseNumberAndStreet,
+  propertyNeighbourhood,
+  propertyState,
+  rentDuration,
+  rentPrice,
+  cautionFee,
+  agencyFee,
+  latePaymentFee,
+}) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.section}>
@@ -31,55 +43,63 @@ const PDFRender = () => (
       <View style={styles.section}>
         <Text style={styles.text}>BETWEEN</Text>
         <Text style={styles.text}>
-          _______________________________________ (Hereinafter called the
-          “LANDLORD” which expression shall where the context so admits include
-          his Legal and Personal Representatives, assigns and
+          <Text style={styles.boldText}>{ownerName}</Text>(Hereinafter called
+          the “LANDLORD” which expression shall where the context so admits
+          include his Legal and Personal Representatives, assigns and
           successors-in-title) of the ONE PART.
         </Text>
         <Text style={styles.text}>AND</Text>
         <Text style={styles.text}>
-          _______________________________________ (Hereinafter called the
-          “TENANT” which expression shall where the context so admits include
-          his Legal and Personal Representatives, assigns and
+          <Text style={styles.boldText}>{tenantName}</Text>(Hereinafter called
+          the “TENANT” which expression shall where the context so admits
+          include his Legal and Personal Representatives, assigns and
           successors-in-title) of the OTHER PART.
+        </Text>
+      </View>
+      <View style={styles.section}>
+        <Text style={styles.subTitle}>WHEREAS:</Text>
+        <Text style={styles.text}>
+          The Landlord is the owner of the property located at _____//House and
+          stree number, {propertyNeighbourhood}, {propertyState}.___
+          (hereinafter referred to as "THE PROPERTY"), which the Landlord has
+          agreed to let and the Tenant has agreed to rent at a fixed rent of
+          __________________________ (______________________). The Landlord and
+          Tenant have agreed to observe the covenants herein contained.
         </Text>
       </View>
       <View style={styles.section}>
         <Text style={styles.subTitle}>1. RENT AND DURATION</Text>
         <Text style={styles.text}>
           1.1 The Landlord hereby lets the property to the Tenant for a fixed
-          term of ____________ (beginning from ______________ and ending on
-          ______________) at a fixed rent of __________________ payable in
+          term of ___1 year____ (beginning from ___//1 week from signed renntal
+          agreement signed__ and ending on __//365 days after start date__) at a
+          fixed rent of ___//Rent price in words{" "}
+          <Text style={styles.boldText}>NGN{rentPrice}</Text> {""} payable in
           advance at the commencement of this agreement, the receipt of which
           the Landlord acknowledges.
         </Text>
+
         <Text style={styles.text}>
-          1.2 The Tenant shall pay a Refundable Caution Fee of ______________
-          (______________), which shall be refunded at the expiration of the
-          tenancy period, provided there are no outstanding damages or unpaid
-          dues.
+          1.2 The Tenant shall pay a Refundable Caution Fee of _One Hundred
+          Thousand Naira only_//Caution fee in words__{" "}
+          <Text style={styles.boldText}>
+            {""}(NGN100,000) {""}
+          </Text>
+          , which shall be refunded at the expiration of the tenancy period,
+          provided there are no outstanding damages or unpaid dues.
         </Text>
         <Text style={styles.text}>
-          1.3 The Tenant agrees to pay a Transaction Fee of ______________
-          (______________), covering agency fee, administrative and processing
-          costs related to the tenancy agreement, as well as Decatron platform
-          charges.
+          1.3 The Tenant agrees to pay a Transaction Fee of{" "}
+          <Text style={styles.boldText}>15%</Text> {""}
+          which is
+          <Text style={styles.boldText}>Calculate 15% of rent price</Text>,
+          covering agency fee, administrative and processing costs related to
+          the tenancy agreement, as well as Decatron platform charges.
         </Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.subTitle}>NOW IT IS HEREBY AGREED AS FOLLOWS:</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.subTitle}>1. RENT AND DURATION</Text>
-        <Text style={styles.text}>
-          1.1 The Landlord hereby lets the property to the Tenant for a fixed
-          term of ____________ (beginning from ______________ and ending on
-          ______________) at a fixed rent of __________________ payable in
-          advance at the commencement of this agreement, the receipt of which
-          the Landlord acknowledges.
-        </Text>
       </View>
 
       <View style={styles.section}>
@@ -123,8 +143,11 @@ const PDFRender = () => (
           renewed by mutual agreement.
         </Text>
         <Text style={styles.text}>
-          - If the Tenant fails to vacate upon expiration, a mesne profit of
-          ______________ per day shall be payable until possession is delivered.
+          - If the Tenant fails to vacate upon expiration, a mesne profit of{" "}
+          {""}
+          <Text style={styles.boldText}>NGN1,000</Text>
+          {""}
+          possession is delivered.
         </Text>
         <Text style={styles.text}>
           - To notify the Landlord at least 30 days before expiration if they

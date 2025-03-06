@@ -20,10 +20,10 @@ const Dashboard = () => {
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const [propertyData, setPropertyData] = useState({});
+  const [propertyData, setPropertyData] = useState();
   const [ownerId, setOwnerId] = useState(null);
-  const [ownerData, setOwnerData] = useState({});
-  const [tenantData, setTenantData] = useState({});
+  const [ownerData, setOwnerData] = useState();
+  const [tenantData, setTenantData] = useState();
 
   const toggleCommentBox = () => setShowCommentBox(!showCommentBox);
 
@@ -81,6 +81,10 @@ const Dashboard = () => {
       setComment("");
     }
   };
+
+  useEffect(() => {
+    console.log("Property data level 2: ", propertyData);
+  }, []);
 
   return (
     <div className="py-4 sm:p-8 space-y-8 bg-gray-50 min-h-screen">

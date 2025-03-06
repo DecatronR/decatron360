@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
 
-const TemplateWrapper = () => {
+const TemplateWrapper = ({ propertyData, ownerData, tenantData }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [padding, setPadding] = useState("20px");
 
@@ -21,6 +21,10 @@ const TemplateWrapper = () => {
     window.addEventListener("resize", updatePadding);
 
     return () => window.removeEventListener("resize", updatePadding);
+  }, []);
+
+  useEffect(() => {
+    console.log("Property data level 2: ", propertyData);
   }, []);
 
   return (
@@ -60,7 +64,20 @@ const TemplateWrapper = () => {
                 borderRadius: "8px", // Smooth edges for the viewer
               }}
             >
-              <RentalAgreementTemplate />
+              {propertyData && ownerData && tenantData && (
+                <RentalAgreementTemplate
+                  ownerName={ownerData.name}
+                  tenantName={tenantData.name}
+                  // propertyHouseNumberAndStreet={propertyData.data.houseNoStreet}
+                  propertyNeighbourhood={propertyData.data.neighbourhood}
+                  propertyState={propertyData.data.state}
+                  // rentDuration={propertyData.data.duration}
+                  rentPrice={propertyData.data.price}
+                  cautionFee={propertyData.data.cautionFee}
+                  agencyFee={propertyData.data.agencyFee}
+                  latePaymentFee={propertyData.data.latePaymentFee}
+                />
+              )}
             </PDFViewer>
           </div>
         )}
