@@ -44,16 +44,26 @@ const PDFRender = () => (
           successors-in-title) of the OTHER PART.
         </Text>
       </View>
-
       <View style={styles.section}>
-        <Text style={styles.subTitle}>WHEREAS:</Text>
+        <Text style={styles.subTitle}>1. RENT AND DURATION</Text>
         <Text style={styles.text}>
-          The Landlord is the owner of the property located at
-          ___________________________________________________________
-          (hereinafter referred to as "THE PROPERTY"), which the Landlord has
-          agreed to let and the Tenant has agreed to rent at a fixed rent of
-          __________________________ (______________________). The Landlord and
-          Tenant have agreed to observe the covenants herein contained.
+          1.1 The Landlord hereby lets the property to the Tenant for a fixed
+          term of ____________ (beginning from ______________ and ending on
+          ______________) at a fixed rent of __________________ payable in
+          advance at the commencement of this agreement, the receipt of which
+          the Landlord acknowledges.
+        </Text>
+        <Text style={styles.text}>
+          1.2 The Tenant shall pay a Refundable Caution Fee of ______________
+          (______________), which shall be refunded at the expiration of the
+          tenancy period, provided there are no outstanding damages or unpaid
+          dues.
+        </Text>
+        <Text style={styles.text}>
+          1.3 The Tenant agrees to pay a Transaction Fee of ______________
+          (______________), covering agency fee, administrative and processing
+          costs related to the tenancy agreement, as well as Decatron platform
+          charges.
         </Text>
       </View>
 
