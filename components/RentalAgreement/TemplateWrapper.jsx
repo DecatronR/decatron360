@@ -26,11 +26,21 @@ const TemplateWrapper = () => {
 
   useEffect(() => {
     const generatePdf = async () => {
-      const blob = await pdf(<RentalAgreementTemplate />).toBlob();
-      setPdfUrl(URL.createObjectURL(blob));
+      try {
+        const blob = await pdf(<RentalAgreementTemplate />).toBlob();
+        const url = URL.createObjectURL(blob);
+        setPdfUrl(url);
+      } catch (error) {
+        console.error("Error generating PDF:", error);
+      }
     };
 
     generatePdf();
+
+    return () => {
+      // Cleanup the object URL to prevent memory leaks
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
   }, []);
 
   return (
@@ -41,7 +51,7 @@ const TemplateWrapper = () => {
         alignItems: "center",
         height: "100vh",
         backgroundColor: "#f4f7fa", // Soft background color
-        padding: padding,
+        padding,
       }}
     >
       <div
@@ -67,7 +77,7 @@ const TemplateWrapper = () => {
             }}
           />
         ) : (
-          <p>Loading PDF...</p>
+          <p>Generating Rental Agreement...</p>
         )}
       </div>
     </div>
