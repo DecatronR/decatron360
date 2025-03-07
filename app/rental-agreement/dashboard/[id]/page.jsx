@@ -4,18 +4,13 @@ import { useParams } from "next/navigation";
 import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
-
-const contractStages = [
-  { label: "Draft", color: "#28a745" },
-  { label: "Under Review", color: "#007bff" },
-  { label: "Modification Requested", color: "#ffc107" },
-  { label: "Owner Review", color: "#fd7e14" },
-  { label: "Awaiting Signature", color: "#dc3545" },
-  { label: "Completed", color: "#218838" },
-];
+import { fetchTemplateDetails } from "app/api/eSignature/fetchTemplateDetails";
+import { createDocumentFromTemplate } from "app/api/eSignature/createDocument";
 
 const Dashboard = () => {
   const { id } = useParams();
+  const rentalAgreementTemplateId =
+    process.env.NEXT_PUBLIC_ZOHO_SIGN_RENTAL_AGREEMENT_TEMPLATE_ID;
   const [currentStage, setCurrentStage] = useState(0);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState("");
@@ -75,16 +70,34 @@ const Dashboard = () => {
     handleFetchTenantData();
   }, []);
 
+  //fetch template details with id
+
+  useEffect(() => {
+    const handleFetchTemplateDetails = async () => {
+      console.log("Template id: ", rentalAgreementTemplateId);
+
+      if (!rentalAgreementTemplateId) return;
+      try {
+        const res = await fetchTemplateDetails(rentalAgreementTemplateId);
+        console.log("Templates details: ", res);
+      } catch (error) {
+        console.log("Failed to fetch template details by Id: ", error);
+      }
+    };
+    handleFetchTemplateDetails();
+  }, [rentalAgreementTemplateId]);
+
+  //create a document with from the temaplete id
+  useEffect(() => {}, []);
+
+  //send the document for signing
+
   const handleSubmitComment = () => {
     if (comment.trim()) {
       setComments([...comments, { text: comment, timestamp: new Date() }]);
       setComment("");
     }
   };
-
-  useEffect(() => {
-    console.log("Property data level 2: ", propertyData);
-  }, []);
 
   return (
     <div className="py-4 sm:p-8 space-y-8 bg-gray-50 min-h-screen">

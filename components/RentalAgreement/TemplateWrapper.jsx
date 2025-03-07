@@ -17,14 +17,10 @@ const TemplateWrapper = ({ propertyData, ownerData, tenantData }) => {
       setPadding(window.innerWidth < 768 ? "0px" : "20px");
     };
 
-    updatePadding(); // Run on initial load
+    updatePadding();
     window.addEventListener("resize", updatePadding);
 
     return () => window.removeEventListener("resize", updatePadding);
-  }, []);
-
-  useEffect(() => {
-    console.log("Property data level 2: ", propertyData);
   }, []);
 
   return (
@@ -41,12 +37,12 @@ const TemplateWrapper = ({ propertyData, ownerData, tenantData }) => {
       <div
         style={{
           textAlign: "center",
-          backgroundColor: "#fff", // White background for the PDF section
-          borderRadius: "8px", // Rounded corners for smooth look
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Light shadow for depth
+          backgroundColor: "#fff",
+          borderRadius: "8px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           padding: "20px",
           maxWidth: "100%",
-          width: "800px", // Limit width to prevent stretching
+          width: "800px",
         }}
       >
         {/* Option 1: Display PDF in a viewer only in the browser */}

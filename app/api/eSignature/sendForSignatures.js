@@ -1,4 +1,5 @@
-import { apiClient } from "./apiClient";
+"use server ";
+import apiClient from "./apiClient";
 
 /**
  *Send the document for signing

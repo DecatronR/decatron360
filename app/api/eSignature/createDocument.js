@@ -1,4 +1,5 @@
-import { apiClient } from "./apiClient";
+"use server";
+import apiClient from "./apiClient";
 
 /**
  * Create a document from a template (Prefill data)
