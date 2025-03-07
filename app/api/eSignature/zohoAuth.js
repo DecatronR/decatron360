@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const CLIENT_ID = process.env.NEXT_PUBLIC_ZOHO_SIGN_CLIENT_ID;
-const CLIENT_SECRET = process.env.NEXT_PUBLIC_ZOHO_SIGN_CLIENT_SECRET;
-const REFRESH_TOKEN = process.env.NEXT_PUBLIC_ZOHO_SIGN_REFRESH_TOKEN;
-const TOKEN_URL = process.env.NEXT_PUBLIC_ZOHO_SIGN_TOKEN_URL;
+const CLIENT_ID = process.env.ZOHO_SIGN_CLIENT_ID;
+const CLIENT_SECRET = process.env.ZOHO_SIGN_CLIENT_SECRET;
+const REFRESH_TOKEN = process.env.ZOHO_SIGN_REFRESH_TOKEN;
+const TOKEN_URL = process.env.ZOHO_SIGN_TOKEN_URL;
 
 // Store access token in memory
 globalThis.accessToken = null;
