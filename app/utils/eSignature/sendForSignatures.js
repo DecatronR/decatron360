@@ -1,4 +1,5 @@
-"use server ";
+"use server";
+
 import apiClient from "./apiClient";
 
 /**

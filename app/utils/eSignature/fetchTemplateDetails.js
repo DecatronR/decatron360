@@ -8,7 +8,7 @@ import apiClient from "./apiClient";
 export const fetchTemplateDetails = async (templateId) => {
   try {
     const response = await apiClient.get(`/templates/${templateId}`);
-    return response.data.template; // Returns template details
+    return response.data;
   } catch (error) {
     console.error(
       "Error fetching template details:",

@@ -1,3 +1,4 @@
+"use server";
 import axios from "axios";
 
 const CLIENT_ID = process.env.ZOHO_SIGN_CLIENT_ID;

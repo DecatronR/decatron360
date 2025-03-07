@@ -4,8 +4,8 @@ import { useParams } from "next/navigation";
 import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
-import { fetchTemplateDetails } from "app/api/eSignature/fetchTemplateDetails";
-import { createDocumentFromTemplate } from "app/api/eSignature/createDocument";
+import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";
+import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
 
 const Dashboard = () => {
   const { id } = useParams();
