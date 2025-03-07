@@ -13,12 +13,17 @@ let accessToken = null;
  */
 const getAccessToken = async () => {
   try {
-    const response = await axios.post(
-      `${TOKEN_URL}?refresh_token=${REFRESH_TOKEN}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&redirect_uri=https%3A%2F%2Fsign.zoho.com&grant_type=refresh_token`
-    );
+    const params = new URLSearchParams({
+      refresh_token: REFRESH_TOKEN,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      redirect_uri: "https://sign.zoho.com",
+      grant_type: "refresh_token",
+    });
 
+    const response = await axios.post(`${TOKEN_URL}`, params);
     accessToken = response.data.access_token;
-    console.log("🔄 Access Token Refreshed:", accessToken);
+    console.log("Access Token Refreshed:", accessToken);
     return accessToken;
   } catch (error) {
     console.error(
