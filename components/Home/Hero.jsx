@@ -16,7 +16,7 @@ const Hero = () => {
         </div>
 
         {/* PropertySearchForm with Filter Button */}
-        <div className="relative z-10 w-full max-w-3xl sm:max-w-xl  md:max-w-2xl lg:max-w-3xl flex items-center gap-3 bg-white/90 shadow-lg rounded-full px-4 py-3  border border-gray-300 focus-within:ring-2 ring-primary-500 transition-all">
+        <div className="relative z-10 w-full max-w-3xl sm:max-w-xl  md:max-w-2xl lg:max-w-3xl flex items-center gap-3 bg-white/90 shadow-lg rounded-full px-3 py-2  border border-gray-300 focus-within:ring-2 ring-primary-500 transition-all">
           {/* Search Form takes up most of the space */}
           <div className="flex-grow">
             <PropertySearchForm />
