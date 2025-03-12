@@ -1,6 +1,7 @@
 "use client";
-import PropertyCard from "../Properties/PropertyCard";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import PropertyCard from "../Properties/PropertyCard";
 import HomePropertiesSkeleton from "components/ui/HomePropertiesSkeleton";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
@@ -9,6 +10,7 @@ import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoritePro
 import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
 
 const HomeProperties = () => {
+  const router = useRouter();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
@@ -109,7 +111,7 @@ const HomeProperties = () => {
   };
 
   const handleAddProperty = () => {
-    router.push("/add-listing");
+    router.push("properties/add/for-rent");
   };
 
   return (
