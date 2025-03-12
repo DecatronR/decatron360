@@ -1,18 +1,17 @@
 "use client";
 import PropertyCard from "../Properties/PropertyCard";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import Spinner from "../ui/Spinner";
 import HomePropertiesSkeleton from "components/ui/HomePropertiesSkeleton";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
 import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
 import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoriteProperties";
+import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
 
 const HomeProperties = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(8); // Initial visible properties
+  const [visibleCount, setVisibleCount] = useState(8);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -109,6 +108,10 @@ const HomeProperties = () => {
     setVisibleCount((prevCount) => prevCount + 8);
   };
 
+  const handleAddProperty = () => {
+    router.push("/add-listing");
+  };
+
   return (
     <>
       <section className="px-4 py-6">
@@ -147,6 +150,7 @@ const HomeProperties = () => {
           </button>
         </section>
       )}
+      <AddPropertyFloatingBtn onClick={handleAddProperty} />
     </>
   );
 };
