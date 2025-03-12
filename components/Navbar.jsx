@@ -66,10 +66,84 @@ const Navbar = () => {
               </Link>
             )}
           </div>
-
           {shouldShowSearch && (
-            <div className="flex-grow flex justify-center">
+            <div className="flex-grow flex justify-center sm:max-w-md md:max-w-lg lg:max-w-none">
               <PropertySearchForm />
+            </div>
+          )}
+
+          {user && (
+            <div className="relative ml-3 block md:hidden">
+              {" "}
+              {/* Hides on md and larger */}
+              <button
+                type="button"
+                className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                id="user-menu-button"
+                aria-expanded="false"
+                aria-haspopup="true"
+                onClick={() => setIsMobileProfileMenuOpen((prev) => !prev)}
+              >
+                <span className="sr-only">Open user menu</span>
+                <Image
+                  className="h-8 w-8 rounded-full"
+                  src={user?.passport || profileDefault}
+                  alt="User Profile"
+                  width={40}
+                  height={40}
+                />
+              </button>
+              {isMobileProfileMenuOpen && (
+                <div
+                  className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="user-menu-button"
+                  tabIndex="-1"
+                >
+                  {/* User Information */}
+                  <div className="px-4 py-3 border-b border-gray-200 hover:bg-gray-100">
+                    <div className="flex items-center space-x-3 ">
+                      <Link
+                        href="/user-profile"
+                        className="flex items-center space-x-3 "
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => setIsMobileProfileMenuOpen(false)}
+                      >
+                        <Image
+                          className="h-10 w-10 rounded-full"
+                          src={user?.passport || profileDefault}
+                          alt="User Profile"
+                          width={40}
+                          height={40}
+                        />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {user?.name || "User Name"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {user?.role?.charAt(0).toUpperCase() +
+                              user?.role?.slice(1) || "Role"}
+                          </p>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      signOut();
+                    }}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    role="menuitem"
+                    tabIndex="-1"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -229,80 +303,6 @@ const Navbar = () => {
           )}
         </div>
         {/* Mobile Profile Button (Only shows Sign Out) */}
-        {user && (
-          <div className="relative ml-3 block md:hidden">
-            {" "}
-            {/* Hides on md and larger */}
-            <button
-              type="button"
-              className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-              id="user-menu-button"
-              aria-expanded="false"
-              aria-haspopup="true"
-              onClick={() => setIsMobileProfileMenuOpen((prev) => !prev)}
-            >
-              <span className="sr-only">Open user menu</span>
-              <Image
-                className="h-8 w-8 rounded-full"
-                src={user?.passport || profileDefault}
-                alt="User Profile"
-                width={40}
-                height={40}
-              />
-            </button>
-            {isMobileProfileMenuOpen && (
-              <div
-                className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="user-menu-button"
-                tabIndex="-1"
-              >
-                {/* User Information */}
-                <div className="px-4 py-3 border-b border-gray-200 hover:bg-gray-100">
-                  <div className="flex items-center space-x-3 ">
-                    <Link
-                      href="/user-profile"
-                      className="flex items-center space-x-3 "
-                      role="menuitem"
-                      tabIndex="-1"
-                      onClick={() => setIsMobileProfileMenuOpen(false)}
-                    >
-                      <Image
-                        className="h-10 w-10 rounded-full"
-                        src={user?.passport || profileDefault}
-                        alt="User Profile"
-                        width={40}
-                        height={40}
-                      />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {user?.name || "User Name"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {user?.role?.charAt(0).toUpperCase() +
-                            user?.role?.slice(1) || "Role"}
-                        </p>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => {
-                    setIsProfileMenuOpen(false);
-                    signOut();
-                  }}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  role="menuitem"
-                  tabIndex="-1"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </nav>
   );
