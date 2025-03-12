@@ -4,26 +4,101 @@ import { useParams } from "next/navigation";
 import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
-
-const contractStages = [
-  { label: "Draft", color: "#28a745" },
-  { label: "Under Review", color: "#007bff" },
-  { label: "Modification Requested", color: "#ffc107" },
-  { label: "Owner Review", color: "#fd7e14" },
-  { label: "Awaiting Signature", color: "#dc3545" },
-  { label: "Completed", color: "#218838" },
-];
+import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";
+import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
+import { numberToWords } from "utils/helpers/priceNumberToWords";
+import { getStartDate } from "utils/helpers/getStartData";
+import { getEndDate } from "utils/helpers/getEndData";
 
 const Dashboard = () => {
   const { id } = useParams();
+  const rentalAgreementTemplateId =
+    process.env.NEXT_PUBLIC_ZOHO_SIGN_RENTAL_AGREEMENT_TEMPLATE_ID;
   const [currentStage, setCurrentStage] = useState(0);
   const [showCommentBox, setShowCommentBox] = useState(false);
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const [propertyData, setPropertyData] = useState({});
+  const [propertyData, setPropertyData] = useState();
   const [ownerId, setOwnerId] = useState(null);
-  const [ownerData, setOwnerData] = useState({});
-  const [tenantData, setTenantData] = useState({});
+  const [ownerData, setOwnerData] = useState();
+  const [tenantData, setTenantData] = useState();
+  const [isCreating, setIsCreating] = useState(false);
+  const [documentCreated, setDocumentCreated] = useState(false);
+  const startDate = getStartDate();
+  const endDate = getEndDate(startDate);
+  const addressParts = [
+    propertyData?.data.houseNoStreet,
+    propertyData?.data.neighbourhood,
+    propertyData?.data.state,
+  ].filter(Boolean);
+  const address = addressParts.join(", ");
+
+  const documentFields = {
+    templates: {
+      field_data: {
+        field_text_data: {
+          Address: address,
+          "Price in words": propertyData?.price
+            ? numberToWords(propertyData?.data.price)
+            : "",
+          "Price in figures": propertyData?.data.price,
+          Duration: "1 Year",
+          "Start Date": startDate,
+          "End Date": endDate,
+          "Late Payment Fee": "₦2,000",
+        },
+        field_boolean_data: {},
+        field_date_data: {
+          Date: "01 January 1970",
+        },
+        field_radio_data: {},
+        field_checkboxgroup_data: {},
+      },
+      notes: "",
+      actions: [
+        {
+          action_type: "SIGN", // Ensure Zoho understands the role
+          recipient_name: ownerData?.name,
+          recipient_email: ownerData?.email,
+          action_id: "451236000000038041",
+          signing_order: 1,
+          role: "LandLord",
+          verify_recipient: false,
+          private_notes: "",
+          // witnesses: [
+          //   {
+          //     action_id: "451236000000038139",
+          //     signing_order: 3,
+          //     role: "Landlord's witness",
+          //     verify_recipient: false,
+          //     private_notes: "",
+          //     witness_specified: true,
+          //   },
+          // ],
+        },
+        {
+          action_type: "SIGN",
+          recipient_name: tenantData?.name,
+          recipient_email: tenantData?.email,
+          action_id: "451236000000038047",
+          signing_order: 2,
+          role: "Tenant",
+          verify_recipient: false,
+          private_notes: "",
+          // witnesses: [
+          //   {
+          //     action_id: "451236000000038145",
+          //     signing_order: 4,
+          //     role: "Tenant's witness",
+          //     verify_recipient: false,
+          //     private_notes: "",
+          //     witness_specified: true,
+          //   },
+          // ],
+        },
+      ],
+    },
+  };
 
   const toggleCommentBox = () => setShowCommentBox(!showCommentBox);
 
@@ -65,6 +140,7 @@ const Dashboard = () => {
       if (!userId) return;
       try {
         const res = await fetchUserData(userId);
+        console.log("Tenant data: ", res);
         setTenantData(res);
       } catch (error) {
         console.log("Failed to fetch user | tenant data:", error);
@@ -73,6 +149,53 @@ const Dashboard = () => {
 
     handleFetchTenantData();
   }, []);
+
+  //fetch template details with id
+
+  useEffect(() => {
+    const handleFetchTemplateDetails = async () => {
+      console.log("Template id: ", rentalAgreementTemplateId);
+
+      if (!rentalAgreementTemplateId) return;
+      try {
+        const res = await fetchTemplateDetails(rentalAgreementTemplateId);
+        console.log("Templates details: ", res);
+      } catch (error) {
+        console.log("Failed to fetch template details by Id: ", error);
+      }
+    };
+    handleFetchTemplateDetails();
+  }, [rentalAgreementTemplateId]);
+
+  //create a document with from the temaplete id
+
+  const handleCreateDocument = async () => {
+    if (!propertyData || !ownerData || !tenantData) {
+      console.log("Missing required data to create document");
+      return;
+    }
+
+    setIsCreating(true);
+    // console.log("Document fields before creation: ", documentFields);
+    console.log(
+      "Payload before sending:",
+      JSON.stringify(documentFields, null, 2)
+    );
+
+    try {
+      const res = await createDocumentFromTemplate(
+        rentalAgreementTemplateId,
+        documentFields
+      );
+      console.log("New document created: ", res);
+    } catch (error) {
+      console.log("Failed to create document from template: ", error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  //send the document for signing
 
   const handleSubmitComment = () => {
     if (comment.trim()) {
@@ -97,7 +220,11 @@ const Dashboard = () => {
               showCommentBox ? "w-2/3" : "w-full"
             } min-h-[300px]`}
           >
-            <TemplateWrapper />
+            <TemplateWrapper
+              propertyData={propertyData}
+              ownerData={ownerData}
+              tenantData={tenantData}
+            />
           </div>
 
           {showCommentBox && (
@@ -141,9 +268,13 @@ const Dashboard = () => {
 
         {/* Action Buttons */}
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-4 sm:py-4">
-          <button className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition">
+          <button
+            className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition"
+            onClick={handleCreateDocument}
+          >
             Proceed to Sign
           </button>
+
           <button
             onClick={toggleCommentBox}
             className="px-6 py-2 w-full sm:w-auto bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition"
