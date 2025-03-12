@@ -12,7 +12,7 @@ const Analytics = dynamic(() => import("@/components/Analytics"), {
 });
 
 const ClientLayout = ({ children }) => {
-  const hideRoutes = ["/auth/login", "/auth/register"];
+  const hideRoutes = ["/auth/login", "/auth/register", "auth/otp"];
   const pathname = usePathname();
   return (
     <AuthProvider>
