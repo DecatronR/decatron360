@@ -8,12 +8,17 @@ import { addFavoriteProperties } from "utils/api/properties/addFavoritePropertie
 import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
 import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoriteProperties";
 import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
+import { useAuth } from "context/AuthContext";
 
 const HomeProperties = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
+
+  const privilegedRoles = ["agent", "owner", "property manager", "admin"];
+  const isPrivilegedUser = user && privilegedRoles.includes(user.role);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -152,7 +157,9 @@ const HomeProperties = () => {
           </button>
         </section>
       )}
-      <AddPropertyFloatingBtn onClick={handleAddProperty} />
+      {user && isPrivilegedUser && (
+        <AddPropertyFloatingBtn onClick={handleAddProperty} />
+      )}
     </>
   );
 };
