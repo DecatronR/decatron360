@@ -68,16 +68,6 @@ const MobileNavbar = () => {
                 <GitBranch className="h-6 w-6" />
                 <span className="text-xs">Networks</span>
               </Link>
-
-              {/* Profile */}
-              <Link
-                className="flex flex-col items-center"
-                href="/user-profile"
-                role="menuitem"
-              >
-                <User className="h-6 w-6" />
-                <span className="text-xs">Profile</span>
-              </Link>
             </>
           ) : (
             <>
@@ -98,15 +88,6 @@ const MobileNavbar = () => {
               >
                 <ClipboardList className="h-6 w-6" />
                 <span className="text-xs">Inspections</span>
-              </Link>
-
-              <Link
-                className="flex flex-col items-center"
-                href="/user-profile"
-                role="menuitem"
-              >
-                <User className="h-6 w-6" />
-                <span className="text-xs">Profile</span>
               </Link>
             </>
           )
