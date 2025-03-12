@@ -123,7 +123,7 @@ const HomeProperties = () => {
     <>
       <section className="px-4 py-6">
         <div className="container-xl lg:container m-auto">
-          <h2 className="text-3xl font-bold text-primary-500 mb-4 text-center">
+          <h2 className="text-2xl font-bold text-primary-500 mb-4 text-center">
             Latest Properties
           </h2>
           {loading ? (
