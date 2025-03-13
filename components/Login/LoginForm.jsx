@@ -32,7 +32,10 @@ const LoginForm = () => {
       enqueueSnackbar("Login successful!", { variant: "success" });
       router.replace("/");
     } catch (error) {
-      console.error("Issues with login", error);
+      console.error("Login failed", error);
+      enqueueSnackbar("Login failed. Please check your credentials.", {
+        variant: "error",
+      });
     } finally {
       setIsButtonLoading(false);
     }
