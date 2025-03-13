@@ -24,6 +24,7 @@ const Registration = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   useEffect(() => {
     const handleFetchRoles = async () => {
@@ -48,29 +49,34 @@ const Registration = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsButtonLoading(true);
+    setRegistrationSuccess(false); // Reset flag before starting
+
     try {
       const response = await axios.post(`${baseUrl}/auth/register`, formData);
+      console.log("response: ", response);
       if (response.status === 201) {
+        setRegistrationSuccess(true);
+        sessionStorage.setItem("email", formData.email);
+        sessionStorage.setItem("userId", response.data.user);
         enqueueSnackbar("Please complete OTP verification!", {
           variant: "success",
         });
         router.replace("/auth/otp");
-      } else {
-        enqueueSnackbar("Registration failed", { variant: "error" });
+        return;
       }
     } catch (error) {
+      if (registrationSuccess) return;
+
       let errorMessage = "Registration failed";
 
       if (error.response) {
         const responseData = error.response.data;
 
         if (Array.isArray(responseData.responseMessage)) {
-          // Extract message from each object in the array
           errorMessage = responseData.responseMessage
             .map((msg) => msg.msg)
             .join(", ");
         } else if (typeof responseData.responseMessage === "string") {
-          // Directly use the string error message
           errorMessage = responseData.responseMessage;
         } else {
           errorMessage = responseData.message || "Something went wrong!";
