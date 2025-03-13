@@ -59,11 +59,29 @@ const Registration = () => {
         enqueueSnackbar("Registration failed", { variant: "error" });
       }
     } catch (error) {
-      enqueueSnackbar(`Registration failed: ${error.message}`, {
-        variant: "error",
-      });
-    } finally {
-      setIsButtonLoading(false);
+      let errorMessage = "Registration failed";
+
+      if (error.response) {
+        const responseData = error.response.data;
+
+        if (Array.isArray(responseData.responseMessage)) {
+          // Extract message from each object in the array
+          errorMessage = responseData.responseMessage
+            .map((msg) => msg.msg)
+            .join(", ");
+        } else if (typeof responseData.responseMessage === "string") {
+          // Directly use the string error message
+          errorMessage = responseData.responseMessage;
+        } else {
+          errorMessage = responseData.message || "Something went wrong!";
+        }
+      } else if (error.request) {
+        errorMessage = "No response from the server. Please try again.";
+      } else {
+        errorMessage = error.message;
+      }
+
+      enqueueSnackbar(errorMessage, { variant: "error" });
     }
   };
 
