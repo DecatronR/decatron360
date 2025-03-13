@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
     } catch (error) {
       console.error("Sign out failed", error);
+      throw error;
     }
   };
 
@@ -63,6 +64,7 @@ export const AuthProvider = ({ children }) => {
           setUser(userData);
         } catch (error) {
           console.error("Get user failed", error);
+          throw error;
         } finally {
           setLoading(false);
         }
