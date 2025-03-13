@@ -24,6 +24,7 @@ const Registration = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   useEffect(() => {
     const handleFetchRoles = async () => {
@@ -31,7 +32,9 @@ const Registration = () => {
         const res = await fetchRoles();
         setRoles(res);
       } catch (error) {
-        console.log("Error fetching roles");
+        enqueueSnackbar("Error fetching roles", error.message, {
+          variant: "error ",
+        });
       }
     };
     handleFetchRoles();
@@ -48,22 +51,44 @@ const Registration = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsButtonLoading(true);
+    setRegistrationSuccess(false); // Reset flag before starting
+
     try {
       const response = await axios.post(`${baseUrl}/auth/register`, formData);
       if (response.status === 201) {
+        setRegistrationSuccess(true);
+        sessionStorage.setItem("email", formData.email);
+        sessionStorage.setItem("userId", response.data.user);
         enqueueSnackbar("Please complete OTP verification!", {
           variant: "success",
         });
         router.replace("/auth/otp");
-      } else {
-        enqueueSnackbar("Registration failed", { variant: "error" });
+        return;
       }
     } catch (error) {
-      enqueueSnackbar(`Registration failed: ${error.message}`, {
-        variant: "error",
-      });
-    } finally {
-      setIsButtonLoading(false);
+      if (registrationSuccess) return;
+
+      let errorMessage = "Registration failed";
+
+      if (error.response) {
+        const responseData = error.response.data;
+
+        if (Array.isArray(responseData.responseMessage)) {
+          errorMessage = responseData.responseMessage
+            .map((msg) => msg.msg)
+            .join(", ");
+        } else if (typeof responseData.responseMessage === "string") {
+          errorMessage = responseData.responseMessage;
+        } else {
+          errorMessage = responseData.message || "Something went wrong!";
+        }
+      } else if (error.request) {
+        errorMessage = "No response from the server. Please try again.";
+      } else {
+        errorMessage = error.message;
+      }
+
+      enqueueSnackbar(errorMessage, { variant: "error" });
     }
   };
 

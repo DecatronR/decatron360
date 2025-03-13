@@ -14,8 +14,12 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (email, password) => {
     try {
       const { userId, token } = await signInApi(email, password);
-      document.cookie = `auth_jwt=${token}; path=/`;
 
+      if (!userId || !token) {
+        throw new Error("Invalid login response");
+      }
+
+      document.cookie = `auth_jwt=${token}; path=/`;
       sessionStorage.setItem("userId", userId);
       sessionStorage.setItem("token", token);
 
@@ -29,10 +33,13 @@ export const AuthProvider = ({ children }) => {
           },
         }
       );
+
       const user = res.data.data;
       setUser(user);
+      return user;
     } catch (error) {
       console.error("Sign in failed", error);
+      throw error;
     }
   };
 
@@ -44,6 +51,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
     } catch (error) {
       console.error("Sign out failed", error);
+      throw error;
     }
   };
 
@@ -56,6 +64,7 @@ export const AuthProvider = ({ children }) => {
           setUser(userData);
         } catch (error) {
           console.error("Get user failed", error);
+          throw error;
         } finally {
           setLoading(false);
         }
@@ -66,7 +75,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ user, setUser, signIn, signOut, loading }}>
       {children}
     </AuthContext.Provider>
   );
