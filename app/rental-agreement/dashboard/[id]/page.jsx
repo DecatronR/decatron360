@@ -6,6 +6,9 @@ import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";
 import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
+import { initiatePayment } from "app/utils/payment/initiailizePayment";
+import { verifyPayment } from "app/utils/payment/verifyPayment";
+import { generatePaymentReference } from "utils/helpers/generatePaymentReference";
 import { numberToWords } from "utils/helpers/priceNumberToWords";
 import { getStartDate } from "utils/helpers/getStartData";
 import { getEndDate } from "utils/helpers/getEndData";
@@ -24,6 +27,8 @@ const Dashboard = () => {
   const [tenantData, setTenantData] = useState();
   const [isCreating, setIsCreating] = useState(false);
   const [documentCreated, setDocumentCreated] = useState(false);
+  const [paymentReference, setPaymentReference] = useState();
+  const [paymentStatus, setPaymentStatus] = useState();
   const startDate = getStartDate();
   const endDate = getEndDate(startDate);
   const addressParts = [
@@ -195,12 +200,86 @@ const Dashboard = () => {
     }
   };
 
-  //send the document for signing
+  const handleDocumentDispatch = () => {
+    //function to send our document for signatures to be triggered immediately after payment is verified
+  };
 
+  //Trigger payment functionality
+  const handlePayment = async () => {
+    try {
+      const paymentData = {
+        userId: "64bdfad4f23a5e6d4c8a9e91",
+        amount: 5000,
+        customerName: "John Doe",
+        customerEmail: "johndoe@example.com",
+        paymentReference: generatePaymentReference("rent"),
+        paymentDescription: "Real payment",
+      };
+
+      const response = await initiatePayment(paymentData);
+      setPaymentReference(paymentData.paymentReference);
+      console.log("Payment initiated:", response);
+
+      // Redirect the user to the Monnify payment page if applicable
+      if (response.responseBody.checkoutUrl) {
+        window.location.href = response.responseBody.checkoutUrl;
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
+  //poll for verification of payment
+  useEffect(() => {
+    if (!paymentReference) {
+      alert("No payment reference found");
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 12;
+
+    const pollPaymentStatus = async () => {
+      try {
+        const response = await verifyPayment(paymentReference);
+        console.log("Payment status:", response);
+
+        if (response?.transaction?.status === "PAID") {
+          clearInterval(interval); // Stop polling
+          setPaymentStatus("verified");
+          handleDocumentDispatch(); // Proceed to send out document for signing
+        } else {
+          setStatus("pending");
+        }
+      } catch (error) {
+        console.error("Error verifying payment:", error.message);
+        if (attempts >= maxAttempts) {
+          clearInterval(interval); // Stop polling after max attempts
+          setStatus("failed");
+        }
+      }
+      attempts++;
+    };
+
+    const interval = setInterval(pollPaymentStatus, 5000); // Poll every 5 seconds
+    pollPaymentStatus(); // Run once immediately
+
+    return () => clearInterval(interval); // Cleanup when component unmounts
+  }, [paymentReference]);
+
+  //send the document for signing
   const handleSubmitComment = () => {
     if (comment.trim()) {
       setComments([...comments, { text: comment, timestamp: new Date() }]);
       setComment("");
+    }
+  };
+
+  const handleProceedToSign = () => {
+    handleCreateDocument();
+    handlePayment();
+    if (paymentStatus === "verified") {
+      handleDocumentDispatch();
     }
   };
 
@@ -270,7 +349,7 @@ const Dashboard = () => {
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-4 sm:py-4">
           <button
             className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition"
-            onClick={handleCreateDocument}
+            onClick={handleProceedToSign}
           >
             Proceed to Sign
           </button>

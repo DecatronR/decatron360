@@ -71,6 +71,7 @@ const Navbar = () => {
               <PropertySearchForm />
             </div>
           )}
+          
           {/* Mobile Profile Button (Only shows Sign Out) */}
           {user && (
             <div className="relative ml-3 block md:hidden">
