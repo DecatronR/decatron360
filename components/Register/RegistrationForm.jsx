@@ -107,7 +107,7 @@ const Registration = () => {
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
           >
             <option disabled value="">
-              Select Role
+              What best describes you
             </option>
             {roles.map((role) => (
               <option key={role.id} value={role.slug}>

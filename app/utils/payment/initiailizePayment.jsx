@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_DOMAIN;
 
 /**
  * Initialize a Payment Transaction
- * @param {Object} paymentData - { amount, customerName, customerEmail, paymentReference, paymentDescription }
+ * @param {Object} paymentData - { userId, amount, customerName, customerEmail, paymentReference, paymentDescription }
  * @returns {Promise<Object>}
  */
 export const initiatePayment = async (paymentData) => {

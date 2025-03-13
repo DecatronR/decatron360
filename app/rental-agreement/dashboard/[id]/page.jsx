@@ -208,10 +208,11 @@ const Dashboard = () => {
   const handlePayment = async () => {
     try {
       const paymentData = {
+        userId: "64bdfad4f23a5e6d4c8a9e91",
         amount: 5000,
         customerName: "John Doe",
         customerEmail: "johndoe@example.com",
-        paymentReference: generatePaymentReference(rent),
+        paymentReference: generatePaymentReference("rent"),
         paymentDescription: "Real payment",
       };
 
@@ -271,6 +272,14 @@ const Dashboard = () => {
     if (comment.trim()) {
       setComments([...comments, { text: comment, timestamp: new Date() }]);
       setComment("");
+    }
+  };
+
+  const handleProceedToSign = () => {
+    handleCreateDocument();
+    handlePayment();
+    if (paymentStatus === "verified") {
+      handleDocumentDispatch();
     }
   };
 
@@ -340,7 +349,7 @@ const Dashboard = () => {
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-4 sm:py-4">
           <button
             className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition"
-            onClick={handleCreateDocument}
+            onClick={handleProceedToSign}
           >
             Proceed to Sign
           </button>
