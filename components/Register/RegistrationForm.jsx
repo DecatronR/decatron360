@@ -32,7 +32,9 @@ const Registration = () => {
         const res = await fetchRoles();
         setRoles(res);
       } catch (error) {
-        console.log("Error fetching roles");
+        enqueueSnackbar("Error fetching roles", error.message, {
+          variant: "error ",
+        });
       }
     };
     handleFetchRoles();
@@ -53,7 +55,6 @@ const Registration = () => {
 
     try {
       const response = await axios.post(`${baseUrl}/auth/register`, formData);
-      console.log("response: ", response);
       if (response.status === 201) {
         setRegistrationSuccess(true);
         sessionStorage.setItem("email", formData.email);
