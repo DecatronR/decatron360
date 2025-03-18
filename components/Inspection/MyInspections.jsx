@@ -77,14 +77,14 @@ const MyInspections = ({ bookings }) => {
                 href={`/properties/${booking.propertyDetails._id}`}
                 passHref
               >
-                <h1 className="text-lg sm:text-2xl font-semibold cursor-pointer hover:underline text-center sm:text-left">
+                <h1 className="text-lg sm:text-2xl font-semibold cursor-pointer hover:underline sm:text-left">
                   {booking.propertyDetails.title || "Loading..."}
                 </h1>
               </Link>
-              <p className="text-gray-600 mt-2 text-center sm:text-left">
+              <p className="text-gray-600 mt-2 sm:text-left">
                 {truncateText(booking.propertyDetails.propertyDetails)}
               </p>
-              <div className="flex items-center justify-center sm:justify-start text-gray-700 mt-2 text-sm sm:text-base">
+              <div className="flex items-center sm:justify-start text-gray-700 mt-2 text-sm sm:text-base">
                 <MapPin className="mr-2 text-blue-500" />
                 <p>
                   {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
@@ -92,7 +92,7 @@ const MyInspections = ({ bookings }) => {
                   {booking.propertyDetails.state || "Loading..."}
                 </p>
               </div>
-              <div className="flex items-center justify-center sm:justify-start text-gray-700 mt-3 text-sm sm:text-base">
+              <div className="flex items-center sm:justify-start text-gray-700 mt-3 text-sm sm:text-base">
                 <Clock className="mr-2 text-red-500" />
                 <p>
                   <span className="font-medium">Inspection Date:</span>{" "}
