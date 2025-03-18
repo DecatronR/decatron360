@@ -6,6 +6,7 @@ import { Clock, MapPin } from "lucide-react";
 
 const MyInspections = ({ bookings }) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  console.log("Bookings: ", bookings);
 
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "Loading...";
@@ -62,7 +63,7 @@ const MyInspections = ({ bookings }) => {
             key={booking.booking._id}
             className="bg-white shadow-lg rounded-lg p-4 mb-6 sm:flex sm:items-center sm:gap-4"
           >
-            <Link href={""} passHref>
+            <Link href={`/properties/${booking.propertyDetails._id}`} passHref>
               <Image
                 src={booking.photos[0]?.path || "/placeholder.jpg"}
                 alt={booking.propertyDetails.title || "Property image"}
@@ -72,7 +73,10 @@ const MyInspections = ({ bookings }) => {
               />
             </Link>
             <div className="mt-4 sm:mt-0 sm:flex-1">
-              <Link href={``} passHref>
+              <Link
+                href={`/properties/${booking.propertyDetails._id}`}
+                passHref
+              >
                 <h1 className="text-lg sm:text-2xl font-semibold cursor-pointer hover:underline text-center sm:text-left">
                   {booking.propertyDetails.title || "Loading..."}
                 </h1>
