@@ -2,10 +2,17 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
+import { Clock, MapPin } from "lucide-react";
 
 const MyInspections = ({ bookings }) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const truncateText = (text, maxLength = 100) => {
+    if (!text) return "Loading...";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
+  };
 
   const calculateTimeLeft = (inspectionDateTime) => {
     const now = new Date();
@@ -20,7 +27,7 @@ const MyInspections = ({ bookings }) => {
       (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
     );
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    const seconds = Math.floor((distance % (1000 * 60 * 60)) / 1000);
 
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   };
@@ -31,7 +38,6 @@ const MyInspections = ({ bookings }) => {
     )
   );
 
-  // Update the time left for each booking every second
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTimeLeft(
@@ -41,88 +47,87 @@ const MyInspections = ({ bookings }) => {
       );
     }, 1000);
 
-    // Cleanup the interval when component unmounts
     return () => clearInterval(intervalId);
   }, [bookings]);
 
   return (
     <div className="container mx-auto p-4">
       {bookings.length === 0 ? (
-        <p>No inspections available.</p>
+        <p className="text-center text-gray-500 text-lg">
+          No inspections available.
+        </p>
       ) : (
-        bookings.map((booking, index) => {
-          const handleStartTracking = () => {
-            alert("Tracking started!");
-          };
-
-          return (
-            <div
-              key={booking.booking._id}
-              className="bg-white shadow-md rounded-lg p-6 mb-6"
-            >
-              <div className="flex items-start mb-4">
-                <Link href={""} passHref>
-                  <Image
-                    src={`${booking.photos[0]?.path}` || "/placeholder.jpg"}
-                    alt={booking.propertyDetails.title || "Property image"}
-                    width={100}
-                    height={100}
-                    className="rounded-lg mr-4 cursor-pointer object-cover"
-                  />
-                </Link>
-                <Link href={``} passHref>
-                  <h1 className="text-2xl font-bold cursor-pointer hover:underline">
-                    {booking.propertyDetails.title || "Loading..."}
-                  </h1>
-                </Link>
-              </div>
-              <p className="text-gray-600 mb-4">
-                {booking.propertyDetails.propertyDetails || "Loading..."}
+        bookings.map((booking, index) => (
+          <div
+            key={booking.booking._id}
+            className="bg-white shadow-lg rounded-lg p-4 mb-6 sm:flex sm:items-center sm:gap-4"
+          >
+            <Link href={""} passHref>
+              <Image
+                src={booking.photos[0]?.path || "/placeholder.jpg"}
+                alt={booking.propertyDetails.title || "Property image"}
+                width={120}
+                height={120}
+                className="rounded-lg object-cover w-full sm:w-40 h-32 sm:h-40"
+              />
+            </Link>
+            <div className="mt-4 sm:mt-0 sm:flex-1">
+              <Link href={``} passHref>
+                <h1 className="text-lg sm:text-2xl font-semibold cursor-pointer hover:underline text-center sm:text-left">
+                  {booking.propertyDetails.title || "Loading..."}
+                </h1>
+              </Link>
+              <p className="text-gray-600 mt-2 text-center sm:text-left">
+                {truncateText(booking.propertyDetails.propertyDetails)}
               </p>
-              <div className="flex items-center text-gray-700 mb-4">
-                <FaMapMarkerAlt className="mr-2" />
-                <p className="font-semibold">
-                  {booking.propertyDetails.neighbourhood || "Loading..."}{" "}
-                  {booking.propertyDetails.lga || "Loading..."}{" "}
-                  {booking.propertyDetails.state || "Loading..."}{" "}
+              <div className="flex items-center justify-center sm:justify-start text-gray-700 mt-2 text-sm sm:text-base">
+                <MapPin className="mr-2 text-blue-500" />
+                <p>
+                  {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
+                  {booking.propertyDetails.lga || "Loading..."},{" "}
+                  {booking.propertyDetails.state || "Loading..."}
                 </p>
               </div>
-              <div className="flex items-center text-gray-700 mb-4">
-                <FaClock className="mr-2" />
+              <div className="flex items-center justify-center sm:justify-start text-gray-700 mt-3 text-sm sm:text-base">
+                <Clock className="mr-2 text-red-500" />
                 <p>
-                  Inspection Date:{" "}
-                  <span className="font-semibold">
-                    {new Date(
-                      booking.booking.bookingDateTime
-                    ).toLocaleDateString("en-US", {
+                  <span className="font-medium">Inspection Date:</span>{" "}
+                  {new Date(booking.booking.bookingDateTime).toLocaleDateString(
+                    "en-US",
+                    {
                       year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                    })}{" "}
-                    {new Date(
-                      booking.booking.bookingDateTime
-                    ).toLocaleTimeString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    }
+                  )}{" "}
+                  at{" "}
+                  {new Date(booking.booking.bookingDateTime).toLocaleTimeString(
+                    "en-US",
+                    {
                       hour: "2-digit",
                       minute: "2-digit",
                       hour12: true,
-                    }) || "Loading..."}
-                  </span>
+                    }
+                  )}
                 </p>
               </div>
-              <div className="bg-blue-50 p-4 rounded-lg text-blue-700 mb-4">
-                <h3 className="text-lg font-semibold mb-2">
+              <div className="bg-blue-50 p-4 rounded-lg text-blue-700 mt-4 text-center">
+                <h3 className="text-lg font-semibold">
                   Time Until Inspection:
                 </h3>
-                <p className="text-2xl font-bold">{timeLeft[index]}</p>
+                <p className="text-xl font-bold">{timeLeft[index]}</p>
               </div>
-              <Link href={`/inspection/tracking/${booking.booking._id}`}>
-                <button className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition duration-300">
+              <Link
+                href={`/inspection/tracking/${booking.booking._id}`}
+                passHref
+              >
+                <button className="w-full bg-green-500 text-white py-3 rounded-full font-semibold hover:bg-green-600 mt-4 transition duration-300">
                   Start Tracking
                 </button>
               </Link>
             </div>
-          );
-        })
+          </div>
+        ))
       )}
     </div>
   );

@@ -59,9 +59,9 @@ const MyInspectionPage = () => {
   }
 
   return (
-    <section className="bg-blue-50 min-h-screen flex items-center">
-      <div className="container mx-auto max-w-3xl p-6">
-        <h1 className="text-2xl font-bold mb-6 text-center">My Inspections</h1>
+    <section className="bg-white min-h-screen flex items-center">
+      <div className="container mx-auto max-w-3xl p-4">
+        <h2 className="text-2xl font-bold mb-6 text-center">My Inspections</h2>
         {sortedInspections.length === 0 ? (
           <p className="text-center text-gray-600">No upcoming inspections.</p>
         ) : (
