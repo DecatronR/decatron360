@@ -6,6 +6,7 @@ import { Clock, MapPin } from "lucide-react";
 
 const MyInspections = ({ bookings }) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  console.log("Bookings: ", bookings);
 
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "Loading...";
@@ -62,7 +63,7 @@ const MyInspections = ({ bookings }) => {
             key={booking.booking._id}
             className="bg-white shadow-lg rounded-lg p-4 mb-6 sm:flex sm:items-center sm:gap-4"
           >
-            <Link href={""} passHref>
+            <Link href={`/properties/${booking.propertyDetails._id}`} passHref>
               <Image
                 src={booking.photos[0]?.path || "/placeholder.jpg"}
                 alt={booking.propertyDetails.title || "Property image"}
@@ -72,15 +73,18 @@ const MyInspections = ({ bookings }) => {
               />
             </Link>
             <div className="mt-4 sm:mt-0 sm:flex-1">
-              <Link href={``} passHref>
-                <h1 className="text-lg sm:text-2xl font-semibold cursor-pointer hover:underline text-center sm:text-left">
+              <Link
+                href={`/properties/${booking.propertyDetails._id}`}
+                passHref
+              >
+                <h1 className="text-lg sm:text-2xl font-semibold cursor-pointer hover:underline sm:text-left">
                   {booking.propertyDetails.title || "Loading..."}
                 </h1>
               </Link>
-              <p className="text-gray-600 mt-2 text-center sm:text-left">
+              <p className="text-gray-600 mt-2 sm:text-left">
                 {truncateText(booking.propertyDetails.propertyDetails)}
               </p>
-              <div className="flex items-center justify-center sm:justify-start text-gray-700 mt-2 text-sm sm:text-base">
+              <div className="flex items-center sm:justify-start text-gray-700 mt-2 text-sm sm:text-base">
                 <MapPin className="mr-2 text-blue-500" />
                 <p>
                   {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
@@ -88,7 +92,7 @@ const MyInspections = ({ bookings }) => {
                   {booking.propertyDetails.state || "Loading..."}
                 </p>
               </div>
-              <div className="flex items-center justify-center sm:justify-start text-gray-700 mt-3 text-sm sm:text-base">
+              <div className="flex items-center sm:justify-start text-gray-700 mt-3 text-sm sm:text-base">
                 <Clock className="mr-2 text-red-500" />
                 <p>
                   <span className="font-medium">Inspection Date:</span>{" "}
