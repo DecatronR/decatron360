@@ -206,26 +206,35 @@ const Dashboard = () => {
 
   //Trigger payment functionality
   const handlePayment = async () => {
+    console.log("............Handle payment.........");
+
+    const userId = sessionStorage.getItem("userId");
+    if (!userId) {
+      console.error("User ID is missing from sessionStorage");
+      return;
+    }
+
+    console.log("User ID: ", userId);
+
     try {
       const paymentData = {
-        userId: "64bdfad4f23a5e6d4c8a9e91",
+        userId,
         amount: 5000,
         customerName: "John Doe",
         customerEmail: "johndoe@example.com",
         paymentReference: generatePaymentReference("rent"),
-        paymentDescription: "Real payment",
+        paymentDescription: "Real estate transaction test payment",
       };
 
       const response = await initiatePayment(paymentData);
       setPaymentReference(paymentData.paymentReference);
       console.log("Payment initiated:", response);
 
-      // Redirect the user to the Monnify payment page if applicable
-      if (response.responseBody.checkoutUrl) {
+      if (response.responseBody?.checkoutUrl) {
         window.location.href = response.responseBody.checkoutUrl;
       }
     } catch (error) {
-      console.error(error.message);
+      console.error("Payment initiation error:", error.message);
     }
   };
 
@@ -349,7 +358,7 @@ const Dashboard = () => {
         <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-center gap-4 px-4 sm:px-6 py-4 sm:py-4">
           <button
             className="px-6 py-2 w-full sm:w-auto bg-green-600 text-white rounded-full hover:bg-green-700 transition"
-            onClick={handleProceedToSign}
+            onClick={handlePayment}
           >
             Proceed to Sign
           </button>
