@@ -161,8 +161,8 @@ const AgentScheduler = () => {
   return (
     <section className="px-4 py-6 bg-gray-50">
       <div className="container max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-primary-600 mb-4 text-center">
-          Agent Inspection Scheduler
+        <h2 className="text-2xl font-bold text-grey-600 mb-4 text-center">
+          Set Availability
         </h2>
         <p className="text-center text-gray-600 mb-6">
           Select available times for property inspections
@@ -173,11 +173,11 @@ const AgentScheduler = () => {
             <span className="text-gray-600">Unavailable</span>
           </div>
           <div className="flex items-center mr-4">
-            <div className="w-4 h-4 bg-green-400 border border-gray-400 rounded-full mr-2"></div>
+            <div className="w-4 h-4 bg-green-500 border border-gray-400 rounded-full mr-2"></div>
             <span className="text-gray-600">Available</span>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-red-400 border border-gray-400 rounded-full mr-2"></div>
+            <div className="w-4 h-4 bg-red-500 border border-gray-400 rounded-full mr-2"></div>
             <span className="text-gray-600">Booked</span>
           </div>
         </div>
@@ -245,9 +245,9 @@ const AgentScheduler = () => {
                           }
                           className={`mb-2 px-4 py-2 rounded transition duration-200 ${
                             isBooked
-                              ? "bg-red-400 text-white cursor-not-allowed"
+                              ? "bg-red-500 text-white cursor-not-allowed"
                               : isAvailable
-                              ? "bg-green-400 text-white hover:bg-green-500"
+                              ? "bg-green-500 text-white hover:bg-green-500"
                               : "bg-gray-200 hover:bg-gray-300"
                           }`}
                           disabled={isBooked}
@@ -265,7 +265,7 @@ const AgentScheduler = () => {
         <div className="text-center mt-5">
           <button
             onClick={handleSaveChanges}
-            className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
+            className="bg-primary-500 text-white px-6 py-3 rounded-full transition hover:bg-primary-600"
           >
             {isButtonLoading ? <ButtonSpinner /> : "Save Changes"}
           </button>
