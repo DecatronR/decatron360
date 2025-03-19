@@ -9,6 +9,7 @@ import { updateSchedule } from "utils/api/scheduler/updateSchedule";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import ButtonSpinner from "components/ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
+import { X } from "lucide-react";
 // import "@fullcalendar/common/main.css";
 
 const AgentScheduler = () => {
@@ -281,18 +282,22 @@ const AgentScheduler = () => {
         {/* Mobile Time Slot Drawer */}
         {/* Sidebar for Time Slots */}
         <div
-          className={`fixed top-[10rem] right-0 h-[65vh] w-[60%] max-w-md bg-white shadow-lg p-6 transform transition-transform duration-300 ${
-            selectedDate ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`fixed top-[10rem] right-0 h-[60vh] w-[60%] max-w-md bg-white shadow-lg p-6 transform transition-transform duration-300 z-50
+    ${
+      selectedDate
+        ? "translate-x-0 pointer-events-auto"
+        : "translate-x-full pointer-events-none"
+    }`}
+          style={{ backgroundColor: "#fff" }}
         >
           <button
             onClick={() => setSelectedDate(null)}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            className="absolute top-4 left-4 text-gray-500 hover:text-gray-800"
           >
-            ✖
+            <X className="w-5 h-5" />
           </button>
 
-          <h4 className="font-semibold text-lg mb-2 text-primary-600">
+          <h4 className="font-semibold text-lg mb-2 text-primary-600 text-center">
             {selectedDate}
           </h4>
 
