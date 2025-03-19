@@ -282,7 +282,7 @@ const AgentScheduler = () => {
         {/* Mobile Time Slot Drawer */}
         {/* Sidebar for Time Slots */}
         <div
-          className={`fixed top-[10rem] right-0 h-[30vh] w-[60%] max-w-md bg-white shadow-lg p-6 transform transition-transform duration-300 z-50
+          className={`fixed top-[10rem] right-0 h-[40vh] w-[60%] max-w-md bg-white shadow-lg p-6 transform sm:hidden transition-transform duration-300 z-50
     ${
       selectedDate
         ? "translate-x-0 pointer-events-auto"
@@ -291,7 +291,7 @@ const AgentScheduler = () => {
           style={{
             backgroundColor: "#fff",
             overflowY: "clip",
-            maxHeight: "30vh",
+            maxHeight: "40vh",
           }}
         >
           <button
