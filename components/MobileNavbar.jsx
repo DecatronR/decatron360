@@ -24,7 +24,7 @@ const MobileNavbar = () => {
   const isPrivilegedUser = user && privilegedRoles.includes(user.role);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-2 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-2 md:hidden z-50">
       <div className="flex justify-around items-center text-gray-600">
         {/* Common Explore Button */}
         <Link className="flex flex-col items-center" href="/" role="menuitem">
