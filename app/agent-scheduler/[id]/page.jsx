@@ -18,6 +18,11 @@ const AgentScheduler = () => {
   const [availableTimes, setAvailableTimes] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
+
+  const closeMobileView = () => {
+    setIsMobileView(false);
+  };
 
   const timeSlots = [
     "09:00",
@@ -72,6 +77,10 @@ const AgentScheduler = () => {
   }, [userId]);
 
   const handleDateClick = (dateInfo) => {
+    setSelectedDate(dateInfo.dateStr);
+    if (window.innerWidth < 640) {
+      setIsMobileView(true);
+    }
     const clickedDate = dateInfo.dateStr;
 
     if (availableTimes[clickedDate] && selectedDate === clickedDate) {
@@ -164,6 +173,7 @@ const AgentScheduler = () => {
           Set Availability
         </h2>
       </div>
+
       <div className="container max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-8">
         <p className="text-center text-gray-800 mb-4 sm:mb-6 text-sm sm:text-base">
           Select available times for property inspections
@@ -186,7 +196,7 @@ const AgentScheduler = () => {
           ))}
         </div>
 
-        <div className="flex flex-col lg:flex-row ">
+        <div className="flex flex-col lg:flex-row">
           {/* Calendar */}
           <div className="lg:w-2/3 w-full">
             <div className="w-full rounded-lg border border-gray-300 shadow-lg overflow-hidden">
@@ -222,8 +232,8 @@ const AgentScheduler = () => {
             </div>
           </div>
 
-          {/* Time Slots Section */}
-          <div className="lg:w-1/3 w-full lg:pl-4 mt-4 lg:mt-0">
+          {/* Desktop Time Slots */}
+          <div className="lg:w-1/3 w-full lg:pl-4 mt-4 lg:mt-0 hidden sm:block">
             {selectedDate && (
               <div className="bg-white rounded-lg shadow-lg p-4">
                 <h4 className="font-semibold text-lg mb-2 text-primary-600">
@@ -265,6 +275,58 @@ const AgentScheduler = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Mobile Time Slot Drawer */}
+        {/* Sidebar for Time Slots */}
+        <div
+          className={`fixed top-[10rem] right-0 h-[65vh] w-[60%] max-w-md bg-white shadow-lg p-6 transform transition-transform duration-300 ${
+            selectedDate ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <button
+            onClick={() => setSelectedDate(null)}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+          >
+            ✖
+          </button>
+
+          <h4 className="font-semibold text-lg mb-2 text-primary-600">
+            {selectedDate}
+          </h4>
+
+          <div className="h-[70vh] overflow-y-auto">
+            <div className="flex flex-col mb-3">
+              <button
+                onClick={handleSelectAllTimeSlots}
+                className="w-full px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+              >
+                All Day
+              </button>
+              {timeSlots.map((slot) => {
+                const isAvailable =
+                  availableTimes[selectedDate]?.includes(slot);
+                const isBooked = bookedDates[selectedDate]?.includes(slot);
+
+                return (
+                  <button
+                    key={slot}
+                    onClick={() => handleTimeSlotClick(selectedDate, slot)}
+                    className={`mb-2 w-full px-4 py-2 rounded transition duration-200 ${
+                      isBooked
+                        ? "bg-red-500 text-white cursor-not-allowed"
+                        : isAvailable
+                        ? "bg-green-500 text-white hover:bg-green-600"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                    disabled={isBooked}
+                  >
+                    {formatTimeTo12Hour(slot)}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
