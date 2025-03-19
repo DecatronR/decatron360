@@ -290,7 +290,7 @@ const AgentScheduler = () => {
     }`}
           style={{
             backgroundColor: "#fff",
-            overflowY: "auto",
+            overflowY: "clip",
             maxHeight: "30vh",
           }}
         >
