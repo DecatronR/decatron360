@@ -159,32 +159,38 @@ const AgentScheduler = () => {
   };
 
   return (
-    <section className="px-4 py-6 bg-gray-50">
-      <div className="container max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-primary-600 mb-4 text-center">
-          Agent Inspection Scheduler
+    <section className="px-2 sm:px-4 py-6 bg-gray-50">
+      <div className="container mx-auto max-w-3xl p-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-600 mb-4 text-center">
+          Set Availability
         </h2>
-        <p className="text-center text-gray-600 mb-6">
+      </div>
+      <div className="container max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-8">
+        <p className="text-center text-gray-800 mb-4 sm:mb-6 text-sm sm:text-base">
           Select available times for property inspections
         </p>
-        <div className="flex justify-center mb-4">
-          <div className="flex items-center mr-4">
-            <div className="w-4 h-4 bg-white border border-gray-400 rounded-full mr-2"></div>
-            <span className="text-gray-600">Unavailable</span>
-          </div>
-          <div className="flex items-center mr-4">
-            <div className="w-4 h-4 bg-green-400 border border-gray-400 rounded-full mr-2"></div>
-            <span className="text-gray-600">Available</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-4 h-4 bg-red-400 border border-gray-400 rounded-full mr-2"></div>
-            <span className="text-gray-600">Booked</span>
-          </div>
+
+        {/* Legend */}
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4">
+          {[
+            { color: "bg-white", label: "Unavailable" },
+            { color: "bg-green-500", label: "Available" },
+            { color: "bg-red-500", label: "Booked" },
+          ].map((item, index) => (
+            <div key={index} className="flex items-center">
+              <div
+                className={`w-4 h-4 ${item.color} border border-gray-400 rounded-full mr-2`}
+              ></div>
+              <span className="text-gray-600 text-sm">{item.label}</span>
+            </div>
+          ))}
         </div>
+
         <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-2/3">
+          {/* Calendar */}
+          <div className="lg:w-2/3 w-full">
             <div className="w-full rounded-lg border border-gray-300 shadow-lg overflow-hidden">
-              <div className="h-[69vh] overflow-y-auto">
+              <div className="h-[50vh] sm:h-[60vh] lg:h-[69vh] overflow-y-auto">
                 <FullCalendar
                   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                   initialView="dayGridMonth"
@@ -197,14 +203,12 @@ const AgentScheduler = () => {
                   dayMaxEvents={true}
                   dateClick={handleDateClick}
                   events={[
-                    // Map available times to green background events
                     ...Object.keys(availableTimes).map((date) => ({
                       start: date,
                       end: date,
                       display: "background",
                       backgroundColor: "green",
                     })),
-                    // Map booked dates to red background events
                     ...Object.keys(bookedDates).map((date) => ({
                       start: date,
                       end: date,
@@ -217,17 +221,19 @@ const AgentScheduler = () => {
               </div>
             </div>
           </div>
-          <div className="lg:w-1/3 lg:pl-4 mt-4 lg:mt-0">
+
+          {/* Time Slots Section */}
+          <div className="lg:w-1/3 w-full lg:pl-4 mt-4 lg:mt-0">
             {selectedDate && (
               <div className="bg-white rounded-lg shadow-lg p-4">
                 <h4 className="font-semibold text-lg mb-2 text-primary-600">
                   {selectedDate}
                 </h4>
-                <div className="h-[60vh] overflow-y-auto">
+                <div className="h-[40vh] sm:h-[50vh] overflow-y-auto">
                   <div className="flex flex-col mb-3">
                     <button
                       onClick={handleSelectAllTimeSlots}
-                      className="mb-2 px-4 py-2 rounded bg-gradient-to-r from-green-400 to-green-600 text-white hover:bg-green-500 transition duration-200"
+                      className="w-full sm:w-auto px-4 py-2 rounded bg-gradient-to-r from-green-400 to-green-600 text-white hover:bg-green-500 transition duration-200"
                     >
                       All Day
                     </button>
@@ -236,18 +242,17 @@ const AgentScheduler = () => {
                         availableTimes[selectedDate]?.includes(slot) || false;
                       const isBooked =
                         bookedDates[selectedDate]?.includes(slot) || false;
-
                       return (
                         <button
                           key={slot}
                           onClick={() =>
                             handleTimeSlotClick(selectedDate, slot)
                           }
-                          className={`mb-2 px-4 py-2 rounded transition duration-200 ${
+                          className={`mb-2 w-full px-4 py-2 rounded transition duration-200 ${
                             isBooked
-                              ? "bg-red-400 text-white cursor-not-allowed"
+                              ? "bg-red-500 text-white cursor-not-allowed"
                               : isAvailable
-                              ? "bg-green-400 text-white hover:bg-green-500"
+                              ? "bg-green-500 text-white hover:bg-green-500"
                               : "bg-gray-200 hover:bg-gray-300"
                           }`}
                           disabled={isBooked}
@@ -262,10 +267,12 @@ const AgentScheduler = () => {
             )}
           </div>
         </div>
+
+        {/* Save Button */}
         <div className="text-center mt-5">
           <button
             onClick={handleSaveChanges}
-            className="bg-primary-500 text-white px-6 py-3 rounded-lg transition hover:bg-primary-600"
+            className="w-full sm:w-auto bg-primary-500 text-white px-6 py-3 rounded-full transition hover:bg-primary-600"
           >
             {isButtonLoading ? <ButtonSpinner /> : "Save Changes"}
           </button>
