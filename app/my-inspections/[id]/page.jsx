@@ -61,7 +61,7 @@ const MyInspectionPage = () => {
   return (
     <section className="bg-white min-h-screen flex items-center py-6">
       <div className="container mx-auto max-w-3xl p-4">
-        <h2 className="text-2xl sm:text-2xl font-bold text-gray-600 mb-6 text-center">
+        <h2 className="text-2xl sm:text-2xl font-bold text-gray-800 mb-6 text-center">
           My Inspections
         </h2>
         {sortedInspections.length === 0 ? (

@@ -5,7 +5,6 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { createSchedule } from "utils/api/scheduler/createSchedule";
 import { updateSchedule } from "utils/api/scheduler/updateSchedule";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import ButtonSpinner from "components/ui/ButtonSpinner";
@@ -161,7 +160,7 @@ const AgentScheduler = () => {
   return (
     <section className="px-2 sm:px-4 py-6 bg-gray-50">
       <div className="container mx-auto max-w-3xl p-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-600 mb-4 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">
           Set Availability
         </h2>
       </div>
@@ -173,6 +172,7 @@ const AgentScheduler = () => {
         {/* Legend */}
         <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4">
           {[
+            { color: "bg-yellow-100", label: "Today" },
             { color: "bg-white", label: "Unavailable" },
             { color: "bg-green-500", label: "Available" },
             { color: "bg-red-500", label: "Booked" },
@@ -186,16 +186,16 @@ const AgentScheduler = () => {
           ))}
         </div>
 
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row ">
           {/* Calendar */}
           <div className="lg:w-2/3 w-full">
             <div className="w-full rounded-lg border border-gray-300 shadow-lg overflow-hidden">
-              <div className="h-[50vh] sm:h-[60vh] lg:h-[69vh] overflow-y-auto">
+              <div className="h-[50vh] sm:h-[60vh] lg:h-[69vh] overflow-y-auto sm:text-lg text-xs">
                 <FullCalendar
                   plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                   initialView="dayGridMonth"
                   headerToolbar={{
-                    left: "prev,next today",
+                    left: "prev,next",
                     center: "title",
                     right: "dayGridMonth",
                   }}
