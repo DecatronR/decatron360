@@ -59,11 +59,13 @@ const MyInspectionPage = () => {
   }
 
   return (
-    <section className="bg-white min-h-screen flex items-center">
+    <section className="bg-white min-h-screen flex items-center py-6">
       <div className="container mx-auto max-w-3xl p-4">
-        <h2 className="text-2xl font-bold mb-6 text-center">My Inspections</h2>
+        <h2 className="text-2xl sm:text-2xl font-bold text-gray-600 mb-6 text-center">
+          My Inspections
+        </h2>
         {sortedInspections.length === 0 ? (
-          <p className="text-center text-gray-600">No upcoming inspections.</p>
+          <p className="text-center text-gray-800">No upcoming inspections.</p>
         ) : (
           <MyInspections bookings={sortedInspections} />
         )}
