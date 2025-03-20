@@ -156,6 +156,12 @@ const InspectionTracker = () => {
   }, [propertyGeoJSON]);
 
   useEffect(() => {
+    if (userLocation) {
+      setMapCenter(userLocation);
+    }
+  }, [userLocation]);
+
+  useEffect(() => {
     if (!socket) return;
 
     socket.on("agentLocationUpdate", setAgentLocation);
@@ -221,15 +227,15 @@ const InspectionTracker = () => {
       } else {
         clearInterval(interval);
       }
-    }, 1000); // Moves every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [routePath]);
 
   useEffect(() => {
-    const fetchRoute = async () => {
-      if (!userLocation || !propertyLocation) return;
+    if (!userLocation || !propertyLocation) return;
 
+    const fetchRoute = async () => {
       try {
         const routeData = await getRoutes(
           userLocation,
@@ -237,17 +243,17 @@ const InspectionTracker = () => {
           MAPS_API_KEY
         );
 
-        if (routeData && routeData.length > 0 && routePath.length === 0) {
-          console.log("Updating routePath state:", routeData);
+        if (routeData?.length > 0) {
+          console.log("Updating routePath dynamically:", routeData);
           setRoutePath(routeData);
         }
       } catch (error) {
-        console.error("Error fetching routes:", error);
+        console.error("Error fetching updated route:", error);
       }
     };
 
     fetchRoute();
-  }, [userLocation, propertyLocation, routePath]);
+  }, [userLocation, propertyLocation]);
 
   const handleEndInspection = async () => {
     const result = await Swal.fire({
@@ -292,7 +298,7 @@ const InspectionTracker = () => {
         {routePath.length > 0 && (
           <Polyline
             path={routePath}
-            options={{ strokeColor: "#19738D", strokeWeight: 5 }}
+            options={{ strokeColor: "#5a47fb", strokeWeight: 5 }}
           />
         )}
       </GoogleMap>
