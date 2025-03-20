@@ -34,7 +34,11 @@ const MyInspectionPage = () => {
 
       try {
         let res;
-        if (role === "agent") {
+        if (
+          role === "agent" ||
+          role === "owner" ||
+          role === "property-manager"
+        ) {
           res = await fetchAgentBookings(id);
         } else {
           res = await fetchUserBookings(id);
