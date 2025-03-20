@@ -5,9 +5,6 @@ import Link from "next/link";
 import { Clock, MapPin } from "lucide-react";
 
 const MyInspections = ({ bookings }) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  console.log("Bookings: ", bookings);
-
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "Loading...";
     return text.length > maxLength
