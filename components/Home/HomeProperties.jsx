@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { trackVisitor } from "utils/api/analytics/trackVisitor";
 import PropertyCard from "../Properties/PropertyCard";
 import HomePropertiesSkeleton from "components/ui/HomePropertiesSkeleton";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
@@ -20,6 +21,24 @@ const HomeProperties = () => {
   const privilegedRoles = ["agent", "owner", "property manager", "admin"];
   const isPrivilegedUser = user && privilegedRoles.includes(user.role);
 
+  //track visitor
+  useEffect(() => {
+    const getVisitorData = async () => {
+      const ipResponse = await fetch("https://api.ipify.org?format=json");
+      const ipData = await ipResponse.json();
+      const ip = ipData.ip;
+
+      const userAgent = window.navigator.userAgent;
+      try {
+        const res = await trackVisitor(ip, userAgent);
+        // console.log("Visitor tracked successfully!: ", res);
+      } catch (error) {
+        console.error("Error tracking visitor:", error);
+      }
+    };
+
+    getVisitorData();
+  }, []);
   useEffect(() => {
     const fetchInitialData = async () => {
       setLoading(true);
