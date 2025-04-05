@@ -1,12 +1,12 @@
 import axios from "axios";
 
-export const trackVisitor = async (ip, userAgent) => {
+export const trackVisitor = async (ip, visitorId, notify, userAgent) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   try {
     const res = await axios.post(
       `${baseUrl}/track`,
-      { ip, userAgent },
+      { ip, visitorId, notify, userAgent },
       {
         withCredentials: true,
         headers: {

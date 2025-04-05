@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { trackVisitor } from "utils/api/analytics/trackVisitor";
 import PropertyCard from "../Properties/PropertyCard";
 import HomePropertiesSkeleton from "components/ui/HomePropertiesSkeleton";
 import { fetchProperties } from "@/utils/api/properties/fetchProperties";
@@ -10,6 +9,9 @@ import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoritePrope
 import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoriteProperties";
 import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
 import { useAuth } from "context/AuthContext";
+import { trackVisitor } from "utils/api/analytics/trackVisitor";
+import { getOrCreateVisitorId } from "utils/api/analytics/getVisitor";
+import { shouldNotifyAgain } from "utils/api/analytics/shouldNotify";
 
 const HomeProperties = () => {
   const router = useRouter();
@@ -27,10 +29,12 @@ const HomeProperties = () => {
       const ipResponse = await fetch("https://api.ipify.org?format=json");
       const ipData = await ipResponse.json();
       const ip = ipData.ip;
+      const visitorId = getOrCreateVisitorId();
+      const notify = shouldNotifyAgain();
 
       const userAgent = window.navigator.userAgent;
       try {
-        const res = await trackVisitor(ip, userAgent);
+        const res = await trackVisitor(ip, visitorId, notify, userAgent);
         // console.log("Visitor tracked successfully!: ", res);
       } catch (error) {
         console.error("Error tracking visitor:", error);
