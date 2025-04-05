@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import MobileNavbar from "./MobileNavbar";
 import { SnackbarProvider } from "notistack";
+import NotificationListener from "./ui/NotificationListener";
 
 const Analytics = dynamic(() => import("@/components/Analytics"), {
   ssr: false,
@@ -35,6 +36,7 @@ const ClientLayout = ({ children }) => {
         <main className="flex-1">{children}</main>
         {!hideRoutes.includes(pathname) && <MobileNavbar />}
         {!hideRoutes.includes(pathname) && <Footer className="mt-auto" />}
+        <NotificationListener />
       </SnackbarProvider>
     </AuthProvider>
   );
