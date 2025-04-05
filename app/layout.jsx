@@ -5,9 +5,9 @@ import ClientLayout from "@/components/ClientLayout";
 
 export const metadata = {
   title: "Decatron",
-  description: "Creating a leap in value",
+  description: "Real estate transactions like online shopping",
   keywords:
-    "properties, real estate, houses, homes, apartments, rent, buy, sell",
+    "properties, real estate, houses, homes, apartments, rent, buy, sell, shortlet, lease, shop real estate, abuja",
 };
 
 export default function RootLayout({ children }) {
@@ -37,6 +37,25 @@ export default function RootLayout({ children }) {
             gtag('config', 'G-SPP14R22ER');
           `}
         </Script>
+
+        {/* Tawk.to chat widget script */}
+        <Script
+          id="tawk-to"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+              (function(){
+                var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                s1.async=true;
+                s1.src='https://embed.tawk.to/67f0e7199eb96f190c92a718/1io2gdfkl';  
+                s1.charset='UTF-8';
+                s1.setAttribute('crossorigin','*');
+                s0.parentNode.insertBefore(s1,s0);
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="min-h-screen flex flex-col">
         <ClientLayout>{children}</ClientLayout>
