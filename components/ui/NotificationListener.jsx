@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useSnackbar } from "notistack";
 import { onMessage } from "firebase/messaging";
-import { messaging } from "@/firebase/firebase-config"; // Firebase messaging config
+import { messaging } from "config/firebaseConfig";
 
 const NotificationListener = () => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar(); // Snackbar methods

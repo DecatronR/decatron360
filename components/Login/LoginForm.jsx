@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import ButtonSpinner from "components/ui/ButtonSpinner";
-import Image from "next/image";
+import { requestAndSendNotificationPermission } from "utils/api/pushNotification/requestPermission";
 
 const LoginForm = () => {
   const { signIn } = useAuth();
@@ -28,8 +28,14 @@ const LoginForm = () => {
     event.preventDefault();
     setIsButtonLoading(true);
     try {
-      await signIn(formData.email, formData.password);
+      const user = await signIn(formData.email, formData.password);
+      console.log("User data on login: ", user);
       enqueueSnackbar("Login successful!", { variant: "success" });
+
+      //trigger notification request
+      if (user?.id) {
+        await requestAndSendNotificationPermission(user.id);
+      }
       router.replace("/");
     } catch (error) {
       enqueueSnackbar("Login failed. Please check your credentials.", {
