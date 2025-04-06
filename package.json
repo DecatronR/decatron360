@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "concurrently \"next dev\" \"yarn test:watch\"",
+    "dev": "concurrently \"node server.js\" \"next dev\" \"yarn test:watch\"",
     "lint": "next lint",
     "start": "next start",
     "test": "vitest",
