@@ -6,11 +6,11 @@ importScripts(
 );
 
 firebase.initializeApp({
-  apiKey: "...",
-  authDomain: "...",
-  projectId: "...",
-  messagingSenderId: "...",
-  appId: "...",
+  apiKey: "AIzaSyC5ACIyr1lpbw5asUP-J7l36uluaE1DyCA",
+  authDomain: "decatron1-2b8cd.firebaseapp.com",
+  projectId: "decatron1-2b8cd",
+  messagingSenderId: "581268509906",
+  appId: "1:581268509906:web:8826b8c859fef88b5f090b",
 });
 
 const messaging = firebase.messaging();

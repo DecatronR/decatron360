@@ -1,25 +1,39 @@
-// utils/requestPermission.ts
 import { getToken } from "firebase/messaging";
 import { messaging } from "../firebase/firebase-config";
+import axios from "axios";
 
-export const requestNotificationPermission = async () => {
+export const requestAndSendNotificationPermission = async (userId) => {
+  const token = sessionStorage.getItem("token");
+
+  if (!token) {
+    console.error("User is not authenticated");
+    return;
+  }
+
   try {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
-      const token = await getToken(messaging, {
-        vapidKey: "YOUR_PUBLIC_VAPID_KEY",
+      const fcmToken = await getToken(messaging, {
+        vapidKey:
+          "BGAq-sbSTG7pHkYNSZHCB_cR3OEbLQ_6Q1U7J8QJYDsN4yD3eLP0iB6Et0zbJene7bLCOmI4XgyUiggcz0r4Mis", //safe to expose
       });
 
-      console.log("FCM Token:", token);
+      console.log("FCM Token:", fcmToken);
 
-      // Send token to backend here
-      await fetch("/api/save-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const response = await axios.post(
+        `${baseUrl}/users/update-fcm-token`,
+        { userId, fcmToken },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      return token;
+      console.log("Token saved successfully:", response.data);
+      return fcmToken;
     } else {
       console.warn("Permission not granted for notifications");
     }
