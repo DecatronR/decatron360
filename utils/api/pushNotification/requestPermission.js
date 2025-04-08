@@ -1,5 +1,5 @@
 import { getToken } from "firebase/messaging";
-import { messaging } from "config/firebaseConfig";
+import { messaging } from "lib/firebase";
 import axios from "axios";
 
 export const requestAndSendNotificationPermission = async (userId) => {

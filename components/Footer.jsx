@@ -137,7 +137,7 @@ const Footer = () => {
 
       <div className="text-center border-t border-gray-800 pt-6">
         <p className="text-sm text-gray-500">
-          &copy; {currentYear} Decatron360. All rights reserved.
+          &copy; {currentYear} Decatron. All rights reserved.
         </p>
       </div>
     </footer>
