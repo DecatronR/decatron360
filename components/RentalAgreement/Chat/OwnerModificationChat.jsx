@@ -1,22 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
+
+// Initialize socket connection
 const socket = io("http://localhost:1280");
 
-const ModificationRequestChat = ({ currentUserId, recipientUserId }) => {
+const OwnerModificationChat = ({ tenantId }) => {
+  const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState();
-  const [showCommentBox, setShowCommentBox] = useState(true); // control this from parent if needed
+  const scrollRef = useRef(null);
+  const currentOwnerId = sessionStorage.getItem("userId");
 
   useEffect(() => {
-    // Register this user with the backend
-    socket.emit("register", currentUserId);
+    if (!currentOwnerId) {
+      return;
+    }
 
-    // Listen for messages sent to this user
+    // Register the owner with the socket server
+    socket.emit("register", currentOwnerId);
+
+    // Listen for incoming messages
     socket.on("receivePrivateMessage", (message) => {
-      // Filter to include only messages relevant to this chat
       if (
-        (message.from === currentUserId && message.to === recipientUserId) ||
-        (message.from === recipientUserId && message.to === currentUserId)
+        (message.from === currentOwnerId && message.to === tenantId) ||
+        (message.from === tenantId && message.to === currentOwnerId)
       ) {
         setComments((prev) => [...prev, message]);
       }
@@ -25,44 +31,49 @@ const ModificationRequestChat = ({ currentUserId, recipientUserId }) => {
     return () => {
       socket.off("receivePrivateMessage");
     };
-  }, [currentUserId, recipientUserId]);
+  }, [currentOwnerId, tenantId]);
 
-  const handleCommentChange = (e) => {
-    setComment(e.target.value);
-  };
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [comments]);
+
+  const handleCommentChange = (e) => setComment(e.target.value);
 
   const handleSubmitComment = () => {
     if (!comment.trim()) return;
 
     const newMessage = {
-      from: currentUserId,
-      to: recipientUserId,
+      from: currentOwnerId,
+      to: tenantId,
       text: comment.trim(),
       timestamp: Date.now(),
     };
 
-    // Emit the message to the backend
+    // Emit to backend
     socket.emit("sendPrivateMessage", newMessage);
 
-    // Optionally add it to local state (server should echo too)
+    // Optimistic update
     setComments((prev) => [...prev, newMessage]);
     setComment("");
   };
 
-  if (!showCommentBox) return null;
-
   return (
-    <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]">
-      <h3 className="text-lg font-medium text-gray-800 mb-3">
-        Modification Requests
-      </h3>
-      <div className="flex-1 overflow-y-auto max-h-[700px] space-y-2 border p-2 rounded-md bg-white">
+    <div className="w-3/4 p-4">
+      <h3 className="text-lg font-medium mb-3">Modification Request</h3>
+
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto max-h-[700px] bg-white p-2 rounded-md border space-y-2"
+      >
         {comments.length > 0 ? (
           comments.map((msg, index) => (
             <div
               key={index}
               className={`p-2 rounded-md text-sm ${
-                msg.from === currentUserId
+                msg.from === currentOwnerId
                   ? "bg-blue-100 text-gray-700"
                   : "bg-green-100 text-gray-800"
               }`}
@@ -77,21 +88,23 @@ const ModificationRequestChat = ({ currentUserId, recipientUserId }) => {
           <p className="text-gray-500 text-sm">No messages yet.</p>
         )}
       </div>
+
       <textarea
         className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
         rows={2}
-        placeholder="Describe the required modifications..."
+        placeholder="Respond to tenant's request..."
         value={comment}
         onChange={handleCommentChange}
       ></textarea>
+
       <button
         onClick={handleSubmitComment}
         className="mt-3 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition"
       >
-        Submit Request
+        Submit Response
       </button>
     </div>
   );
 };
 
-export default ModificationRequestChat;
+export default OwnerModificationChat;
