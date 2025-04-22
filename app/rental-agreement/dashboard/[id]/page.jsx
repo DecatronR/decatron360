@@ -12,7 +12,7 @@ import { generatePaymentReference } from "utils/helpers/generatePaymentReference
 import { numberToWords } from "utils/helpers/priceNumberToWords";
 import { getStartDate } from "utils/helpers/getStartData";
 import { getEndDate } from "utils/helpers/getEndData";
-import TenantModificationChat from "components/RentalAgreement/TenantModificationChat";
+import TenantModificationChat from "components/RentalAgreement/Chat/TenantModificationChat";
 
 const Dashboard = () => {
   const { id } = useParams();

@@ -71,7 +71,7 @@ const Navbar = () => {
               <PropertySearchForm />
             </div>
           )}
-          
+
           {/* Mobile Profile Button (Only shows Sign Out) */}
           {user && (
             <div className="relative ml-3 block md:hidden">
@@ -236,15 +236,19 @@ const Navbar = () => {
                       </div>
                     </div>
                     {/* Dropdown Menu Items */}
-                    <Link
-                      href="/properties/favorite"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      role="menuitem"
-                      tabIndex="-1"
-                      onClick={() => setIsProfileMenuOpen(false)}
-                    >
-                      Favourite Properties
-                    </Link>
+                    {(user.role === "buyer" ||
+                      user.role === "agent" ||
+                      user.role === "admin") && (
+                      <Link
+                        href="/properties/favorite"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        Favourite Properties
+                      </Link>
+                    )}
                     <Link
                       href={`/agent-scheduler/${user.id}`}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -263,6 +267,28 @@ const Navbar = () => {
                     >
                       My Inspections
                     </Link>
+                    {[
+                      "owner",
+                      "propertyManager",
+                      "caretaker",
+                      "buyer",
+                    ].includes(user.role) && (
+                      <Link
+                        href={
+                          ["owner", "propertyManager", "caretaker"].includes(
+                            user.role
+                          )
+                            ? "/owner-contracts"
+                            : "/client-contracts"
+                        }
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        Contracts
+                      </Link>
+                    )}
                     {[
                       "owner",
                       "propertyManager",
