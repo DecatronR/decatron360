@@ -1,12 +1,33 @@
+"use client";
 import { useState } from "react";
 import OwnerConversationList from "components/RentalAgreement/Chat/OwnerConversationList";
 import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
 
 const contractsData = [
-  { id: 1, title: "Website Redesign", status: "Completed" },
-  { id: 2, title: "Mobile App", status: "Pending" },
-  { id: 3, title: "Marketing Campaign", status: "Ended" },
-  { id: 4, title: "Landing Page", status: "Pending" },
+  {
+    id: 1,
+    propertyTitle: "Downtown Loft",
+    ownerName: "Alice Johnson",
+    status: "Completed",
+  },
+  {
+    id: 2,
+    propertyTitle: "Suburban House",
+    ownerName: "Bob Smith",
+    status: "Pending",
+  },
+  {
+    id: 3,
+    propertyTitle: "Beachfront Villa",
+    ownerName: "Cynthia Doe",
+    status: "Ended",
+  },
+  {
+    id: 4,
+    propertyTitle: "City Apartment",
+    ownerName: "Daniel Green",
+    status: "Pending",
+  },
 ];
 
 const STATUS_COLORS = {
@@ -80,11 +101,16 @@ const ContractsDashboard = () => {
                 key={contract.id}
                 className="p-4 bg-white rounded-lg shadow border border-gray-200 flex flex-col justify-between"
               >
-                <div>
-                  <h3 className="text-lg font-medium">{contract.title}</h3>
+                <div className="mb-2">
+                  <h3 className="text-lg font-semibold">
+                    {contract.propertyTitle}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Owner: {contract.ownerName}
+                  </p>
                 </div>
                 <span
-                  className={`inline-block mt-4 px-3 py-1 text-xs text-white rounded-full w-max ${
+                  className={`inline-block mt-2 px-3 py-1 text-xs text-white rounded-full w-max ${
                     STATUS_COLORS[contract.status]
                   }`}
                 >

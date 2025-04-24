@@ -278,8 +278,8 @@ const Navbar = () => {
                           ["owner", "propertyManager", "caretaker"].includes(
                             user.role
                           )
-                            ? "/owner-contracts"
-                            : "/client-contracts"
+                            ? `/owner-contract/${user.id}`
+                            : `/client-contract/${user.id}`
                         }
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         role="menuitem"
@@ -289,6 +289,7 @@ const Navbar = () => {
                         Contracts
                       </Link>
                     )}
+
                     {[
                       "owner",
                       "propertyManager",

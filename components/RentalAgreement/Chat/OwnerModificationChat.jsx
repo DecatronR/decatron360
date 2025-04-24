@@ -61,7 +61,7 @@ const OwnerModificationChat = ({ tenantId }) => {
   };
 
   return (
-    <div className="w-3/4 p-4">
+    <div className="w-1/4 p-4">
       <h3 className="text-lg font-medium mb-3">Modification Request</h3>
 
       <div
