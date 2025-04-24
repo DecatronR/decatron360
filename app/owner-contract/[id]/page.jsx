@@ -1,40 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import OwnerConversationList from "components/RentalAgreement/Chat/OwnerConversationList";
 import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
-
-const contractsData = [
-  {
-    id: 1,
-    propertyTitle: "Downtown Loft",
-    clientName: "Alice Johnson",
-    status: "Completed",
-  },
-  {
-    id: 2,
-    propertyTitle: "Suburban House",
-    clientName: "Bob Smith",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    propertyTitle: "Beachfront Villa",
-    clientName: "Cynthia Doe",
-    status: "Ended",
-  },
-  {
-    id: 4,
-    propertyTitle: "City Apartment",
-    clientName: "Daniel Green",
-    status: "Pending",
-  },
-];
+import { fetchOwnerContracts } from "utils/api/contract/fetchOwnerContracts";
+import { truncateText } from "utils/helpers/truncateText";
+import { MapPin, Wallet } from "lucide-react";
 
 const STATUS_COLORS = {
-  Completed: "bg-green-500",
-  Pending: "bg-yellow-500",
-  Ended: "bg-red-500",
+  completed: "bg-green-500",
+  pending: "bg-yellow-500",
+  ended: "bg-red-500",
 };
 
 const tabs = ["All", "Completed", "Pending", "Ended"];
@@ -43,11 +19,29 @@ const ContractsDashboard = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("All");
   const [selectedTenant, setSelectedTenant] = useState(null);
+  const [contracts, setContracts] = useState(null);
+
+  useEffect(() => {
+    const handleFetchOwnerContract = async () => {
+      try {
+        const res = await fetchOwnerContracts();
+        console.log("Owner contracts: ", res);
+        setContracts(res);
+      } catch (error) {
+        console.log();
+      }
+    };
+
+    handleFetchOwnerContract();
+  }, []);
 
   const filteredContracts =
     activeTab === "All"
-      ? contractsData
-      : contractsData.filter((contract) => contract.status === activeTab);
+      ? contracts || []
+      : (contracts || []).filter(
+          (contract) =>
+            contract.status.toLowerCase() === activeTab.toLowerCase()
+        );
 
   return (
     <div className="flex h-screen bg-gray-50 px-4 md:px-8">
@@ -93,19 +87,40 @@ const ContractsDashboard = () => {
           {filteredContracts.length > 0 ? (
             filteredContracts.map((contract) => (
               <div
-                key={contract.id}
-                className="p-4 bg-white rounded-lg shadow border border-gray-200 flex flex-col justify-between"
+                key={contract._id}
+                className="p-5 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between transition hover:shadow-md hover:-translate-y-0.5 duration-200"
               >
-                <div className="mb-2">
-                  <h3 className="text-lg font-semibold">
-                    {contract.propertyTitle}
+                <div className="mb-3 space-y-1">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {truncateText(contract.propertyName, 30)}
                   </h3>
                   <p className="text-sm text-gray-500">
                     Client: {contract.clientName}
                   </p>
+
+                  {/* Property Location */}
+                  <div className="flex items-center text-sm text-gray-600 space-x-2">
+                    <span className="p-1 bg-gray-100 rounded-full">
+                      <MapPin className="w-4 h-4 text-blue-600" />
+                    </span>
+                    <span>{truncateText(contract.propertyLocation, 30)}</span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="flex items-center text-sm text-gray-600 space-x-2">
+                    <span className="p-1 bg-gray-100 rounded-full">
+                      <Wallet className="w-4 h-4 text-green-600" />
+                    </span>
+                    <span>
+                      NGN{" "}
+                      {new Intl.NumberFormat().format(contract.propertyPrice)}
+                    </span>
+                  </div>
                 </div>
+
+                {/* Status Badge */}
                 <span
-                  className={`inline-block mt-2 px-3 py-1 text-xs text-white rounded-full w-max ${
+                  className={`inline-block mt-2 px-3 py-1 text-xs font-medium text-white rounded-full w-max ${
                     STATUS_COLORS[contract.status]
                   }`}
                 >
