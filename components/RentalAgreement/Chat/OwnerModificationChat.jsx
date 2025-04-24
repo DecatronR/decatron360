@@ -1,28 +1,28 @@
 import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 // Initialize socket connection
-const socket = io("http://localhost:1280");
+const socket = io(baseUrl);
 
-const OwnerModificationChat = ({ tenantId }) => {
+const OwnerModificationChat = ({ ownerId, clientId, rightSectionWidth }) => {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const scrollRef = useRef(null);
-  const currentOwnerId = sessionStorage.getItem("userId");
 
   useEffect(() => {
-    if (!currentOwnerId) {
+    if (!ownerId) {
       return;
     }
 
     // Register the owner with the socket server
-    socket.emit("register", currentOwnerId);
+    socket.emit("register", ownerId);
 
     // Listen for incoming messages
     socket.on("receivePrivateMessage", (message) => {
       if (
-        (message.from === currentOwnerId && message.to === tenantId) ||
-        (message.from === tenantId && message.to === currentOwnerId)
+        (message.from === ownerId && message.to === clientId) ||
+        (message.from === clientId && message.to === ownerId)
       ) {
         setComments((prev) => [...prev, message]);
       }
@@ -31,7 +31,7 @@ const OwnerModificationChat = ({ tenantId }) => {
     return () => {
       socket.off("receivePrivateMessage");
     };
-  }, [currentOwnerId, tenantId]);
+  }, [ownerId, clientId]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -46,8 +46,8 @@ const OwnerModificationChat = ({ tenantId }) => {
     if (!comment.trim()) return;
 
     const newMessage = {
-      from: currentOwnerId,
-      to: tenantId,
+      from: ownerId,
+      to: clientId,
       text: comment.trim(),
       timestamp: Date.now(),
     };
@@ -61,25 +61,31 @@ const OwnerModificationChat = ({ tenantId }) => {
   };
 
   return (
-    <div className="w-1/4 p-4">
-      <h3 className="text-lg font-medium mb-3">Modification Request</h3>
+    <div
+      className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]"
+      style={{ width: `${rightSectionWidth}%` }}
+    >
+      <h3 className="text-xl font-semibold mb-4 text-gray-800">
+        Modification Request
+      </h3>
 
+      {/* Messages container */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto max-h-[700px] bg-white p-2 rounded-md border space-y-2"
+        className="flex-1 overflow-auto bg-white p-4 rounded-lg max-h-[600px] space-y-4 custom-scrollbar"
       >
         {comments.length > 0 ? (
           comments.map((msg, index) => (
             <div
               key={index}
-              className={`p-2 rounded-md text-sm ${
-                msg.from === currentOwnerId
-                  ? "bg-blue-100 text-gray-700"
-                  : "bg-green-100 text-gray-800"
+              className={`p-3 rounded-lg max-w-xs break-words text-sm ${
+                msg.from === ownerId
+                  ? "bg-blue-200 text-gray-800 self-end"
+                  : "bg-green-200 text-gray-800 self-start"
               }`}
             >
               <p>{msg.text}</p>
-              <span className="text-xs text-gray-500 block mt-1">
+              <span className="text-xs text-gray-500 block mt-2">
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </span>
             </div>
@@ -89,20 +95,23 @@ const OwnerModificationChat = ({ tenantId }) => {
         )}
       </div>
 
-      <textarea
-        className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-        rows={2}
-        placeholder="Respond to tenant's request..."
-        value={comment}
-        onChange={handleCommentChange}
-      ></textarea>
+      {/* Input & Submit Button */}
+      <div className="mt-6 flex flex-col space-y-3">
+        <textarea
+          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
+          rows={4}
+          placeholder="Respond to tenant's request..."
+          value={comment}
+          onChange={handleCommentChange}
+        ></textarea>
 
-      <button
-        onClick={handleSubmitComment}
-        className="mt-3 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition"
-      >
-        Submit Response
-      </button>
+        <button
+          onClick={handleSubmitComment}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all ease-in-out duration-200"
+        >
+          Submit Response
+        </button>
+      </div>
     </div>
   );
 };

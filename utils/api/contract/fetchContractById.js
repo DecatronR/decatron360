@@ -9,7 +9,7 @@ export const fetchContractById = async (contractId) => {
   }
   try {
     const res = await axios.post(
-      `${baseUrl}/contract/create`,
+      `${baseUrl}/contract/fetchContractById`,
       { contractId },
       {
         withCredentials: true,
