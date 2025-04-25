@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import socket from "lib/socket";
+import { fetchMessages } from "utils/api/chat/fetchMessages";
 const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
@@ -11,6 +12,34 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [comments]);
+
+  useEffect(() => {
+    const handleFetchMessageHistory = async () => {
+      try {
+        const res = await fetchMessages(contractId);
+        console.log("Message history: ", res);
+        if (res?.data) {
+          const formattedMessages = res.data.map((msg) => ({
+            messageId: msg.messageId,
+            from: msg.from._id,
+            to: msg.to._id,
+            text: msg.text,
+            role: msg.role,
+            timestamp: msg.timestamp,
+          }));
+
+          setComments(
+            formattedMessages.sort(
+              (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+            )
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching messages", error);
+      }
+    };
+    handleFetchMessageHistory();
+  }, [contractId]);
 
   useEffect(() => {
     // Register the owner with the socket server
