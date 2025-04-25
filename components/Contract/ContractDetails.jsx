@@ -40,7 +40,7 @@ const ContractDetailsContent = () => {
       try {
         const res = await fetchContractById(id);
         console.log("Contract details: ", res);
-        setContract(res);
+        setContract(res.data);
       } catch (error) {
         console.error("Failed to fetch contract details: ", error);
       }
@@ -144,15 +144,15 @@ const ContractDetailsContent = () => {
       >
         {["owner", "property manager", "careTaker"].includes(userRole) ? (
           <OwnerModificationChat
+            contractId={contract._id}
             ownerId={contract.ownerId}
             clientId={contract.clientId}
-            rightSectionWidth={100 - leftWidth}
           />
         ) : userRole === "buyer" ? (
           <ClientModificationChat
+            contractId={contract._id}
             clientId={contract.clientId}
             ownerId={contract.ownerId}
-            rightSectionWidth={100 - leftWidth}
           />
         ) : null}
       </div>

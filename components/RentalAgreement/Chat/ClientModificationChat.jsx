@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import socket from "lib/socket";
 
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-// Initialize socket connection
-const socket = io(baseUrl);
-
-const ClientModificationChat = ({ clientId, ownerId, rightSectionWidth }) => {
+const ClientModificationChat = ({ contractId, clientId, ownerId }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const scrollRef = useRef(null);
@@ -17,9 +13,8 @@ const ClientModificationChat = ({ clientId, ownerId, rightSectionWidth }) => {
     }
   }, [comments]);
 
-  const currentUserId = sessionStorage.getItem("userId");
   useEffect(() => {
-    // Register tenant user on socket server
+    // Register client user on socket server
     console.log("ClientId (current user): ", clientId);
     console.log("OwnerId: ", ownerId);
 
@@ -28,11 +23,15 @@ const ClientModificationChat = ({ clientId, ownerId, rightSectionWidth }) => {
     // Listen for incoming messages
     socket.on("receivePrivateMessage", (message) => {
       const isRelevant =
-        (message.from === currentUserId && message.to === recipientUserId) ||
-        (message.from === recipientUserId && message.to === currentUserId);
+        (message.from === clientId && message.to === ownerId) ||
+        (message.from === ownerId && message.to === clientId);
 
       if (isRelevant) {
-        setComments((prev) => [...prev, message]);
+        setComments((prev) => {
+          const exists = prev.find((m) => m.messageId === message.messageId);
+          if (exists) return prev;
+          return [...prev, message];
+        });
       }
     });
 
@@ -47,42 +46,55 @@ const ClientModificationChat = ({ clientId, ownerId, rightSectionWidth }) => {
     if (!comment.trim()) return;
 
     const newMessage = {
-      from: currentUserId,
-      to: recipientUserId,
+      contractId,
+      messageId: `${clientId}-${Date.now()}`,
+      from: clientId,
+      to: ownerId,
       text: comment.trim(),
+      role: "client",
       timestamp: Date.now(),
     };
 
     // Emit to backend
-    socket.emit("sendPrivateMessage", newMessage);
+    socket.emit("sendPrivateMessage", newMessage, (ack) => {
+      if (ack.status === "delivered") {
+        console.log("Message delivered successfully");
+      }
+    });
 
     // Optimistic update (server should also echo)
-    setComments((prev) => [...prev, newMessage]);
+    setComments((prev) => {
+      const exists = prev.find((m) => m.messageId === newMessage.messageId);
+      if (exists) return prev;
+      return [...prev, newMessage];
+    });
+
     setComment("");
   };
 
   return (
-    <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]">
-      <h3 className="text-lg font-medium text-gray-800 mb-3">
-        Modification Requests (Client)
+    <div className="w-full bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[700px] h-full">
+      <h3 className="text-xl font-semibold mb-4 text-gray-800">
+        Modification Request (Client)
       </h3>
 
+      {/* Messages container */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto max-h-[700px] space-y-2 border p-2 rounded-md bg-white"
+        className="flex-1 overflow-auto bg-white p-4 rounded-lg space-y-4 custom-scrollbar"
       >
         {comments.length > 0 ? (
-          comments.map((msg, index) => (
+          comments.map((msg) => (
             <div
-              key={index}
-              className={`p-2 rounded-md text-sm ${
-                msg.from === currentUserId
-                  ? "bg-blue-100 text-gray-700"
-                  : "bg-green-100 text-gray-800"
+              key={msg.messageId}
+              className={`p-3 rounded-lg max-w-xs break-words text-sm ${
+                msg.from === clientId
+                  ? "bg-blue-200 text-gray-800 self-end"
+                  : "bg-green-200 text-gray-800 self-start"
               }`}
             >
               <p>{msg.text}</p>
-              <span className="text-xs text-gray-500 block mt-1">
+              <span className="text-xs text-gray-500 block mt-2">
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </span>
             </div>
@@ -92,20 +104,23 @@ const ClientModificationChat = ({ clientId, ownerId, rightSectionWidth }) => {
         )}
       </div>
 
-      <textarea
-        className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-        rows={2}
-        placeholder="Describe the required modifications..."
-        value={comment}
-        onChange={handleCommentChange}
-      ></textarea>
+      {/* Input & Submit Button */}
+      <div className="mt-4 flex flex-col space-y-3">
+        <textarea
+          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
+          rows={4}
+          placeholder="Respond to tenant's request..."
+          value={comment}
+          onChange={handleCommentChange}
+        ></textarea>
 
-      <button
-        onClick={handleSubmitComment}
-        className="mt-3 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition"
-      >
-        Submit Request
-      </button>
+        <button
+          onClick={handleSubmitComment}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-all ease-in-out duration-200"
+        >
+          Submit Response
+        </button>
+      </div>
     </div>
   );
 };
