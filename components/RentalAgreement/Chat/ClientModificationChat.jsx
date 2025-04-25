@@ -116,16 +116,23 @@ const ClientModificationChat = ({ contractId, clientId, ownerId }) => {
           comments.map((msg) => (
             <div
               key={msg.messageId}
-              className={`p-3 rounded-lg max-w-xs break-words text-sm ${
-                msg.from === clientId
-                  ? "bg-blue-200 text-gray-800 self-end"
-                  : "bg-green-200 text-gray-800 self-start"
+              className={`flex items-start ${
+                msg.from === clientId ? "justify-end" : "justify-start"
               }`}
             >
-              <p>{msg.text}</p>
-              <span className="text-xs text-gray-500 block mt-2">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </span>
+              {/* Message Bubble */}
+              <div
+                className={`p-3 rounded-lg max-w-xs break-words text-sm ${
+                  msg.from === clientId
+                    ? "bg-blue-200 text-gray-800 self-end"
+                    : "bg-green-200 text-gray-800 self-start"
+                }`}
+              >
+                <p>{msg.text}</p>
+                <span className="text-xs text-gray-500 block mt-2">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
             </div>
           ))
         ) : (

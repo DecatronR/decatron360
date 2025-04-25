@@ -106,6 +106,7 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
       </h3>
 
       {/* Messages container */}
+      {/* Messages container */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-auto bg-white p-4 rounded-lg space-y-4 custom-scrollbar"
@@ -114,16 +115,23 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
           comments.map((msg) => (
             <div
               key={msg.messageId}
-              className={`p-3 rounded-lg max-w-xs break-words text-sm ${
-                msg.from === ownerId
-                  ? "bg-blue-200 text-gray-800 self-end"
-                  : "bg-green-200 text-gray-800 self-start"
+              className={`flex items-start ${
+                msg.from === ownerId ? "justify-end" : "justify-start"
               }`}
             >
-              <p>{msg.text}</p>
-              <span className="text-xs text-gray-500 block mt-2">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </span>
+              {/* Message Bubble */}
+              <div
+                className={`p-3 rounded-lg max-w-xs break-words text-sm ${
+                  msg.from === ownerId
+                    ? "bg-blue-200 text-gray-800 self-end"
+                    : "bg-green-200 text-gray-800 self-start"
+                }`}
+              >
+                <p>{msg.text}</p>
+                <span className="text-xs text-gray-500 block mt-2">
+                  {new Date(msg.timestamp).toLocaleTimeString()}
+                </span>
+              </div>
             </div>
           ))
         ) : (
