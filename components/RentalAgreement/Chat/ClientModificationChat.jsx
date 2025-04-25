@@ -145,7 +145,7 @@ const ClientModificationChat = ({ contractId, clientId, ownerId }) => {
         <textarea
           className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
           rows={4}
-          placeholder="Respond to tenant's request..."
+          placeholder="Message Property Owner ..."
           value={comment}
           onChange={handleCommentChange}
         ></textarea>

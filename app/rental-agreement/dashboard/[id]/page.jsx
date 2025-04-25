@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
+import TemplateWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";

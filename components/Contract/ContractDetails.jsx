@@ -7,6 +7,8 @@ import { truncateText } from "utils/helpers/truncateText";
 import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
 import ClientModificationChat from "components/RentalAgreement/Chat/ClientModificationChat";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
+import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -21,6 +23,11 @@ const ContractDetailsContent = () => {
   const [contract, setContract] = useState(null);
   const [leftWidth, setLeftWidth] = useState(70); // Default 70% for the left section
   const [isDragging, setIsDragging] = useState(false);
+
+  const [propertyData, setPropertyData] = useState();
+  const [ownerId, setOwnerId] = useState(null);
+  const [ownerData, setOwnerData] = useState();
+  const [tenantData, setTenantData] = useState();
 
   useEffect(() => {
     const handleFetchUserRole = async () => {
@@ -63,6 +70,49 @@ const ContractDetailsContent = () => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
+  useEffect(() => {
+    const handleFetchPropertyData = async () => {
+      try {
+        const res = await fetchPropertyData(contract.propertyId);
+        setPropertyData(res);
+        setOwnerId(res.data.userID);
+        console.log("property data: ", res);
+      } catch (error) {
+        console.log("Failed to fetch property data: ", error);
+      }
+    };
+
+    handleFetchPropertyData();
+  }, [contract]);
+
+  useEffect(() => {
+    const handleFetchOwnerData = async () => {
+      try {
+        const res = await fetchUserData(contract.ownerId);
+        setOwnerData(res);
+        console.log("owner data: ", res);
+      } catch (error) {
+        console.log("Failed to fetch owner data: ", error);
+      }
+    };
+
+    handleFetchOwnerData();
+  }, [contract]);
+
+  useEffect(() => {
+    const handleFetchClientData = async () => {
+      try {
+        const res = await fetchUserData(contract.clientId);
+        console.log("Tenant data: ", res);
+        setTenantData(res);
+      } catch (error) {
+        console.log("Failed to fetch client data:", error);
+      }
+    };
+
+    handleFetchClientData();
+  }, [contract]);
 
   if (!contract) {
     return (
@@ -117,7 +167,11 @@ const ContractDetailsContent = () => {
             <div className="flex items-center text-gray-700 space-x-2">
               <CalendarDays className="w-4 h-4 text-gray-500" />
               <span>
-                {contract.startDate} - {contract.endDate}
+                {new Date(contract.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </span>
             </div>
 
@@ -133,6 +187,18 @@ const ContractDetailsContent = () => {
             >
               {contract.status}
             </span>
+          </div>
+        </div>
+
+        {/* Tenancy Agreement Template */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border mb-6">
+          <h2 className="text-xl font-bold mb-4">Tenancy Agreement</h2>
+          <div className="overflow-auto max-h-96">
+            <RentalAgreementWrapper
+              propertyData={propertyData}
+              ownerData={ownerData}
+              tenantData={tenantData}
+            />
           </div>
         </div>
       </div>

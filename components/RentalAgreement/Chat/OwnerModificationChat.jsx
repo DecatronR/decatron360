@@ -106,7 +106,6 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
       </h3>
 
       {/* Messages container */}
-      {/* Messages container */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-auto bg-white p-4 rounded-lg space-y-4 custom-scrollbar"
@@ -144,7 +143,7 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
         <textarea
           className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
           rows={4}
-          placeholder="Respond to tenant's request..."
+          placeholder="Message Client..."
           value={comment}
           onChange={handleCommentChange}
         ></textarea>

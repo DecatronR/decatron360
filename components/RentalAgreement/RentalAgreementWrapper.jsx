@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
 
-const TemplateWrapper = ({ propertyData, ownerData, tenantData }) => {
+const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [padding, setPadding] = useState("20px");
 
@@ -82,4 +82,4 @@ const TemplateWrapper = ({ propertyData, ownerData, tenantData }) => {
   );
 };
 
-export default TemplateWrapper;
+export default RentalAgreementWrapper;
