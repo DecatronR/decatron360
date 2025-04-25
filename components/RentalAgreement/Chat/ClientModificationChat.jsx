@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 // Initialize socket connection
-const socket = io("http://localhost:1280");
+const socket = io(baseUrl);
 
-const TenantModificationChat = ({ recipientUserId }) => {
+const ClientModificationChat = ({ clientId, ownerId, rightSectionWidth }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const scrollRef = useRef(null);
@@ -19,10 +20,10 @@ const TenantModificationChat = ({ recipientUserId }) => {
   const currentUserId = sessionStorage.getItem("userId");
   useEffect(() => {
     // Register tenant user on socket server
-    console.log("Current user id: ", currentUserId);
-    console.log("Recipient id: ", recipientUserId);
+    console.log("ClientId (current user): ", clientId);
+    console.log("OwnerId: ", ownerId);
 
-    socket.emit("register", currentUserId);
+    socket.emit("register", clientId);
 
     // Listen for incoming messages
     socket.on("receivePrivateMessage", (message) => {
@@ -38,7 +39,7 @@ const TenantModificationChat = ({ recipientUserId }) => {
     return () => {
       socket.off("receivePrivateMessage");
     };
-  }, [currentUserId, recipientUserId]);
+  }, [clientId, ownerId]);
 
   const handleCommentChange = (e) => setComment(e.target.value);
 
@@ -63,7 +64,7 @@ const TenantModificationChat = ({ recipientUserId }) => {
   return (
     <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]">
       <h3 className="text-lg font-medium text-gray-800 mb-3">
-        Modification Requests
+        Modification Requests (Client)
       </h3>
 
       <div
@@ -109,4 +110,4 @@ const TenantModificationChat = ({ recipientUserId }) => {
   );
 };
 
-export default TenantModificationChat;
+export default ClientModificationChat;

@@ -5,6 +5,8 @@ import { MapPin, Wallet, CalendarDays } from "lucide-react";
 import { fetchContractById } from "utils/api/contract/fetchContractById";
 import { truncateText } from "utils/helpers/truncateText";
 import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
+import ClientModificationChat from "components/RentalAgreement/Chat/ClientModificationChat";
+import { fetchUserData } from "utils/api/user/fetchUserData";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -15,9 +17,23 @@ const STATUS_COLORS = {
 const ContractDetailsContent = () => {
   const { id } = useParams();
   const router = useRouter();
+  const [userRole, setUserRole] = useState();
   const [contract, setContract] = useState(null);
   const [leftWidth, setLeftWidth] = useState(70); // Default 70% for the left section
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const handleFetchUserRole = async () => {
+      const userId = sessionStorage.getItem("userId");
+      try {
+        const res = await fetchUserData(userId);
+        setUserRole(res.role);
+      } catch (error) {
+        console.log("Failed to get user role: ", error);
+      }
+    };
+    handleFetchUserRole();
+  }, []);
 
   useEffect(() => {
     const handleFetchContractDetails = async () => {
@@ -123,14 +139,22 @@ const ContractDetailsContent = () => {
 
       {/* Right Section - Chat Component */}
       <div
-        className="bg-white shadow-md rounded-md p-6 max-w-xs"
+        className="bg-white shadow-md rounded-md p-6 flex flex-col h-full"
         style={{ width: `${100 - leftWidth}%` }}
       >
-        <OwnerModificationChat
-          ownerId={contract.ownerId}
-          clientId={contract.clientId}
-          rightSectionWidth={100 - leftWidth}
-        />
+        {["owner", "property manager", "careTaker"].includes(userRole) ? (
+          <OwnerModificationChat
+            ownerId={contract.ownerId}
+            clientId={contract.clientId}
+            rightSectionWidth={100 - leftWidth}
+          />
+        ) : userRole === "buyer" ? (
+          <ClientModificationChat
+            clientId={contract.clientId}
+            ownerId={contract.ownerId}
+            rightSectionWidth={100 - leftWidth}
+          />
+        ) : null}
       </div>
     </div>
   );

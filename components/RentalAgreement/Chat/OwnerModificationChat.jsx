@@ -61,12 +61,9 @@ const OwnerModificationChat = ({ ownerId, clientId, rightSectionWidth }) => {
   };
 
   return (
-    <div
-      className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]"
-      style={{ width: `${rightSectionWidth}%` }}
-    >
+    <div className="w-full bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]">
       <h3 className="text-xl font-semibold mb-4 text-gray-800">
-        Modification Request
+        Modification Request (Owner)
       </h3>
 
       {/* Messages container */}

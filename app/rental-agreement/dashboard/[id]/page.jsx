@@ -12,7 +12,7 @@ import { generatePaymentReference } from "utils/helpers/generatePaymentReference
 import { numberToWords } from "utils/helpers/priceNumberToWords";
 import { getStartDate } from "utils/helpers/getStartData";
 import { getEndDate } from "utils/helpers/getEndData";
-import TenantModificationChat from "components/RentalAgreement/Chat/TenantModificationChat";
+import ClientModificationChat from "components/RentalAgreement/Chat/ClientModificationChat";
 
 const Dashboard = () => {
   const { id } = useParams();
@@ -318,9 +318,7 @@ const Dashboard = () => {
             />
           </div>
 
-          {showCommentBox && (
-            <TenantModificationChat recipientUserId={ownerId} />
-          )}
+          {showCommentBox && <ClientModificationChat />}
         </div>
 
         {/* Action Buttons */}
