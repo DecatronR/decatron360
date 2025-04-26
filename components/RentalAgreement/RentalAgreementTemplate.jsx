@@ -1,4 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
 
 // Updated clean, modern styles
 const styles = StyleSheet.create({
@@ -40,29 +41,17 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     marginBottom: 5,
   },
+  watermark: {
+    position: "absolute",
+    top: "40%",
+    left: "20%",
+    fontSize: 80,
+    color: "#19738D",
+    opacity: 0.1,
+    transform: "rotate(-30deg)",
+    zIndex: 0,
+  },
 });
-
-const getOrdinalSuffix = (day) => {
-  if (day > 3 && day < 21) return "th";
-  switch (day % 10) {
-    case 1:
-      return "st";
-    case 2:
-      return "nd";
-    case 3:
-      return "rd";
-    default:
-      return "th";
-  }
-};
-
-const currentDate = new Date();
-const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString(
-  "default",
-  {
-    month: "long",
-  }
-)} ${currentDate.getFullYear()}`;
 
 const PDFRender = ({
   ownerName,
@@ -78,10 +67,12 @@ const PDFRender = ({
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>
+      <Text style={styles.watermark}>SAMPLE</Text>
+
       <View style={styles.section}>
         <Text style={styles.title}>Tenancy Agreement Template</Text>
         <Text style={styles.text}>
-          THIS TENANCY AGREEMENT is made on the {formattedDate}
+          THIS TENANCY AGREEMENT is made on the {""} {formatDateWithOrdinal()}
         </Text>
       </View>
 
@@ -105,13 +96,17 @@ const PDFRender = ({
         <Text style={styles.text}>
           The Landlord is the rightful owner of the property located at{" "}
           <Text style={styles.boldText}>
-            {propertyHouseNumberAndStreet}, {propertyNeighbourhood},{" "}
+            {propertyHouseNumberAndStreet}, {propertyNeighbourhood}, {""}
             {propertyState}
           </Text>
           . The Landlord has agreed to lease, and the Tenant to rent, the
           property at a fixed rent of{" "}
-          <Text style={styles.boldText}>NGN{rentPrice}</Text>. Both parties have
-          agreed to abide by the terms outlined in this agreement.
+          <Text style={styles.boldText}>
+            NGN{""}
+            {rentPrice}
+          </Text>
+          . Both parties have agreed to abide by the terms outlined in this
+          agreement.
         </Text>
       </View>
 
@@ -122,14 +117,20 @@ const PDFRender = ({
           <Text style={styles.boldText}>{rentDuration}</Text>, commencing from
           one week after the signing of this agreement and ending 365 days
           thereafter. The rent of{" "}
-          <Text style={styles.boldText}>NGN{rentPrice}</Text> is payable in
-          advance.
+          <Text style={styles.boldText}>
+            NGN{""}
+            {rentPrice}
+          </Text>{" "}
+          is payable in advance.
         </Text>
         <Text style={styles.text}>
           1.2 A refundable caution fee of{" "}
-          <Text style={styles.boldText}>NGN{cautionFee}</Text> is payable and
-          shall be refunded at the end of the tenancy period, subject to
-          property inspection.
+          <Text style={styles.boldText}>
+            NGN{""}
+            {cautionFee}
+          </Text>{" "}
+          is payable and shall be refunded at the end of the tenancy period,
+          subject to property inspection.
         </Text>
         <Text style={styles.text}>
           1.3 An agency/transaction fee of{" "}
@@ -139,6 +140,7 @@ const PDFRender = ({
       </View>
 
       <View style={styles.section}>
+        <Text style={styles.watermark}>SAMPLE</Text>
         <Text style={styles.subTitle}>2. Tenant’s Obligations</Text>
         <Text style={styles.text}>The Tenant agrees to:</Text>
         {[
