@@ -31,6 +31,49 @@ const ContractDetailsContent = () => {
   const [tenantData, setTenantData] = useState();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [rentAndDurationText, setRentAndDurationText] = useState([
+    "Loading tenancy details...",
+    "Loading caution fee details...",
+    "Loading agency fee details...",
+  ]);
+
+  const [tenantObligations, setTenantObligations] = useState([
+    "Pay all applicable utility and security charges promptly.",
+    "Maintain cleanliness and good condition of the premises.",
+    "Use the property solely for residential purposes.",
+    "Obtain written consent before sub-letting or making alterations.",
+    "Repair any damages caused by themselves or their visitors.",
+    "Vacate upon expiry unless renewed by agreement.",
+    "Pay NGN1,000 as mesne profit for each day of illegal occupation after expiry.",
+    "Notify the Landlord at least 30 days before expiration if intending to renew.",
+  ]);
+
+  const [landlordObligations, setLandlordObligations] = useState([
+    "Ensure peaceful possession by the Tenant upon timely payment.",
+    "Not unreasonably withhold required consents.",
+    "Provide one month’s notice before expiration for possession delivery.",
+  ]);
+
+  useEffect(() => {
+    if (propertyData && propertyData.data) {
+      // Function to clean unwanted characters like '¦'
+      const cleanValue = (value) => {
+        return value ? value.replace(/[^0-9.,]/g, "") : "N/A"; // Removes any non-numeric, non-comma, non-period characters
+      };
+
+      setRentAndDurationText([
+        `The tenancy is for a fixed term of , commencing from one week after the signing of this agreement and ending 365 days thereafter. The rent of NGN${cleanValue(
+          propertyData.data.price
+        )} is payable in advance`,
+
+        `A refundable caution fee of NGN${cleanValue(
+          propertyData.data.cautionFee
+        )} is payable and shall be refunded at the end of the tenancy period, subject to property inspection`,
+
+        `An agency/transaction fee of 15% of the rent price applies for administrative and processing costs.`,
+      ]);
+    }
+  }, [propertyData]);
 
   useEffect(() => {
     const handleFetchUserRole = async () => {
@@ -125,7 +168,7 @@ const ContractDetailsContent = () => {
     console.log("Update agreement successful");
   };
 
-  if (!contract) {
+  if (!contract || !propertyData || !propertyData.data) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-gray-600">Loading contract details...</p>
@@ -239,6 +282,9 @@ const ContractDetailsContent = () => {
               propertyData={propertyData}
               ownerData={ownerData}
               tenantData={tenantData}
+              rentAndDurationText={rentAndDurationText}
+              tenantObligations={tenantObligations}
+              landlordObligations={landlordObligations}
               isFullScreen={isFullScreen} // Pass fullscreen state to the wrapper
               toggleFullScreen={toggleFullScreen} // Pass the toggle function
             />

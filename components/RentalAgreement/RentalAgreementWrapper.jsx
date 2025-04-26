@@ -7,6 +7,9 @@ const RentalAgreementWrapper = ({
   propertyData,
   ownerData,
   tenantData,
+  rentAndDurationText,
+  tenantObligations,
+  landlordObligations,
   isFullScreen,
   toggleFullScreen,
 }) => {
@@ -103,6 +106,9 @@ const RentalAgreementWrapper = ({
                   cautionFee={propertyData.data.cautionFee}
                   agencyFee={propertyData.data.agencyFee}
                   latePaymentFee={propertyData.data.latePaymentFee}
+                  rentAndDurationText={rentAndDurationText}
+                  tenantObligations={tenantObligations}
+                  landlordObligations={landlordObligations}
                 />
               )}
             </PDFViewer>

@@ -1,6 +1,5 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
-import { Edit } from "lucide-react";
 
 // Updated clean, modern styles
 const styles = StyleSheet.create({
@@ -54,6 +53,10 @@ const styles = StyleSheet.create({
   },
 });
 
+const cleanValue = (value) => {
+  return value ? value.replace(/[^0-9.,]/g, "") : "N/A"; // Removes any non-numeric, non-comma, non-period characters
+};
+
 const PDFRender = ({
   ownerName,
   tenantName,
@@ -65,6 +68,9 @@ const PDFRender = ({
   cautionFee,
   agencyFee,
   latePaymentFee,
+  rentAndDurationText,
+  tenantObligations,
+  landlordObligations,
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -102,58 +108,25 @@ const PDFRender = ({
           </Text>
           . The Landlord has agreed to lease, and the Tenant to rent, the
           property at a fixed rent of{" "}
-          <Text style={styles.boldText}>
-            NGN{""}
-            {rentPrice}
-          </Text>
-          . Both parties have agreed to abide by the terms outlined in this
-          agreement.
+          <Text style={styles.boldText}>NGN{cleanValue(rentPrice)}</Text>. Both
+          parties have agreed to abide by the terms outlined in this agreement.
         </Text>
       </View>
 
       <View style={styles.section}>
         <Text style={styles.subTitle}>1. Rent and Duration</Text>
-        <Text style={styles.text}>
-          1.1 The tenancy is for a fixed term of{" "}
-          <Text style={styles.boldText}>{rentDuration}</Text>, commencing from
-          one week after the signing of this agreement and ending 365 days
-          thereafter. The rent of{" "}
-          <Text style={styles.boldText}>
-            NGN{""}
-            {rentPrice}
-          </Text>{" "}
-          is payable in advance.
-        </Text>
-        <Text style={styles.text}>
-          1.2 A refundable caution fee of{" "}
-          <Text style={styles.boldText}>
-            NGN{""}
-            {cautionFee}
-          </Text>{" "}
-          is payable and shall be refunded at the end of the tenancy period,
-          subject to property inspection.
-        </Text>
-        <Text style={styles.text}>
-          1.3 An agency/transaction fee of{" "}
-          <Text style={styles.boldText}>15%</Text> of the rent price applies for
-          administrative and processing costs.
-        </Text>
+        {rentAndDurationText.map((item, index) => (
+          <Text key={index} style={styles.bulletPoint}>
+            • {item}
+          </Text>
+        ))}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.watermark}>SAMPLE</Text>
         <Text style={styles.subTitle}>2. Tenant’s Obligations</Text>
         <Text style={styles.text}>The Tenant agrees to:</Text>
-        {[
-          "Pay all applicable utility and security charges promptly.",
-          "Maintain cleanliness and good condition of the premises.",
-          "Use the property solely for residential purposes.",
-          "Obtain written consent before sub-letting or making alterations.",
-          "Repair any damages caused by themselves or their visitors.",
-          "Vacate upon expiry unless renewed by agreement.",
-          "Pay NGN1,000 as mesne profit for each day of illegal occupation after expiry.",
-          "Notify the Landlord at least 30 days before expiration if intending to renew.",
-        ].map((item, index) => (
+        {tenantObligations.map((item, index) => (
           <Text key={index} style={styles.bulletPoint}>
             • {item}
           </Text>
@@ -163,11 +136,7 @@ const PDFRender = ({
       <View style={styles.section}>
         <Text style={styles.subTitle}>3. Landlord’s Obligations</Text>
         <Text style={styles.text}>The Landlord agrees to:</Text>
-        {[
-          "Ensure peaceful possession by the Tenant upon timely payment.",
-          "Not unreasonably withhold required consents.",
-          "Provide one month’s notice before expiration for possession delivery.",
-        ].map((item, index) => (
+        {landlordObligations.map((item, index) => (
           <Text key={index} style={styles.bulletPoint}>
             • {item}
           </Text>
