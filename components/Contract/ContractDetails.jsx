@@ -12,6 +12,7 @@ import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWr
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Pencil, Maximize2 } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
+import { useAuth } from "context/AuthContext";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -22,6 +23,7 @@ const STATUS_COLORS = {
 const ContractDetailsContent = () => {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [userRole, setUserRole] = useState();
   const [contract, setContract] = useState(null);
   const [leftWidth, setLeftWidth] = useState(70); // Default 70% for the left section
@@ -255,25 +257,27 @@ const ContractDetailsContent = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Tenancy Agreement</h2>
             <div className="flex items-center space-x-4">
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <button
-                      onClick={() => setIsEditDialogOpen(true)}
-                      className="p-2 rounded-full hover:bg-gray-100"
+              {contract?.ownerId === user?.id && (
+                <Tooltip.Provider>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <button
+                        onClick={() => setIsEditDialogOpen(true)}
+                        className="p-2 rounded-full hover:bg-gray-100"
+                      >
+                        <Pencil className="w-6 h-6 text-primary-600" />
+                      </button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      side="bottom"
+                      sideOffset={4}
+                      className="bg-gray-800 text-white text-xs rounded px-2 py-1"
                     >
-                      <Pencil className="w-6 h-6 text-primary-600" />
-                    </button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    side="bottom"
-                    sideOffset={4}
-                    className="bg-gray-800 text-white text-xs rounded px-2 py-1"
-                  >
-                    Edit Agreement
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+                      Edit Agreement
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </Tooltip.Provider>
+              )}
               <button
                 onClick={toggleFullScreen}
                 className="text-sm text-blue-600 hover:underline"
