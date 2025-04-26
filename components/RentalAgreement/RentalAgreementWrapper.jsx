@@ -3,13 +3,17 @@ import React, { useEffect, useState } from "react";
 import { PDFViewer } from "@react-pdf/renderer";
 import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
 
-const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
+const RentalAgreementWrapper = ({
+  propertyData,
+  ownerData,
+  tenantData,
+  isFullScreen,
+  toggleFullScreen,
+}) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [padding, setPadding] = useState("20px");
-  const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
-    // Check if code is running in the browser
     setIsBrowser(typeof window !== "undefined");
   }, []);
 
@@ -24,10 +28,6 @@ const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
     return () => window.removeEventListener("resize", updatePadding);
   }, []);
 
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-  };
-
   return (
     <div
       style={{
@@ -40,6 +40,26 @@ const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
         overflow: isFullScreen ? "hidden" : "auto",
       }}
     >
+      {isFullScreen && (
+        <button
+          onClick={toggleFullScreen}
+          style={{
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: 10000,
+            padding: "10px 16px",
+            backgroundColor: " #5a47fb",
+            color: "#fff",
+            border: "none",
+            borderRadius: "7px",
+            cursor: "pointer",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          Exit Fullscreen
+        </button>
+      )}
       <div
         style={{
           position: isFullScreen ? "fixed" : "relative",
@@ -55,27 +75,7 @@ const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
           overflow: "hidden",
         }}
       >
-        {/* Fullscreen toggle button */}
-        {isBrowser && (
-          <button
-            onClick={toggleFullScreen}
-            style={{
-              position: "absolute",
-              top: "16px",
-              right: "18px",
-              zIndex: 10000,
-              padding: "8px 14px",
-              borderRadius: "25px",
-              backgroundColor: "#5a47fb",
-              color: "#fff",
-              border: "none",
-              fontSize: "14px",
-              cursor: "pointer",
-            }}
-          >
-            {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
-          </button>
-        )}
+        {/* Fullscreen toggle button is now handled in ContractDetailsContent, so no need here */}
 
         {/* PDF Viewer */}
         {isBrowser && (

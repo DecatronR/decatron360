@@ -23,11 +23,10 @@ const ContractDetailsContent = () => {
   const [contract, setContract] = useState(null);
   const [leftWidth, setLeftWidth] = useState(70); // Default 70% for the left section
   const [isDragging, setIsDragging] = useState(false);
-
   const [propertyData, setPropertyData] = useState();
-  const [ownerId, setOwnerId] = useState(null);
   const [ownerData, setOwnerData] = useState();
   const [tenantData, setTenantData] = useState();
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
     const handleFetchUserRole = async () => {
@@ -114,6 +113,10 @@ const ContractDetailsContent = () => {
     handleFetchClientData();
   }, [contract]);
 
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen); // Toggle fullscreen state
+  };
+
   if (!contract) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -192,12 +195,23 @@ const ContractDetailsContent = () => {
 
         {/* Tenancy Agreement Template */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border mb-6">
-          <h2 className="text-xl font-bold mb-4">Tenancy Agreement</h2>
-          <div className="overflow-auto max-h-96">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">Tenancy Agreement</h2>
+            <button
+              onClick={toggleFullScreen} // Trigger fullscreen toggle here
+              className="text-sm text-blue-600 hover:underline"
+            >
+              {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+            </button>
+          </div>
+
+          <div id="agreement-content" className="overflow-auto max-h-96">
             <RentalAgreementWrapper
               propertyData={propertyData}
               ownerData={ownerData}
               tenantData={tenantData}
+              isFullScreen={isFullScreen} // Pass fullscreen state to the wrapper
+              toggleFullScreen={toggleFullScreen} // Pass the toggle function
             />
           </div>
         </div>
