@@ -10,8 +10,8 @@ import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import * as Menu from "@radix-ui/react-dropdown-menu";
 import { Pencil, Maximize2 } from "lucide-react";
+import EditAgreementDialog from "./EditAgreementDialogue";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -30,6 +30,7 @@ const ContractDetailsContent = () => {
   const [ownerData, setOwnerData] = useState();
   const [tenantData, setTenantData] = useState();
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   useEffect(() => {
     const handleFetchUserRole = async () => {
@@ -118,6 +119,10 @@ const ContractDetailsContent = () => {
 
   const toggleFullScreen = () => {
     setIsFullScreen(!isFullScreen); // Toggle fullscreen state
+  };
+
+  const handleAgreementUpdate = () => {
+    console.log("Update agreement successful");
   };
 
   if (!contract) {
@@ -260,6 +265,11 @@ const ContractDetailsContent = () => {
           />
         ) : null}
       </div>
+      <EditAgreementDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        onSubmit={handleAgreementUpdate}
+      />
     </div>
   );
 };
