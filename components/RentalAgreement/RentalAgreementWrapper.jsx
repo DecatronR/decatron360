@@ -6,9 +6,10 @@ import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementT
 const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
   const [isBrowser, setIsBrowser] = useState(false);
   const [padding, setPadding] = useState("20px");
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   useEffect(() => {
-    // Check if the code is running in the browser
+    // Check if code is running in the browser
     setIsBrowser(typeof window !== "undefined");
   }, []);
 
@@ -23,51 +24,81 @@ const RentalAgreementWrapper = ({ propertyData, ownerData, tenantData }) => {
     return () => window.removeEventListener("resize", updatePadding);
   }, []);
 
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
+
   return (
     <div
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f4f7fa", // Soft background color
-        padding: padding,
+        height: isFullScreen ? "100vh" : "100vh",
+        backgroundColor: isFullScreen ? "#fff" : "#f4f7fa",
+        padding: isFullScreen ? "0px" : padding,
+        overflow: isFullScreen ? "hidden" : "auto",
       }}
     >
       <div
         style={{
-          textAlign: "center",
+          position: isFullScreen ? "fixed" : "relative",
+          top: isFullScreen ? 0 : "auto",
+          left: isFullScreen ? 0 : "auto",
+          width: isFullScreen ? "100vw" : "800px",
+          height: isFullScreen ? "100vh" : "auto",
+          zIndex: isFullScreen ? 9999 : "auto",
           backgroundColor: "#fff",
-          borderRadius: "8px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           padding: "20px",
-          maxWidth: "100%",
-          width: "800px",
+          borderRadius: isFullScreen ? "0" : "8px",
+          boxShadow: isFullScreen ? "none" : "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
         }}
       >
-        {/* Option 1: Display PDF in a viewer only in the browser */}
+        {/* Fullscreen toggle button */}
+        {isBrowser && (
+          <button
+            onClick={toggleFullScreen}
+            style={{
+              position: "absolute",
+              top: "16px",
+              right: "18px",
+              zIndex: 10000,
+              padding: "8px 14px",
+              borderRadius: "25px",
+              backgroundColor: "#5a47fb",
+              color: "#fff",
+              border: "none",
+              fontSize: "14px",
+              cursor: "pointer",
+            }}
+          >
+            {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
+          </button>
+        )}
+
+        {/* PDF Viewer */}
         {isBrowser && (
           <div
             style={{
-              marginBottom: "20px", // Space below the PDF viewer
+              marginTop: "50px",
+              height: isFullScreen ? "calc(100vh - 70px)" : "700px",
             }}
           >
             <PDFViewer
               width="100%"
-              height="700px"
+              height="100%"
               style={{
-                border: "none", // Remove the border
-                borderRadius: "8px", // Smooth edges for the viewer
+                border: "none",
+                borderRadius: isFullScreen ? "0" : "8px",
               }}
             >
               {propertyData && ownerData && tenantData && (
                 <RentalAgreementTemplate
                   ownerName={ownerData.name}
                   tenantName={tenantData.name}
-                  // propertyHouseNumberAndStreet={propertyData.data.houseNoStreet}
                   propertyNeighbourhood={propertyData.data.neighbourhood}
                   propertyState={propertyData.data.state}
-                  // rentDuration={propertyData.data.duration}
                   rentPrice={propertyData.data.price}
                   cautionFee={propertyData.data.cautionFee}
                   agencyFee={propertyData.data.agencyFee}
