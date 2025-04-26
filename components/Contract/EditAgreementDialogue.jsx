@@ -1,7 +1,22 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { useState, useEffect } from "react";
 
-const EditAgreementDialog = ({ open, onOpenChange, onSubmit }) => {
+const EditAgreementDialog = ({ open, onOpenChange, onSubmit, data }) => {
+  const [selectedTitle, setSelectedTitle] = useState("Rent and Duration");
+  const [currentValue, setCurrentValue] = useState("");
+
+  useEffect(() => {
+    if (data[selectedTitle]) {
+      setCurrentValue(data[selectedTitle]);
+    }
+  }, [selectedTitle, data]);
+
+  const handleSave = () => {
+    onSubmit(selectedTitle, currentValue);
+    onOpenChange(false);
+  };
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -19,14 +34,23 @@ const EditAgreementDialog = ({ open, onOpenChange, onSubmit }) => {
           </div>
 
           <div className="space-y-4">
-            {/* Replace with actual form inputs */}
-            <input
-              type="text"
-              placeholder="Agreement Title"
+            {/* Dropdown for titles */}
+            <select
+              value={selectedTitle}
+              onChange={(e) => setSelectedTitle(e.target.value)}
               className="w-full border rounded p-2"
-            />
+            >
+              {Object.keys(data).map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+            </select>
+
+            {/* Textarea for content */}
             <textarea
-              placeholder="Agreement Details"
+              value={currentValue}
+              onChange={(e) => setCurrentValue(e.target.value)}
               className="w-full border rounded p-2 h-32"
             />
           </div>
@@ -38,7 +62,7 @@ const EditAgreementDialog = ({ open, onOpenChange, onSubmit }) => {
               </button>
             </Dialog.Close>
             <button
-              onClick={onSubmit}
+              onClick={handleSave}
               className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700"
             >
               Save

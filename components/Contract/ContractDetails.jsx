@@ -54,6 +54,12 @@ const ContractDetailsContent = () => {
     "Provide one month’s notice before expiration for possession delivery.",
   ]);
 
+  const agreementData = {
+    "Rent and Duration": rentAndDurationText,
+    "Tenant's Obligation": tenantObligations,
+    "Landlord's Obligation": landlordObligations,
+  };
+
   useEffect(() => {
     if (propertyData && propertyData.data) {
       // Function to clean unwanted characters like '¦'
@@ -315,6 +321,7 @@ const ContractDetailsContent = () => {
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         onSubmit={handleAgreementUpdate}
+        data={agreementData}
       />
     </div>
   );
