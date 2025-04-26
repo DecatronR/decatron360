@@ -8,12 +8,23 @@ const EditAgreementDialog = ({ open, onOpenChange, onSubmit, data }) => {
 
   useEffect(() => {
     if (data[selectedTitle]) {
-      setCurrentValue(data[selectedTitle]);
+      if (Array.isArray(data[selectedTitle])) {
+        setCurrentValue(
+          data[selectedTitle].map((line) => `• ${line}`).join("\n")
+        );
+      } else {
+        setCurrentValue(data[selectedTitle]);
+      }
     }
   }, [selectedTitle, data]);
 
   const handleSave = () => {
-    onSubmit(selectedTitle, currentValue);
+    const updatedValue = currentValue
+      .split("\n")
+      .map((line) => line.replace(/^•\s*/, "").trim())
+      .filter((line) => line !== "");
+
+    onSubmit(selectedTitle, updatedValue);
     onOpenChange(false);
   };
 
@@ -21,7 +32,7 @@ const EditAgreementDialog = ({ open, onOpenChange, onSubmit, data }) => {
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-50" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 w-[90vw] max-w-md -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-lg p-6 z-50">
+        <Dialog.Content className="fixed top-1/2 left-1/2 w-[90vw] max-w-3xl -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-lg p-6 z-50">
           <div className="flex items-center justify-between mb-4">
             <Dialog.Title className="text-lg font-semibold">
               Edit Agreement
@@ -51,7 +62,23 @@ const EditAgreementDialog = ({ open, onOpenChange, onSubmit, data }) => {
             <textarea
               value={currentValue}
               onChange={(e) => setCurrentValue(e.target.value)}
-              className="w-full border rounded p-2 h-32"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const { selectionStart, selectionEnd } = e.target;
+                  const newValue =
+                    currentValue.substring(0, selectionStart) +
+                    "\n• " +
+                    currentValue.substring(selectionEnd);
+                  setCurrentValue(newValue);
+                  // move cursor after bullet
+                  setTimeout(() => {
+                    e.target.selectionStart = e.target.selectionEnd =
+                      selectionStart + 3;
+                  }, 0);
+                }
+              }}
+              className="w-full border rounded p-2 h-64"
             />
           </div>
 
