@@ -1,5 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
+import { Edit } from "lucide-react";
 
 // Updated clean, modern styles
 const styles = StyleSheet.create({

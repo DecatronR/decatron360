@@ -9,6 +9,9 @@ import ClientModificationChat from "components/RentalAgreement/Chat/ClientModifi
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWrapper";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import * as Menu from "@radix-ui/react-dropdown-menu";
+import { Pencil, Maximize2 } from "lucide-react";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -197,12 +200,33 @@ const ContractDetailsContent = () => {
         <div className="bg-white rounded-2xl p-6 shadow-sm border mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">Tenancy Agreement</h2>
-            <button
-              onClick={toggleFullScreen} // Trigger fullscreen toggle here
-              className="text-sm text-blue-600 hover:underline"
-            >
-              {isFullScreen ? "Exit Fullscreen" : "Fullscreen"}
-            </button>
+            <div className="flex items-center space-x-4">
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <button
+                      onClick={() => setIsEditDialogOpen(true)}
+                      className="p-2 rounded-full hover:bg-gray-100"
+                    >
+                      <Pencil className="w-6 h-6 text-primary-600" />
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content
+                    side="bottom"
+                    sideOffset={4}
+                    className="bg-gray-800 text-white text-xs rounded px-2 py-1"
+                  >
+                    Edit Agreement
+                  </Tooltip.Content>
+                </Tooltip.Root>
+              </Tooltip.Provider>
+              <button
+                onClick={toggleFullScreen}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                <Maximize2 className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
           </div>
 
           <div id="agreement-content" className="overflow-auto max-h-96">
