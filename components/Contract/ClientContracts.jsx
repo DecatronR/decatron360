@@ -42,18 +42,20 @@ const ClientContract = () => {
         );
 
   return (
-    <div className="flex h-screen bg-gray-50 px-4 md:px-8">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50 px-4 md:px-8">
       {/* Main Dashboard Area */}
       <div className="flex-1 flex flex-col p-6 overflow-auto">
-        <h1 className="text-2xl font-semibold mb-4">Contract Dashboard</h1>
+        <h1 className="text-2xl font-semibold mb-4 text-center md:text-left">
+          Contract Dashboard
+        </h1>
 
         {/* Status Tabs */}
-        <div className="flex space-x-4 mb-6">
+        <div className="flex space-x-4 mb-6 overflow-x-auto">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full transition ${
+              className={`px-2 py-1 sm:px-4 sm:py-2 rounded-full transition ${
                 activeTab === tab
                   ? "bg-blue-600 text-white"
                   : "bg-white text-gray-700 border"
@@ -65,7 +67,7 @@ const ClientContract = () => {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center space-x-4 mb-4">
+        <div className="flex items-center space-x-4 mb-4 flex-wrap justify-center md:justify-start">
           <span className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-green-500"></span>
             <span className="text-sm">Completed</span>

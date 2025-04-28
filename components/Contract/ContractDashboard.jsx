@@ -10,7 +10,7 @@ import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { Pencil, Maximize2 } from "lucide-react";
+import { Pencil, Maximize2, ArrowLeft } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
 import { useAuth } from "context/AuthContext";
 
@@ -20,7 +20,7 @@ const STATUS_COLORS = {
   ended: "bg-red-500",
 };
 
-const ContractDetailsContent = () => {
+const ContractDashboard = () => {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -202,7 +202,9 @@ const ContractDetailsContent = () => {
           onClick={() => router.back()}
           className="text-sm text-blue-600 mb-4 hover:underline"
         >
-          ← Back to Dashboard
+          <span className="flex items-center">
+            <ArrowLeft className="mr-2" /> Back
+          </span>
         </button>
 
         <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 px-2 md:px-0">
@@ -351,4 +353,4 @@ const ContractDetailsContent = () => {
   );
 };
 
-export default ContractDetailsContent;
+export default ContractDashboard;
