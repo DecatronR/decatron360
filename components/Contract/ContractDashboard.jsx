@@ -68,9 +68,43 @@ const ContractDashboard = () => {
       try {
         const res = await fetchContractById(id);
         console.log("Contract details: ", res);
+
+        const fetchedAgreement = res.data.agreement;
+        console.log("Fetch agreement: ", fetchedAgreement);
+
+        // If the agreement is empty, fall back on the hardcoded data
+        const agreement = {
+          "Rent and Duration": fetchedAgreement.rentAndDuration.length
+            ? fetchedAgreement.rentAndDuration
+            : rentAndDurationText,
+          "Tenant's Obligation": fetchedAgreement.tenantObligations.length
+            ? fetchedAgreement.tenantObligations
+            : tenantObligations,
+          "Landlord's Obligation": fetchedAgreement.landlordObligations.length
+            ? fetchedAgreement.landlordObligations
+            : landlordObligations,
+        };
+
+        // Set agreement data into the state
+        setRentAndDurationText(agreement["Rent and Duration"]);
+        setTenantObligations(agreement["Tenant's Obligation"]);
+        setLandlordObligations(agreement["Landlord's Obligation"]);
+
+        // Optionally set contract details if needed
         setContract(res.data);
       } catch (error) {
         console.error("Failed to fetch contract details: ", error);
+
+        // In case of error, fall back to the hardcoded data directly
+        const agreement = {
+          "Rent and Duration": rentAndDurationText,
+          "Tenant's Obligation": tenantObligations,
+          "Landlord's Obligation": landlordObligations,
+        };
+
+        setRentAndDurationText(agreement["Rent and Duration"]);
+        setTenantObligations(agreement["Tenant's Obligation"]);
+        setLandlordObligations(agreement["Landlord's Obligation"]);
       }
     };
 
@@ -165,21 +199,12 @@ const ContractDashboard = () => {
     handleFetchClientData();
   }, [contract]);
 
-  const handleAgreementUpdate = async (title, updatedValue) => {
+  const handleAgreementUpdate = async (updatedValue) => {
     const agreement = {
       rentAndDurationText,
       tenantObligations,
       landlordObligations,
     };
-
-    // Update the state based on the title being edited
-    if (title === "Rent and Duration") {
-      agreement.rentAndDurationText = updatedValue;
-    } else if (title === "Tenant's Obligation") {
-      agreement.tenantObligations = updatedValue;
-    } else if (title === "Landlord's Obligation") {
-      agreement.landlordObligations = updatedValue;
-    }
 
     try {
       const res = await updateAgreement(id, agreement);

@@ -41,7 +41,7 @@ const EditAgreementDialog = ({
       setLandlordObligations(updatedValue);
     }
 
-    onSubmit(selectedTitle, updatedValue);
+    onSubmit(updatedValue);
     onOpenChange(false);
   };
 
