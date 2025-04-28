@@ -303,18 +303,33 @@ const ContractDashboard = () => {
                       side="bottom"
                       sideOffset={4}
                       className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
+                      style={{ zIndex: 9999 }}
                     >
                       Edit Agreement
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
               )}
-              <button
-                onClick={toggleFullScreen}
-                className="p-1 md:p-2 rounded-full hover:bg-gray-100"
-              >
-                <Maximize2 className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-              </button>
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <button
+                      onClick={toggleFullScreen}
+                      className="p-1 md:p-2 rounded-full hover:bg-gray-100"
+                    >
+                      <Maximize2 className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content
+                    side="bottom"
+                    sideOffset={4}
+                    className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
+                    style={{ zIndex: 9999 }}
+                  >
+                    Fullscreen
+                  </Tooltip.Content>
+                </Tooltip.Root>
+              </Tooltip.Provider>
             </div>
           </div>
 
