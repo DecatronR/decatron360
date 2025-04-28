@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import TemplateWrapper from "components/RentalAgreement/TemplateWrapper";
+import TemplateWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";
@@ -12,6 +12,7 @@ import { generatePaymentReference } from "utils/helpers/generatePaymentReference
 import { numberToWords } from "utils/helpers/priceNumberToWords";
 import { getStartDate } from "utils/helpers/getStartData";
 import { getEndDate } from "utils/helpers/getEndData";
+import ClientModificationChat from "components/RentalAgreement/Chat/ClientModificationChat";
 
 const Dashboard = () => {
   const { id } = useParams();
@@ -108,6 +109,16 @@ const Dashboard = () => {
   const toggleCommentBox = () => setShowCommentBox(!showCommentBox);
 
   const handleCommentChange = (event) => setComment(event.target.value);
+
+  //current user and recipient
+  // const currentUserId = sessionStorage.getItem("userId");
+  // let recipientUserId;
+
+  // if (ownerId !== currentUserId) {
+  //   recipientUserId = ownerId;
+  // } else {
+  //   recipientUserId = renterId;
+  // }
 
   useEffect(() => {
     const handleFetchPropertyData = async () => {
@@ -276,14 +287,6 @@ const Dashboard = () => {
     return () => clearInterval(interval); // Cleanup when component unmounts
   }, [paymentReference]);
 
-  //send the document for signing
-  const handleSubmitComment = () => {
-    if (comment.trim()) {
-      setComments([...comments, { text: comment, timestamp: new Date() }]);
-      setComment("");
-    }
-  };
-
   const handleProceedToSign = () => {
     handleCreateDocument();
     handlePayment();
@@ -315,43 +318,7 @@ const Dashboard = () => {
             />
           </div>
 
-          {showCommentBox && (
-            <div className="w-full lg:w-1/3 bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[1000px]">
-              <h3 className="text-lg font-medium text-gray-800 mb-3">
-                Modification Requests
-              </h3>
-              <div className="flex-1 overflow-y-auto max-h-[700px] space-y-2 border p-2 rounded-md bg-white">
-                {comments.length > 0 ? (
-                  comments.map((msg, index) => (
-                    <div
-                      key={index}
-                      className="bg-blue-100 p-2 rounded-md text-gray-700 text-sm"
-                    >
-                      <p>{msg.text}</p>
-                      <span className="text-xs text-gray-500 block mt-1">
-                        {msg.timestamp.toLocaleTimeString()}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-sm">No messages yet.</p>
-                )}
-              </div>
-              <textarea
-                className="w-full p-2 mt-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                rows={2}
-                placeholder="Describe the required modifications..."
-                value={comment}
-                onChange={handleCommentChange}
-              ></textarea>
-              <button
-                onClick={handleSubmitComment}
-                className="mt-3 w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700 transition"
-              >
-                Submit Request
-              </button>
-            </div>
-          )}
+          {showCommentBox && <ClientModificationChat />}
         </div>
 
         {/* Action Buttons */}
