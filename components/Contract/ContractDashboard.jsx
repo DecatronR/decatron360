@@ -323,7 +323,7 @@ const ContractDashboard = () => {
       <div
         className={`
         bg-white shadow-md rounded-md p-3 md:p-6 flex flex-col 
-        w-full h-[500px] md:h-full md:w-auto mx-2 md:mx-0`}
+        w-full h-[500px] md:h-fit md:w-auto mx-2 md:mx-0`}
         style={{
           width: window.innerWidth >= 768 ? `${100 - leftWidth}%` : "100%",
         }}

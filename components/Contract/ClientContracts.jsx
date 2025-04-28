@@ -87,7 +87,7 @@ const ClientContract = () => {
           {filteredContracts.length > 0 ? (
             filteredContracts.map((contract) => (
               <Link
-                href={`/contract-details/${contract._id}`}
+                href={`/contract-dashboard/${contract._id}`}
                 key={contract._id}
               >
                 <div className="p-5 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between transition hover:shadow-md hover:-translate-y-0.5 duration-200">
