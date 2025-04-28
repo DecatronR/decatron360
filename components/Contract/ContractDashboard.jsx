@@ -13,6 +13,7 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import { Pencil, Maximize2, ArrowLeft } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
 import { useAuth } from "context/AuthContext";
+import { updateAgreement } from "utils/api/contract/updateAgreement";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -63,6 +64,35 @@ const ContractDashboard = () => {
   };
 
   useEffect(() => {
+    const handleFetchContractDetails = async () => {
+      try {
+        const res = await fetchContractById(id);
+        console.log("Contract details: ", res);
+        setContract(res.data);
+      } catch (error) {
+        console.error("Failed to fetch contract details: ", error);
+      }
+    };
+
+    handleFetchContractDetails();
+  }, [id]);
+
+  useEffect(() => {
+    const handleFetchPropertyData = async () => {
+      try {
+        const res = await fetchPropertyData(contract.propertyId);
+        setPropertyData(res);
+        setOwnerId(res.data.userID);
+        console.log("property data: ", res);
+      } catch (error) {
+        console.log("Failed to fetch property data: ", error);
+      }
+    };
+
+    handleFetchPropertyData();
+  }, [contract]);
+
+  useEffect(() => {
     if (propertyData && propertyData.data) {
       // Function to clean unwanted characters like '¦'
       const cleanValue = (value) => {
@@ -96,24 +126,6 @@ const ContractDashboard = () => {
     handleFetchUserRole();
   }, []);
 
-  useEffect(() => {
-    const handleFetchContractDetails = async () => {
-      try {
-        const res = await fetchContractById(id);
-        console.log("Contract details: ", res);
-        setContract(res.data);
-      } catch (error) {
-        console.error("Failed to fetch contract details: ", error);
-      }
-    };
-
-    handleFetchContractDetails();
-  }, [id]);
-
-  const handleMouseDown = (e) => {
-    setIsDragging(true);
-  };
-
   const handleMouseMove = (e) => {
     if (isDragging) {
       const newWidth = (e.clientX / window.innerWidth) * 100;
@@ -124,21 +136,6 @@ const ContractDashboard = () => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
-
-  useEffect(() => {
-    const handleFetchPropertyData = async () => {
-      try {
-        const res = await fetchPropertyData(contract.propertyId);
-        setPropertyData(res);
-        setOwnerId(res.data.userID);
-        console.log("property data: ", res);
-      } catch (error) {
-        console.log("Failed to fetch property data: ", error);
-      }
-    };
-
-    handleFetchPropertyData();
-  }, [contract]);
 
   useEffect(() => {
     const handleFetchOwnerData = async () => {
@@ -168,12 +165,32 @@ const ContractDashboard = () => {
     handleFetchClientData();
   }, [contract]);
 
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen); // Toggle fullscreen state
+  const handleAgreementUpdate = async (title, updatedValue) => {
+    const agreement = {
+      rentAndDurationText,
+      tenantObligations,
+      landlordObligations,
+    };
+
+    // Update the state based on the title being edited
+    if (title === "Rent and Duration") {
+      agreement.rentAndDurationText = updatedValue;
+    } else if (title === "Tenant's Obligation") {
+      agreement.tenantObligations = updatedValue;
+    } else if (title === "Landlord's Obligation") {
+      agreement.landlordObligations = updatedValue;
+    }
+
+    try {
+      const res = await updateAgreement(id, agreement);
+      console.log("Agreement updated: ", res);
+    } catch (error) {
+      console.log("Failed to update agreement:", error);
+    }
   };
 
-  const handleAgreementUpdate = () => {
-    console.log("Update agreement successful");
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
   };
 
   if (!contract || !propertyData || !propertyData.data) {
@@ -348,6 +365,9 @@ const ContractDashboard = () => {
         onOpenChange={setIsEditDialogOpen}
         onSubmit={handleAgreementUpdate}
         data={agreementData}
+        setRentAndDurationText={setRentAndDurationText}
+        setTenantObligations={setTenantObligations}
+        setLandlordObligations={setLandlordObligations}
       />
     </div>
   );

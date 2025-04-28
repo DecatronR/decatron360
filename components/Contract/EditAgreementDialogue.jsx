@@ -2,7 +2,15 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const EditAgreementDialog = ({ open, onOpenChange, onSubmit, data }) => {
+const EditAgreementDialog = ({
+  open,
+  onOpenChange,
+  onSubmit,
+  data,
+  setRentAndDurationText,
+  setTenantObligations,
+  setLandlordObligations,
+}) => {
   const [selectedTitle, setSelectedTitle] = useState("Rent and Duration");
   const [currentValue, setCurrentValue] = useState("");
 
@@ -23,6 +31,15 @@ const EditAgreementDialog = ({ open, onOpenChange, onSubmit, data }) => {
       .split("\n")
       .map((line) => line.replace(/^•\s*/, "").trim())
       .filter((line) => line !== "");
+
+    // Update the state in the parent component based on the selected title
+    if (selectedTitle === "Rent and Duration") {
+      setRentAndDurationText(updatedValue);
+    } else if (selectedTitle === "Tenant's Obligation") {
+      setTenantObligations(updatedValue);
+    } else if (selectedTitle === "Landlord's Obligation") {
+      setLandlordObligations(updatedValue);
+    }
 
     onSubmit(selectedTitle, updatedValue);
     onOpenChange(false);
