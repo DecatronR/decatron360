@@ -199,7 +199,7 @@ const ContractDashboard = () => {
     handleFetchClientData();
   }, [contract]);
 
-  const handleAgreementUpdate = async (updatedValue) => {
+  const handleAgreementUpdate = async () => {
     const agreement = {
       rentAndDurationText,
       tenantObligations,

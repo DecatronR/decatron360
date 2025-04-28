@@ -1,6 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
 const EditAgreementDialog = ({
   open,
@@ -13,6 +14,7 @@ const EditAgreementDialog = ({
 }) => {
   const [selectedTitle, setSelectedTitle] = useState("Rent and Duration");
   const [currentValue, setCurrentValue] = useState("");
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     if (data[selectedTitle]) {
@@ -27,6 +29,7 @@ const EditAgreementDialog = ({
   }, [selectedTitle, data]);
 
   const handleSave = () => {
+    setButtonLoading(true);
     const updatedValue = currentValue
       .split("\n")
       .map((line) => line.replace(/^•\s*/, "").trim())
@@ -43,6 +46,8 @@ const EditAgreementDialog = ({
 
     onSubmit(updatedValue);
     onOpenChange(false);
+
+    setButtonLoading(false);
   };
 
   return (
@@ -109,7 +114,7 @@ const EditAgreementDialog = ({
               onClick={handleSave}
               className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700"
             >
-              Save
+              {buttonLoading ? <ButtonSpinner /> : "Save"}
             </button>
           </div>
         </Dialog.Content>
