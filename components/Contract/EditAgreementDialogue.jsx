@@ -2,6 +2,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import ButtonSpinner from "components/ui/ButtonSpinner";
+import Swal from "sweetalert2";
 
 const EditAgreementDialog = ({
   open,
@@ -28,24 +29,39 @@ const EditAgreementDialog = ({
     }
   }, [selectedTitle, data]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setButtonLoading(true);
-    const updatedValue = currentValue
-      .split("\n")
-      .map((line) => line.replace(/^•\s*/, "").trim())
-      .filter((line) => line !== "");
 
-    // Update the state in the parent component based on the selected title
-    if (selectedTitle === "Rent and Duration") {
-      setRentAndDurationText(updatedValue);
-    } else if (selectedTitle === "Tenant's Obligation") {
-      setTenantObligations(updatedValue);
-    } else if (selectedTitle === "Landlord's Obligation") {
-      setLandlordObligations(updatedValue);
+    const result = await Swal.fire({
+      toast: true,
+      title: "Are you sure?",
+      text: "Saving this will make changes to the tenancy agreement",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const updatedValue = currentValue
+        .split("\n")
+        .map((line) => line.replace(/^•\s*/, "").trim())
+        .filter((line) => line !== "");
+
+      if (selectedTitle === "Rent and Duration") {
+        setRentAndDurationText(updatedValue);
+      } else if (selectedTitle === "Tenant's Obligation") {
+        setTenantObligations(updatedValue);
+      } else if (selectedTitle === "Landlord's Obligation") {
+        setLandlordObligations(updatedValue);
+      }
+
+      onSubmit(updatedValue);
+      onOpenChange(false);
+      Swal.fire("Updated!", "Agreement updated successfully", "success");
     }
-
-    onSubmit(updatedValue);
-    onOpenChange(false);
 
     setButtonLoading(false);
   };
