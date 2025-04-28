@@ -37,7 +37,7 @@ const RentalAgreementWrapper = ({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: isFullScreen ? "100vh" : "100vh",
+        height: isFullScreen ? "100vh" : "70vh",
         backgroundColor: isFullScreen ? "#fff" : "#f4f7fa",
         padding: isFullScreen ? "0px" : padding,
         overflow: isFullScreen ? "hidden" : "auto",

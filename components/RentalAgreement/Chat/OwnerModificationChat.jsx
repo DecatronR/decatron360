@@ -100,15 +100,15 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
   };
 
   return (
-    <div className="w-full bg-gray-100 shadow-md rounded-md p-4 sm:p-6 flex flex-col max-h-[700px] h-full">
-      <h3 className="text-xl font-semibold mb-4 text-gray-800">
+    <div className="w-full bg-gray-100 shadow-md rounded-md p-3 sm:p-6 flex flex-col max-h-[700px] h-full">
+      <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-4 text-gray-800">
         Modification Request (Owner)
       </h3>
 
       {/* Messages container */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-auto bg-white p-4 rounded-lg space-y-4 custom-scrollbar"
+        className="flex-1 overflow-auto bg-white p-3 md:p-4 rounded-lg space-y-3 md:space-y-4 custom-scrollbar"
       >
         {comments.length > 0 ? (
           comments.map((msg) => (
@@ -120,29 +120,29 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
             >
               {/* Message Bubble */}
               <div
-                className={`p-3 rounded-lg max-w-xs break-words text-sm ${
+                className={`p-2 md:p-3 rounded-lg max-w-[75%] md:max-w-xs break-words text-xs md:text-sm ${
                   msg.from === ownerId
                     ? "bg-blue-200 text-gray-800 self-end"
                     : "bg-green-200 text-gray-800 self-start"
                 }`}
               >
                 <p>{msg.text}</p>
-                <span className="text-xs text-gray-500 block mt-2">
+                <span className="text-xs text-gray-500 block mt-1 md:mt-2">
                   {new Date(msg.timestamp).toLocaleTimeString()}
                 </span>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-gray-500 text-sm">No messages yet.</p>
+          <p className="text-gray-500 text-xs md:text-sm">No messages yet.</p>
         )}
       </div>
 
       {/* Input & Submit Button */}
-      <div className="mt-4 flex flex-col space-y-3">
+      <div className="mt-3 md:mt-4 flex flex-col space-y-2 md:space-y-3">
         <textarea
-          className="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
-          rows={4}
+          className="w-full p-3 md:p-4 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
+          rows={3}
           placeholder="Message Client..."
           value={comment}
           onChange={handleCommentChange}
@@ -150,7 +150,7 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
 
         <button
           onClick={handleSubmitComment}
-          className="w-full bg-primary-600 text-white py-3 rounded-full hover:bg-primary-700 transition-all ease-in-out duration-200"
+          className="w-full bg-primary-600 text-white text-sm py-2 md:py-3 rounded-full hover:bg-primary-700 transition-all ease-in-out duration-200"
         >
           Submit Response
         </button>

@@ -2,8 +2,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import OwnerConversationList from "components/RentalAgreement/Chat/OwnerConversationList";
-import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
 import { fetchOwnerContracts } from "utils/api/contract/fetchOwnerContracts";
 import { truncateText } from "utils/helpers/truncateText";
 import { MapPin, Wallet } from "lucide-react";
@@ -19,7 +17,6 @@ const tabs = ["All", "Completed", "Pending", "Ended"];
 const OwnerContract = () => {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("All");
-  const [selectedTenant, setSelectedTenant] = useState(null);
   const [contracts, setContracts] = useState(null);
 
   useEffect(() => {

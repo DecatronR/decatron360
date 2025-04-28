@@ -301,7 +301,7 @@ const ContractDetailsContent = () => {
 
           <div
             id="agreement-content"
-            className="overflow-auto md:max-h-96 h-fit"
+            className="overflow-auto md:max-h-96 h-200"
           >
             <RentalAgreementWrapper
               propertyData={propertyData}
