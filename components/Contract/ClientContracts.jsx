@@ -15,7 +15,6 @@ const STATUS_COLORS = {
 const tabs = ["All", "Completed", "Pending", "Ended"];
 
 const ClientContract = () => {
-  const { id } = useParams();
   const [activeTab, setActiveTab] = useState("All");
   const [contracts, setContracts] = useState(null);
 

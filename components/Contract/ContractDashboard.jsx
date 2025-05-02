@@ -14,6 +14,14 @@ import { Pencil, Maximize2, ArrowLeft } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
 import { useAuth } from "context/AuthContext";
 import { updateAgreement } from "utils/api/contract/updateAgreement";
+import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";
+import { getDocumentFields } from "./getDocumentFields";
+import { numberToWords } from "utils/helpers/priceNumberToWords";
+import { getStartDate } from "utils/helpers/getStartDate";
+import { getEndDate } from "utils/helpers/getEndDate";
+import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
+import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
+import SignatureDialog from "./SignatureDialogue";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -25,6 +33,8 @@ const ContractDashboard = () => {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const rentalAgreementTemplateId =
+    process.env.NEXT_PUBLIC_ZOHO_SIGN_RENTAL_AGREEMENT_TEMPLATE_ID;
   const [userRole, setUserRole] = useState();
   const [contract, setContract] = useState(null);
   const [leftWidth, setLeftWidth] = useState(70); // Default 70% for the left section
@@ -34,6 +44,8 @@ const ContractDashboard = () => {
   const [tenantData, setTenantData] = useState();
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isSignatureOpen, setIsSignatureOpen] = useState(false);
   const [rentAndDurationText, setRentAndDurationText] = useState([
     "Loading tenancy details...",
     "Loading caution fee details...",
@@ -63,6 +75,9 @@ const ContractDashboard = () => {
     "Landlord's Obligation": landlordObligations,
   };
 
+  const handleSignatureSave = (signatureDataUrlOrFileUrl) => {
+    console.log("Saved signature:", signatureDataUrlOrFileUrl);
+  };
   useEffect(() => {
     const handleFetchContractDetails = async () => {
       try {
@@ -116,7 +131,6 @@ const ContractDashboard = () => {
       try {
         const res = await fetchPropertyData(contract.propertyId);
         setPropertyData(res);
-        setOwnerId(res.data.userID);
         console.log("property data: ", res);
       } catch (error) {
         console.log("Failed to fetch property data: ", error);
@@ -199,6 +213,21 @@ const ContractDashboard = () => {
     handleFetchClientData();
   }, [contract]);
 
+  useEffect(() => {
+    const handleFetchTemplateDetails = async () => {
+      console.log("Template id: ", rentalAgreementTemplateId);
+
+      if (!rentalAgreementTemplateId) return;
+      try {
+        const res = await fetchTemplateDetails(rentalAgreementTemplateId);
+        console.log("Templates details: ", res);
+      } catch (error) {
+        console.log("Failed to fetch template details by Id: ", error);
+      }
+    };
+    handleFetchTemplateDetails();
+  }, [rentalAgreementTemplateId]);
+
   const handleAgreementUpdate = async () => {
     const agreement = {
       rentAndDurationText,
@@ -218,6 +247,62 @@ const ContractDashboard = () => {
     setIsFullScreen(!isFullScreen);
   };
 
+  const handleSign = () => {};
+
+  const handleCreateDocument = async () => {
+    if (!propertyData || !ownerData || !tenantData) {
+      console.log("Missing required data to create document");
+      return;
+    }
+    const address = `${propertyData.data.houseNoStreet || ""}, ${
+      propertyData.data.neighbourhood || ""
+    }, ${propertyData.data.propertyState || ""}, ${
+      propertyData.data.state || ""
+    }`;
+    const priceInWords = numberToWords(propertyData.data.price);
+    const startDate = getStartDate();
+    const endDate = getEndDate(startDate);
+    const agreementDate = formatDateWithOrdinal().toString();
+
+    const documentData = {
+      address: address,
+      priceInFigures: propertyData.data.price,
+      priceInWords: priceInWords,
+      startDate: startDate,
+      endDate: endDate,
+      duration: "One Year",
+      latePaymentFee: propertyData.data.latePaymentFee,
+      date: agreementDate,
+      landlordName: ownerData.name,
+      landlordEmail: ownerData.email,
+      tenantName: tenantData.name,
+      tenantEmail: tenantData.email,
+    };
+
+    console.log("Data: ", documentData);
+
+    const documentFields = getDocumentFields(documentData);
+
+    setIsCreating(true);
+    console.log("Document fields before creation: ", documentFields);
+    console.log(
+      "Payload before sending:",
+      JSON.stringify(documentFields, null, 2)
+    );
+
+    try {
+      const res = await createDocumentFromTemplate(
+        rentalAgreementTemplateId,
+        documentFields
+      );
+      console.log("New document created: ", res);
+    } catch (error) {
+      console.log("Failed to create document from template: ", error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   if (!contract || !propertyData || !propertyData.data) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -228,7 +313,7 @@ const ContractDashboard = () => {
 
   return (
     <div
-      className="flex flex-col md:flex-row h-screen bg-gray-50 overflow-hidden px-2 md:px-6 py-2 md:py-4"
+      className="flex flex-col md:flex-row h-screen bg-gray-50 overflow-hidden px-2 md:px-6 py-2 md:py-4 mt-4 md:mt-0"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
@@ -242,11 +327,9 @@ const ContractDashboard = () => {
       >
         <button
           onClick={() => router.back()}
-          className="text-sm text-blue-600 mb-4 hover:underline"
+          className="hidden md:flex items-center text-sm text-blue-600 mb-4 hover:underline"
         >
-          <span className="flex items-center">
-            <ArrowLeft className="mr-2" /> Back
-          </span>
+          <ArrowLeft className="mr-2" /> Back
         </button>
 
         <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 px-2 md:px-0">
@@ -376,28 +459,40 @@ const ContractDashboard = () => {
         </div>
       </div>
 
-      {/* Right Section - Chat Component */}
+      {/* Right Section Wrapper */}
       <div
-        className={`
-        bg-white shadow-md rounded-md p-3 md:p-6 flex flex-col 
-        w-full h-[500px] md:h-fit md:w-auto mx-2 md:mx-0`}
+        className="flex flex-col w-full md:w-auto mx-2 md:mx-0"
         style={{
           width: window.innerWidth >= 768 ? `${100 - leftWidth}%` : "100%",
         }}
       >
-        {["owner", "property manager", "careTaker"].includes(userRole) ? (
-          <OwnerModificationChat
-            contractId={contract._id}
-            ownerId={contract.ownerId}
-            clientId={contract.clientId}
-          />
-        ) : userRole === "buyer" ? (
-          <ClientModificationChat
-            contractId={contract._id}
-            clientId={contract.clientId}
-            ownerId={contract.ownerId}
-          />
-        ) : null}
+        {/* Chat Section */}
+        <div className="bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit">
+          {["owner", "property manager", "careTaker"].includes(userRole) ? (
+            <OwnerModificationChat
+              contractId={contract._id}
+              ownerId={contract.ownerId}
+              clientId={contract.clientId}
+            />
+          ) : userRole === "buyer" ? (
+            <ClientModificationChat
+              contractId={contract._id}
+              clientId={contract.clientId}
+              ownerId={contract.ownerId}
+            />
+          ) : null}
+        </div>
+
+        {/* Proceed to Sign Button Section */}
+        <div className="hidden md:flex justify-center px-4 bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit my-4">
+          <button
+            onClick={() => setIsSignatureOpen(true)}
+            className="bg-primary-500 text-white px-6 py-3 text-lg font-semibold rounded-full shadow-md 
+        hover:bg-primary-600 transition duration-300 ease-in-out transform hover:scale-105 animate-pulse"
+          >
+            Proceed to Sign
+          </button>
+        </div>
       </div>
 
       <EditAgreementDialog
@@ -408,6 +503,12 @@ const ContractDashboard = () => {
         setRentAndDurationText={setRentAndDurationText}
         setTenantObligations={setTenantObligations}
         setLandlordObligations={setLandlordObligations}
+      />
+
+      <SignatureDialog
+        open={isSignatureOpen}
+        onOpenChange={setIsSignatureOpen}
+        onSave={handleSignatureSave}
       />
     </div>
   );
