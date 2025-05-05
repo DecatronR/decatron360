@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { XIcon } from "lucide-react";
 
-const Media = ({ fields, handleChange }) => {
+const Media = ({ fields, setFields, handleChange }) => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
 

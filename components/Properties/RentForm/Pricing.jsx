@@ -83,7 +83,7 @@ const Pricing = ({ fields, setFields }) => {
             className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
             value={fields.cautionFee || ""}
             onChange={handleChange}
-            onBlur={() => handleBlur("refundableCautionFee")}
+            onBlur={() => handleBlur("cautionFee")}
           />
         </div>
 
@@ -103,7 +103,7 @@ const Pricing = ({ fields, setFields }) => {
             className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
             value={fields.agencyFee || ""}
             onChange={handleChange}
-            onBlur={() => handleBlur("transactionCommission")}
+            onBlur={() => handleBlur("agencyFee")}
           />
         </div>
 
@@ -123,7 +123,7 @@ const Pricing = ({ fields, setFields }) => {
             className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
             value={fields.latePaymentFee || ""}
             onChange={handleChange}
-            onBlur={() => handleBlur("transactionCommission")}
+            onBlur={() => handleBlur("latePaymentFee")}
           />
         </div>
       </div>

@@ -164,7 +164,7 @@ const Location = ({ fields, handleChange }) => {
             id="houseNoStreet"
             name="houseNoStreet"
             className="w-full border rounded-lg py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-            placeholder="This field will be hidden from other users"
+            placeholder="This details will be hidden from other users"
             value={fields.houseNoStreet}
             onChange={handleChange}
           />
