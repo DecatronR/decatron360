@@ -21,7 +21,7 @@ const SelectField = ({ label, id, name, value, options, onChange }) => (
       </option>
       {options.length > 0 ? (
         options.map((option) => (
-          <option key={option._id} value={option._slug || ""}>
+          <option key={option._id} value={option.slug || ""}>
             {option.propertyType ||
               option.propertyCondition ||
               option.propertyUsage ||
