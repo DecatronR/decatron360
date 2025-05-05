@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { useAuth } from "context/AuthContext";
 import SignatureCanvas from "react-signature-canvas";
 import { trimCanvas } from "utils/helpers/trimCanvas";
-import { createSignature } from "utils/api/contract/eSignature/createSignature";
+import { dataURLToBlob } from "utils/helpers/dataUrlToBlob";
+import { createSignature } from "utils/api/eSignature/createSignature";
 
 const SignatureDialog = ({ open, onOpenChange, onSave, contractId }) => {
   const { user } = useAuth();
@@ -39,11 +40,11 @@ const SignatureDialog = ({ open, onOpenChange, onSave, contractId }) => {
   };
 
   const handleSave = async () => {
-    if (buttonLoading) return; // Prevent multiple clicks
+    if (buttonLoading) return;
 
     setButtonLoading(true);
 
-    let signatureData = null;
+    let blob = null;
 
     if (activeTab === "draw") {
       if (!sigPadRef.current) {
@@ -53,43 +54,44 @@ const SignatureDialog = ({ open, onOpenChange, onSave, contractId }) => {
       }
 
       if (sigPadRef.current.isEmpty()) {
-        signatureData = null;
-      } else {
-        const originalCanvas = sigPadRef.current.getCanvas();
-        const trimmedCanvas = trimCanvas(originalCanvas);
-        signatureData = trimmedCanvas.toDataURL();
+        console.log("Please provide a signature.");
+        setButtonLoading(false);
+        return;
       }
+
+      const originalCanvas = sigPadRef.current.getCanvas();
+      const trimmedCanvas = trimCanvas(originalCanvas);
+      const dataURL = trimmedCanvas.toDataURL("image/png");
+      blob = dataURLToBlob(dataURL);
     } else {
       // Upload tab
-      if (uploadedImage) {
-        signatureData = uploadedImage;
+      if (!uploadedImage) {
+        console.log("Please provide a signature.");
+        setButtonLoading(false);
+        return;
       }
+
+      blob = dataURLToBlob(uploadedImage);
     }
 
-    if (!signatureData) {
-      console.log("Please provide a signature.");
-      setButtonLoading(false);
-      return;
-    }
+    console.log("contractId before append:", contractId);
 
-    const event = "signed";
-    const role = mapUserRoleToBackendRole(user?.role);
-    const timestamp = new Date().toISOString();
-    const device = navigator.userAgent;
-
-    console.log("Signature base 64 string: ", signatureData);
+    const formData = new FormData();
+    formData.append("contractId", contractId);
+    formData.append("event", "signed");
+    formData.append("role", mapUserRoleToBackendRole(user?.role));
+    formData.append("timestamp", new Date().toISOString());
+    formData.append("device", navigator.userAgent);
+    formData.append("signatureImage", blob, "signature.png");
 
     try {
-      await createSignature(
-        contractId,
-        event,
-        role,
-        timestamp,
-        device,
-        signatureData
-      );
-      onSave(signatureData); // Call the onSave prop function
-      onOpenChange(false); // Close the dialog
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ", " + pair[1]);
+      }
+
+      await createSignature(formData); // <- this will now take FormData
+      onSave(URL.createObjectURL(blob)); // optionally preview signature locally
+      onOpenChange(false);
     } catch (error) {
       console.log("Failed to save signature. Please try again.", error);
     } finally {

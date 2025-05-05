@@ -1,13 +1,6 @@
 import axios from "axios";
 
-export const createSignature = async (
-  contractId,
-  event,
-  role,
-  timestamp,
-  device,
-  signature
-) => {
+export const createSignature = async (signatureData) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -17,18 +10,12 @@ export const createSignature = async (
   try {
     const res = await axios.post(
       `${baseUrl}/eSignature/create`,
-      {
-        contractId,
-        event,
-        role,
-        timestamp,
-        device,
-        signature,
-      },
+      signatureData,
       {
         withCredentials: true,
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       }
     );
