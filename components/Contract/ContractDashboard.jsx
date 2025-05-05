@@ -509,6 +509,7 @@ const ContractDashboard = () => {
         open={isSignatureOpen}
         onOpenChange={setIsSignatureOpen}
         onSave={handleSignatureSave}
+        contractId={contract._id}
       />
     </div>
   );

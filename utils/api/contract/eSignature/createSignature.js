@@ -3,6 +3,7 @@ import axios from "axios";
 export const createSignature = async (
   contractId,
   event,
+  role,
   timestamp,
   device,
   signature
@@ -19,6 +20,7 @@ export const createSignature = async (
       {
         contractId,
         event,
+        role,
         timestamp,
         device,
         signature,
