@@ -233,7 +233,7 @@ const RentForm = () => {
         </div>
 
         <div className="bg-gray-50 rounded-lg shadow-sm">
-          <Pricing fields={fields} />
+          <Pricing fields={fields} setFields={setFields} />
         </div>
 
         <div className="bg-gray-50 rounded-lg shadow-sm">
