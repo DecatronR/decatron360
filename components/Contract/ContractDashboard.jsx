@@ -22,6 +22,7 @@ import { getEndDate } from "utils/helpers/getEndDate";
 import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
 import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
 import SignatureDialog from "./SignatureDialogue";
+import ContractActions from "./ContractActions";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -485,13 +486,14 @@ const ContractDashboard = () => {
 
         {/* Proceed to Sign Button Section */}
         <div className="hidden md:flex justify-center px-4 bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit my-4">
-          <button
+          {/* <button
             onClick={() => setIsSignatureOpen(true)}
             className="bg-primary-500 text-white px-6 py-3 text-lg font-semibold rounded-full shadow-md 
         hover:bg-primary-600 transition duration-300 ease-in-out transform hover:scale-105 animate-pulse"
           >
             Proceed to Sign
-          </button>
+          </button> */}
+          <ContractActions contractId={contract._id} />
         </div>
       </div>
 
@@ -503,13 +505,6 @@ const ContractDashboard = () => {
         setRentAndDurationText={setRentAndDurationText}
         setTenantObligations={setTenantObligations}
         setLandlordObligations={setLandlordObligations}
-      />
-
-      <SignatureDialog
-        open={isSignatureOpen}
-        onOpenChange={setIsSignatureOpen}
-        onSave={handleSignatureSave}
-        contractId={contract._id}
       />
     </div>
   );
