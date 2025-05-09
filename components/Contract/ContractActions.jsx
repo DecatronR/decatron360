@@ -6,11 +6,6 @@ const ContractActions = ({ contractId }) => {
   const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
   const [isWitnessDialogOpen, setIsWitnessDialogOpen] = useState(false);
 
-  const handleSignatureSave = (signatureUrl) => {
-    // Handle the saved signature
-    console.log("Signature saved:", signatureUrl);
-  };
-
   return (
     <div className="flex space-x-4">
       <button
@@ -30,7 +25,6 @@ const ContractActions = ({ contractId }) => {
       <SignatureDialog
         open={isSignatureDialogOpen}
         onOpenChange={setIsSignatureDialogOpen}
-        onSave={handleSignatureSave}
         contractId={contractId}
       />
 

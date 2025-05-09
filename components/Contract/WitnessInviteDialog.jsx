@@ -2,12 +2,24 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { sendWitnessInvite } from "utils/api/eSignature/sendWitnessInvite";
+import { useAuth } from "context/AuthContext";
 
 const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
+  const { user } = useAuth();
+
+  const mapUserRoleToWitnessRole = (userRole) => {
+    if (["owner", "propertyManager", "careTaker"].includes(userRole)) {
+      return "propertyOwnerWitness";
+    } else if (["buyer", "tenant"].includes(userRole)) {
+      return "tenantWitness";
+    }
+    throw new Error(`Unsupported user role: ${userRole}`);
+  };
+
   const [formData, setFormData] = useState({
     witnessName: "",
     witnessEmail: "",
-    role: "witness",
+    role: mapUserRoleToWitnessRole(user?.role),
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
