@@ -3,9 +3,12 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { sendWitnessInvite } from "utils/api/eSignature/sendWitnessInvite";
 import { useAuth } from "context/AuthContext";
+import Swal from "sweetalert2";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
 const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
   const { user } = useAuth();
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   const mapUserRoleToWitnessRole = (userRole) => {
     if (["owner", "propertyManager", "careTaker"].includes(userRole)) {
@@ -21,8 +24,6 @@ const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
     witnessEmail: "",
     role: mapUserRoleToWitnessRole(user?.role),
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,22 +35,100 @@ const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+
+    // Validate form
+    if (!formData.witnessName.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please enter witness name.",
+        toast: true,
+        position: "center",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return;
+    }
+
+    if (!formData.witnessEmail.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please enter witness email.",
+        toast: true,
+        position: "center",
+        showConfirmButton: false,
+        timer: 3000,
+      });
+      return;
+    }
+
+    // Show confirmation toast
+    const result = await Swal.fire({
+      title: "Confirm Invitation",
+      text: "Are you sure you want to send this witness invitation?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, send it",
+      cancelButtonText: "No, cancel",
+      toast: true,
+      position: "center",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setButtonLoading(true);
 
     try {
+      // Show loading state
+      Swal.fire({
+        title: "Sending Invitation",
+        text: "Please wait while we send the invitation...",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       await sendWitnessInvite(
         contractId,
         formData.witnessName,
         formData.witnessEmail,
         formData.role
       );
+
+      // Close loading state
+      Swal.close();
+
+      // Show success message
+      await Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Witness invitation has been sent successfully.",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
       onOpenChange(false);
     } catch (error) {
-      setError("Failed to send witness invitation. Please try again.");
       console.error("Error sending witness invite:", error);
+
+      // Close loading state
+      Swal.close();
+
+      // Show error message
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to send witness invitation. Please try again.",
+        confirmButtonText: "OK",
+      });
     } finally {
-      setLoading(false);
+      setButtonLoading(false);
     }
   };
 
@@ -100,8 +179,6 @@ const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
               />
             </div>
 
-            {error && <div className="text-red-500 text-sm">{error}</div>}
-
             <div className="mt-6 flex justify-end space-x-3">
               <Dialog.Close asChild>
                 <button
@@ -113,10 +190,14 @@ const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
               </Dialog.Close>
               <button
                 type="submit"
-                disabled={loading}
+                disabled={buttonLoading}
                 className="px-4 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Sending..." : "Send Invitation"}
+                {buttonLoading ? (
+                  <ButtonSpinner loading={buttonLoading} />
+                ) : (
+                  "Send Invitation"
+                )}
               </button>
             </div>
           </form>

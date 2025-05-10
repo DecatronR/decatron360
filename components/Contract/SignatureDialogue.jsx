@@ -7,15 +7,9 @@ import { trimCanvas } from "utils/helpers/trimCanvas";
 import { dataURLToBlob } from "utils/helpers/dataUrlToBlob";
 import { createSignature } from "utils/api/eSignature/createSignature";
 import Swal from "sweetalert2";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
-const SignatureDialog = ({
-  open,
-  onOpenChange,
-  contractId,
-  isGuest = false,
-  role: providedRole,
-  signingToken,
-}) => {
+const SignatureDialog = ({ open, onOpenChange, onSave, contractId }) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("draw");
   const sigPadRef = useRef(null);
@@ -38,11 +32,12 @@ const SignatureDialog = ({
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Create a FileReader to read the file as a base64 string
       const reader = new FileReader();
       reader.onloadend = () => {
-        setUploadedImage(reader.result);
+        setUploadedImage(reader.result); // base64 string of the image
       };
-      reader.readAsDataURL(file);
+      reader.readAsDataURL(file); // Convert to base64 string
     }
   };
 
@@ -91,6 +86,27 @@ const SignatureDialog = ({
       }
     }
 
+    // Prepare the signature data before confirmation
+    let blob = null;
+    try {
+      if (activeTab === "draw") {
+        const originalCanvas = sigPadRef.current.getCanvas();
+        const trimmedCanvas = trimCanvas(originalCanvas);
+        const dataURL = trimmedCanvas.toDataURL("image/png");
+        blob = dataURLToBlob(dataURL);
+      } else {
+        blob = dataURLToBlob(uploadedImage);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to prepare signature. Please try again.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     // Show confirmation toast
     const result = await Swal.fire({
       title: "Confirm Signature",
@@ -109,36 +125,33 @@ const SignatureDialog = ({
 
     setButtonLoading(true);
 
-    let blob = null;
-
-    if (activeTab === "draw") {
-      const originalCanvas = sigPadRef.current.getCanvas();
-      const trimmedCanvas = trimCanvas(originalCanvas);
-      const dataURL = trimmedCanvas.toDataURL("image/png");
-      blob = dataURLToBlob(dataURL);
-    } else {
-      blob = dataURLToBlob(uploadedImage);
-    }
-
     const formData = new FormData();
     formData.append("contractId", contractId);
     formData.append("event", "signed");
-    formData.append(
-      "role",
-      isGuest ? providedRole : mapUserRoleToBackendRole(user?.role)
-    );
+    formData.append("role", mapUserRoleToBackendRole(user?.role));
     formData.append("timestamp", new Date().toISOString());
     formData.append("device", navigator.userAgent);
     formData.append("signatureImage", blob, "signature.png");
 
-    if (isGuest && signingToken) {
-      formData.append("signingToken", signingToken);
-    }
-
     try {
+      // Show loading state
+      Swal.fire({
+        title: "Saving Signature",
+        text: "Please wait while we save your signature...",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       await createSignature(formData);
 
-      // Show success message
+      // Close loading state
+      Swal.close();
+
+      // Show success message and handle cleanup
       await Swal.fire({
         icon: "success",
         title: "Success!",
@@ -147,9 +160,18 @@ const SignatureDialog = ({
         timer: 2000,
       });
 
+      // Only call onSave if it's provided
+      if (typeof onSave === "function") {
+        onSave(URL.createObjectURL(blob));
+      }
+
       onOpenChange(false);
+      return; // Add return to prevent error alert
     } catch (error) {
       console.error("Failed to save signature:", error);
+
+      // Close loading state
+      Swal.close();
 
       // Show error message
       Swal.fire({
@@ -170,15 +192,13 @@ const SignatureDialog = ({
         <Dialog.Content className="fixed top-1/2 left-1/2 w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-lg p-6 z-50">
           <div className="flex items-center justify-between mb-4">
             <Dialog.Title className="text-lg font-semibold">
-              {isGuest ? "Sign as Witness" : "Add Signature"}
+              Add Signature
             </Dialog.Title>
-            {!isGuest && (
-              <Dialog.Close asChild>
-                <button className="p-1 rounded hover:bg-gray-100">
-                  <X className="w-5 h-5 text-gray-600" />
-                </button>
-              </Dialog.Close>
-            )}
+            <Dialog.Close asChild>
+              <button className="p-1 rounded hover:bg-gray-100">
+                <X className="w-5 h-5 text-gray-600" />
+              </button>
+            </Dialog.Close>
           </div>
 
           <div className="flex space-x-2 mb-4">
@@ -204,6 +224,7 @@ const SignatureDialog = ({
             </button>
           </div>
 
+          {/* Draw */}
           {activeTab === "draw" && (
             <div className="space-y-2">
               <SignatureCanvas
@@ -224,6 +245,7 @@ const SignatureDialog = ({
             </div>
           )}
 
+          {/* Upload */}
           {activeTab === "upload" && (
             <div className="space-y-2">
               <input
@@ -243,19 +265,21 @@ const SignatureDialog = ({
           )}
 
           <div className="mt-6 flex justify-end space-x-3">
-            {!isGuest && (
-              <Dialog.Close asChild>
-                <button className="px-4 py-2 rounded-full border text-gray-600 hover:bg-gray-50">
-                  Cancel
-                </button>
-              </Dialog.Close>
-            )}
+            <Dialog.Close asChild>
+              <button className="px-4 py-2 rounded-full border text-gray-600 hover:bg-gray-50">
+                Cancel
+              </button>
+            </Dialog.Close>
             <button
               onClick={handleSave}
               disabled={buttonLoading}
               className="px-4 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {buttonLoading ? "Saving..." : "Save Signature"}
+              {buttonLoading ? (
+                <ButtonSpinner loading={buttonLoading} />
+              ) : (
+                "Save Signature"
+              )}
             </button>
           </div>
         </Dialog.Content>
