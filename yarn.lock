@@ -3851,7 +3851,7 @@ follow-redirects@^1.15.6:
   version "1.15.9"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.9.tgz#a604fa10e443bf98ca94228d9eebcc2e8a2c8ee1"
 
-fontkit@^2.0.2:
+fontkit@^2.0.2, fontkit@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/fontkit/-/fontkit-2.0.4.tgz#4765d664c68b49b5d6feb6bd1051ee49d8ec5ab0"
   dependencies:
@@ -4447,6 +4447,10 @@ jay-peg@^1.1.1:
 jiti@^1.20.0, jiti@^1.21.0:
   version "1.21.6"
   resolved "https://registry.yarnpkg.com/jiti/-/jiti-1.21.6.tgz#6c7f7398dd4b3142767f9a168af2f317a428d268"
+
+jpeg-exif@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/jpeg-exif/-/jpeg-exif-1.1.4.tgz#781a65b6cd74f62cb1c493511020f8d3577a1c2b"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -5172,6 +5176,16 @@ pbf@^3.2.1:
     ieee754 "^1.1.12"
     resolve-protobuf-schema "^2.1.0"
 
+pdfkit@^0.17.1:
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/pdfkit/-/pdfkit-0.17.1.tgz#df00ec822fa56d40a235d7493cba841dedba2e12"
+  dependencies:
+    crypto-js "^4.2.0"
+    fontkit "^2.0.4"
+    jpeg-exif "^1.1.4"
+    linebreak "^1.1.0"
+    png-js "^1.0.0"
+
 photoswipe@^5.4.3:
   version "5.4.4"
   resolved "https://registry.yarnpkg.com/photoswipe/-/photoswipe-5.4.4.tgz#e045dc036453493188d5c8665b0e8f1000ac4d6e"
@@ -5191,6 +5205,10 @@ pify@^2.3.0:
 pirates@^4.0.1:
   version "4.0.6"
   resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.6.tgz#3018ae32ecfcff6c29ba2267cbf21166ac1f36b9"
+
+png-js@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/png-js/-/png-js-1.0.0.tgz#e5484f1e8156996e383aceebb3789fd75df1874d"
 
 possible-typed-array-names@^1.0.0:
   version "1.0.0"

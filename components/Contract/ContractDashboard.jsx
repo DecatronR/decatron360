@@ -10,7 +10,7 @@ import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { Pencil, Maximize2, ArrowLeft } from "lucide-react";
+import { Pencil, Maximize2, ArrowLeft, FileText } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
 import { useAuth } from "context/AuthContext";
 import { updateAgreement } from "utils/api/contract/updateAgreement";
@@ -25,6 +25,11 @@ import ContractActions from "./ContractActions";
 import SignatureStatus from "./SignatureStatus";
 import PropertyDetails from "./PropertyDetails";
 import { fetchSignedRoles } from "utils/api/eSignature/fetchSignedRoles";
+import SignatureDisplay from "./SignatureDisplay";
+import Swal from "sweetalert2";
+import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
+import ReactDOM from "react-dom/client";
 
 const ContractDashboard = () => {
   const { id } = useParams();
@@ -365,7 +370,9 @@ const ContractDashboard = () => {
         {/* Tenancy Agreement Template */}
         <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0 min-h-[400px]">
           <div className="flex items-center justify-between mb-3 md:mb-4">
-            <h3 className="text-lg md:text-xl font-bold">Tenancy Agreement</h3>
+            <h3 className="text-lg md:text-xl font-bold">
+              Tenancy Agreement Terms
+            </h3>
             <div className="flex items-center space-x-2 md:space-x-4">
               {contract?.ownerId === user?.id && (
                 <Tooltip.Provider>
@@ -402,7 +409,198 @@ const ContractDashboard = () => {
                 <Tooltip.Root>
                   <Tooltip.Trigger asChild>
                     <button
-                      onClick={toggleFullScreen}
+                      onClick={() => {
+                        if (!propertyData || !ownerData || !tenantData) {
+                          Swal.fire({
+                            icon: "error",
+                            title: "Missing Data",
+                            text: "Please wait while we load all the required data.",
+                          });
+                          return;
+                        }
+
+                        Swal.fire({
+                          title: "Tenancy Agreement Preview",
+                          html: `
+                            <div style="height: 80vh; width: 100%;">
+                              <div id="pdf-preview" style="height: 100%; width: 100%;"></div>
+                            </div>
+                          `,
+                          width: "80%",
+                          showConfirmButton: true,
+                          showCancelButton: true,
+                          confirmButtonText: "Download PDF",
+                          cancelButtonText: "Close",
+                          didOpen: () => {
+                            const pdfPreview =
+                              document.getElementById("pdf-preview");
+                            const pdfViewer = document.createElement("div");
+                            pdfViewer.style.height = "100%";
+                            pdfViewer.style.width = "100%";
+                            pdfPreview.appendChild(pdfViewer);
+
+                            const root = ReactDOM.createRoot(pdfViewer);
+                            root.render(
+                              <PDFViewer width="100%" height="100%">
+                                <RentalAgreementTemplate
+                                  ownerName={ownerData.name}
+                                  tenantName={tenantData.name}
+                                  propertyNeighbourhood={
+                                    propertyData.data.neighbourhood
+                                  }
+                                  propertyState={propertyData.data.state}
+                                  rentPrice={propertyData.data.price}
+                                  cautionFee={propertyData.data.cautionFee}
+                                  agencyFee={propertyData.data.agencyFee}
+                                  latePaymentFee={
+                                    propertyData.data.latePaymentFee
+                                  }
+                                  rentAndDurationText={rentAndDurationText}
+                                  tenantObligations={tenantObligations}
+                                  landlordObligations={landlordObligations}
+                                />
+                              </PDFViewer>
+                            );
+                          },
+                          willClose: () => {
+                            const pdfPreview =
+                              document.getElementById("pdf-preview");
+                            if (pdfPreview) {
+                              pdfPreview.innerHTML = "";
+                            }
+                          },
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            // Create a hidden PDFDownloadLink
+                            const downloadContainer =
+                              document.createElement("div");
+                            downloadContainer.style.display = "none";
+                            document.body.appendChild(downloadContainer);
+
+                            const root = ReactDOM.createRoot(downloadContainer);
+                            root.render(
+                              <PDFDownloadLink
+                                document={
+                                  <RentalAgreementTemplate
+                                    ownerName={ownerData.name}
+                                    tenantName={tenantData.name}
+                                    propertyNeighbourhood={
+                                      propertyData.data.neighbourhood
+                                    }
+                                    propertyState={propertyData.data.state}
+                                    rentPrice={propertyData.data.price}
+                                    cautionFee={propertyData.data.cautionFee}
+                                    agencyFee={propertyData.data.agencyFee}
+                                    latePaymentFee={
+                                      propertyData.data.latePaymentFee
+                                    }
+                                    rentAndDurationText={rentAndDurationText}
+                                    tenantObligations={tenantObligations}
+                                    landlordObligations={landlordObligations}
+                                  />
+                                }
+                                fileName={`tenancy-agreement-${id}.pdf`}
+                              >
+                                {({ url, loading }) => {
+                                  if (loading) {
+                                    return null;
+                                  }
+                                  // Create and click a temporary link
+                                  const link = document.createElement("a");
+                                  link.href = url;
+                                  link.click();
+                                  // Clean up after a short delay
+                                  setTimeout(() => {
+                                    document.body.removeChild(
+                                      downloadContainer
+                                    );
+                                  }, 100);
+                                  return null;
+                                }}
+                              </PDFDownloadLink>
+                            );
+                          }
+                        });
+                      }}
+                      className="p-1 md:p-2 rounded-full hover:bg-gray-100"
+                    >
+                      <FileText className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content
+                    side="bottom"
+                    sideOffset={4}
+                    className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
+                    style={{ zIndex: 9999 }}
+                  >
+                    View PDF Version
+                  </Tooltip.Content>
+                </Tooltip.Root>
+              </Tooltip.Provider>
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <button
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Tenancy Agreement",
+                          html: `
+                            <div class="text-left space-y-6 p-4">
+                              ${Object.entries(agreementData)
+                                .map(
+                                  ([title, content]) => `
+                                <div class="mb-6">
+                                  <h3 class="text-xl font-semibold text-black-600 mb-3">${title}</h3>
+                                  <div class="prose max-w-none">
+                                    ${
+                                      Array.isArray(content)
+                                        ? content
+                                            .map(
+                                              (item) =>
+                                                `<p class="mb-2">• ${item}</p>`
+                                            )
+                                            .join("")
+                                        : `<p>${content}</p>`
+                                    }
+                                  </div>
+                                </div>
+                              `
+                                )
+                                .join("")}
+                              <div class="mt-8">
+                                <h3 class="text-xl font-semibold text-black-600 mb-3">Signatures</h3>
+                                <div id="signatures-container"></div>
+                              </div>
+                            </div>
+                          `,
+                          width: "80%",
+                          showCloseButton: true,
+                          showConfirmButton: false,
+                          customClass: {
+                            container: "agreement-modal",
+                            popup: "agreement-modal-popup",
+                            content: "agreement-modal-content",
+                          },
+                          didOpen: () => {
+                            const signaturesContainer = document.getElementById(
+                              "signatures-container"
+                            );
+                            if (signaturesContainer) {
+                              const root =
+                                ReactDOM.createRoot(signaturesContainer);
+                              root.render(<SignatureDisplay contractId={id} />);
+                            }
+                          },
+                          willClose: () => {
+                            const signaturesContainer = document.getElementById(
+                              "signatures-container"
+                            );
+                            if (signaturesContainer) {
+                              signaturesContainer.innerHTML = "";
+                            }
+                          },
+                        });
+                      }}
                       className="p-1 md:p-2 rounded-full hover:bg-gray-100"
                     >
                       <Maximize2 className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
@@ -425,16 +623,27 @@ const ContractDashboard = () => {
             id="agreement-content"
             className="overflow-auto md:max-h-96 h-fit"
           >
-            <RentalAgreementWrapper
-              propertyData={propertyData}
-              ownerData={ownerData}
-              tenantData={tenantData}
-              rentAndDurationText={rentAndDurationText}
-              tenantObligations={tenantObligations}
-              landlordObligations={landlordObligations}
-              isFullScreen={isFullScreen}
-              toggleFullScreen={toggleFullScreen}
-            />
+            <div className="space-y-6">
+              {Object.entries(agreementData).map(([title, content]) => (
+                <div key={title}>
+                  <h3 className="text-lg font-semibold mb-3">{title}</h3>
+                  <div className="prose max-w-none">
+                    {Array.isArray(content) ? (
+                      <ul className="list-disc pl-6 space-y-2">
+                        {content.map((item, index) => (
+                          <li key={index} className="text-gray-700">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-700">{content}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <SignatureDisplay contractId={id} />
+            </div>
           </div>
         </div>
       </div>
