@@ -22,7 +22,10 @@ export const fetchSignedRoles = async (contractId) => {
     );
     return res.data;
   } catch (error) {
-    console.error("Failed to fetch contract's signed roles:", error);
+    console.error(
+      "Failed to fetch signers status contract's e-signature:",
+      error
+    );
     throw error;
   }
 };

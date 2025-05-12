@@ -22,6 +22,8 @@ import { getEndDate } from "utils/helpers/getEndDate";
 import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
 import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
 import ContractActions from "./ContractActions";
+import SignatureStatus from "./SignatureStatus";
+import PropertyDetails from "./PropertyDetails";
 
 const STATUS_COLORS = {
   completed: "bg-green-500",
@@ -66,7 +68,7 @@ const ContractDashboard = () => {
   const [landlordObligations, setLandlordObligations] = useState([
     "Ensure peaceful possession by the Tenant upon timely payment.",
     "Not unreasonably withhold required consents.",
-    "Provide one month’s notice before expiration for possession delivery.",
+    "Provide one month's notice before expiration for possession delivery.",
   ]);
 
   const agreementData = {
@@ -340,61 +342,19 @@ const ContractDashboard = () => {
           )}
         </h1>
 
+        {/* Signature Status Section */}
         <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0">
-          <div className="space-y-3 md:space-y-4">
-            <div>
-              <p className="text-xs md:text-sm text-gray-500">Client</p>
-              <p className="font-medium text-gray-800">{contract.clientName}</p>
-            </div>
+          <SignatureStatus contractId={contract._id} />
+        </div>
 
-            <div className="flex items-center text-sm md:text-base text-gray-700 space-x-2">
-              <MapPin className="w-4 h-4 text-blue-600" />
-              <span className="text-sm md:text-base">
-                {contract.propertyLocation}
-              </span>
-            </div>
-
-            <div className="flex items-center text-sm md:text-base text-gray-700 space-x-2">
-              <Wallet className="w-4 h-4 text-green-600" />
-              <span className="text-sm md:text-base">
-                NGN {new Intl.NumberFormat().format(contract.propertyPrice)}
-              </span>
-            </div>
-
-            <div className="flex items-center text-sm md:text-base text-gray-700 space-x-2">
-              <CalendarDays className="w-4 h-4 text-gray-500" />
-              <span className="text-sm md:text-base">
-                {new Date(contract.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-
-            <div>
-              <p className="text-xs md:text-sm text-gray-500">
-                Agreement Terms
-              </p>
-              <p className="text-sm md:text-base text-gray-700">
-                {contract.terms}
-              </p>
-            </div>
-
-            <span
-              className={`inline-block mt-2 px-3 py-1 text-xs font-medium text-white rounded-full w-max ${
-                STATUS_COLORS[contract.status]
-              }`}
-            >
-              {contract.status}
-            </span>
-          </div>
+        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0">
+          <PropertyDetails contract={contract} />
         </div>
 
         {/* Tenancy Agreement Template */}
         <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0 min-h-[400px]">
           <div className="flex items-center justify-between mb-3 md:mb-4">
-            <h2 className="text-lg md:text-xl font-bold">Tenancy Agreement</h2>
+            <h3 className="text-lg md:text-xl font-bold">Tenancy Agreement</h3>
             <div className="flex items-center space-x-2 md:space-x-4">
               {contract?.ownerId === user?.id && (
                 <Tooltip.Provider>
