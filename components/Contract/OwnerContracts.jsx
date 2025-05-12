@@ -9,10 +9,10 @@ import { MapPin, Wallet } from "lucide-react";
 const STATUS_COLORS = {
   completed: "bg-green-500",
   pending: "bg-yellow-500",
-  ended: "bg-red-500",
+  cancelled: "bg-red-500",
 };
 
-const tabs = ["All", "Completed", "Pending", "Ended"];
+const tabs = ["All", "Completed", "Pending", "Cancelled"];
 
 const OwnerContract = () => {
   const [activeTab, setActiveTab] = useState("All");
@@ -44,7 +44,7 @@ const OwnerContract = () => {
     <div className="flex h-screen bg-gray-50 px-4 md:px-8">
       {/* Main Dashboard Area */}
       <div className="flex-1 flex flex-col p-6 overflow-auto">
-        <h1 className="text-2xl font-semibold mb-4">Contract Dashboard</h1>
+        <h1 className="text-2xl font-semibold mb-4">Contract List</h1>
 
         {/* Status Tabs */}
         <div className="flex space-x-4 mb-6 overflow-x-auto">
@@ -75,7 +75,7 @@ const OwnerContract = () => {
           </span>
           <span className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-red-500"></span>
-            <span className="text-sm">Ended</span>
+            <span className="text-sm">Cancelled</span>
           </span>
         </div>
 

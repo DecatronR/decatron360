@@ -24,12 +24,7 @@ import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument"
 import ContractActions from "./ContractActions";
 import SignatureStatus from "./SignatureStatus";
 import PropertyDetails from "./PropertyDetails";
-
-const STATUS_COLORS = {
-  completed: "bg-green-500",
-  pending: "bg-yellow-500",
-  ended: "bg-red-500",
-};
+import { fetchSignedRoles } from "utils/api/eSignature/fetchSignedRoles";
 
 const ContractDashboard = () => {
   const { id } = useParams();
@@ -48,6 +43,7 @@ const ContractDashboard = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isSignatureOpen, setIsSignatureOpen] = useState(false);
+  const [signedRoles, setSignedRoles] = useState([]);
   const [rentAndDurationText, setRentAndDurationText] = useState([
     "Loading tenancy details...",
     "Loading caution fee details...",
@@ -175,6 +171,21 @@ const ContractDashboard = () => {
     };
     handleFetchUserRole();
   }, []);
+
+  useEffect(() => {
+    const fetchSignedRolesData = async () => {
+      try {
+        const res = await fetchSignedRoles(id);
+        if (res.responseCode === 200) {
+          setSignedRoles(res.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching signed roles:", error);
+      }
+    };
+
+    fetchSignedRolesData();
+  }, [id]);
 
   const handleMouseMove = (e) => {
     if (isDragging) {
@@ -361,8 +372,15 @@ const ContractDashboard = () => {
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
                       <button
-                        onClick={() => setIsEditDialogOpen(true)}
-                        className="p-1 md:p-2 rounded-full hover:bg-gray-100"
+                        onClick={() =>
+                          signedRoles.length === 0 && setIsEditDialogOpen(true)
+                        }
+                        className={`p-1 md:p-2 rounded-full ${
+                          signedRoles.length > 0
+                            ? "opacity-50 cursor-not-allowed"
+                            : "hover:bg-gray-100"
+                        }`}
+                        disabled={signedRoles.length > 0}
                       >
                         <Pencil className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
                       </button>
@@ -373,7 +391,9 @@ const ContractDashboard = () => {
                       className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
                       style={{ zIndex: 9999 }}
                     >
-                      Edit Agreement
+                      {signedRoles.length > 0
+                        ? "Cannot edit after signatures have been added. Please create a new contract if changes are needed."
+                        : "Edit Agreement"}
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </Tooltip.Provider>
@@ -457,6 +477,7 @@ const ContractDashboard = () => {
         setRentAndDurationText={setRentAndDurationText}
         setTenantObligations={setTenantObligations}
         setLandlordObligations={setLandlordObligations}
+        signedRoles={signedRoles}
       />
     </div>
   );
