@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import SignatureDialog from "components/Contract/SignatureDialogue";
+import WitnessSignatureDialog from "components/Contract/WitnessSignatureDialog";
 import { validateSignatureLink } from "utils/api/eSignature/validateSignatureLink";
 
 const WitnessSigningPage = () => {
@@ -10,6 +10,8 @@ const WitnessSigningPage = () => {
   const contractId = searchParams.get("contractId");
   const token = searchParams.get("token");
   const role = searchParams.get("role");
+  const witnessName = searchParams.get("witnessName");
+  const witnessEmail = searchParams.get("witnessEmail");
 
   const [isValidToken, setIsValidToken] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -96,15 +98,16 @@ const WitnessSigningPage = () => {
           <h1 className="text-2xl font-semibold mb-6">
             Sign Contract as Witness
           </h1>
-          <SignatureDialog
+          <WitnessSignatureDialog
             open={true}
             onOpenChange={() => {
-              // Handle completion - maybe redirect to a thank you page
-              window.location.href = "/thank-you";
+              // Let the user manually close the window
+              // window.close();
             }}
             contractId={contractId}
             role={role}
-            isGuest={true}
+            witnessName={witnessName}
+            witnessEmail={witnessEmail}
             signingToken={token}
           />
         </div>
