@@ -1,4 +1,11 @@
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
 
 // Updated clean, modern styles
@@ -51,10 +58,72 @@ const styles = StyleSheet.create({
     transform: "rotate(-30deg)",
     zIndex: 0,
   },
+  signatureSection: {
+    marginTop: 40,
+    borderTop: "1px solid #19738D",
+    paddingTop: 30,
+  },
+  signatureRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
+    gap: 20,
+  },
+  signatureBox: {
+    width: "45%",
+    padding: 15,
+    border: "1px solid #E5E7EB",
+    borderRadius: 8,
+    backgroundColor: "#F9FAFB",
+  },
+  signatureLine: {
+    borderBottom: "1px solid #19738D",
+    marginBottom: 10,
+    height: 50,
+  },
+  signatureText: {
+    fontSize: 11,
+    textAlign: "center",
+    color: "#374151",
+    marginBottom: 4,
+  },
+  signatureImage: {
+    width: 180,
+    height: 60,
+    marginBottom: 10,
+    objectFit: "contain",
+  },
+  signatureTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#19738D",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  witnessBox: {
+    marginTop: 15,
+    borderTop: "1px dashed #19738D",
+    paddingTop: 15,
+  },
+  witnessText: {
+    fontSize: 11,
+    textAlign: "center",
+    color: "#374151",
+    marginBottom: 4,
+  },
 });
 
 const cleanValue = (value) => {
   return value ? value.replace(/[^0-9.,]/g, "") : "N/A"; // Removes any non-numeric, non-comma, non-period characters
+};
+
+// Helper function to convert base64 to data URL
+const base64ToDataUrl = (base64String) => {
+  if (!base64String) return null;
+  // Check if the string is already a data URL
+  if (base64String.startsWith("data:")) return base64String;
+  // Add the data URL prefix if it's not already there
+  return `data:image/png;base64,${base64String}`;
 };
 
 const PDFRender = ({
@@ -71,6 +140,7 @@ const PDFRender = ({
   rentAndDurationText,
   tenantObligations,
   landlordObligations,
+  signatures = [],
 }) => (
   <Document>
     <Page size="A4" style={styles.page}>
@@ -87,13 +157,13 @@ const PDFRender = ({
         <Text style={styles.text}>BETWEEN</Text>
         <Text style={styles.text}>
           <Text style={styles.boldText}>{ownerName}</Text> (hereinafter called
-          the “LANDLORD”, which includes their legal and personal
+          the "LANDLORD", which includes their legal and personal
           representatives, assigns, and successors-in-title) of the ONE PART.
         </Text>
         <Text style={styles.text}>AND</Text>
         <Text style={styles.text}>
           <Text style={styles.boldText}>{tenantName}</Text> (hereinafter called
-          the “TENANT”, which includes their legal and personal representatives,
+          the "TENANT", which includes their legal and personal representatives,
           assigns, and successors-in-title) of the OTHER PART.
         </Text>
       </View>
@@ -124,7 +194,7 @@ const PDFRender = ({
 
       <View style={styles.section}>
         <Text style={styles.watermark}>SAMPLE</Text>
-        <Text style={styles.subTitle}>2. Tenant’s Obligations</Text>
+        <Text style={styles.subTitle}>2. Tenant's Obligations</Text>
         <Text style={styles.text}>The Tenant agrees to:</Text>
         {tenantObligations.map((item, index) => (
           <Text key={index} style={styles.bulletPoint}>
@@ -134,7 +204,7 @@ const PDFRender = ({
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.subTitle}>3. Landlord’s Obligations</Text>
+        <Text style={styles.subTitle}>3. Landlord's Obligations</Text>
         <Text style={styles.text}>The Landlord agrees to:</Text>
         {landlordObligations.map((item, index) => (
           <Text key={index} style={styles.bulletPoint}>
@@ -149,6 +219,44 @@ const PDFRender = ({
           This Agreement shall be governed by and construed in accordance with
           the laws of the Federal Republic of Nigeria.
         </Text>
+      </View>
+
+      {/* Signatures Section */}
+      <View style={styles.signatureSection}>
+        <Text style={styles.signatureTitle}>Signatures</Text>
+        <View style={styles.signatureRow}>
+          {signatures.map((signature, index) => (
+            <View key={index} style={styles.signatureBox}>
+              {signature.signature ? (
+                <Image
+                  src={base64ToDataUrl(signature.signature)}
+                  style={styles.signatureImage}
+                />
+              ) : (
+                <View style={styles.signatureLine} />
+              )}
+              <Text style={styles.signatureText}>
+                {signature.role.toUpperCase()}
+              </Text>
+              <Text style={styles.signatureText}>{signature.signerName}</Text>
+
+              {signature.witness && (
+                <View style={styles.witnessBox}>
+                  {signature.witness.signature && (
+                    <Image
+                      src={base64ToDataUrl(signature.witness.signature)}
+                      style={styles.signatureImage}
+                    />
+                  )}
+                  <Text style={styles.witnessText}>WITNESS</Text>
+                  <Text style={styles.witnessText}>
+                    {signature.witness.name}
+                  </Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </View>
       </View>
     </Page>
   </Document>

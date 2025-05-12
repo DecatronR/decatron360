@@ -25,6 +25,7 @@ import ContractActions from "./ContractActions";
 import SignatureStatus from "./SignatureStatus";
 import PropertyDetails from "./PropertyDetails";
 import { fetchSignedRoles } from "utils/api/eSignature/fetchSignedRoles";
+import { fetchSignatureByContractId } from "utils/api/eSignature/fetchSignatureByContractId";
 import SignatureDisplay from "./SignatureDisplay";
 import Swal from "sweetalert2";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
@@ -49,6 +50,7 @@ const ContractDashboard = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isSignatureOpen, setIsSignatureOpen] = useState(false);
   const [signedRoles, setSignedRoles] = useState([]);
+  const [signatures, setSignatures] = useState([]);
   const [rentAndDurationText, setRentAndDurationText] = useState([
     "Loading tenancy details...",
     "Loading caution fee details...",
@@ -180,12 +182,52 @@ const ContractDashboard = () => {
   useEffect(() => {
     const fetchSignedRolesData = async () => {
       try {
-        const res = await fetchSignedRoles(id);
-        if (res.responseCode === 200) {
-          setSignedRoles(res.data || []);
+        // First fetch all signature events for this contract
+        const signatureRes = await fetchSignatureByContractId(id);
+        if (signatureRes.responseCode === 200) {
+          const signatureEvents = signatureRes.data;
+
+          // Extract unique roles from signature events
+          const roles = [
+            ...new Set(signatureEvents.map((event) => event.role)),
+          ];
+          setSignedRoles(roles);
+
+          // Map signature events to the format needed for the PDF
+          const formattedSignatures = roles.map((role) => {
+            const event = signatureEvents.find((event) => event.role === role);
+            if (event) {
+              return {
+                role,
+                signerName: event.user?.name || "Unknown",
+                timestamp: event.timestamp,
+                signature: event.signature,
+                witness: event.witness
+                  ? {
+                      name: event.witness.name,
+                      email: event.witness.email,
+                      signature: event.witness.signature, // This is the witness signature base64 string
+                      timestamp: event.witness.timestamp,
+                    }
+                  : null,
+              };
+            }
+            return {
+              role,
+              signerName: "Not signed",
+              timestamp: null,
+              signature: null,
+              witness: null,
+            };
+          });
+
+          console.log("Formatted signatures:", formattedSignatures); // Debug log
+          setSignatures(formattedSignatures);
         }
       } catch (error) {
-        console.error("Error fetching signed roles:", error);
+        console.error("Error fetching signatures:", error);
+        setSignedRoles([]);
+        setSignatures([]);
       }
     };
 
@@ -458,6 +500,22 @@ const ContractDashboard = () => {
                                   rentAndDurationText={rentAndDurationText}
                                   tenantObligations={tenantObligations}
                                   landlordObligations={landlordObligations}
+                                  signatures={signatures.map((sig) => ({
+                                    role: sig.role
+                                      .replace(/([A-Z])/g, " $1")
+                                      .trim(),
+                                    signerName: sig.signerName,
+                                    timestamp: sig.timestamp,
+                                    signature: sig.signature,
+                                    witness: sig.witness
+                                      ? {
+                                          name: sig.witness.name,
+                                          email: sig.witness.email,
+                                          signature: sig.witness.signature,
+                                          timestamp: sig.witness.timestamp,
+                                        }
+                                      : null,
+                                  }))}
                                 />
                               </PDFViewer>
                             );
@@ -497,6 +555,22 @@ const ContractDashboard = () => {
                                     rentAndDurationText={rentAndDurationText}
                                     tenantObligations={tenantObligations}
                                     landlordObligations={landlordObligations}
+                                    signatures={signatures.map((sig) => ({
+                                      role: sig.role
+                                        .replace(/([A-Z])/g, " $1")
+                                        .trim(),
+                                      signerName: sig.signerName,
+                                      timestamp: sig.timestamp,
+                                      signature: sig.signature,
+                                      witness: sig.witness
+                                        ? {
+                                            name: sig.witness.name,
+                                            email: sig.witness.email,
+                                            signature: sig.witness.signature,
+                                            timestamp: sig.witness.timestamp,
+                                          }
+                                        : null,
+                                    }))}
                                   />
                                 }
                                 fileName={`tenancy-agreement-${id}.pdf`}
