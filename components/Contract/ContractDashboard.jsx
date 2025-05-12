@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { MapPin, Wallet, CalendarDays } from "lucide-react";
 import { fetchContractById } from "utils/api/contract/fetchContractById";
@@ -179,60 +179,65 @@ const ContractDashboard = () => {
     handleFetchUserRole();
   }, []);
 
-  useEffect(() => {
-    const fetchSignedRolesData = async () => {
-      try {
-        // First fetch all signature events for this contract
-        const signatureRes = await fetchSignatureByContractId(id);
-        if (signatureRes.responseCode === 200) {
-          const signatureEvents = signatureRes.data;
+  // Function to fetch signatures
+  const fetchSignedRolesData = useCallback(async () => {
+    try {
+      const signatureRes = await fetchSignatureByContractId(id);
+      if (signatureRes.responseCode === 200) {
+        const signatureEvents = signatureRes.data;
 
-          // Extract unique roles from signature events
-          const roles = [
-            ...new Set(signatureEvents.map((event) => event.role)),
-          ];
-          setSignedRoles(roles);
+        // Extract unique roles from signature events
+        const roles = [...new Set(signatureEvents.map((event) => event.role))];
+        setSignedRoles(roles);
 
-          // Map signature events to the format needed for the PDF
-          const formattedSignatures = roles.map((role) => {
-            const event = signatureEvents.find((event) => event.role === role);
-            if (event) {
-              return {
-                role,
-                signerName: event.user?.name || "Unknown",
-                timestamp: event.timestamp,
-                signature: event.signature,
-                witness: event.witness
-                  ? {
-                      name: event.witness.name,
-                      email: event.witness.email,
-                      signature: event.witness.signature, // This is the witness signature base64 string
-                      timestamp: event.witness.timestamp,
-                    }
-                  : null,
-              };
-            }
+        // Map signature events to the format needed for the PDF
+        const formattedSignatures = roles.map((role) => {
+          const event = signatureEvents.find((event) => event.role === role);
+          if (event) {
             return {
               role,
-              signerName: "Not signed",
-              timestamp: null,
-              signature: null,
-              witness: null,
+              signerName: event.user?.name || "Unknown",
+              timestamp: event.timestamp,
+              signature: event.signature,
+              witness: event.witness
+                ? {
+                    name: event.witness.name,
+                    email: event.witness.email,
+                    signature: event.witness.signature,
+                    timestamp: event.witness.timestamp,
+                  }
+                : null,
             };
-          });
+          }
+          return {
+            role,
+            signerName: "Not signed",
+            timestamp: null,
+            signature: null,
+            witness: null,
+          };
+        });
 
-          console.log("Formatted signatures:", formattedSignatures); // Debug log
-          setSignatures(formattedSignatures);
-        }
-      } catch (error) {
-        console.error("Error fetching signatures:", error);
-        setSignedRoles([]);
-        setSignatures([]);
+        setSignatures(formattedSignatures);
       }
-    };
-
-    fetchSignedRolesData();
+    } catch (error) {
+      console.error("Error fetching signatures:", error);
+    }
   }, [id]);
+
+  // Initial fetch and polling setup
+  useEffect(() => {
+    // Initial fetch
+    fetchSignedRolesData();
+
+    // Set up polling
+    const pollInterval = setInterval(() => {
+      fetchSignedRolesData();
+    }, 5000); // Check every 5 seconds
+
+    // Cleanup on unmount
+    return () => clearInterval(pollInterval);
+  }, [fetchSignedRolesData]);
 
   const handleMouseMove = (e) => {
     if (isDragging) {
