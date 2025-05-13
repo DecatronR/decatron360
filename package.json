@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "oldDev": "concurrently \"node server.js\" \"next dev\" \"yarn test:watch\"",
-    "dev": "concurrently \"next dev --hostname 0.0.0.0\" \"yarn test:watch\"",
+    "dev": "concurrently \"next dev\" \"yarn test:watch\"",
     "lint": "next lint",
     "start": "next start",
     "test": "vitest",
