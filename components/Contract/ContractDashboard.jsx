@@ -775,7 +775,7 @@ const ContractDashboard = () => {
         }}
       >
         {/* Chat Section */}
-        <div className="bg-white shadow-md rounded-md p-3 md:p-6 w-full h-[calc(100vh-14rem)] md:h-[calc(100vh-14rem)]">
+        <div className="bg-white rounded-md p-3 md:p-6 w-full h-[calc(100vh-14rem)] md:h-[calc(100vh-14rem)]">
           <div className="flex justify-between items-center mb-4 md:hidden">
             <h3 className="text-lg font-semibold">Chat</h3>
             <button
