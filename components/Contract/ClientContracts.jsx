@@ -9,13 +9,12 @@ import { MapPin, Wallet } from "lucide-react";
 const STATUS_COLORS = {
   completed: "bg-green-500",
   pending: "bg-yellow-500",
-  ended: "bg-red-500",
+  cancelled: "bg-red-500",
 };
 
-const tabs = ["All", "Completed", "Pending", "Ended"];
+const tabs = ["All", "Completed", "Pending", "Cancelled"];
 
 const ClientContract = () => {
-  const { id } = useParams();
   const [activeTab, setActiveTab] = useState("All");
   const [contracts, setContracts] = useState(null);
 
@@ -46,7 +45,7 @@ const ClientContract = () => {
       {/* Main Dashboard Area */}
       <div className="flex-1 flex flex-col p-6 overflow-auto">
         <h1 className="text-2xl font-semibold mb-4 text-center md:text-left">
-          Contract Dashboard
+          Contract List
         </h1>
 
         {/* Status Tabs */}
@@ -78,7 +77,7 @@ const ClientContract = () => {
           </span>
           <span className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-red-500"></span>
-            <span className="text-sm">Ended</span>
+            <span className="text-sm">Cancelled</span>
           </span>
         </div>
 

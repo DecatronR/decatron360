@@ -10,8 +10,8 @@ import { initiatePayment } from "app/utils/payment/initiailizePayment";
 import { verifyPayment } from "app/utils/payment/verifyPayment";
 import { generatePaymentReference } from "utils/helpers/generatePaymentReference";
 import { numberToWords } from "utils/helpers/priceNumberToWords";
-import { getStartDate } from "utils/helpers/getStartData";
-import { getEndDate } from "utils/helpers/getEndData";
+import { getStartDate } from "utils/helpers/getStartDate";
+import { getEndDate } from "utils/helpers/getEndDate";
 import ClientModificationChat from "components/RentalAgreement/Chat/ClientModificationChat";
 
 const Dashboard = () => {
@@ -184,7 +184,6 @@ const Dashboard = () => {
   }, [rentalAgreementTemplateId]);
 
   //create a document with from the temaplete id
-
   const handleCreateDocument = async () => {
     if (!propertyData || !ownerData || !tenantData) {
       console.log("Missing required data to create document");

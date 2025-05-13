@@ -12,24 +12,39 @@ const EditAgreementDialog = ({
   setRentAndDurationText,
   setTenantObligations,
   setLandlordObligations,
+  signedRoles = [],
 }) => {
   const [selectedTitle, setSelectedTitle] = useState("Rent and Duration");
   const [currentValue, setCurrentValue] = useState("");
   const [buttonLoading, setButtonLoading] = useState(false);
 
+  const hasSignatures = signedRoles.length > 0;
+
   useEffect(() => {
-    if (data[selectedTitle]) {
-      if (Array.isArray(data[selectedTitle])) {
-        setCurrentValue(
-          data[selectedTitle].map((line) => `• ${line}`).join("\n")
-        );
+    if (open && data[selectedTitle]) {
+      const content = data[selectedTitle];
+      if (Array.isArray(content)) {
+        setCurrentValue(content.map((item) => `• ${item}`).join("\n"));
       } else {
-        setCurrentValue(data[selectedTitle]);
+        setCurrentValue(content);
       }
     }
-  }, [selectedTitle, data]);
+    if (!open) {
+      setCurrentValue(""); // optional: clear out state when closed
+    }
+  }, [open, selectedTitle]);
 
   const handleSave = async () => {
+    if (hasSignatures) {
+      Swal.fire({
+        icon: "error",
+        title: "Cannot Edit",
+        text: "This agreement cannot be edited as it has already been signed.",
+        confirmButtonText: "OK",
+      });
+      return;
+    }
+
     setButtonLoading(true);
 
     const result = await Swal.fire({
@@ -82,56 +97,67 @@ const EditAgreementDialog = ({
             </Dialog.Close>
           </div>
 
-          <div className="space-y-4">
-            {/* Dropdown for titles */}
-            <select
-              value={selectedTitle}
-              onChange={(e) => setSelectedTitle(e.target.value)}
-              className="w-full border rounded p-2"
-            >
-              {Object.keys(data).map((title) => (
-                <option key={title} value={title}>
-                  {title}
-                </option>
-              ))}
-            </select>
+          {hasSignatures ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-2">
+                This agreement cannot be edited as it has already been signed.
+              </p>
+              <p className="text-sm text-gray-500">
+                {signedRoles.length} of 4 signatures completed
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <select
+                value={selectedTitle}
+                onChange={(e) => setSelectedTitle(e.target.value)}
+                className="w-full border rounded p-2"
+              >
+                {Object.keys(data).map((title) => (
+                  <option key={title} value={title}>
+                    {title}
+                  </option>
+                ))}
+              </select>
 
-            {/* Textarea for content */}
-            <textarea
-              value={currentValue}
-              onChange={(e) => setCurrentValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  const { selectionStart, selectionEnd } = e.target;
-                  const newValue =
-                    currentValue.substring(0, selectionStart) +
-                    "\n• " +
-                    currentValue.substring(selectionEnd);
-                  setCurrentValue(newValue);
-                  // move cursor after bullet
-                  setTimeout(() => {
-                    e.target.selectionStart = e.target.selectionEnd =
-                      selectionStart + 3;
-                  }, 0);
-                }
-              }}
-              className="w-full border rounded p-2 h-64"
-            />
-          </div>
+              <textarea
+                value={currentValue}
+                onChange={(e) => setCurrentValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const { selectionStart, selectionEnd } = e.target;
+                    const newValue =
+                      currentValue.substring(0, selectionStart) +
+                      "\n• " +
+                      currentValue.substring(selectionEnd);
+                    setCurrentValue(newValue);
+                    // move cursor after bullet
+                    setTimeout(() => {
+                      e.target.selectionStart = e.target.selectionEnd =
+                        selectionStart + 3;
+                    }, 0);
+                  }
+                }}
+                className="w-full border rounded p-2 h-64"
+              />
+            </div>
+          )}
 
           <div className="mt-6 flex justify-end space-x-3">
             <Dialog.Close asChild>
               <button className="px-4 py-2 rounded-full border text-gray-600 hover:bg-gray-50">
-                Cancel
+                Close
               </button>
             </Dialog.Close>
-            <button
-              onClick={handleSave}
-              className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700"
-            >
-              {buttonLoading ? <ButtonSpinner /> : "Save"}
-            </button>
+            {!hasSignatures && (
+              <button
+                onClick={handleSave}
+                className="px-4 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700"
+              >
+                {buttonLoading ? <ButtonSpinner /> : "Save"}
+              </button>
+            )}
           </div>
         </Dialog.Content>
       </Dialog.Portal>

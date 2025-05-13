@@ -256,7 +256,7 @@ const Navbar = () => {
                       tabIndex="-1"
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
-                      Scheduler
+                      Availability
                     </Link>
                     <Link
                       href={`/my-inspections/${user.id}`}

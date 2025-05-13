@@ -16,7 +16,7 @@ export const trackVisitor = async (ip, visitorId, notify, userAgent) => {
     );
     return res.data;
   } catch (error) {
-    console.error("Failed to book inspection:", error);
+    console.error("Failed to track visitor:", error);
     throw error;
   }
 };
