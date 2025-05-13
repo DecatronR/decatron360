@@ -343,8 +343,6 @@ const ContractDashboard = () => {
     setIsFullScreen(!isFullScreen);
   };
 
-  const handleSign = () => {};
-
   const handleCreateDocument = async () => {
     if (!propertyData || !ownerData || !tenantData) {
       console.log("Missing required data to create document");
@@ -445,7 +443,7 @@ const ContractDashboard = () => {
         </div>
 
         {/* Tenancy Agreement Template */}
-        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0 min-h-[400px]">
+        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0">
           <div className="flex items-center justify-between mb-3 md:mb-4">
             <h3 className="text-lg md:text-xl font-bold">
               Tenancy Agreement Terms
@@ -710,23 +708,33 @@ const ContractDashboard = () => {
 
           <div
             id="agreement-content"
-            className="overflow-auto md:max-h-96 h-fit"
+            className="overflow-auto h-[calc(100vh-32rem)] md:h-[calc(100vh-40rem)] custom-scrollbar"
           >
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {Object.entries(agreementData).map(([title, content]) => (
-                <div key={title}>
-                  <h3 className="text-lg font-semibold mb-3">{title}</h3>
+                <div
+                  key={title}
+                  className="border-b border-gray-100 last:border-0 pb-3 md:pb-4"
+                >
+                  <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">
+                    {title}
+                  </h3>
                   <div className="prose max-w-none">
                     {Array.isArray(content) ? (
-                      <ul className="list-disc pl-6 space-y-2">
+                      <ul className="list-disc pl-4 md:pl-6 space-y-1 md:space-y-2">
                         {content.map((item, index) => (
-                          <li key={index} className="text-gray-700">
+                          <li
+                            key={index}
+                            className="text-sm md:text-base text-gray-700"
+                          >
                             {item}
                           </li>
                         ))}
                       </ul>
                     ) : (
-                      <p className="text-gray-700">{content}</p>
+                      <p className="text-sm md:text-base text-gray-700">
+                        {content}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -767,7 +775,7 @@ const ContractDashboard = () => {
         }}
       >
         {/* Chat Section */}
-        <div className="bg-white shadow-md rounded-md p-3 md:p-6 w-full h-[calc(100vh-8rem)] md:h-fit overflow-auto">
+        <div className="bg-white shadow-md rounded-md p-3 md:p-6 w-full h-[calc(100vh-14rem)] md:h-[calc(100vh-14rem)]">
           <div className="flex justify-between items-center mb-4 md:hidden">
             <h3 className="text-lg font-semibold">Chat</h3>
             <button

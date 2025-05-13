@@ -100,15 +100,18 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
   };
 
   return (
-    <div className="w-full bg-gray-100 shadow-md rounded-md p-3 sm:p-6 flex flex-col max-h-[700px] h-full">
-      <h3 className="text-lg md:text-xl font-semibold mb-2 md:mb-4 text-gray-800">
-        Modification Request (Owner)
-      </h3>
+    <div className="w-full bg-gray-100 shadow-md rounded-md flex flex-col h-full">
+      {/* Header */}
+      <div className="bg-white px-4 py-3 border-b">
+        <h3 className="text-base md:text-lg font-semibold text-gray-800">
+          Modification Request
+        </h3>
+      </div>
 
       {/* Messages container */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-auto bg-white p-3 md:p-4 rounded-lg space-y-3 md:space-y-4 custom-scrollbar"
+        className="flex-1 overflow-auto bg-gray-50 p-2 md:p-4 space-y-2 md:space-y-4 custom-scrollbar"
       >
         {comments.length > 0 ? (
           comments.map((msg) => (
@@ -120,40 +123,79 @@ const OwnerModificationChat = ({ contractId, ownerId, clientId }) => {
             >
               {/* Message Bubble */}
               <div
-                className={`p-2 md:p-3 rounded-lg max-w-[75%] md:max-w-xs break-words text-xs md:text-sm ${
+                className={`p-2 md:p-3 rounded-2xl max-w-[85%] md:max-w-[70%] break-words ${
                   msg.from === ownerId
-                    ? "bg-blue-200 text-gray-800 self-end"
-                    : "bg-green-200 text-gray-800 self-start"
+                    ? "bg-primary-100 text-gray-800 rounded-tr-none"
+                    : "bg-white text-gray-800 rounded-tl-none shadow-sm"
                 }`}
               >
-                <p>{msg.text}</p>
-                <span className="text-xs text-gray-500 block mt-1 md:mt-2">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
+                <p className="text-sm md:text-base">{msg.text}</p>
+                <span className="text-[10px] md:text-xs text-gray-500 block mt-1">
+                  {new Date(msg.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-gray-500 text-xs md:text-sm">No messages yet.</p>
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500 text-sm md:text-base">
+              No messages yet
+            </p>
+          </div>
         )}
       </div>
 
       {/* Input & Submit Button */}
-      <div className="mt-3 md:mt-4 flex flex-col space-y-2 md:space-y-3">
-        <textarea
-          className="w-full p-3 md:p-4 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ease-in-out duration-200"
-          rows={3}
-          placeholder="Message Client..."
-          value={comment}
-          onChange={handleCommentChange}
-        ></textarea>
-
-        <button
-          onClick={handleSubmitComment}
-          className="w-full bg-primary-600 text-white text-sm py-2 md:py-3 rounded-full hover:bg-primary-700 transition-all ease-in-out duration-200"
-        >
-          Submit Response
-        </button>
+      <div className="bg-white p-2 md:p-4 border-t">
+        <div className="flex items-end gap-2 md:gap-4">
+          <div className="flex-1 relative">
+            <textarea
+              className="w-full p-2 md:p-3 pr-12 border border-gray-200 rounded-full md:rounded-xl text-sm md:text-base resize-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ease-in-out duration-200"
+              rows={1}
+              style={{
+                minHeight: "40px",
+                maxHeight: "120px",
+                height: "40px",
+              }}
+              placeholder="Type a message..."
+              value={comment}
+              onChange={(e) => {
+                handleCommentChange(e);
+                // Auto-resize textarea
+                e.target.style.height = "auto";
+                e.target.style.height =
+                  Math.min(e.target.scrollHeight, 120) + "px";
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmitComment();
+                }
+              }}
+            />
+          </div>
+          <button
+            onClick={handleSubmitComment}
+            disabled={!comment.trim()}
+            className={`p-2 md:p-3 rounded-full ${
+              comment.trim()
+                ? "bg-primary-600 text-white hover:bg-primary-700"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            } transition-all ease-in-out duration-200`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-5 h-5 md:w-6 md:h-6"
+            >
+              <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
