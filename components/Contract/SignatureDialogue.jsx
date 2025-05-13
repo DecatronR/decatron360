@@ -173,7 +173,6 @@ const SignatureDialog = ({ open, onOpenChange, onSave, contractId }) => {
       // Close loading state
       Swal.close();
 
-      // Show error message
       Swal.fire({
         icon: "error",
         title: "Error",
