@@ -533,6 +533,23 @@ const ContractDashboard = () => {
                                   rentAndDurationText={rentAndDurationText}
                                   tenantObligations={tenantObligations}
                                   landlordObligations={landlordObligations}
+                                  signatures={signatures.map((sig) => ({
+                                    role: sig.role
+                                      .replace(/([A-Z])/g, " $1")
+                                      .trim(),
+                                    signerName: sig.signerName,
+                                    timestamp: sig.timestamp,
+                                    signature: sig.signature,
+                                    witness: sig.witness
+                                      ? {
+                                          name: sig.witness.name,
+                                          email: sig.witness.email,
+                                          signature: sig.witness.signature,
+                                          timestamp: sig.witness.timestamp,
+                                        }
+                                      : null,
+                                  }))}
+                                  contractId={id}
                                 />
                               </PDFViewer>
                             );
@@ -775,7 +792,7 @@ const ContractDashboard = () => {
         }}
       >
         {/* Chat Section */}
-        <div className="bg-white rounded-md p-3 md:p-6 w-full h-[calc(100vh-14rem)] md:h-[calc(100vh-14rem)]">
+        <div className="bg-white rounded-md p-3 md:p-6 w-full h-[calc(100vh-20rem)] md:h-[calc(100vh-14rem)]">
           <div className="flex justify-between items-center mb-4 md:hidden">
             <h3 className="text-lg font-semibold">Chat</h3>
             <button

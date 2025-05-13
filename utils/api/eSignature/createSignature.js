@@ -19,7 +19,6 @@ export const createSignature = async (signatureData) => {
         },
       }
     );
-
     return res.data;
   } catch (error) {
     console.error("Failed to create e-signature:", error);

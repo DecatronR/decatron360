@@ -7,6 +7,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
+import { generateVerificationUrl } from "utils/helpers/generateVerificationUrl";
 
 // Updated clean, modern styles
 const styles = StyleSheet.create({
@@ -111,6 +112,22 @@ const styles = StyleSheet.create({
     color: "#374151",
     marginBottom: 4,
   },
+  verificationSection: {
+    marginTop: 30,
+    borderTop: "1px solid #19738D",
+    paddingTop: 20,
+    textAlign: "center",
+  },
+  verificationText: {
+    fontSize: 10,
+    color: "#666",
+    marginBottom: 10,
+  },
+  qrCodeContainer: {
+    width: 100,
+    height: 100,
+    margin: "0 auto",
+  },
 });
 
 const cleanValue = (value) => {
@@ -141,125 +158,153 @@ const PDFRender = ({
   tenantObligations,
   landlordObligations,
   signatures = [],
-}) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.watermark}>SAMPLE</Text>
+  contractId,
+}) => {
+  // Generate verification URL
+  const verificationUrl = generateVerificationUrl(contractId);
 
-      <View style={styles.section}>
-        <Text style={styles.title}>Tenancy Agreement Template</Text>
-        <Text style={styles.text}>
-          THIS TENANCY AGREEMENT is made on the {""} {formatDateWithOrdinal()}
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.text}>BETWEEN</Text>
-        <Text style={styles.text}>
-          <Text style={styles.boldText}>{ownerName}</Text> (hereinafter called
-          the "LANDLORD", which includes their legal and personal
-          representatives, assigns, and successors-in-title) of the ONE PART.
-        </Text>
-        <Text style={styles.text}>AND</Text>
-        <Text style={styles.text}>
-          <Text style={styles.boldText}>{tenantName}</Text> (hereinafter called
-          the "TENANT", which includes their legal and personal representatives,
-          assigns, and successors-in-title) of the OTHER PART.
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.subTitle}>WHEREAS:</Text>
-        <Text style={styles.text}>
-          The Landlord is the rightful owner of the property located at{" "}
-          <Text style={styles.boldText}>
-            {propertyHouseNumberAndStreet}, {propertyNeighbourhood}, {""}
-            {propertyState}
-          </Text>
-          . The Landlord has agreed to lease, and the Tenant to rent, the
-          property at a fixed rent of{" "}
-          <Text style={styles.boldText}>NGN{cleanValue(rentPrice)}</Text>. Both
-          parties have agreed to abide by the terms outlined in this agreement.
-        </Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.subTitle}>1. Rent and Duration</Text>
-        {rentAndDurationText.map((item, index) => (
-          <Text key={index} style={styles.bulletPoint}>
-            • {item}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.section}>
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
         <Text style={styles.watermark}>SAMPLE</Text>
-        <Text style={styles.subTitle}>2. Tenant's Obligations</Text>
-        <Text style={styles.text}>The Tenant agrees to:</Text>
-        {tenantObligations.map((item, index) => (
-          <Text key={index} style={styles.bulletPoint}>
-            • {item}
+
+        <View style={styles.section}>
+          <Text style={styles.title}>Tenancy Agreement Template</Text>
+          <Text style={styles.text}>
+            THIS TENANCY AGREEMENT is made on the {""} {formatDateWithOrdinal()}
           </Text>
-        ))}
-      </View>
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.subTitle}>3. Landlord's Obligations</Text>
-        <Text style={styles.text}>The Landlord agrees to:</Text>
-        {landlordObligations.map((item, index) => (
-          <Text key={index} style={styles.bulletPoint}>
-            • {item}
+        <View style={styles.section}>
+          <Text style={styles.text}>BETWEEN</Text>
+          <Text style={styles.text}>
+            <Text style={styles.boldText}>{ownerName}</Text> (hereinafter called
+            the "LANDLORD", which includes their legal and personal
+            representatives, assigns, and successors-in-title) of the ONE PART.
           </Text>
-        ))}
-      </View>
+          <Text style={styles.text}>AND</Text>
+          <Text style={styles.text}>
+            <Text style={styles.boldText}>{tenantName}</Text> (hereinafter
+            called the "TENANT", which includes their legal and personal
+            representatives, assigns, and successors-in-title) of the OTHER
+            PART.
+          </Text>
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.subTitle}>4. Governing Law</Text>
-        <Text style={styles.text}>
-          This Agreement shall be governed by and construed in accordance with
-          the laws of the Federal Republic of Nigeria.
-        </Text>
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.subTitle}>WHEREAS:</Text>
+          <Text style={styles.text}>
+            The Landlord is the rightful owner of the property located at{" "}
+            <Text style={styles.boldText}>
+              {propertyHouseNumberAndStreet}, {propertyNeighbourhood}, {""}
+              {propertyState}
+            </Text>
+            . The Landlord has agreed to lease, and the Tenant to rent, the
+            property at a fixed rent of{" "}
+            <Text style={styles.boldText}>NGN{cleanValue(rentPrice)}</Text>.
+            Both parties have agreed to abide by the terms outlined in this
+            agreement.
+          </Text>
+        </View>
 
-      {/* Signatures Section */}
-      <View style={styles.signatureSection}>
-        <Text style={styles.signatureTitle}>Signatures</Text>
-        <View style={styles.signatureRow}>
-          {signatures.map((signature, index) => (
-            <View key={index} style={styles.signatureBox}>
-              {signature.signature ? (
-                <Image
-                  src={base64ToDataUrl(signature.signature)}
-                  style={styles.signatureImage}
-                />
-              ) : (
-                <View style={styles.signatureLine} />
-              )}
-              <Text style={styles.signatureText}>
-                {signature.role.toUpperCase()}
-              </Text>
-              <Text style={styles.signatureText}>{signature.signerName}</Text>
-
-              {signature.witness && (
-                <View style={styles.witnessBox}>
-                  {signature.witness.signature && (
-                    <Image
-                      src={base64ToDataUrl(signature.witness.signature)}
-                      style={styles.signatureImage}
-                    />
-                  )}
-                  <Text style={styles.witnessText}>WITNESS</Text>
-                  <Text style={styles.witnessText}>
-                    {signature.witness.name}
-                  </Text>
-                </View>
-              )}
-            </View>
+        <View style={styles.section}>
+          <Text style={styles.subTitle}>1. Rent and Duration</Text>
+          {rentAndDurationText.map((item, index) => (
+            <Text key={index} style={styles.bulletPoint}>
+              • {item}
+            </Text>
           ))}
         </View>
-      </View>
-    </Page>
-  </Document>
-);
+
+        <View style={styles.section}>
+          <Text style={styles.watermark}>SAMPLE</Text>
+          <Text style={styles.subTitle}>2. Tenant's Obligations</Text>
+          <Text style={styles.text}>The Tenant agrees to:</Text>
+          {tenantObligations.map((item, index) => (
+            <Text key={index} style={styles.bulletPoint}>
+              • {item}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.subTitle}>3. Landlord's Obligations</Text>
+          <Text style={styles.text}>The Landlord agrees to:</Text>
+          {landlordObligations.map((item, index) => (
+            <Text key={index} style={styles.bulletPoint}>
+              • {item}
+            </Text>
+          ))}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.subTitle}>4. Governing Law</Text>
+          <Text style={styles.text}>
+            This Agreement shall be governed by and construed in accordance with
+            the laws of the Federal Republic of Nigeria.
+          </Text>
+        </View>
+
+        {/* Signatures Section */}
+        <View style={styles.signatureSection}>
+          <Text style={styles.signatureTitle}>Signatures</Text>
+          <View style={styles.signatureRow}>
+            {signatures.map((signature, index) => (
+              <View key={index} style={styles.signatureBox}>
+                {signature.signature ? (
+                  <Image
+                    src={base64ToDataUrl(signature.signature)}
+                    style={styles.signatureImage}
+                  />
+                ) : (
+                  <View style={styles.signatureLine} />
+                )}
+                <Text style={styles.signatureText}>
+                  {signature.role.toUpperCase()}
+                </Text>
+                <Text style={styles.signatureText}>{signature.signerName}</Text>
+
+                {signature.witness && (
+                  <View style={styles.witnessBox}>
+                    {signature.witness.signature && (
+                      <Image
+                        src={base64ToDataUrl(signature.witness.signature)}
+                        style={styles.signatureImage}
+                      />
+                    )}
+                    <Text style={styles.witnessText}>WITNESS</Text>
+                    <Text style={styles.witnessText}>
+                      {signature.witness.name}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Verification Section */}
+        {signatures.length > 0 && (
+          <View style={styles.verificationSection}>
+            <Text style={styles.verificationText}>
+              Scan this QR code to verify the authenticity of this document
+            </Text>
+            <View style={styles.qrCodeContainer}>
+              <Image
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
+                  verificationUrl
+                )}`}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </View>
+            <Text style={styles.verificationText}>
+              Document ID: {contractId}
+            </Text>
+          </View>
+        )}
+      </Page>
+    </Document>
+  );
+};
 
 export default PDFRender;
