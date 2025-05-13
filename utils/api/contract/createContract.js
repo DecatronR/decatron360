@@ -32,6 +32,7 @@ export const createContract = async (
         },
       }
     );
+
     return res.data;
   } catch (error) {
     console.error("Failed to create contract:", error);

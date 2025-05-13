@@ -1,36 +1,43 @@
 import { useState } from "react";
+import { useAuth } from "context/AuthContext";
 import SignatureDialog from "./SignatureDialogue";
 import WitnessInviteDialog from "./WitnessInviteDialog";
 
 const ContractActions = ({ contractId }) => {
-  const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
-  const [isWitnessDialogOpen, setIsWitnessDialogOpen] = useState(false);
+  const { user } = useAuth();
+  const [showSignatureDialog, setShowSignatureDialog] = useState(false);
+  const [showWitnessDialog, setShowWitnessDialog] = useState(false);
+
+  const handleSignatureSave = (signatureUrl) => {
+    // Handle signature save if needed
+    console.log("Signature saved:", signatureUrl);
+  };
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex flex-col md:flex-row gap-4 p-4 bg-white rounded-lg shadow">
       <button
-        onClick={() => setIsSignatureDialogOpen(true)}
-        className="px-4 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700"
+        onClick={() => setShowSignatureDialog(true)}
+        className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
       >
-        Sign Document
+        Sign Contract
       </button>
-
       <button
-        onClick={() => setIsWitnessDialogOpen(true)}
-        className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-50"
+        onClick={() => setShowWitnessDialog(true)}
+        className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
       >
         Invite Witness
       </button>
 
       <SignatureDialog
-        open={isSignatureDialogOpen}
-        onOpenChange={setIsSignatureDialogOpen}
+        open={showSignatureDialog}
+        onOpenChange={setShowSignatureDialog}
+        onSave={handleSignatureSave}
         contractId={contractId}
       />
 
       <WitnessInviteDialog
-        open={isWitnessDialogOpen}
-        onOpenChange={setIsWitnessDialogOpen}
+        open={showWitnessDialog}
+        onOpenChange={setShowWitnessDialog}
         contractId={contractId}
       />
     </div>
