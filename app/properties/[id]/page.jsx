@@ -16,6 +16,7 @@ import { fetchUserData } from "@/utils/api/user/fetchUserData";
 import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndReviews";
 import ProceedToRent from "components/Property/ProceedToRent";
 import { fetchUserBookings } from "utils/api/inspection/fetchUserBookings";
+import { createContract } from "utils/api/contract/createContract";
 
 const PropertyPage = () => {
   const router = useRouter();
@@ -75,6 +76,7 @@ const PropertyPage = () => {
       if (!id) return;
       try {
         const res = await fetchPropertyData(id);
+        console.log("Property data: ", res);
         setProperty(res);
         setAgentId(res.data.userID);
       } catch (error) {
@@ -135,8 +137,21 @@ const PropertyPage = () => {
     setShowScheduleForm(true);
   };
 
-  const handleProceedToRent = () => {
-    router.push(`/rental-agreement/dashboard/${id}`);
+  const handleProceedToRent = async () => {
+    try {
+      const res = await createContract(
+        id,
+        property.data.title,
+        agentId,
+        agentData.name,
+        Number(property.data.price.replace(/[₦,]/g, "")),
+        `${property.data.houseNoStreet}, ${property.data.lga}, ${property.data.state}`
+      );
+      console.log("Contract created: ", res);
+      router.push(`client-contracts`);
+    } catch (error) {
+      console.log("Failed to create contract");
+    }
   };
 
   if (!property && !isLoading) {
