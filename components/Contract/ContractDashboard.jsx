@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MapPin, Wallet, CalendarDays } from "lucide-react";
+import { MapPin, Wallet, CalendarDays, MessageSquare, X } from "lucide-react";
 import { fetchContractById } from "utils/api/contract/fetchContractById";
 import { truncateText } from "utils/helpers/truncateText";
 import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
@@ -54,6 +54,7 @@ const ContractDashboard = () => {
     "Loading caution fee details...",
     "Loading agency fee details...",
   ]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [tenantObligations, setTenantObligations] = useState([
     "Pay all applicable utility and security charges promptly.",
@@ -416,7 +417,6 @@ const ContractDashboard = () => {
       {/* Left Section - Contract Details */}
       <div
         className={`transition-all duration-200 ease-in-out overflow-auto max-w-screen-lg mx-auto 
-       
         w-full md:w-auto md:flex-1 mb-4 md:mb-0 pb-4 md:pb-0`}
         style={{ width: window.innerWidth >= 768 ? `${leftWidth}%` : "100%" }}
       >
@@ -660,10 +660,6 @@ const ContractDashboard = () => {
                               `
                                 )
                                 .join("")}
-                              <div class="mt-8">
-                                <h3 class="text-xl font-semibold text-black-600 mb-3">Signatures</h3>
-                                <div id="signatures-container"></div>
-                              </div>
                             </div>
                           `,
                           width: "80%",
@@ -741,15 +737,46 @@ const ContractDashboard = () => {
         </div>
       </div>
 
+      {/* Mobile Action Bar */}
+      <div className="md:hidden fixed bottom-12 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
+        <div className="flex items-center justify-between max-w-screen-lg mx-auto">
+          <div className="flex-1">
+            <ContractActions contractId={contract._id} />
+          </div>
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className="ml-4 bg-primary-600 text-white p-3 rounded-full shadow-lg"
+          >
+            {isChatOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <MessageSquare className="w-6 h-6" />
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* Right Section Wrapper */}
       <div
-        className="flex flex-col w-full md:w-auto mx-2 md:mx-0"
+        className={`fixed md:relative inset-0 md:inset-auto bg-white md:bg-transparent z-40 md:z-auto
+          transform transition-transform duration-300 ease-in-out
+          ${isChatOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"}
+          w-full md:w-auto mx-2 md:mx-0 pt-16 md:pt-0 pb-20 md:pb-0`}
         style={{
           width: window.innerWidth >= 768 ? `${100 - leftWidth}%` : "100%",
         }}
       >
         {/* Chat Section */}
-        <div className="bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit">
+        <div className="bg-white shadow-md rounded-md p-3 md:p-6 w-full h-[calc(100vh-8rem)] md:h-fit overflow-auto">
+          <div className="flex justify-between items-center mb-4 md:hidden">
+            <h3 className="text-lg font-semibold">Chat</h3>
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
           {["owner", "property manager", "careTaker"].includes(userRole) ? (
             <OwnerModificationChat
               contractId={contract._id}
@@ -765,7 +792,7 @@ const ContractDashboard = () => {
           ) : null}
         </div>
 
-        {/* Proceed to Sign Button Section */}
+        {/* Proceed to Sign Button Section - Desktop Only */}
         <div className="hidden md:flex justify-center px-4 bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit my-4">
           <ContractActions contractId={contract._id} />
         </div>
