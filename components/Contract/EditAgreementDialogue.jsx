@@ -21,16 +21,18 @@ const EditAgreementDialog = ({
   const hasSignatures = signedRoles.length > 0;
 
   useEffect(() => {
-    if (data[selectedTitle]) {
-      if (Array.isArray(data[selectedTitle])) {
-        setCurrentValue(
-          data[selectedTitle].map((line) => `• ${line}`).join("\n")
-        );
+    if (open && data[selectedTitle]) {
+      const content = data[selectedTitle];
+      if (Array.isArray(content)) {
+        setCurrentValue(content.map((item) => `• ${item}`).join("\n"));
       } else {
-        setCurrentValue(data[selectedTitle]);
+        setCurrentValue(content);
       }
     }
-  }, [selectedTitle, data]);
+    if (!open) {
+      setCurrentValue(""); // optional: clear out state when closed
+    }
+  }, [open, selectedTitle]);
 
   const handleSave = async () => {
     if (hasSignatures) {
@@ -106,7 +108,6 @@ const EditAgreementDialog = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Dropdown for titles */}
               <select
                 value={selectedTitle}
                 onChange={(e) => setSelectedTitle(e.target.value)}
@@ -119,7 +120,6 @@ const EditAgreementDialog = ({
                 ))}
               </select>
 
-              {/* Textarea for content */}
               <textarea
                 value={currentValue}
                 onChange={(e) => setCurrentValue(e.target.value)}
@@ -153,7 +153,7 @@ const EditAgreementDialog = ({
             {!hasSignatures && (
               <button
                 onClick={handleSave}
-                className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700"
+                className="px-4 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700"
               >
                 {buttonLoading ? <ButtonSpinner /> : "Save"}
               </button>

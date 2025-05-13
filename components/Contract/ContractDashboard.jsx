@@ -8,7 +8,6 @@ import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModifica
 import ClientModificationChat from "components/RentalAgreement/Chat/ClientModificationChat";
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
-import RentalAgreementWrapper from "components/RentalAgreement/RentalAgreementWrapper";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Pencil, Maximize2, ArrowLeft, FileText } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
@@ -24,7 +23,6 @@ import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument"
 import ContractActions from "./ContractActions";
 import SignatureStatus from "./SignatureStatus";
 import PropertyDetails from "./PropertyDetails";
-import { fetchSignedRoles } from "utils/api/eSignature/fetchSignedRoles";
 import { fetchSignatureByContractId } from "utils/api/eSignature/fetchSignatureByContractId";
 import SignatureDisplay from "./SignatureDisplay";
 import Swal from "sweetalert2";
@@ -293,18 +291,50 @@ const ContractDashboard = () => {
     handleFetchTemplateDetails();
   }, [rentalAgreementTemplateId]);
 
-  const handleAgreementUpdate = async () => {
-    const agreement = {
-      rentAndDurationText,
-      tenantObligations,
-      landlordObligations,
-    };
-
+  const handleAgreementUpdate = async (updatedValue) => {
     try {
+      // Get the latest state values
+      const agreement = {
+        rentAndDuration: rentAndDurationText,
+        tenantObligations: tenantObligations,
+        landlordObligations: landlordObligations,
+      };
+
+      // Update the local state first
+      if (updatedValue) {
+        if (Array.isArray(updatedValue)) {
+          if (updatedValue[0]?.includes("tenancy is for")) {
+            setRentAndDurationText(updatedValue);
+          } else if (updatedValue[0]?.includes("Pay all applicable")) {
+            setTenantObligations(updatedValue);
+          } else if (updatedValue[0]?.includes("Ensure peaceful")) {
+            setLandlordObligations(updatedValue);
+          }
+        }
+      }
+
+      console.log("Updating agreement with:", agreement);
+
       const res = await updateAgreement(id, agreement);
-      console.log("Agreement updated: ", res);
+
+      if (res.responseCode === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Agreement updated successfully",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } else {
+        throw new Error(res.message || "Failed to update agreement");
+      }
     } catch (error) {
-      console.log("Failed to update agreement:", error);
+      console.error("Failed to update agreement:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to update agreement. Please try again.",
+      });
     }
   };
 
@@ -505,22 +535,6 @@ const ContractDashboard = () => {
                                   rentAndDurationText={rentAndDurationText}
                                   tenantObligations={tenantObligations}
                                   landlordObligations={landlordObligations}
-                                  signatures={signatures.map((sig) => ({
-                                    role: sig.role
-                                      .replace(/([A-Z])/g, " $1")
-                                      .trim(),
-                                    signerName: sig.signerName,
-                                    timestamp: sig.timestamp,
-                                    signature: sig.signature,
-                                    witness: sig.witness
-                                      ? {
-                                          name: sig.witness.name,
-                                          email: sig.witness.email,
-                                          signature: sig.witness.signature,
-                                          timestamp: sig.witness.timestamp,
-                                        }
-                                      : null,
-                                  }))}
                                 />
                               </PDFViewer>
                             );
