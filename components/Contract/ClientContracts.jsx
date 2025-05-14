@@ -50,7 +50,6 @@ const ClientContract = () => {
 
         {/* Status Tabs */}
         <div className="flex space-x-4 mb-6 overflow-x-auto">
-          c
           {tabs.map((tab) => (
             <button
               key={tab}

@@ -148,7 +148,7 @@ const PropertyPage = () => {
         `${property.data.houseNoStreet}, ${property.data.lga}, ${property.data.state}`
       );
       console.log("Contract created: ", res);
-      router.push(`client-contracts`);
+      router.push(`/client-contracts`);
     } catch (error) {
       console.log("Failed to create contract");
     }
