@@ -5,6 +5,7 @@ import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import MoonSpinner from "@/components/ui/MoonSpinner";
+import { createManualPayment } from "utils/api/manualPayment/createManualPayment";
 
 const bankDetails = {
   accountName: "Decatron Realtors",
@@ -35,29 +36,33 @@ const ManualPaymentPage = () => {
     setLoadingMessage("We are confirming your payment...");
 
     try {
-      // Simulate payment confirmation
-      setTimeout(async () => {
-        const paymentConfirmed = true;
+      const paymentConfirmed = await createManualPayment(
+        contractId,
+        bankDetails.accountName,
+        bankDetails.accountNumber,
+        bankDetails.bankName,
+        amount
+      );
+      console.log(paymentConfirmed);
 
-        if (paymentConfirmed) {
-          setPaymentStatus("success");
-          setLoadingMessage("Payment confirmed! Redirecting...");
+      if (paymentConfirmed.responseCode === 201) {
+        setPaymentStatus("success");
+        setLoadingMessage("Payment confirmed! Redirecting...");
 
-          Swal.fire({
-            icon: "success",
-            title: "Payment Confirmed!",
-            text: "Your payment was successful. You will be redirected shortly.",
-          }).then(() => {
-            router.push("/confirmation");
-          });
-        } else {
-          setPaymentStatus("error");
-          setLoadingMessage(
-            "There was an error confirming your payment. Please try again."
-          );
-        }
-        setIsProcessing(false);
-      }, 5000);
+        Swal.fire({
+          icon: "success",
+          title: "Payment Confirmed!",
+          text: "Your payment was successful. You will be redirected shortly.",
+        }).then(() => {
+          router.push("/confirmation");
+        });
+      } else {
+        setPaymentStatus("error");
+        setLoadingMessage(
+          "There was an error confirming your payment. Please try again."
+        );
+      }
+      setIsProcessing(false);
     } catch (error) {
       setPaymentStatus("error");
       setLoadingMessage("There was an error processing your payment.");
