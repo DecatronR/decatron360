@@ -1,7 +1,10 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Copy, Banknote, ShieldCheck, Send } from "lucide-react";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import MoonSpinner from "@/components/ui/MoonSpinner";
 
 const bankDetails = {
   accountName: "Decatron Realtors",
@@ -11,33 +14,77 @@ const bankDetails = {
 
 const ManualPaymentPage = () => {
   const { enqueueSnackbar } = useSnackbar();
+  const contractId = "12389hiy9894";
+  const amount = 4000000;
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [loadingMessage, setLoadingMessage] = useState(
+    "We are confirming your payment..."
+  );
+  const router = useRouter();
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     enqueueSnackbar("Copied to clipboard!", { variant: "success" });
   };
 
-  const handlePaymentConfirmation = () => {
-    enqueueSnackbar("Thanks! We've received your notification.", {
-      variant: "info",
-    });
+  const handlePaymentConfirmation = async () => {
+    setIsProcessing(true);
+    setPaymentStatus(null);
+    setLoadingMessage("We are confirming your payment...");
+
+    try {
+      // Simulate payment confirmation
+      setTimeout(async () => {
+        const paymentConfirmed = true;
+
+        if (paymentConfirmed) {
+          setPaymentStatus("success");
+          setLoadingMessage("Payment confirmed! Redirecting...");
+
+          Swal.fire({
+            icon: "success",
+            title: "Payment Confirmed!",
+            text: "Your payment was successful. You will be redirected shortly.",
+          }).then(() => {
+            router.push("/confirmation");
+          });
+        } else {
+          setPaymentStatus("error");
+          setLoadingMessage(
+            "There was an error confirming your payment. Please try again."
+          );
+        }
+        setIsProcessing(false);
+      }, 5000);
+    } catch (error) {
+      setPaymentStatus("error");
+      setLoadingMessage("There was an error processing your payment.");
+      setIsProcessing(false);
+    }
   };
 
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-      {/* Page Title */}
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">
-        Complete Your Payment
-      </h1>
+    <section className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 relative">
+      {/* Payment Processing Overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
+          <MoonSpinner loading={isProcessing} message={loadingMessage} />
+        </div>
+      )}
 
+      {/* Main Content */}
+      <h2 className="text-2xl font-bold text-gray-800 mb-8">
+        Complete Your Payment
+      </h2>
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-gray-200 p-6 space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-3">
           <Banknote className="w-7 h-7 text-primary-600" />
           <h2 className="text-2xl font-semibold text-gray-800">Bank Details</h2>
         </div>
 
-        {/* Details */}
+        {/* Bank Details */}
         <div className="space-y-4">
           {Object.entries(bankDetails).map(([key, value]) => (
             <div
@@ -60,13 +107,49 @@ const ManualPaymentPage = () => {
           ))}
         </div>
 
+        {/* Amount to Pay */}
+        <div className="flex justify-between items-center border-b pb-3">
+          <div>
+            <p className="text-sm text-gray-500">Amount to Pay</p>
+            <p className="text-lg font-medium text-gray-800">
+              ₦{amount.toLocaleString()}
+            </p>
+          </div>
+          <button
+            onClick={() => copyToClipboard(amount)}
+            className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+          >
+            <Copy className="w-5 h-5 text-gray-600" />
+          </button>
+        </div>
+
+        {/* Important Note */}
+        <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded text-yellow-800 text-sm">
+          <ShieldCheck className="w-4 h-4 inline-block mr-2 text-yellow-600" />
+          Please ensure you send the <strong>exact amount displayed</strong>.
+          Incorrect payments may delay your confirmation.
+        </div>
+
         {/* Payment Confirmation Button */}
         <button
           onClick={handlePaymentConfirmation}
+          disabled={isProcessing}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white text-base font-semibold rounded-full transition"
         >
-          <Send className="w-5 h-5" />I have sent the money
+          <Send className="w-5 h-5" /> I have sent the money
         </button>
+
+        {/* Payment Status */}
+        {paymentStatus === "success" && (
+          <div className="text-green-600 mt-4">
+            Payment confirmed! Thank you.
+          </div>
+        )}
+        {paymentStatus === "error" && (
+          <div className="text-red-600 mt-4">
+            Something went wrong. Please try again.
+          </div>
+        )}
       </div>
     </section>
   );
