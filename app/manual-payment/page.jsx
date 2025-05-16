@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Copy, Banknote, ShieldCheck, Send } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import MoonSpinner from "@/components/ui/MoonSpinner";
 import { createManualPayment } from "utils/api/manualPayment/createManualPayment";
+import socket from "@/lib/socket";
 
 const bankDetails = {
   accountName: "Decatron Realtors",
@@ -14,21 +15,55 @@ const bankDetails = {
 };
 
 const ManualPaymentPage = () => {
+  const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const contractId = "12389hiy9894";
   const amount = 4000000;
-
+  const [paymentId, setPaymentId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [loadingMessage, setLoadingMessage] = useState(
     "We are confirming your payment..."
   );
-  const router = useRouter();
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     enqueueSnackbar("Copied to clipboard!", { variant: "success" });
   };
+
+  useEffect(() => {
+    socket.emit("joinPaymentRoom", { contractId, paymentId });
+
+    const handlePaymentStatusChanged = (data) => {
+      if (data.contractId === contractId && data.paymentId === paymentId) {
+        setPaymentStatus(data.status);
+
+        if (data.status === "confirmed") {
+          Swal.fire({
+            icon: "success",
+            title: "Payment Confirmed!",
+            text: "Your payment was successful. You will be redirected shortly.",
+          }).then(() => {
+            router.push("/confirmation");
+          });
+        } else if (data.status === "failed") {
+          Swal.fire({
+            icon: "error",
+            title: "Payment Failed!",
+            text: "Your payment failed. Please try again or contact support.",
+          });
+        }
+      }
+    };
+
+    socket.on("paymentStatusChanged", handlePaymentStatusChanged);
+
+    return () => {
+      if (contractId) socket.emit("leaveRoom", contractId);
+      if (paymentId) socket.emit("leaveRoom", paymentId);
+      socket.off("paymentStatusChanged", handlePaymentStatusChanged);
+    };
+  }, [contractId, paymentId, router]);
 
   const handlePaymentConfirmation = async () => {
     setIsProcessing(true);
@@ -44,6 +79,7 @@ const ManualPaymentPage = () => {
         amount
       );
       console.log(paymentConfirmed);
+      setPaymentId(paymentConfirmed.data.paymentId);
 
       if (paymentConfirmed.responseCode === 201) {
         setPaymentStatus("success");
