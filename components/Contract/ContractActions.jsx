@@ -7,17 +7,27 @@ const ContractActions = ({ contractId }) => {
   const [isWitnessDialogOpen, setIsWitnessDialogOpen] = useState(false);
 
   return (
-    <div className="flex space-x-4">
+    <div className="flex flex-row space-x-2 justify-between">
+      <button
+        onClick={() => console.log("Make Payment clicked")}
+        className="px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-md text-sm sm:px-4 sm:py-2 sm:text-base 
+    md:px-5 md:py-2.5 md:text-base"
+      >
+        Make Payment
+      </button>
+
       <button
         onClick={() => setIsSignatureDialogOpen(true)}
-        className="px-4 py-2 rounded-full bg-primary-600 text-white hover:bg-primary-700"
+        className="px-3 py-1.5 rounded-full bg-primary-600 text-white hover:bg-primary-700 text-sm sm:px-4 sm:py-2 sm:text-base 
+    md:px-5 md:py-2.5 md:text-base "
       >
         Sign Document
       </button>
 
       <button
         onClick={() => setIsWitnessDialogOpen(true)}
-        className="px-4 py-2 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-50"
+        className="px-3 py-1.5 rounded-full border border-primary-600 text-primary-600 hover:bg-primary-50 text-sm sm:px-4 sm:py-2 sm:text-base 
+    md:px-5 md:py-2.5 md:text-base "
       >
         Invite Witness
       </button>

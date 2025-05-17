@@ -1,7 +1,7 @@
-import ContractDashboardPage from "components/Contract/ContractDashboard";
+import ContractDashboard from "components/Contract/ContractDashboard";
 
 const ContractDashboardPage = () => {
-  return <ContractDashboardPage />;
+  return <ContractDashboard />;
 };
 
 export default ContractDashboardPage;
