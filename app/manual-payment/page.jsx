@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import MoonSpinner from "@/components/ui/MoonSpinner";
 import { createManualPayment } from "utils/api/manualPayment/createManualPayment";
 import socket from "@/lib/socket";
+import { getPaymentById } from "utils/api/manualPayment/getPaymentById";
 
 const bankDetails = {
   accountName: "Decatron Realtors",
@@ -36,8 +37,38 @@ const ManualPaymentPage = () => {
     if (existingPaymentId) {
       setPaymentId(existingPaymentId);
       setIsProcessing(true);
+      handleFetchPaymentStatus(existingPaymentId);
     }
   }, []);
+
+  const handleFetchPaymentStatus = async (paymentId) => {
+    try {
+      const res = await getPaymentById(paymentId);
+      const status = res.data.status;
+
+      setPaymentStatus(status);
+
+      if (status === "confirmed") {
+        Swal.fire({
+          icon: "success",
+          title: "Payment Confirmed!",
+          text: "...",
+        }).then(() => {
+          localStorage.removeItem("paymentId");
+          router.push("/confirmation");
+        });
+        setIsProcessing(false);
+      } else if (status === "failed") {
+        Swal.fire({ icon: "error", title: "Payment Failed!", text: "..." });
+        setIsProcessing(false);
+      } else {
+        // Pending - wait for socket update
+      }
+    } catch (error) {
+      console.error("Failed to fetch payment status", error);
+      setIsProcessing(false);
+    }
+  };
 
   useEffect(() => {
     if (!paymentId) return;
@@ -175,7 +206,7 @@ const ManualPaymentPage = () => {
             </p>
           </div>
           <button
-            onClick={() => copyToClipboard(amount)}
+            onClick={() => copyToClipboard(amount.toString())}
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
           >
             <Copy className="w-5 h-5 text-gray-600" />
