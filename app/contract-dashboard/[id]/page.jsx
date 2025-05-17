@@ -1,6 +1,6 @@
 import ContractDashboardPage from "components/Contract/ContractDashboard";
 
-const ContractDetailsPage = () => {
+const ContractDashboardPage = () => {
   return <ContractDashboardPage />;
 };
 

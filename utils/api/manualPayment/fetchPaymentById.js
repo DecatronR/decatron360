@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getPaymentById = async (paymentId) => {
+export const fetchPaymentById = async (paymentId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
