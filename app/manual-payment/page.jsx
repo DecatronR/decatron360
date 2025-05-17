@@ -32,9 +32,23 @@ const ManualPaymentPage = () => {
   };
 
   useEffect(() => {
+    const existingPaymentId = localStorage.getItem("paymentId");
+    if (existingPaymentId) {
+      setPaymentId(existingPaymentId);
+      setIsProcessing(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!paymentId) return;
+
+    console.log("Joining room with paymentId", paymentId);
+
     socket.emit("joinPaymentRoom", { contractId, paymentId });
 
     const handlePaymentStatusChanged = (data) => {
+      console.log("Received paymentStatusChanged event:", data);
+
       if (data.contractId === contractId && data.paymentId === paymentId) {
         setPaymentStatus(data.status);
 
@@ -44,6 +58,7 @@ const ManualPaymentPage = () => {
             title: "Payment Confirmed!",
             text: "Your payment was successful. You will be redirected shortly.",
           }).then(() => {
+            localStorage.removeItem("paymentId");
             router.push("/confirmation");
           });
         } else if (data.status === "failed") {
@@ -53,17 +68,19 @@ const ManualPaymentPage = () => {
             text: "Your payment failed. Please try again or contact support.",
           });
         }
+
+        setIsProcessing(false);
       }
     };
 
     socket.on("paymentStatusChanged", handlePaymentStatusChanged);
 
+    // Cleanup
     return () => {
-      if (contractId) socket.emit("leaveRoom", contractId);
-      if (paymentId) socket.emit("leaveRoom", paymentId);
+      socket.emit("leaveRoom", { contractId, paymentId });
       socket.off("paymentStatusChanged", handlePaymentStatusChanged);
     };
-  }, [contractId, paymentId, router]);
+  }, [paymentId]);
 
   const handlePaymentConfirmation = async () => {
     setIsProcessing(true);
@@ -78,28 +95,29 @@ const ManualPaymentPage = () => {
         bankDetails.bankName,
         amount
       );
+
       console.log(paymentConfirmed);
-      setPaymentId(paymentConfirmed.data.paymentId);
 
       if (paymentConfirmed.responseCode === 201) {
-        setPaymentStatus("success");
-        setLoadingMessage("Payment confirmed! Redirecting...");
+        const newPaymentId = paymentConfirmed.data._id;
+        console.log(newPaymentId);
+        setPaymentId(newPaymentId);
+        localStorage.setItem("paymentId", newPaymentId);
 
-        Swal.fire({
-          icon: "success",
-          title: "Payment Confirmed!",
-          text: "Your payment was successful. You will be redirected shortly.",
-        }).then(() => {
-          router.push("/confirmation");
-        });
+        // Join the WebSocket room for the new paymentId
+        socket.emit("joinPaymentRoom", { contractId, paymentId: newPaymentId });
+
+        // Show spinner, wait for websocket event — no Swal here yet
+        setLoadingMessage("Waiting for payment confirmation...");
       } else {
         setPaymentStatus("error");
         setLoadingMessage(
-          "There was an error confirming your payment. Please try again."
+          "There was an error initiating your payment. Please try again."
         );
+        setIsProcessing(false);
       }
-      setIsProcessing(false);
     } catch (error) {
+      console.error(error);
       setPaymentStatus("error");
       setLoadingMessage("There was an error processing your payment.");
       setIsProcessing(false);
