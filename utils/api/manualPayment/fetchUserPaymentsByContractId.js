@@ -9,7 +9,7 @@ export const fetchUserPaymentsByContractId = async (contractId) => {
   }
   try {
     const res = await axios.post(
-      `${baseUrl}/manualPayment/getUserPaymentsByContractId`,
+      `${baseUrl}/manualPayment/getUserPaymentByContract`,
       {
         contractId,
       },

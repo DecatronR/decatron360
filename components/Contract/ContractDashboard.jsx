@@ -14,12 +14,6 @@ import EditAgreementDialog from "./EditAgreementDialogue";
 import { useAuth } from "context/AuthContext";
 import { updateAgreement } from "utils/api/contract/updateAgreement";
 import { fetchTemplateDetails } from "app/utils/eSignature/fetchTemplateDetails";
-import { getDocumentFields } from "./getDocumentFields";
-import { numberToWords } from "utils/helpers/priceNumberToWords";
-import { getStartDate } from "utils/helpers/getStartDate";
-import { getEndDate } from "utils/helpers/getEndDate";
-import { formatDateWithOrdinal } from "utils/helpers/formatDateWithOrdinal";
-import { createDocumentFromTemplate } from "app/utils/eSignature/createDocument";
 import ContractActions from "./ContractActions";
 import SignatureStatus from "./SignatureStatus";
 import PropertyDetails from "./PropertyDetails";
@@ -29,7 +23,7 @@ import Swal from "sweetalert2";
 import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
 import ReactDOM from "react-dom/client";
-
+import { parseAmount } from "utils/helpers/formatCurrency";
 const ContractDashboard = () => {
   const { id } = useParams();
   const router = useRouter();
@@ -339,62 +333,18 @@ const ContractDashboard = () => {
     }
   };
 
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
+  //routing to payment page
+  const handlePayment = (contractId) => {
+    const totalAmount =
+      parseAmount(propertyData.data.price) +
+      parseAmount(propertyData.data.cautionFee) +
+      parseAmount(propertyData.data.agencyFee);
+    console.log("Total amount: ", totalAmount);
+    router.push(`/manual-payment/${contractId}?amount=${totalAmount}`);
   };
 
-  const handleCreateDocument = async () => {
-    if (!propertyData || !ownerData || !tenantData) {
-      console.log("Missing required data to create document");
-      return;
-    }
-    const address = `${propertyData.data.houseNoStreet || ""}, ${
-      propertyData.data.neighbourhood || ""
-    }, ${propertyData.data.propertyState || ""}, ${
-      propertyData.data.state || ""
-    }`;
-    const priceInWords = numberToWords(propertyData.data.price);
-    const startDate = getStartDate();
-    const endDate = getEndDate(startDate);
-    const agreementDate = formatDateWithOrdinal().toString();
-
-    const documentData = {
-      address: address,
-      priceInFigures: propertyData.data.price,
-      priceInWords: priceInWords,
-      startDate: startDate,
-      endDate: endDate,
-      duration: "One Year",
-      latePaymentFee: propertyData.data.latePaymentFee,
-      date: agreementDate,
-      landlordName: ownerData.name,
-      landlordEmail: ownerData.email,
-      tenantName: tenantData.name,
-      tenantEmail: tenantData.email,
-    };
-
-    console.log("Data: ", documentData);
-
-    const documentFields = getDocumentFields(documentData);
-
-    setIsCreating(true);
-    console.log("Document fields before creation: ", documentFields);
-    console.log(
-      "Payload before sending:",
-      JSON.stringify(documentFields, null, 2)
-    );
-
-    try {
-      const res = await createDocumentFromTemplate(
-        rentalAgreementTemplateId,
-        documentFields
-      );
-      console.log("New document created: ", res);
-    } catch (error) {
-      console.log("Failed to create document from template: ", error);
-    } finally {
-      setIsCreating(false);
-    }
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
   };
 
   if (!contract || !propertyData || !propertyData.data) {
@@ -768,9 +718,7 @@ const ContractDashboard = () => {
           <div className="flex-1">
             <ContractActions
               contractId={contract._id}
-              propertyPrice={propertyData.data.price || "₦0.00"}
-              cautionFee={propertyData.data.cautionFee || "₦0.00"}
-              agencyFee={propertyData.data.agencyFee || "₦0.00"}
+              handlePayment={handlePayment}
             />
           </div>
           <button
@@ -824,7 +772,10 @@ const ContractDashboard = () => {
 
         {/* Proceed to Sign Button Section - Desktop Only */}
         <div className="hidden md:flex justify-center px-4 bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit my-4">
-          <ContractActions contractId={contract._id} />
+          <ContractActions
+            contractId={contract._id}
+            handlePayment={handlePayment}
+          />
         </div>
       </div>
 

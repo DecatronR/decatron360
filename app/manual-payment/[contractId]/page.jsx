@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { Copy, Banknote, ShieldCheck, Send } from "lucide-react";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
@@ -18,15 +19,19 @@ const bankDetails = {
 
 const ManualPaymentPage = () => {
   const router = useRouter();
+  const { contractId } = useParams();
+  const searchParams = useSearchParams();
+  const amount = searchParams.get("amount");
   const { enqueueSnackbar } = useSnackbar();
-  const contractId = "12389hiy9894";
-  const amount = 4000000;
   const [paymentId, setPaymentId] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [loadingMessage, setLoadingMessage] = useState(
     "We are confirming your payment..."
   );
+
+  console.log("contractId: ", contractId);
+  console.log("amount: ", amount);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -211,7 +216,7 @@ const ManualPaymentPage = () => {
           <div>
             <p className="text-sm text-gray-500">Amount to Pay</p>
             <p className="text-lg font-medium text-gray-800">
-              ₦{amount.toLocaleString()}
+              ₦{Number(amount).toLocaleString("en-US")}
             </p>
           </div>
           <button
