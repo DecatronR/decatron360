@@ -147,8 +147,7 @@ const PropertyPage = () => {
         Number(property.data.price.replace(/[₦,]/g, "")),
         `${property.data.houseNoStreet}, ${property.data.lga}, ${property.data.state}`
       );
-      console.log("Contract created: ", res);
-      router.push(`/client-contracts`);
+      router.push(`/contract-dashboard/${res.data._id}`);
     } catch (error) {
       console.log("Failed to create contract");
     }

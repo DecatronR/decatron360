@@ -766,7 +766,12 @@ const ContractDashboard = () => {
       <div className="md:hidden fixed bottom-12 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
         <div className="flex items-center justify-between max-w-screen-lg mx-auto">
           <div className="flex-1">
-            <ContractActions contractId={contract._id} />
+            <ContractActions
+              contractId={contract._id}
+              propertyPrice={propertyData.data.price || "₦0.00"}
+              cautionFee={propertyData.data.cautionFee || "₦0.00"}
+              agencyFee={propertyData.data.agencyFee || "₦0.00"}
+            />
           </div>
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
