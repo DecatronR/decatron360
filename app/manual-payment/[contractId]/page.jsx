@@ -30,9 +30,6 @@ const ManualPaymentPage = () => {
     "We are confirming your payment..."
   );
 
-  console.log("contractId: ", contractId);
-  console.log("amount: ", amount);
-
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     enqueueSnackbar("Copied to clipboard!", { variant: "success" });
@@ -42,13 +39,26 @@ const ManualPaymentPage = () => {
     const fetchExistingUserPayment = async () => {
       try {
         const res = await fetchUserPaymentsByContractId(contractId);
+        console.log("found payment: ", res);
         const payments = res.data;
-        const pendingPayment = payments.find((p) => p.status === "pending");
-
-        if (pendingPayment) {
-          setPaymentId(pendingPayment._id);
+        if (payments?.status === "pending") {
+          setPaymentId(payments._id);
           setIsProcessing(true);
-          handleFetchPaymentStatus(pendingPayment._id);
+          handleFetchPaymentStatus(payments._id);
+        } else if (payments?.status === "confirmed") {
+          Swal.fire({
+            icon: "success",
+            title: "Payment Confirmed!",
+            text: "Your payment was successful. You will be redirected shortly.",
+          }).then(() => {
+            router.push(`/contract-dashboard/${contractId}`);
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Payment Failed!",
+            text: "Your payment failed. Please try again or contact support.",
+          });
         }
       } catch (error) {
         console.error("Error fetching user payments:", error);
@@ -71,7 +81,7 @@ const ManualPaymentPage = () => {
           title: "Payment Confirmed!",
           text: "...",
         }).then(() => {
-          router.push("/confirmation");
+          router.push(`/contract-dashboard/${contractId}`);
         });
         setIsProcessing(false);
       } else if (status === "failed") {
