@@ -7,13 +7,13 @@ const ContractActions = ({ contractId }) => {
   const [isWitnessDialogOpen, setIsWitnessDialogOpen] = useState(false);
 
   return (
-    <div className="flex flex-row space-x-2 justify-between">
+    <div className="flex flex-row space-x-2 justify-between py-7">
       <button
         onClick={() => console.log("Make Payment clicked")}
-        className="px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-md text-sm sm:px-4 sm:py-2 sm:text-base 
+        className="px-3 py-1.5 rounded-full bg-gradient-to-r bg-green-600 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-md text-sm sm:px-4 sm:py-2 sm:text-base 
     md:px-5 md:py-2.5 md:text-base"
       >
-        Make Payment
+        Payment
       </button>
 
       <button
