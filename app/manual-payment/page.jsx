@@ -7,7 +7,8 @@ import Swal from "sweetalert2";
 import MoonSpinner from "@/components/ui/MoonSpinner";
 import { createManualPayment } from "utils/api/manualPayment/createManualPayment";
 import socket from "@/lib/socket";
-import { getPaymentById } from "utils/api/manualPayment/getPaymentById";
+import { fetchPaymentById } from "utils/api/manualPayment/fetchPaymentById";
+import { fetchUserPaymentsByContractId } from "utils/api/manualPayment/fetchUserPaymentsByContractId";
 
 const bankDetails = {
   accountName: "Decatron Realtors",
@@ -33,17 +34,28 @@ const ManualPaymentPage = () => {
   };
 
   useEffect(() => {
-    const existingPaymentId = localStorage.getItem("paymentId");
-    if (existingPaymentId) {
-      setPaymentId(existingPaymentId);
-      setIsProcessing(true);
-      handleFetchPaymentStatus(existingPaymentId);
-    }
+    const fetchExistingUserPayment = async () => {
+      try {
+        const res = await fetchUserPaymentsByContractId(contractId);
+        const payments = res.data;
+        const pendingPayment = payments.find((p) => p.status === "pending");
+
+        if (pendingPayment) {
+          setPaymentId(pendingPayment._id);
+          setIsProcessing(true);
+          handleFetchPaymentStatus(pendingPayment._id);
+        }
+      } catch (error) {
+        console.error("Error fetching user payments:", error);
+      }
+    };
+
+    fetchExistingUserPayment();
   }, []);
 
   const handleFetchPaymentStatus = async (paymentId) => {
     try {
-      const res = await getPaymentById(paymentId);
+      const res = await fetchPaymentById(paymentId);
       const status = res.data.status;
 
       setPaymentStatus(status);
@@ -54,7 +66,6 @@ const ManualPaymentPage = () => {
           title: "Payment Confirmed!",
           text: "...",
         }).then(() => {
-          localStorage.removeItem("paymentId");
           router.push("/confirmation");
         });
         setIsProcessing(false);
@@ -89,7 +100,6 @@ const ManualPaymentPage = () => {
             title: "Payment Confirmed!",
             text: "Your payment was successful. You will be redirected shortly.",
           }).then(() => {
-            localStorage.removeItem("paymentId");
             router.push("/confirmation");
           });
         } else if (data.status === "failed") {
@@ -133,7 +143,6 @@ const ManualPaymentPage = () => {
         const newPaymentId = paymentConfirmed.data._id;
         console.log(newPaymentId);
         setPaymentId(newPaymentId);
-        localStorage.setItem("paymentId", newPaymentId);
 
         // Join the WebSocket room for the new paymentId
         socket.emit("joinPaymentRoom", { contractId, paymentId: newPaymentId });
