@@ -36,7 +36,7 @@ const ManualPaymentPage = () => {
   };
 
   useEffect(() => {
-    const fetchExistingUserPayment = async () => {
+    const fetchUserPaymentStatus = async () => {
       try {
         const res = await fetchUserPaymentsByContractId(contractId);
         console.log("found payment: ", res);
@@ -65,7 +65,7 @@ const ManualPaymentPage = () => {
       }
     };
 
-    fetchExistingUserPayment();
+    fetchUserPaymentStatus();
   }, []);
 
   const handleFetchPaymentStatus = async (paymentId) => {
@@ -115,7 +115,7 @@ const ManualPaymentPage = () => {
             title: "Payment Confirmed!",
             text: "Your payment was successful. You will be redirected shortly.",
           }).then(() => {
-            router.push("/confirmation");
+            router.push(`/contract-dashboard/${contractId}`);
           });
         } else if (data.status === "failed") {
           Swal.fire({
