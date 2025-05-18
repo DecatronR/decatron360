@@ -17,8 +17,10 @@ import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndRevi
 import ProceedToRent from "components/Property/ProceedToRent";
 import { fetchUserBookings } from "utils/api/inspection/fetchUserBookings";
 import { createContract } from "utils/api/contract/createContract";
+import { useAuth } from "context/AuthContext";
 
 const PropertyPage = () => {
+  const { user } = useAuth();
   const router = useRouter();
   const { id } = useParams();
   const [property, setProperty] = useState(null);

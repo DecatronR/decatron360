@@ -41,7 +41,13 @@ const ManualPaymentPage = () => {
         const res = await fetchUserPaymentsByContractId(contractId);
         console.log("found payment: ", res);
         const payments = res.data;
-        if (payments?.status === "pending") {
+
+        if (!payments) {
+          console.log("No existing payment record found.");
+          return;
+        }
+
+        if (payments.status === "pending") {
           setPaymentId(payments._id);
           setIsProcessing(true);
           handleFetchPaymentStatus(payments._id);
