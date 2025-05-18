@@ -17,8 +17,10 @@ import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndRevi
 import ProceedToRent from "components/Property/ProceedToRent";
 import { fetchUserBookings } from "utils/api/inspection/fetchUserBookings";
 import { createContract } from "utils/api/contract/createContract";
+import { useAuth } from "context/AuthContext";
 
 const PropertyPage = () => {
+  const { user } = useAuth();
   const router = useRouter();
   const { id } = useParams();
   const [property, setProperty] = useState(null);
@@ -147,8 +149,7 @@ const PropertyPage = () => {
         Number(property.data.price.replace(/[₦,]/g, "")),
         `${property.data.houseNoStreet}, ${property.data.lga}, ${property.data.state}`
       );
-      console.log("Contract created: ", res);
-      router.push(`client-contracts`);
+      router.push(`/contract-dashboard/${res.data._id}`);
     } catch (error) {
       console.log("Failed to create contract");
     }

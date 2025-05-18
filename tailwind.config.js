@@ -12,6 +12,9 @@ module.exports = {
         nasalization: ["Nasalization Rg", "sans-serif"],
         raleway: ["Raleway", "sans-serif"],
       },
+      backdropBlur: {
+        sm: "blur(5px)",
+      },
       gridTemplateColumns: {
         "70/30": "70% 28%",
       },
