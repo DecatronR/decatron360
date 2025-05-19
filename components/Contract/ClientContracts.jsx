@@ -7,12 +7,13 @@ import { truncateText } from "utils/helpers/truncateText";
 import { MapPin, Wallet } from "lucide-react";
 
 const STATUS_COLORS = {
-  completed: "bg-green-500",
   pending: "bg-yellow-500",
+  paid: "bg-blue-500",
+  completed: "bg-green-500",
   cancelled: "bg-red-500",
 };
 
-const tabs = ["All", "Completed", "Pending", "Cancelled"];
+const tabs = ["All", "Pending", "Paid", "Completed", "Cancelled"];
 
 const ClientContract = () => {
   const [activeTab, setActiveTab] = useState("All");
@@ -68,12 +69,16 @@ const ClientContract = () => {
         {/* Legend */}
         <div className="flex items-center space-x-4 mb-4 flex-wrap justify-center md:justify-start">
           <span className="flex items-center space-x-2">
-            <span className="w-3 h-3 rounded-full bg-green-500"></span>
-            <span className="text-sm">Completed</span>
-          </span>
-          <span className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
             <span className="text-sm">Pending</span>
+          </span>
+          <span className="flex items-center space-x-2">
+            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+            <span className="text-sm">Paid</span>
+          </span>
+          <span className="flex items-center space-x-2">
+            <span className="w-3 h-3 rounded-full bg-green-500"></span>
+            <span className="text-sm">Completed</span>
           </span>
           <span className="flex items-center space-x-2">
             <span className="w-3 h-3 rounded-full bg-red-500"></span>

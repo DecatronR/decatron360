@@ -55,9 +55,10 @@ const PropertyDetails = ({ contract }) => {
 };
 
 const STATUS_COLORS = {
-  completed: "bg-green-500",
   pending: "bg-yellow-500",
-  ended: "bg-red-500",
+  paid: "bg-blue-500",
+  completed: "bg-green-500",
+  cancelled: "bg-red-500",
 };
 
 export default PropertyDetails;

@@ -1,14 +1,6 @@
 import axios from "axios";
 
-export const createContract = async (
-  propertyId,
-  propertyName,
-  ownerId,
-  ownerName,
-  ownerEmail,
-  propertyPrice,
-  propertyLocation
-) => {
+export const verifyReceiptById = async (paymentId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   if (!token) {
@@ -17,15 +9,9 @@ export const createContract = async (
   }
   try {
     const res = await axios.post(
-      `${baseUrl}/contract/create`,
+      `${baseUrl}/manualPayment/verifyReceiptById`,
       {
-        propertyId,
-        propertyName,
-        ownerId,
-        ownerName,
-        ownerEmail,
-        propertyPrice,
-        propertyLocation,
+        paymentId,
       },
       {
         withCredentials: true,
@@ -34,10 +20,9 @@ export const createContract = async (
         },
       }
     );
-
     return res.data;
   } catch (error) {
-    console.error("Failed to create contract:", error);
+    console.error("Failed to verify receipt by id:", error);
     throw error;
   }
 };
