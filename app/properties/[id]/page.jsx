@@ -145,6 +145,7 @@ const PropertyPage = () => {
         property.data.title,
         agentId,
         agentData.name,
+        agentData.email,
         Number(property.data.price.replace(/[₦,]/g, "")),
         `${property.data.houseNoStreet}, ${property.data.lga}, ${property.data.state}`
       );

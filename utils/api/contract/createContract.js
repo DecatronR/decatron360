@@ -5,6 +5,7 @@ export const createContract = async (
   propertyName,
   ownerId,
   ownerName,
+  ownerEmail,
   propertyPrice,
   propertyLocation
 ) => {
@@ -22,6 +23,7 @@ export const createContract = async (
         propertyName,
         ownerId,
         ownerName,
+        ownerEmail,
         propertyPrice,
         propertyLocation,
       },
