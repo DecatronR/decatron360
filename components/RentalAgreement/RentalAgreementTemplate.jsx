@@ -287,7 +287,8 @@ const PDFRender = ({
         {signatures.length > 0 && (
           <View style={styles.verificationSection}>
             <Text style={styles.verificationText}>
-              Scan this QR code to verify the authenticity of this document
+              Scan this QR code to verify the authenticity of this tenancy
+              agreement contract
             </Text>
             <View style={styles.qrCodeContainer}>
               <Image
@@ -298,7 +299,7 @@ const PDFRender = ({
               />
             </View>
             <Text style={styles.verificationText}>
-              Document ID: {contractId}
+              Contract ID: {contractId}
             </Text>
           </View>
         )}
