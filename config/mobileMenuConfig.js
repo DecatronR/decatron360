@@ -12,7 +12,7 @@ import {
 // Map roles to groups
 export const roleGroups = {
   owner: "ownerGroup",
-  propertyManager: "ownerGroup",
+  "property-manager": "ownerGroup",
   careTaker: "ownerGroup",
   agent: "agent",
   buyer: "buyer",
