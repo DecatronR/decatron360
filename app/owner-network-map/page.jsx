@@ -123,7 +123,7 @@ const OwnerNetworkMap = () => {
   ];
 
   const roleIcons = {
-    propertyManager: <Home className="w-5 h-5 text-blue-500" />,
+    "property-manager": <Home className="w-5 h-5 text-blue-500" />,
     agent: <UserCheck className="w-5 h-5 text-green-500" />,
     client: <CalendarCheck className="w-5 h-5 text-orange-500" />,
   };
@@ -210,7 +210,7 @@ const OwnerNetworkMap = () => {
                 )}
                 <span>
                   {selectedNode.roleSpecificData}{" "}
-                  {selectedNode.role === "propertyManager"
+                  {selectedNode.role === "property-manager"
                     ? "Properties"
                     : selectedNode.role === "agent"
                     ? "Clients"

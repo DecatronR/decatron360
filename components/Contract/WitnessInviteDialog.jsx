@@ -11,7 +11,7 @@ const WitnessInviteDialog = ({ open, onOpenChange, contractId }) => {
   const [buttonLoading, setButtonLoading] = useState(false);
 
   const mapUserRoleToWitnessRole = (userRole) => {
-    if (["owner", "propertyManager", "careTaker"].includes(userRole)) {
+    if (["owner", "property-manager", "careTaker"].includes(userRole)) {
       return "propertyOwnerWitness";
     } else if (["buyer", "tenant"].includes(userRole)) {
       return "tenantWitness";

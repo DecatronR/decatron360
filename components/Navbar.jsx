@@ -269,13 +269,13 @@ const Navbar = () => {
                     </Link>
                     {[
                       "owner",
-                      "propertyManager",
+                      "property-manager",
                       "caretaker",
                       "buyer",
                     ].includes(user.role) && (
                       <Link
                         href={
-                          ["owner", "propertyManager", "caretaker"].includes(
+                          ["owner", "property-manager", "caretaker"].includes(
                             user.role
                           )
                             ? "/owner-contracts"
@@ -292,13 +292,13 @@ const Navbar = () => {
 
                     {[
                       "owner",
-                      "propertyManager",
+                      "property-manager",
                       "caretaker",
                       "agent",
                     ].includes(user.role) && (
                       <Link
                         href={
-                          ["owner", "propertyManager", "caretaker"].includes(
+                          ["owner", "property-manager", "caretaker"].includes(
                             user.role
                           )
                             ? "/owner-network-map"

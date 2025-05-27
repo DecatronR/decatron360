@@ -17,7 +17,7 @@ const SignatureDialog = ({ open, onOpenChange, onSave, contractId }) => {
   const [buttonLoading, setButtonLoading] = useState(false);
 
   const mapUserRoleToBackendRole = (role) => {
-    if (["owner", "propertyManager", "careTaker"].includes(role)) {
+    if (["owner", "property-manager", "careTaker"].includes(role)) {
       return "propertyOwner";
     } else if (["buyer", "tenant"].includes(role)) {
       return "tenant";

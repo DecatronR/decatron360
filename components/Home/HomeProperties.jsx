@@ -20,7 +20,7 @@ const HomeProperties = () => {
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(8);
 
-  const privilegedRoles = ["agent", "owner", "property manager", "admin"];
+  const privilegedRoles = ["agent", "owner", "property-manager", "admin"];
   const isPrivilegedUser = user && privilegedRoles.includes(user.role);
 
   //track visitor
