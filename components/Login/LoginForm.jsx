@@ -38,9 +38,23 @@ const LoginForm = () => {
       }
       router.replace("/");
     } catch (error) {
-      enqueueSnackbar("Login failed. Please check your credentials.", {
-        variant: "error",
-      });
+      // Check if the error is due to unverified account
+      if (
+        error.response?.data?.responseCode === 410 &&
+        error.response?.data?.responseMessage ===
+          "Kindly confirm your account to proceed"
+      ) {
+        // Store email in session storage for OTP page
+        sessionStorage.setItem("email", formData.email);
+        enqueueSnackbar("Please verify your account first", {
+          variant: "info",
+        });
+        router.replace("/auth/otp");
+      } else {
+        enqueueSnackbar("Login failed. Please check your credentials.", {
+          variant: "error",
+        });
+      }
     } finally {
       setIsButtonLoading(false);
     }
@@ -101,7 +115,7 @@ const LoginForm = () => {
         </form>
 
         <div className="text-center text-sm text-gray-600 mt-4">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <a href="/auth/register" className="text-primary-500 hover:underline">
             Sign up
           </a>
