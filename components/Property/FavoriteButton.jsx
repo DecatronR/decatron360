@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
-import { getMyFavorites } from "@/utils/api/favorites/getMyFavorites";
+import { fetchMyFavorites } from "utils/api/favorites/fetchMyFavorites";
 import { createFavorite } from "@/utils/api/favorites/createFavorite";
 import { deleteFavorite } from "@/utils/api/favorites/deleteFavorite";
 
@@ -19,6 +19,8 @@ const FavoriteButton = ({ property }) => {
   const [loading, setLoading] = useState(true);
   const [favoriteId, setFavoriteId] = useState(null);
 
+  console.log("Property Id: ", property);
+
   useEffect(() => {
     if (!userId) {
       setLoading(false);
@@ -27,7 +29,7 @@ const FavoriteButton = ({ property }) => {
 
     const checkFavoriteStatus = async () => {
       try {
-        const response = await getMyFavorites(userId);
+        const response = await fetchMyFavorites(userId);
         const favorites = response.data;
         const isPropertyFavorited = favorites.some(
           (fav) => fav.propertyListingId === property._id
@@ -79,7 +81,8 @@ const FavoriteButton = ({ property }) => {
           variant: "success",
         });
       } else {
-        const response = await createFavorite(userId, property._id);
+        console.log("Property ID being sent:", property.data._id);
+        const response = await createFavorite(userId, property.data._id);
         setIsFavorited(true);
         setFavoriteId(response.data._id);
         enqueueSnackbar("Property added to favorites", {
