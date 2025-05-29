@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { updateUserData } from "@/utils/api/user/updateUserData";
 import { useSnackbar } from "notistack";
 import { fetchUserData } from "@/utils/api/user/fetchUserData";
+import { User } from "lucide-react";
 
 const UserProfilePhoto = ({ userId, userData, onUserDataUpdate }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -64,12 +65,21 @@ const UserProfilePhoto = ({ userId, userData, onUserDataUpdate }) => {
   return (
     <div className="flex flex-col items-center">
       <div className="relative mb-4">
-        <img
-          src={userData?.passport || "/path/to/default/profile.png"}
-          alt="Profile"
-          className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
-          onClick={() => fileInputRef.current.click()}
-        />
+        {userData?.passport ? (
+          <img
+            src={userData.passport}
+            alt="Profile"
+            className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
+            onClick={() => fileInputRef.current.click()}
+          />
+        ) : (
+          <div
+            className="w-32 h-32 rounded-full border-4 border-primary-500 bg-gray-100 flex items-center justify-center cursor-pointer"
+            onClick={() => fileInputRef.current.click()}
+          >
+            <User className="w-16 h-16 text-gray-400" />
+          </div>
+        )}
         <input
           type="file"
           accept="image/*"
