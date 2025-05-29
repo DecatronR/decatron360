@@ -5,6 +5,7 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
 const Otp = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -17,6 +18,7 @@ const Otp = () => {
   const [email, setEmail] = useState("");
   const inputRefs = useRef([]);
   const [isResending, setIsResending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     const email = sessionStorage.getItem("email");
@@ -122,6 +124,11 @@ const Otp = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Prevent multiple submissions
+    if (isVerifying) return;
+
+    setIsVerifying(true);
     try {
       setError(null);
       setSuccess(null);
@@ -157,6 +164,8 @@ const Otp = () => {
       router.replace(redirectPath);
     } catch (error) {
       enqueueSnackbar(error.message, { variant: "error" });
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -196,9 +205,12 @@ const Otp = () => {
           <div>
             <button
               type="submit"
-              className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400"
+              disabled={isVerifying}
+              className={`flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400 ${
+                isVerifying ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Verify OTP
+              {isVerifying ? <ButtonSpinner /> : "Verify OTP"}
             </button>
           </div>
         </form>
