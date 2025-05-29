@@ -26,7 +26,7 @@ const ClientLayout = ({ children }) => {
           variantInfo: "bg-blue-500 text-white",
         }}
         anchorOrigin={{
-          vertical: "bottom",
+          vertical: "top",
           horizontal: "right",
         }}
         style={{ borderRadius: "25px" }}
