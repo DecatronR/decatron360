@@ -27,7 +27,7 @@ const ClientLayout = ({ children }) => {
         }}
         anchorOrigin={{
           vertical: "top",
-          horizontal: "right",
+          horizontal: "left",
         }}
         style={{ borderRadius: "25px" }}
       >
