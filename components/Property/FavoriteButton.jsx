@@ -3,13 +3,23 @@
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { FaHeart } from "react-icons/fa";
+import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
+import { fetchMyFavorites } from "utils/api/favorites/fetchMyFavorites";
+import { createFavorite } from "@/utils/api/favorites/createFavorite";
+import { deleteFavorite } from "@/utils/api/favorites/deleteFavorite";
 
 const FavoriteButton = ({ property }) => {
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
   const userId = user?.id;
 
   const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [favoriteId, setFavoriteId] = useState(null);
+
+  console.log("Property Id: ", property);
 
   useEffect(() => {
     if (!userId) {
@@ -19,22 +29,21 @@ const FavoriteButton = ({ property }) => {
 
     const checkFavoriteStatus = async () => {
       try {
-        const res = await fetch("/api/favorites/check", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            propertyId: property._id,
-          }),
-        });
-
-        if (res.status === 200) {
-          const data = await res.json();
-          setIsFavorited(data.isFavorited);
+        const response = await fetchMyFavorites(userId);
+        const favorites = response.data;
+        const isPropertyFavorited = favorites.some(
+          (fav) => fav.propertyListingId === property._id
+        );
+        setIsFavorited(isPropertyFavorited);
+        if (isPropertyFavorited) {
+          const favorite = favorites.find(
+            (fav) => fav.propertyListingId === property._id
+          );
+          setFavoriteId(favorite._id);
         }
       } catch (error) {
         console.error("Error checking favorite status:", error);
+        enqueueSnackbar("Error checking favorite status", { variant: "error" });
       } finally {
         setLoading(false);
       }
@@ -45,46 +54,74 @@ const FavoriteButton = ({ property }) => {
 
   const handleClick = async () => {
     if (!userId) {
-      toast.error("You need to sign in to add a property to favorites");
+      enqueueSnackbar("Please sign in to add properties to favorites", {
+        variant: "warning",
+        action: (key) => (
+          <button
+            onClick={() => {
+              router.push("/auth/login");
+              enqueueSnackbar.dismiss(key);
+            }}
+            className="text-white underline"
+          >
+            Sign in
+          </button>
+        ),
+      });
       return;
     }
 
     try {
-      const res = await fetch("/api/favorites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          propertyId: property._id,
-        }),
-      });
-
-      if (res.status === 200) {
-        const data = await res.json();
-        toast.success(data.message);
-        setIsFavorited(data.isFavorited);
+      setLoading(true);
+      if (isFavorited) {
+        await deleteFavorite(favoriteId);
+        setIsFavorited(false);
+        setFavoriteId(null);
+        enqueueSnackbar("Property removed from favorites", {
+          variant: "success",
+        });
+      } else {
+        console.log("Property ID being sent:", property.data._id);
+        const response = await createFavorite(userId, property.data._id);
+        setIsFavorited(true);
+        setFavoriteId(response.data._id);
+        enqueueSnackbar("Property added to favorites", {
+          variant: "success",
+        });
       }
     } catch (error) {
       console.error("Error updating favorite:", error);
-      toast.error("Something went wrong");
+      enqueueSnackbar(error.message || "Failed to update favorite status", {
+        variant: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (loading) return <p className="text-center">Loading...</p>;
+  if (loading) {
+    return (
+      <button
+        disabled
+        className="transition duration-300 w-full py-2 px-4 rounded-lg flex items-center justify-center text-white font-semibold shadow-md bg-gray-400 cursor-not-allowed"
+      >
+        <FaHeart className="mr-2 text-white animate-pulse" />
+        Loading...
+      </button>
+    );
+  }
 
   return (
     <button
       onClick={handleClick}
+      disabled={loading}
       className={`transition duration-300 w-full py-2 px-4 rounded-lg flex items-center justify-center text-white font-semibold shadow-md ${
         isFavorited
           ? "bg-pink-500 hover:bg-pink-600"
           : "bg-gray-500 hover:bg-gray-600"
-      }`}
+      } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
     >
-      <FaHeart
-        className={`mr-2 ${isFavorited ? "text-white" : "text-white"}`}
-      />
+      <FaHeart className="mr-2 text-white" />
       {isFavorited ? "Remove from Favorites" : "Add to Favorites"}
     </button>
   );
