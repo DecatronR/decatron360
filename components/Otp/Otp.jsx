@@ -81,33 +81,27 @@ const Otp = () => {
 
   const onConfirmOtp = async () => {
     const otpValue = otp.join("");
-    if (otpValue.length === 6) {
-      try {
-        const res = await axios.post(
-          `${baseUrl}/auth/confirmOTP`,
-          { email: email, otp: otpValue },
-          { withCredentials: true }
-        );
-        return res.data;
-      } catch (error) {
-        if (error.response && error.response.data) {
-          const { responseMessage } = error.response.data;
-          if (Array.isArray(responseMessage) && responseMessage.length > 0) {
-            enqueueSnackbar(responseMessage[0].msg || "An error occurred", {
-              variant: "error",
-            });
-          } else {
-            enqueueSnackbar("Failed to verify OTP!", { variant: "error" });
-          }
-        } else {
-          enqueueSnackbar("Network error, please try again.", {
-            variant: "error",
-          });
+
+    // Validate OTP before making the API call
+    if (!otpValue || otpValue.length !== 6) {
+      throw new Error("Please enter a valid 6-digit OTP");
+    }
+
+    try {
+      const res = await axios.post(
+        `${baseUrl}/auth/confirmOTP`,
+        { email: email, otp: otpValue },
+        { withCredentials: true }
+      );
+      return res.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const { responseMessage } = error.response.data;
+        if (Array.isArray(responseMessage) && responseMessage.length > 0) {
+          throw new Error(responseMessage[0].msg || "Failed to verify OTP");
         }
-        throw error;
       }
-    } else {
-      enqueueSnackbar("OTP should be 6 digits long", { variant: "error" });
+      throw new Error("Failed to verify OTP. Please try again.");
     }
   };
 
@@ -147,9 +141,7 @@ const Otp = () => {
       const redirectPath = queryParams.get("redirect") || "/";
       router.replace(redirectPath);
     } catch (error) {
-      enqueueSnackbar("Failed to complete OTP verification!", {
-        variant: "error",
-      });
+      enqueueSnackbar(error.message, { variant: "error" });
     }
   };
 
