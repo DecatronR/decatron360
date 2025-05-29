@@ -16,6 +16,7 @@ const Otp = () => {
   const [success, setSuccess] = useState(null);
   const [email, setEmail] = useState("");
   const inputRefs = useRef([]);
+  const [isResending, setIsResending] = useState(false);
 
   useEffect(() => {
     const email = sessionStorage.getItem("email");
@@ -70,12 +71,26 @@ const Otp = () => {
   };
 
   const handleResendOtp = async () => {
+    if (isResending) return; // Prevent multiple clicks
+
+    setIsResending(true);
     try {
-      await axios.get(`${baseUrl}/auth/resendOTP`);
+      const response = await axios.post(`${baseUrl}/auth/resendOTP`, { email });
+      if (response.status === 200) {
+        enqueueSnackbar("OTP resent successfully!", { variant: "success" });
+        // Clear the OTP input fields
+        setOtp(new Array(6).fill(""));
+      }
     } catch (error) {
-      enqueueSnackbar("Error resending OTP.", error, {
-        variant: "error",
-      });
+      let errorMessage = "Failed to resend OTP";
+      if (error.response?.data?.responseMessage) {
+        errorMessage = Array.isArray(error.response.data.responseMessage)
+          ? error.response.data.responseMessage[0].msg
+          : error.response.data.responseMessage;
+      }
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -192,9 +207,12 @@ const Otp = () => {
           <button
             type="button"
             onClick={handleResendOtp}
-            className="font-medium text-primary-500 hover:text-primary-400"
+            disabled={isResending}
+            className={`font-medium text-primary-500 hover:text-primary-400 ${
+              isResending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Resend OTP
+            {isResending ? "Resending..." : "Resend OTP"}
           </button>
         </div>
       </div>
