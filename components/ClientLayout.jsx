@@ -26,10 +26,15 @@ const ClientLayout = ({ children }) => {
           variantInfo: "bg-blue-500 text-white",
         }}
         anchorOrigin={{
-          vertical: "top",
+          vertical: "bottom",
           horizontal: "left",
         }}
-        style={{ borderRadius: "25px" }}
+        style={{
+          borderRadius: "25px",
+          maxWidth: "100%",
+          margin: "30 auto",
+          bottom: "80px",
+        }}
       >
         <Analytics />
         {!hideRoutes.includes(pathname) && <Navbar />}
