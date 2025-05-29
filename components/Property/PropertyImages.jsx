@@ -1,9 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Dialog, IconButton } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useSwipeable } from "react-swipeable";
 
 const PropertyImages = ({ images }) => {
@@ -37,7 +35,7 @@ const PropertyImages = ({ images }) => {
     onSwipedLeft: handleNext,
     onSwipedRight: handlePrevious,
     preventDefaultTouchmoveEvent: true,
-    trackMouse: true, // enables mouse swipe detection as well
+    trackMouse: true,
   });
 
   return (
@@ -88,50 +86,47 @@ const PropertyImages = ({ images }) => {
         PaperProps={{
           style: { backgroundColor: "transparent", boxShadow: "none" },
         }}
-        fullScreen={window.innerWidth < 640} // Set fullScreen for mobile devices
+        fullScreen={window.innerWidth < 640}
       >
         <div
-          {...handlers} // Add swipeable handlers here
+          {...handlers}
           className="relative flex justify-center items-center w-full h-full"
         >
-          <IconButton
+          {/* Close button positioned at the top right of the image container */}
+          <button
             onClick={handleClose}
-            className="absolute top-2 right-2 text-white"
+            className="absolute top-4 right-4 z-50 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-2 shadow-lg"
           >
-            <CloseIcon />
-          </IconButton>
+            <X size={24} />
+          </button>
 
           {/* Left arrow for navigating images */}
           {selectedIndex > 0 && (
-            <IconButton
+            <button
               onClick={handlePrevious}
-              className="absolute left-2 sm:left-4 text-white"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-3 shadow-lg"
               aria-label="Previous image"
             >
-              <ArrowBackIcon
-                fontSize={window.innerWidth < 640 ? "medium" : "large"}
-              />
-            </IconButton>
+              <ChevronLeft size={24} />
+            </button>
           )}
 
           {/* Display the selected image */}
           <img
-            src={`${baseUrl}/${displayedImages[selectedIndex]?.path}`}
+            src={`${displayedImages[selectedIndex]?.path}`}
             alt="Selected Property"
             className="w-full h-auto object-contain max-h-[90vh] rounded-lg"
           />
 
           {/* Right arrow for navigating images */}
           {selectedIndex < displayedImages.length - 1 && (
-            <IconButton
+            <button
               onClick={handleNext}
-              className="absolute right-2 sm:right-4 text-white"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-white hover:bg-gray-100 text-gray-800 rounded-full p-3 shadow-lg"
               aria-label="Next image"
             >
-              <ArrowForwardIcon
-                fontSize={window.innerWidth < 640 ? "medium" : "large"}
-              />
-            </IconButton>
+              <ChevronRight size={24} />
+            </button>
           )}
         </div>
       </Dialog>
