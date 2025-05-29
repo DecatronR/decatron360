@@ -50,8 +50,12 @@ const Registration = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Prevent multiple submissions
+    if (isButtonLoading) return;
+
     setIsButtonLoading(true);
-    setRegistrationSuccess(false); // Reset flag before starting
+    setRegistrationSuccess(false);
 
     try {
       const response = await axios.post(`${baseUrl}/auth/register`, formData);
@@ -66,7 +70,8 @@ const Registration = () => {
         return;
       }
     } catch (error) {
-      if (registrationSuccess) return;
+      // Reset success state on error
+      setRegistrationSuccess(false);
 
       let errorMessage = "Registration failed";
 
@@ -89,6 +94,9 @@ const Registration = () => {
       }
 
       enqueueSnackbar(errorMessage, { variant: "error" });
+    } finally {
+      // Ensure loading state is reset
+      setIsButtonLoading(false);
     }
   };
 
@@ -198,7 +206,10 @@ const Registration = () => {
           </div>
           <button
             type="submit"
-            className="w-full px-4 py-3 text-white bg-primary-500 rounded-full hover:bg-primary-600"
+            disabled={isButtonLoading}
+            className={`w-full px-4 py-3 text-white bg-primary-500 rounded-full hover:bg-primary-600 ${
+              isButtonLoading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
             {isButtonLoading ? <ButtonSpinner /> : "Sign up"}
           </button>
