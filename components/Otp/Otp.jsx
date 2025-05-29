@@ -5,6 +5,7 @@ import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import ButtonSpinner from "components/ui/ButtonSpinner";
 
 const Otp = () => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -16,6 +17,8 @@ const Otp = () => {
   const [success, setSuccess] = useState(null);
   const [email, setEmail] = useState("");
   const inputRefs = useRef([]);
+  const [isResending, setIsResending] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     const email = sessionStorage.getItem("email");
@@ -70,49 +73,62 @@ const Otp = () => {
   };
 
   const handleResendOtp = async () => {
+    if (isResending) return; // Prevent multiple clicks
+
+    setIsResending(true);
     try {
-      await axios.get(`${baseUrl}/auth/resendOTP`);
+      const response = await axios.post(`${baseUrl}/auth/resendOTP`, { email });
+      if (response.status === 200) {
+        enqueueSnackbar("OTP resent successfully!", { variant: "success" });
+        // Clear the OTP input fields
+        setOtp(new Array(6).fill(""));
+      }
     } catch (error) {
-      enqueueSnackbar("Error resending OTP.", error, {
-        variant: "error",
-      });
+      let errorMessage = "Failed to resend OTP";
+      if (error.response?.data?.responseMessage) {
+        errorMessage = Array.isArray(error.response.data.responseMessage)
+          ? error.response.data.responseMessage[0].msg
+          : error.response.data.responseMessage;
+      }
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    } finally {
+      setIsResending(false);
     }
   };
 
   const onConfirmOtp = async () => {
     const otpValue = otp.join("");
-    if (otpValue.length === 6) {
-      try {
-        const res = await axios.post(
-          `${baseUrl}/auth/confirmOTP`,
-          { email: email, otp: otpValue },
-          { withCredentials: true }
-        );
-        return res.data;
-      } catch (error) {
-        if (error.response && error.response.data) {
-          const { responseMessage } = error.response.data;
-          if (Array.isArray(responseMessage) && responseMessage.length > 0) {
-            enqueueSnackbar(responseMessage[0].msg || "An error occurred", {
-              variant: "error",
-            });
-          } else {
-            enqueueSnackbar("Failed to verify OTP!", { variant: "error" });
-          }
-        } else {
-          enqueueSnackbar("Network error, please try again.", {
-            variant: "error",
-          });
+
+    // Validate OTP before making the API call
+    if (!otpValue || otpValue.length !== 6) {
+      throw new Error("Please enter a valid 6-digit OTP");
+    }
+
+    try {
+      const res = await axios.post(
+        `${baseUrl}/auth/confirmOTP`,
+        { email: email, otp: otpValue },
+        { withCredentials: true }
+      );
+      return res.data;
+    } catch (error) {
+      if (error.response && error.response.data) {
+        const { responseMessage } = error.response.data;
+        if (Array.isArray(responseMessage) && responseMessage.length > 0) {
+          throw new Error(responseMessage[0].msg || "Failed to verify OTP");
         }
-        throw error;
       }
-    } else {
-      enqueueSnackbar("OTP should be 6 digits long", { variant: "error" });
+      throw new Error("Failed to verify OTP. Please try again.");
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Prevent multiple submissions
+    if (isVerifying) return;
+
+    setIsVerifying(true);
     try {
       setError(null);
       setSuccess(null);
@@ -147,9 +163,9 @@ const Otp = () => {
       const redirectPath = queryParams.get("redirect") || "/";
       router.replace(redirectPath);
     } catch (error) {
-      enqueueSnackbar("Failed to complete OTP verification!", {
-        variant: "error",
-      });
+      enqueueSnackbar(error.message, { variant: "error" });
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -189,9 +205,12 @@ const Otp = () => {
           <div>
             <button
               type="submit"
-              className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400"
+              disabled={isVerifying}
+              className={`flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-primary-500 border border-transparent rounded-md shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-400 ${
+                isVerifying ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Verify OTP
+              {isVerifying ? <ButtonSpinner /> : "Verify OTP"}
             </button>
           </div>
         </form>
@@ -200,9 +219,12 @@ const Otp = () => {
           <button
             type="button"
             onClick={handleResendOtp}
-            className="font-medium text-primary-500 hover:text-primary-400"
+            disabled={isResending}
+            className={`font-medium text-primary-500 hover:text-primary-400 ${
+              isResending ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
-            Resend OTP
+            {isResending ? "Resending..." : "Resend OTP"}
           </button>
         </div>
       </div>
