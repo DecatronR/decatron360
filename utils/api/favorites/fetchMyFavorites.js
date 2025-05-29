@@ -2,14 +2,13 @@ import axios from "axios";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const deleteFavorite = async (favoriteId) => {
+export const fetchMyFavorites = async (userId) => {
   const token = sessionStorage.getItem("token");
   try {
     const response = await axios.post(
-      `${baseUrl}/favorite/deleteData`,
-      {
-        id: favoriteId,
-      },
+      `${baseUrl}/favorite/getMyFavorites`,
+
+      { userId: userId },
       {
         withCredentials: true,
         headers: {
