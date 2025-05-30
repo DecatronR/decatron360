@@ -201,30 +201,32 @@ const PropertyPage = () => {
                   )}
                   <ShareButtons property={property} />
                 </div>
-                {agentId &&
-                  (hasBookedInspection ? (
-                    showScheduleForm ? (
+                {agentId && (
+                  <>
+                    {hasBookedInspection ? (
+                      showScheduleForm ? (
+                        <ScheduleInspectionForm
+                          propertyId={id}
+                          agentId={agentId}
+                          referralCode={referralCode}
+                        />
+                      ) : (
+                        (userRole === "buyer" || userRole === "renter") && (
+                          <ProceedToRent
+                            onProceed={handleProceedToRent}
+                            onBookInspection={handleInspectAgain}
+                          />
+                        )
+                      )
+                    ) : (
                       <ScheduleInspectionForm
                         propertyId={id}
                         agentId={agentId}
                         referralCode={referralCode}
                       />
-                    ) : (
-                      userRole === "buyer" ||
-                      (userRole === "renter" && (
-                        <ProceedToRent
-                          onProceed={handleProceedToRent}
-                          onBookInspection={handleInspectAgain}
-                        />
-                      ))
-                    )
-                  ) : (
-                    <ScheduleInspectionForm
-                      propertyId={id}
-                      agentId={agentId}
-                      referralCode={referralCode}
-                    />
-                  ))}
+                    )}
+                  </>
+                )}
               </aside>
             </div>
           </div>
