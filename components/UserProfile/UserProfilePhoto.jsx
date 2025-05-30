@@ -54,9 +54,22 @@ const UserProfilePhoto = ({ userId, userData, onUserDataUpdate }) => {
       }
     } catch (error) {
       console.error("Failed to update user data: ", error);
-      enqueueSnackbar(`Failed to update user profile photo! ${error.message}`, {
-        variant: "error",
-      });
+      // Check for file size error
+      if (error.response?.data?.message?.includes("File size exceeds")) {
+        enqueueSnackbar(
+          "Image size is too large. Please select an image under 150KB.",
+          {
+            variant: "error",
+          }
+        );
+      } else {
+        enqueueSnackbar(
+          `Failed to update user profile photo! ${error.message}`,
+          {
+            variant: "error",
+          }
+        );
+      }
     }
   };
 
@@ -165,12 +178,6 @@ const UserProfilePhoto = ({ userId, userData, onUserDataUpdate }) => {
       {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 pt-24">
           <div className="relative max-w-4xl w-full">
-            <button
-              onClick={handleClosePreview}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors"
-            >
-              <X className="w-8 h-8" />
-            </button>
             <div className="relative">
               <img
                 src={userData.passport}
