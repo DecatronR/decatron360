@@ -160,7 +160,11 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite }) => {
             )}
 
             <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-semibold uppercase shadow-md">
-              {property.listingType === "Rent" ? "For Rent" : "For Sale"}
+              {property.listingType === "Rent"
+                ? "For Rent"
+                : property.listingType === "Shortlet"
+                ? "Shortlet"
+                : "For Sale"}
             </div>
           </div>
         </div>
