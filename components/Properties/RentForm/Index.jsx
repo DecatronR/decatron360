@@ -6,6 +6,7 @@ import ButtonSpinner from "components/ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 import { fetchUserData } from "utils/api/user/fetchUserData";
+import { fetchListingTypes } from "@/utils/api/propertyListing/fetchListingTypes";
 import Description from "./Description";
 import Location from "./Location";
 import Features from "./Features";
@@ -18,6 +19,7 @@ const RentForm = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [mounted, setMounted] = useState(false);
   const [users, setUsers] = useState([]);
+  const [listingTypes, setListingTypes] = useState([]);
   const [userRole, setUserRole] = useState();
   const [loading, setLoading] = useState(true);
   const [isbuttonLoading, setIsButtonLoading] = useState(false);
@@ -25,7 +27,7 @@ const RentForm = () => {
   const [fields, setFields] = useState({
     userID: "",
     title: "",
-    listingType: "Rent",
+    listingType: "",
     usageType: "",
     propertyType: "",
     propertySubType: "null",
@@ -94,6 +96,21 @@ const RentForm = () => {
     };
     handleFetchUserRole();
   }, []);
+
+  //fetch listing types
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const res = await fetchListingTypes();
+        setListingTypes(res);
+      } catch (error) {
+        console.error("Failed to fetch listing types:", error);
+        enqueueSnackbar("Failed to fetch listing types", { variant: "error" });
+      }
+    };
+
+    fetchTypes();
+  }, [enqueueSnackbar]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -188,7 +205,11 @@ const RentForm = () => {
         className="space-y-6 bg-white shadow-lg rounded-none sm:rounded-xl p-6 max-w-3xl w-full mx-auto border border-gray-200 sm:p-6"
       >
         <h2 className="text-2xl text-center font-bold mb-10 text-gray-900 sm:text-xl">
-          Add Property For Rent
+          Add Property For{" "}
+          {fields.listingType
+            ? listingTypes.find((type) => type.slug === fields.listingType)
+                ?.listingType
+            : "...."}
         </h2>
 
         {userRole === "admin" && (
@@ -218,6 +239,33 @@ const RentForm = () => {
             </select>
           </div>
         )}
+
+        {/* Listing Type Selection */}
+        <div className="mb-6">
+          <label
+            htmlFor="listingType"
+            className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base"
+          >
+            Listing Type
+          </label>
+          <select
+            id="listingType"
+            name="listingType"
+            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm sm:text-base"
+            required
+            value={fields.listingType}
+            onChange={handleChange}
+          >
+            <option disabled value="">
+              Select Listing Type
+            </option>
+            {listingTypes.map((type) => (
+              <option key={type._id} value={type.slug}>
+                {type.listingType}
+              </option>
+            ))}
+          </select>
+        </div>
 
         {/* Responsive Section Wrappers */}
         <div className="bg-gray-50  rounded-lg shadow-sm ">
