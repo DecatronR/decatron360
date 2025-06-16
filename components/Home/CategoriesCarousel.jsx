@@ -57,6 +57,16 @@ const CategoriesCarousel = () => {
       link: "/properties/categories/off-plan",
     },
     {
+      title: "Shortlet",
+      icon: <Home size={iconSize} />,
+      link: "/properties/categories/shortlet",
+    },
+    {
+      title: "Distress Sale",
+      icon: <Store size={iconSize} />,
+      link: "/properties/categories/distress-sale",
+    },
+    {
       title: "Shops",
       icon: <Store size={iconSize} />,
       link: "/properties/categories/shops",
