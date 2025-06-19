@@ -112,7 +112,10 @@ const UserProfilePage = () => {
         </div>
 
         {/* Right Column: Scrollable Details */}
-        <div className="w-full mt-8 md:mt-0 md:w-2/3 md:ml-8 md:h-[calc(100vh-4rem)] overflow-y-auto">
+        <div
+          className="w-full mt-8 md:mt-0 md:w-2/3 md:ml-8 md:h-[calc(100vh-4rem)] overflow-y-auto"
+          style={{ isolation: "isolate" }}
+        >
           <UserAbout userData={userData} />
           <UserPropertiesCarousel
             userProperties={userProperties}

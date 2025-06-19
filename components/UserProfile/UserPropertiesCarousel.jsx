@@ -71,7 +71,7 @@ const UserPropertiesCarousel = ({ userProperties, userId }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+    <div className="bg-white p-6 rounded-lg shadow-md mb-6 relative z-0">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold text-gray-800">My Listings</h2>
       </div>
