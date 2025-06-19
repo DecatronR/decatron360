@@ -1,90 +1,67 @@
-import React, { useState, useRef } from "react";
-import { updateUserData } from "utils/api/user/updateUserData";
-import { useSnackbar } from "notistack";
-import { fetchUserData } from "utils/api/user/fetchUserData";
-import AgentProfileModal from "./AgentProfileModal";
+import React, { useState } from "react";
+import { User, X } from "lucide-react";
+import { createPortal } from "react-dom";
 
-const AgentProfilePhoto = ({ agentId, agentData, onAgentDataUpdate }) => {
-  const { enqueueSnackbar } = useSnackbar();
-  const [passport, setPassport] = useState(agentData?.passport || null);
-  const [passportChanged, setPassportChanged] = useState(false);
-  const fileInputRef = useRef(null);
-  const [file, setFile] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const AgentProfilePhoto = ({ agentData }) => {
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handlePassportChange = (event) => {
-    const selectedFile = event.target.files[0];
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPassport(reader.result); // Show preview
-        setFile(selectedFile); // Save the selected file
-        setPassportChanged(true); // Mark as changed
-      };
-      reader.readAsDataURL(selectedFile);
+  const handleImageClick = () => {
+    if (agentData?.passport) {
+      setShowPreview(true);
     }
   };
 
-  const handleProfileUpdate = async () => {
-    if (!file) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("passport", file);
-
-      // Include additional user data if required
-      for (const key in userData) {
-        formData.append(key, userData[key]);
-      }
-
-      const res = await updateUserData(formData);
-
-      if (res.passport) {
-        const updatedPassportUrl = `${res.passport}`;
-        setPassport(updatedPassportUrl);
-        enqueueSnackbar("Successfully updated user profile!", {
-          variant: "success",
-        });
-
-        // Optionally re-fetch user data if the backend sends partial updates
-        if (onAgentDataUpdate) {
-          const updatedUserData = await fetchUserData(userId);
-          onUserDataUpdate(updatedUserData);
-        }
-
-        setPassportChanged(false);
-        setFile(null); // Clear file state
-      }
-    } catch (error) {
-      console.error("Failed to update user data: ", error);
-      enqueueSnackbar("Failed to update user profile photo!", {
-        variant: "error",
-      });
-    }
+  const handleClosePreview = () => {
+    setShowPreview(false);
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative mb-4">
-        <img
-          src={agentData?.passport || "/path/to/default/profile.png"}
-          alt="Profile"
-          className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer"
-          onClick={() => setIsModalOpen(true)}
-        />
+    <div className="flex flex-col items-center mt-5">
+      <div className="relative mb-4 group">
+        <div className="relative">
+          {agentData?.passport ? (
+            // Show current profile photo
+            <div className="relative">
+              <img
+                src={agentData.passport}
+                alt="Profile"
+                className="w-32 h-32 rounded-full border-4 border-primary-500 object-cover cursor-pointer transition-transform hover:scale-105"
+                onClick={handleImageClick}
+              />
+            </div>
+          ) : (
+            // Show placeholder
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full border-4 border-primary-500 bg-gray-100 flex items-center justify-center cursor-pointer">
+                <User className="w-16 h-16 text-gray-400" />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      {/* {isModalOpen && (
-        <AgentProfileModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        >
-          <img
-            src={passport || "/path/to/default/profile.png"}
-            alt="Full-size Profile"
-            className="w-full h-auto max-w-screen-lg max-h-screen"
-          />
-        </AgentProfileModal>
-      )} */}
+
+      {/* Full-size Image Preview Modal */}
+      {showPreview &&
+        createPortal(
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[9999] p-4 pt-24">
+            <div className="relative max-w-4xl w-full">
+              <div className="relative">
+                <img
+                  src={agentData.passport}
+                  alt="Profile Preview"
+                  className="w-full h-auto rounded-lg shadow-2xl"
+                />
+                <button
+                  onClick={handleClosePreview}
+                  className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
