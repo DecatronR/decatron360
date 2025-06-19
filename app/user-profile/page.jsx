@@ -23,7 +23,7 @@ const UserProfilePage = () => {
 
   const isEmailVerified = true;
   const isPhoneVerified = false;
-  const isIdentityVerified = false;
+  const [isIdentityVerified, setIsIdentityVerified] = useState(false);
 
   const handleCancel = (id) => {
     console.log(`Canceled request with id: ${id}`);
@@ -40,6 +40,7 @@ const UserProfilePage = () => {
         const res = await fetchUserData(userId);
         console.log("user data: ", res);
         setUserData(res);
+        setIsIdentityVerified(res.isIdentityVerified);
       } catch (error) {
         console.log("Issues fetching user data: ", error);
       } finally {
