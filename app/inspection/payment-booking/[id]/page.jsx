@@ -11,6 +11,11 @@ import { fetchPropertyData } from "@/utils/api/properties/fetchPropertyData";
 import { bookInspection } from "@/utils/api/inspection/bookInspection";
 import { referralBookInspection } from "utils/api/inspection/referralBookInspection";
 import { scheduleBooked } from "utils/api/scheduler/scheduleBooked";
+import { sendNotification } from "@/utils/api/pushNotification/sendNotification";
+import {
+  getAgentInspectionBookedMessage,
+  getClientInspectionConfirmedMessage,
+} from "@/utils/notificationMessages/inspectionNotifications";
 
 const PaymentInspectionBooking = () => {
   const publicKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
@@ -146,6 +151,50 @@ const PaymentInspectionBooking = () => {
         agentId,
         bookingDateTime
       );
+      // --- Notification logic ---
+      // Fetch agent and client data
+      const [agentData, clientData] = await Promise.all([
+        fetchUserData(agentId),
+        fetchUserData(userId),
+      ]);
+      // Format date/time for message
+      const dateStr = editedDate;
+      const timeStr = editedTime;
+      // Notify agent
+      if (agentData?.fcmToken) {
+        const msg = getAgentInspectionBookedMessage(
+          property?.data?.title || "Property",
+          dateStr,
+          timeStr
+        );
+        await sendNotification({
+          fcmToken: agentData.fcmToken,
+          title: msg.title,
+          body: msg.body,
+          data: {
+            type: "inspection",
+            route: `/my-inspections/${agentData._id}`,
+          },
+        });
+      }
+      // Notify client
+      if (clientData?.fcmToken) {
+        const msg = getClientInspectionConfirmedMessage(
+          property?.data?.title || "Property",
+          dateStr,
+          timeStr
+        );
+        await sendNotification({
+          fcmToken: clientData.fcmToken,
+          title: msg.title,
+          body: msg.body,
+          data: {
+            type: "inspection",
+            route: `/my-inspections/${clientData._id}`,
+          },
+        });
+      }
+      // --- End notification logic ---
       return bookingId;
     } catch (error) {
       console.error("Failed to book inspection", error);
@@ -175,6 +224,43 @@ const PaymentInspectionBooking = () => {
         referralCode,
         bookingDateTime
       );
+      // --- Notification logic ---
+      // Fetch agent and client data
+      const agentId = sessionStorage.getItem("agentId");
+      const [agentData, clientData] = await Promise.all([
+        fetchUserData(agentId),
+        fetchUserData(userId),
+      ]);
+      // Format date/time for message
+      const dateStr = editedDate;
+      const timeStr = editedTime;
+      // Notify agent
+      if (agentData?.fcmToken) {
+        const msg = getAgentInspectionBookedMessage(
+          property?.data?.title || "Property",
+          dateStr,
+          timeStr
+        );
+        await sendNotification({
+          fcmToken: agentData.fcmToken,
+          title: msg.title,
+          body: msg.body,
+        });
+      }
+      // Notify client
+      if (clientData?.fcmToken) {
+        const msg = getClientInspectionConfirmedMessage(
+          property?.data?.title || "Property",
+          dateStr,
+          timeStr
+        );
+        await sendNotification({
+          fcmToken: clientData.fcmToken,
+          title: msg.title,
+          body: msg.body,
+        });
+      }
+      // --- End notification logic ---
       return bookingId;
     } catch (error) {
       console.error("Failed to book inspection", error);

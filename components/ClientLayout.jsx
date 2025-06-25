@@ -3,10 +3,10 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { AuthProvider } from "@/context/AuthContext";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
-import MobileNavbar from "./MobileNavbar";
+import Navbar from "./Navigation/Navbar";
+import MobileNavbar from "./Navigation/MobileNavbar";
 import { SnackbarProvider } from "notistack";
-import NotificationListener from "./ui/NotificationListener";
+import NotificationListener from "./Notification/NotificationListener";
 
 const Analytics = dynamic(() => import("@/components/Analytics"), {
   ssr: false,
@@ -30,7 +30,7 @@ const ClientLayout = ({ children }) => {
           horizontal: "left",
         }}
         style={{
-          borderRadius: "25px",
+          borderRadius: "16px",
           maxWidth: "100%",
           margin: "30 auto",
           bottom: "80px",
