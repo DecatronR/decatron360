@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { HousePlus } from "lucide-react";
 import PropertySearchForm from "./Properties/PropertySearchForm";
+import NotificationBell from "./ui/NotificationBell";
 
 const Navbar = () => {
   const router = useRouter();
@@ -75,7 +76,9 @@ const Navbar = () => {
           {/* Mobile Profile Button (Only shows Sign Out) */}
           {user && (
             <div className="relative ml-3 block md:hidden">
-              {" "}
+              <div className="absolute -left-12 top-1">
+                <NotificationBell />
+              </div>{" "}
               {/* Hides on md and larger */}
               <button
                 type="button"
@@ -179,7 +182,10 @@ const Navbar = () => {
                 <HousePlus size={18} className="inline-block" />
                 <span className="hidden sm:inline">Add Property</span>
               </button>
-
+              {/* Notification Bell */}
+              <div className="mr-4">
+                <NotificationBell />
+              </div>
               <div className="relative ml-3">
                 <button
                   type="button"
