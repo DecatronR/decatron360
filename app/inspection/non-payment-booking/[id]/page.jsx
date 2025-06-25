@@ -154,6 +154,10 @@ const NonPaymentInspectionBooking = () => {
           fcmToken: agentData.fcmToken,
           title: msg.title,
           body: msg.body,
+          data: {
+            type: "inspection",
+            route: `/my-inspections/${agentData._id}`,
+          },
         });
       }
       // Notify client
@@ -167,6 +171,10 @@ const NonPaymentInspectionBooking = () => {
           fcmToken: clientData.fcmToken,
           title: msg.title,
           body: msg.body,
+          data: {
+            type: "inspection",
+            route: `/my-inspections/${clientData._id}`,
+          },
         });
       }
       // --- End notification logic ---
