@@ -13,7 +13,7 @@ const NotificationListener = () => {
     if (!messaging) return;
 
     const unsubscribe = onMessage(messaging, (payload) => {
-      // Determine route from payload
+      // Always use route from payload.data.route if present
       const route = payload.data?.route || getRouteFromType(payload.data?.type);
       enqueueSnackbar(
         <div
@@ -29,10 +29,6 @@ const NotificationListener = () => {
         {
           variant: "info",
           autoHideDuration: 8000,
-          onClick: () => {
-            closeSnackbar();
-            if (route) router.push(route);
-          },
         }
       );
     });
