@@ -6,8 +6,8 @@ import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { HousePlus } from "lucide-react";
-import PropertySearchForm from "./Properties/PropertySearchForm";
-import NotificationBell from "./ui/NotificationBell";
+import PropertySearchForm from "../Properties/PropertySearchForm";
+import NotificationBell from "../Notification/NotificationBell";
 
 const Navbar = () => {
   const router = useRouter();

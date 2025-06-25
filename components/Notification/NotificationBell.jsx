@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, BellOff, X } from "lucide-react";
+import { requestAndSendNotificationPermission } from "../../utils/api/pushNotification/requestPermission";
 
 const placeholderNotifications = [
   {
@@ -29,7 +30,16 @@ const NotificationBell = () => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(placeholderNotifications);
   const [muted, setMuted] = useState(false);
+  const [permission, setPermission] = useState(
+    typeof window !== "undefined" ? Notification.permission : "default"
+  );
+  const [loading, setLoading] = useState(false);
   const bellRef = useRef(null);
+  const [error, setError] = useState("");
+
+  // Get userId from sessionStorage (or context if available)
+  const userId =
+    typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -47,6 +57,45 @@ const NotificationBell = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [open]);
+
+  // Set initial mute state based on Notification.permission
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPermission(Notification.permission);
+      setMuted(Notification.permission !== "granted");
+    }
+  }, []);
+
+  const handleToggleMute = async () => {
+    setError("");
+    if (muted) {
+      // User wants to enable notifications
+      setLoading(true);
+      try {
+        const token = await requestAndSendNotificationPermission(userId);
+        if (token) {
+          setMuted(false);
+          setPermission("granted");
+        } else {
+          setPermission(Notification.permission);
+          setMuted(true);
+          setError(
+            "Permission denied. Please enable notifications in your browser settings."
+          );
+        }
+      } catch (err) {
+        setError("Error enabling notifications.");
+        setMuted(true);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // User wants to mute notifications
+      setMuted(true);
+      // Optionally: clear FCM token from storage or call backend to unregister
+      // sessionStorage.removeItem('fcmToken');
+    }
+  };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -75,14 +124,15 @@ const NotificationBell = () => {
             <button
               className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 p-1 rounded-full"
               aria-label={muted ? "Unmute notifications" : "Mute notifications"}
-              onClick={() => setMuted((m) => !m)}
+              onClick={handleToggleMute}
+              disabled={loading}
             >
               {muted ? (
                 <BellOff className="w-5 h-5" />
               ) : (
                 <Bell className="w-5 h-5" />
               )}
-              {muted ? "Unmute" : "Mute"}
+              {loading ? "..." : muted ? "Unmute" : "Mute"}
             </button>
             <button
               className="p-1 rounded-full hover:bg-gray-100 ml-2"
@@ -92,6 +142,11 @@ const NotificationBell = () => {
               <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
+          {error && (
+            <div className="px-4 py-2 text-xs text-red-500 text-center bg-red-50 border-b border-red-100">
+              {error}
+            </div>
+          )}
           <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
             {muted ? (
               <div className="p-4 text-center text-gray-400 text-sm">
