@@ -685,11 +685,7 @@ const InspectionTracker = () => {
                 {agentData && (
                   <ParticipantCard
                     role="Agent"
-                    name={
-                      agentData.firstName && agentData.lastName
-                        ? `${agentData.firstName} ${agentData.lastName}`
-                        : agentData.firstName || "Agent Name"
-                    }
+                    name={agentData.name || "Agent Name"}
                     phone={agentData.phone}
                     email={agentData.email}
                     isOnline={!!agentLocation}
@@ -697,12 +693,8 @@ const InspectionTracker = () => {
                 )}
                 {buyerData && (
                   <ParticipantCard
-                    role="Buyer"
-                    name={
-                      buyerData.firstName && buyerData.lastName
-                        ? `${buyerData.firstName} ${buyerData.lastName}`
-                        : buyerData.firstName || "Buyer Name"
-                    }
+                    role="Client"
+                    name={buyerData.name || "Client Name"}
                     phone={buyerData.phone}
                     email={buyerData.email}
                     isOnline={!!buyerLocation}
