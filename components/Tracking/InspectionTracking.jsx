@@ -228,12 +228,36 @@ const InfoCard = ({ icon: Icon, title, value, subtitle }) => (
   </div>
 );
 
-const ParticipantCard = ({ role, name, phone, email, isOnline = false }) => (
+const ParticipantCard = ({
+  role,
+  name,
+  phone,
+  email,
+  isOnline = false,
+  profilePicture,
+}) => (
   <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
     <div className="flex items-start space-x-3">
       <div className="relative flex-shrink-0">
-        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-          <User className="w-5 h-5 text-gray-600" />
+        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+          {profilePicture ? (
+            <img
+              src={profilePicture}
+              alt={`${name}'s profile`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "flex";
+              }}
+            />
+          ) : null}
+          <div
+            className={`w-full h-full flex items-center justify-center ${
+              profilePicture ? "hidden" : "flex"
+            }`}
+          >
+            <User className="w-5 h-5 text-gray-600" />
+          </div>
         </div>
         {isOnline && (
           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
@@ -689,6 +713,7 @@ const InspectionTracker = () => {
                     phone={agentData.phone}
                     email={agentData.email}
                     isOnline={!!agentLocation}
+                    profilePicture={agentData.passport}
                   />
                 )}
                 {buyerData && (
@@ -698,6 +723,7 @@ const InspectionTracker = () => {
                     phone={buyerData.phone}
                     email={buyerData.email}
                     isOnline={!!buyerLocation}
+                    profilePicture={buyerData.passport}
                   />
                 )}
               </div>
