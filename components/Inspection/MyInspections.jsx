@@ -334,7 +334,7 @@ const MyInspections = ({ bookings, role }) => {
           onClick={() => setViewMode("list")}
           className={`p-2 rounded-lg border ${
             viewMode === "list"
-              ? "bg-blue-600 text-white border-blue-600"
+              ? "bg-primary-600 text-white border-primary-600"
               : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
           } transition-colors`}
           aria-label="List view"
@@ -684,7 +684,7 @@ const MyInspections = ({ bookings, role }) => {
       {showScrollBtn && (
         <button
           onClick={handleScrollToBottom}
-          className="fixed z-40 bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg p-3 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="fixed z-100 bottom-15 right-6 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg p-3 flex items-center justify-center transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-400"
           aria-label="Scroll to bottom"
         >
           <ArrowDownCircle className="w-7 h-7" />
