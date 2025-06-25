@@ -57,7 +57,7 @@ const Navbar = () => {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
-          <div className="flex flex-1 items-center justify-start">
+          <div className="flex flex-1 items-center gap-2">
             {(!isScrolled || window.innerWidth >= 768) && (
               <Link
                 className="flex flex-shrink-0 items-center md:block"
@@ -66,12 +66,19 @@ const Navbar = () => {
                 <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
               </Link>
             )}
+            {/* Desktop Search Bar: perfectly centered, wide, only on md+ */}
+            {shouldShowSearch && (
+              <div className="hidden md:flex absolute left-0 right-0 mx-auto justify-center items-center max-w-md lg:max-w-lg w-full h-full z-10">
+                <PropertySearchForm />
+              </div>
+            )}
+            {/* Mobile Search Bar: left-aligned, narrow, only on mobile */}
+            {shouldShowSearch && (
+              <div className="flex md:hidden items-center max-w-[280px] w-full">
+                <PropertySearchForm />
+              </div>
+            )}
           </div>
-          {shouldShowSearch && (
-            <div className="flex-grow flex justify-center sm:max-w-md md:max-w-lg lg:max-w-none">
-              <PropertySearchForm />
-            </div>
-          )}
 
           {/* Mobile Profile Button (Only shows Sign Out) */}
           {user && (
