@@ -1,34 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Bell, BellOff, X } from "lucide-react";
 import { requestAndSendNotificationPermission } from "../../utils/api/pushNotification/requestPermission";
-
-const placeholderNotifications = [
-  {
-    id: 1,
-    title: "New Inspection Scheduled",
-    description: "Your inspection for 123 Main St is confirmed for tomorrow.",
-    time: "2h ago",
-    read: false,
-  },
-  {
-    id: 2,
-    title: "Payment Received",
-    description: "You have received a payment for contract #456.",
-    time: "1d ago",
-    read: true,
-  },
-  {
-    id: 3,
-    title: "Profile Updated",
-    description: "Your profile information was updated successfully.",
-    time: "3d ago",
-    read: true,
-  },
-];
+import { fetchNotifications } from "../../utils/api/pushNotification/fetchNotifications";
+import { markNotificationAsRead } from "../../utils/api/pushNotification/markNotificationAsRead";
+import { useRouter } from "next/navigation";
 
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState(placeholderNotifications);
+  const [notifications, setNotifications] = useState([]);
   const [muted, setMuted] = useState(false);
   const [permission, setPermission] = useState(
     typeof window !== "undefined" ? Notification.permission : "default"
@@ -36,10 +15,28 @@ const NotificationBell = () => {
   const [loading, setLoading] = useState(false);
   const bellRef = useRef(null);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   // Get userId from sessionStorage (or context if available)
   const userId =
     typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
+
+  // Fetch notifications when dropdown opens
+  useEffect(() => {
+    if (open && userId) {
+      fetchNotifications(userId)
+        .then((data) => {
+          // Sort by createdAt descending if present
+          const sorted = Array.isArray(data)
+            ? [...data].sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+              )
+            : [];
+          setNotifications(sorted);
+        })
+        .catch((err) => setError("Failed to load notifications"));
+    }
+  }, [open, userId]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -94,6 +91,23 @@ const NotificationBell = () => {
       setMuted(true);
       // Optionally: clear FCM token from storage or call backend to unregister
       // sessionStorage.removeItem('fcmToken');
+    }
+  };
+
+  const handleNotificationClick = async (notification) => {
+    if (!notification.read) {
+      // Optimistically update UI
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notification.id ? { ...n, read: true } : n))
+      );
+      try {
+        await markNotificationAsRead(notification.id);
+      } catch (err) {
+        // Optionally revert UI or show error
+      }
+    }
+    if (notification.route) {
+      router.push(notification.route);
     }
   };
 
@@ -163,14 +177,20 @@ const NotificationBell = () => {
                   className={`px-4 py-3 flex flex-col gap-1 transition cursor-pointer ${
                     !n.read ? "bg-blue-50" : ""
                   } hover:bg-primary-50`}
+                  onClick={() => handleNotificationClick(n)}
                 >
                   <span className="font-medium text-gray-800 text-sm truncate">
                     {n.title}
                   </span>
                   <span className="text-xs text-gray-600 truncate">
-                    {n.description}
+                    {n.description || n.body}
                   </span>
-                  <span className="text-xs text-gray-400 mt-1">{n.time}</span>
+                  <span className="text-xs text-gray-400 mt-1">
+                    {n.time ||
+                      (n.createdAt
+                        ? new Date(n.createdAt).toLocaleString()
+                        : "")}
+                  </span>
                 </div>
               ))
             )}
