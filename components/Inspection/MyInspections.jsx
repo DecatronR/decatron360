@@ -51,6 +51,18 @@ const ArchiveModal = ({ open, onClose, inspections, renderInspection }) => {
   );
 };
 
+// Add a simple mobile detection hook
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 const MyInspections = ({ bookings, role }) => {
   const [timeLeft, setTimeLeft] = useState({});
   const [loadingStates, setLoadingStates] = useState({});
@@ -62,6 +74,7 @@ const MyInspections = ({ bookings, role }) => {
   const bottomRef = useRef(null);
   const [viewMode, setViewMode] = useState("list"); // "list" or "grid"
   const [userProfiles, setUserProfiles] = useState({}); // { userId: { name, passport } }
+  const isMobile = useIsMobile();
 
   // Split into recent and archived
   const sortedBookings = [...bookings].sort(
@@ -268,7 +281,7 @@ const MyInspections = ({ bookings, role }) => {
 
   // Filter/Sort Bar
   const FilterSortBar = () => (
-    <div className="flex flex-wrap sm:flex-nowrap gap-4 items-center justify-between mb-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+    <div className="flex flex-col sm:flex-row flex-wrap sm:flex-nowrap gap-3 sm:gap-4 items-stretch sm:items-center justify-between mb-4 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100">
       {/* Status Filter */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
         <label className="font-medium text-gray-700">Status:</label>
@@ -361,8 +374,8 @@ const MyInspections = ({ bookings, role }) => {
 
     // Card layout tweaks for grid vs list
     const ProfileBadge = userProfile ? (
-      <div className="absolute top-3 right-3 flex items-center gap-2 bg-white/80 rounded-full px-2 py-1 shadow-sm z-10">
-        <div className="w-8 h-8 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex items-center gap-2 bg-white/80 rounded-full px-1.5 py-0.5 sm:px-2 sm:py-1 shadow-sm z-10">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
           {userProfile.passport ? (
             <Image
               src={userProfile.passport}
@@ -381,7 +394,7 @@ const MyInspections = ({ bookings, role }) => {
             />
           )}
         </div>
-        <span className="text-xs font-medium text-gray-800 truncate max-w-[80px]">
+        <span className="text-xs font-medium text-gray-800 truncate max-w-[60px] sm:max-w-[80px]">
           {userProfile.name}
         </span>
       </div>
@@ -390,13 +403,12 @@ const MyInspections = ({ bookings, role }) => {
       return (
         <div
           key={booking.booking._id}
-          className="relative flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
-          style={{ minHeight: 420 }}
+          className="relative flex flex-col h-full min-h-[420px] max-h-[420px] bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
         >
           {ProfileBadge}
-          <div className="flex-1 flex flex-col p-4">
+          <div className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden">
             {/* Property Image */}
-            <div className="relative w-full h-40 mb-4 rounded-lg overflow-hidden">
+            <div className="relative w-full h-32 sm:h-40 mb-3 sm:mb-4 rounded-lg overflow-hidden flex-shrink-0">
               <Link
                 href={`/properties/${booking.propertyDetails._id}`}
                 className="block"
@@ -410,16 +422,23 @@ const MyInspections = ({ bookings, role }) => {
               </Link>
             </div>
             {/* Property Details */}
-            <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
               {/* Header */}
               <div className="mb-2">
                 <Link href={`/properties/${booking.propertyDetails._id}`}>
-                  <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate">
+                  <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate overflow-hidden whitespace-nowrap">
                     {booking.propertyDetails.title || "Loading..."}
                   </h2>
                 </Link>
-                <p className="text-gray-600 mt-1 text-sm line-clamp-2">
-                  {truncateText(booking.propertyDetails.propertyDetails, 120)}
+                <p
+                  className="text-gray-600 mt-1 text-sm truncate overflow-hidden"
+                  style={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                  }}
+                >
+                  {booking.propertyDetails.propertyDetails}
                 </p>
               </div>
               {/* Location */}
@@ -457,8 +476,8 @@ const MyInspections = ({ bookings, role }) => {
                   <span className="ml-1">{timeInfo?.text}</span>
                 </div>
               </div>
-              {/* Action Button */}
-              <div className="mt-auto">
+              {/* Action Button - always at bottom */}
+              <div className="mt-auto pt-2">
                 <Link href={`/inspection/tracking/${booking.booking._id}`}>
                   <button
                     onClick={() => handleStartTracking(booking.booking._id)}
@@ -468,6 +487,7 @@ const MyInspections = ({ bookings, role }) => {
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                         : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 shadow-lg"
                     }`}
+                    style={{ minHeight: 44, maxHeight: 44, overflow: "hidden" }}
                   >
                     {isLoading ? (
                       <>
@@ -500,9 +520,9 @@ const MyInspections = ({ bookings, role }) => {
         className="relative bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
       >
         {ProfileBadge}
-        <div className="flex flex-col sm:flex-row gap-4 p-6 items-start">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-6 items-start overflow-hidden">
           {/* Property Image */}
-          <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden mb-4 sm:mb-0 flex-shrink-0">
+          <div className="relative w-full h-32 sm:w-40 sm:h-40 rounded-lg overflow-hidden mb-3 sm:mb-0 flex-shrink-0">
             <Link
               href={`/properties/${booking.propertyDetails._id}`}
               className="block"
@@ -516,16 +536,23 @@ const MyInspections = ({ bookings, role }) => {
             </Link>
           </div>
           {/* Property Details */}
-          <div className="flex-1 min-w-0 flex flex-col">
+          <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
             {/* Header */}
             <div className="mb-2">
               <Link href={`/properties/${booking.propertyDetails._id}`}>
-                <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate">
+                <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate overflow-hidden whitespace-nowrap">
                   {booking.propertyDetails.title || "Loading..."}
                 </h2>
               </Link>
-              <p className="text-gray-600 mt-1 text-sm line-clamp-2">
-                {truncateText(booking.propertyDetails.propertyDetails, 120)}
+              <p
+                className="text-gray-600 mt-1 text-sm line-clamp-2 overflow-hidden"
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                }}
+              >
+                {booking.propertyDetails.propertyDetails}
               </p>
             </div>
             {/* Location */}
@@ -563,8 +590,8 @@ const MyInspections = ({ bookings, role }) => {
                 <span className="ml-1">{timeInfo?.text}</span>
               </div>
             </div>
-            {/* Action Button */}
-            <div className="mt-auto">
+            {/* Action Button - always at bottom */}
+            <div className="mt-auto pt-2">
               <Link href={`/inspection/tracking/${booking.booking._id}`}>
                 <button
                   onClick={() => handleStartTracking(booking.booking._id)}
@@ -574,6 +601,7 @@ const MyInspections = ({ bookings, role }) => {
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                       : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 shadow-lg"
                   }`}
+                  style={{ minHeight: 44, maxHeight: 44, overflow: "hidden" }}
                 >
                   {isLoading ? (
                     <>
@@ -602,14 +630,15 @@ const MyInspections = ({ bookings, role }) => {
 
   // Render inspections as grid or list
   const renderInspections = (inspections) => {
-    if (viewMode === "grid") {
+    // Always use grid layout on mobile
+    if (isMobile || viewMode === "grid") {
       return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {inspections.map((booking) => renderInspection(booking, "grid"))}
         </div>
       );
     }
-    // list mode
+    // list mode (desktop only)
     return (
       <div className="space-y-6">
         {inspections.map((booking) => renderInspection(booking, "list"))}
