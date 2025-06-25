@@ -3,7 +3,22 @@ import { Bell, BellOff, X } from "lucide-react";
 import { requestAndSendNotificationPermission } from "../../utils/api/pushNotification/requestPermission";
 import { fetchNotifications } from "../../utils/api/pushNotification/fetchNotifications";
 import { markNotificationAsRead } from "../../utils/api/pushNotification/markNotificationAsRead";
+import { unregisterFcmTokenOnServer } from "../../utils/api/pushNotification/unregisterFcmTokenOnServer";
 import { useRouter } from "next/navigation";
+import { messaging } from "lib/firebase";
+
+// Helper to delete FCM token from client
+const deleteFcmTokenLocally = async () => {
+  try {
+    const currentToken = sessionStorage.getItem("fcmToken");
+    if (currentToken && messaging) {
+      await messaging.deleteToken(currentToken);
+      sessionStorage.removeItem("fcmToken");
+    }
+  } catch (err) {
+    console.error("Error deleting FCM token locally:", err);
+  }
+};
 
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
@@ -89,8 +104,16 @@ const NotificationBell = () => {
     } else {
       // User wants to mute notifications
       setMuted(true);
-      // Optionally: clear FCM token from storage or call backend to unregister
-      // sessionStorage.removeItem('fcmToken');
+      // Remove FCM token locally and on server
+      const fcmToken = sessionStorage.getItem("fcmToken");
+      await deleteFcmTokenLocally();
+      if (userId && fcmToken) {
+        try {
+          await unregisterFcmTokenOnServer(userId, fcmToken);
+        } catch (err) {
+          // Optionally show error
+        }
+      }
     }
   };
 
