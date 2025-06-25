@@ -2,7 +2,7 @@
 
 export const getAgentInspectionBookedMessage = (propertyTitle, date, time) => ({
   title: "New Inspection Booked",
-  body: `A new inspection has been booked for ${propertyTitle} on ${date} at ${time}.`,
+  body: `A new inspection has been booked for ${propertyTitle} on ${date} at ${time}.  please check email for more details`,
 });
 
 export const getClientInspectionConfirmedMessage = (
@@ -11,5 +11,5 @@ export const getClientInspectionConfirmedMessage = (
   time
 ) => ({
   title: "Inspection Booking Confirmed",
-  body: `Your inspection for ${propertyTitle} is confirmed for ${date} at ${time}.`,
+  body: `Your inspection for ${propertyTitle} is confirmed for ${date} at ${time}. please check email for more details`,
 });

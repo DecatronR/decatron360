@@ -1,6 +1,11 @@
 import axios from "axios";
 
-export const sendNotification = async ({ fcmToken, title, body }) => {
+export const sendNotification = async ({
+  fcmToken,
+  title,
+  body,
+  data = {},
+}) => {
   const token = sessionStorage.getItem("token");
   if (!token) {
     console.error("User is not authenticated");
@@ -10,7 +15,7 @@ export const sendNotification = async ({ fcmToken, title, body }) => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const response = await axios.post(
       `${baseUrl}/notification/send-notification`,
-      { fcmToken, title, body },
+      { fcmToken, title, body, data },
       {
         headers: {
           "Content-Type": "application/json",
