@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, X } from "lucide-react";
+import { Bell, BellOff, X } from "lucide-react";
 
 const placeholderNotifications = [
   {
@@ -28,6 +28,7 @@ const placeholderNotifications = [
 const NotificationBell = () => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState(placeholderNotifications);
+  const [muted, setMuted] = useState(false);
   const bellRef = useRef(null);
 
   // Close dropdown on outside click
@@ -52,12 +53,16 @@ const NotificationBell = () => {
   return (
     <div className="relative" ref={bellRef}>
       <button
-        className="relative p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
-        aria-label="Show notifications"
+        className="relative p-2 rounded-full hover:bg-primary-700/80 focus:outline-none focus:ring-2 focus:ring-white transition-colors"
+        aria-label={muted ? "Notifications muted" : "Show notifications"}
         onClick={() => setOpen((prev) => !prev)}
       >
-        <Bell className="w-6 h-6 text-white" />
-        {unreadCount > 0 && (
+        {muted ? (
+          <BellOff className="w-6 h-6 text-gray-300 transition-colors" />
+        ) : (
+          <Bell className="w-6 h-6 text-white transition-colors" />
+        )}
+        {!muted && unreadCount > 0 && (
           <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
         )}
       </button>
@@ -68,7 +73,19 @@ const NotificationBell = () => {
               Notifications
             </span>
             <button
-              className="p-1 rounded-full hover:bg-gray-100"
+              className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 p-1 rounded-full"
+              aria-label={muted ? "Unmute notifications" : "Mute notifications"}
+              onClick={() => setMuted((m) => !m)}
+            >
+              {muted ? (
+                <BellOff className="w-5 h-5" />
+              ) : (
+                <Bell className="w-5 h-5" />
+              )}
+              {muted ? "Unmute" : "Mute"}
+            </button>
+            <button
+              className="p-1 rounded-full hover:bg-gray-100 ml-2"
               aria-label="Close notifications"
               onClick={() => setOpen(false)}
             >
@@ -76,7 +93,11 @@ const NotificationBell = () => {
             </button>
           </div>
           <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
-            {notifications.length === 0 ? (
+            {muted ? (
+              <div className="p-4 text-center text-gray-400 text-sm">
+                Notifications muted
+              </div>
+            ) : notifications.length === 0 ? (
               <div className="p-4 text-center text-gray-500 text-sm">
                 No notifications
               </div>
@@ -84,9 +105,9 @@ const NotificationBell = () => {
               notifications.map((n) => (
                 <div
                   key={n.id}
-                  className={`px-4 py-3 flex flex-col gap-1 hover:bg--50 transition cursor-pointer ${
+                  className={`px-4 py-3 flex flex-col gap-1 transition cursor-pointer ${
                     !n.read ? "bg-blue-50" : ""
-                  }`}
+                  } hover:bg-primary-50`}
                 >
                   <span className="font-medium text-gray-800 text-sm truncate">
                     {n.title}
