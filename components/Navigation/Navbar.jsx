@@ -74,7 +74,7 @@ const Navbar = () => {
             )}
             {/* Mobile Search Bar: left-aligned, narrow, only on mobile */}
             {shouldShowSearch && (
-              <div className="flex md:hidden items-center max-w-[280px] w-full">
+              <div className="flex md:hidden items-center max-w-[220px] w-full">
                 <PropertySearchForm />
               </div>
             )}
@@ -83,7 +83,7 @@ const Navbar = () => {
           {/* Mobile Profile Button (Only shows Sign Out) */}
           {user && (
             <div className="relative ml-3 block md:hidden">
-              <div className="absolute -left-12 top-1">
+              <div className="absolute -left-12">
                 <NotificationBell />
               </div>{" "}
               {/* Hides on md and larger */}
