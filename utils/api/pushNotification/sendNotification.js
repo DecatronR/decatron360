@@ -9,7 +9,7 @@ export const sendNotification = async ({ fcmToken, title, body }) => {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
     const response = await axios.post(
-      `${baseUrl}/send-notification`,
+      `${baseUrl}/notification/send-notification`,
       { fcmToken, title, body },
       {
         headers: {
