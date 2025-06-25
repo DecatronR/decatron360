@@ -19,6 +19,10 @@ export const requestAndSendNotificationPermission = async (userId) => {
       });
 
       console.log("FCM Token:", fcmToken);
+      if (fcmToken) {
+        // Store in sessionStorage
+        sessionStorage.setItem("fcmToken", fcmToken);
+      }
 
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
       const response = await axios.post(
