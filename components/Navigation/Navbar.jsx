@@ -74,7 +74,7 @@ const Navbar = () => {
             )}
             {/* Mobile Search Bar: left-aligned, narrow, only on mobile */}
             {shouldShowSearch && (
-              <div className="flex md:hidden items-center max-w-[280px] w-full">
+              <div className="flex md:hidden items-center max-w-[220px] w-full">
                 <PropertySearchForm />
               </div>
             )}
