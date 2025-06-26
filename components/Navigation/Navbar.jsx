@@ -30,7 +30,7 @@ const Navbar = () => {
       } else {
         setIsScrolled(false);
       }
-      if (scrollY > 250) {
+      if (scrollY > 400) {
         setShowSearchInNavbar(true);
       } else {
         setShowSearchInNavbar(false);
