@@ -27,8 +27,7 @@ const MainLayout = ({ children }) => {
   };
 
   const handleRequestProperty = () => {
-    //  Open modal here
-    console.log("Request property modal opened");
+    router.push("/property-requests/create");
   };
 
   const requestMenuItems = [

@@ -47,7 +47,7 @@ const Navbar = () => {
   };
 
   const handleRequestProperty = () => {
-    console.log("Request property modal opened");
+    router.push("/property-requests/create");
   };
 
   const requestMenuItems = [
