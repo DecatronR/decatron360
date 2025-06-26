@@ -70,7 +70,7 @@ const Location = ({ fields, handleChange }) => {
             </option>
             {states.length > 0 ? (
               states.map((type) => (
-                <option key={type._id} value={type._slug}>
+                <option key={type._id} value={type.slug}>
                   {type.state}
                 </option>
               ))
@@ -99,7 +99,7 @@ const Location = ({ fields, handleChange }) => {
             </option>
             {lga.length > 0
               ? lga.map((type) => (
-                  <option key={type._id} value={type._slug}>
+                  <option key={type._id} value={type.slug}>
                     {type.lga}
                   </option>
                 ))

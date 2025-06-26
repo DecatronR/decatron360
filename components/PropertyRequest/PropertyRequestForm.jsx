@@ -54,11 +54,13 @@ const PropertyRequestForm = () => {
           propertyTypesData,
           propertyUsagesData,
           statesData,
+          lgaData,
         ] = await Promise.all([
           fetchListingTypes(),
           fetchPropertyTypes(),
           fetchPropertyUsage(),
           fetchStates(),
+          fetchLga(),
         ]);
 
         // Log the fetched data here
@@ -66,11 +68,13 @@ const PropertyRequestForm = () => {
         console.log("Fetched property types:", propertyTypesData);
         console.log("Fetched property usages:", propertyUsagesData);
         console.log("Fetched states:", statesData);
+        console.log("Fetched lgas:", lgaData);
 
         setListingTypes(listingTypesData);
         setPropertyTypes(propertyTypesData);
         setPropertyUsages(propertyUsagesData);
         setStates(statesData);
+        setLgas(lgaData);
       } catch (error) {
         console.error("Failed to fetch form data:", error);
       } finally {
@@ -263,8 +267,8 @@ const PropertyRequestForm = () => {
             >
               <option value="">Select Property Usage</option>
               {propertyUsages.map((usage) => (
-                <option key={usage._id} value={usage._slug}>
-                  {usage.propertyType}
+                <option key={usage._id} value={usage.slug}>
+                  {usage.propertyUsage}
                 </option>
               ))}
             </select>
@@ -303,9 +307,9 @@ const PropertyRequestForm = () => {
               className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm"
             >
               <option value="">Select State</option>
-              {states.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
+              {states.map((state) => (
+                <option key={state.id} value={state.slug}>
+                  {state.state}
                 </option>
               ))}
             </select>
@@ -328,7 +332,7 @@ const PropertyRequestForm = () => {
             >
               <option value="">Select LGA</option>
               {lgas.map((lga) => (
-                <option key={lga._id} value={lga._slug}>
+                <option key={lga._id} value={lga.slug}>
                   {lga.lga}
                 </option>
               ))}
