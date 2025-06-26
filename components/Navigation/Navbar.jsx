@@ -5,7 +5,7 @@ import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { HousePlus } from "lucide-react";
+import { HousePlus, Search, FilePlus2 } from "lucide-react";
 import PropertySearchForm from "../Properties/PropertySearchForm";
 import NotificationBell from "../Notification/NotificationBell";
 
@@ -43,6 +43,10 @@ const Navbar = () => {
 
   const handleLogin = () => {
     router.replace("/auth/login");
+  };
+
+  const handleRequestProperty = () => {
+    console.log("Request property modal opened");
   };
 
   return (
@@ -181,14 +185,27 @@ const Navbar = () => {
           {/* Right side menu (Profile and logout when authenticated) */}
           {user && (
             <div className="hidden sm:flex absolute inset-y-0 right-0 items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
-              {/* Add Property Button */}
-              <button
-                onClick={() => router.push("/properties/add/for-rent")}
-                className="hidden sm:flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
-              >
-                <HousePlus size={18} className="inline-block" />
-                <span className="hidden sm:inline">Add Property</span>
-              </button>
+              {/* Conditional CTA Button */}
+              {user.role === "buyer" ? (
+                <button
+                  onClick={handleRequestProperty}
+                  className="hidden sm:flex items-center gap-2 text-white bg-amber-500 hover:bg-amber-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
+                >
+                  <FilePlus2 size={18} className="inline-block" />
+                  <span className="hidden sm:inline">Request Property</span>
+                </button>
+              ) : ["owner", "agent", "property-manager", "caretaker"].includes(
+                  user.role
+                ) ? (
+                <button
+                  onClick={() => router.push("/properties/add/for-rent")}
+                  className="hidden sm:flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
+                >
+                  <HousePlus size={18} className="inline-block" />
+                  <span className="hidden sm:inline">Add Property</span>
+                </button>
+              ) : null}
+
               {/* Notification Bell */}
               <div className="mr-4">
                 <NotificationBell />
