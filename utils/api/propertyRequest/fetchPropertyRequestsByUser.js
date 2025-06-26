@@ -4,7 +4,7 @@ export const fetchPropertyRequestsByUser = async (userId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const token = sessionStorage.getItem("token");
   try {
-    const res = await axios.get(`${baseUrl}/property-request/user/${userId}`, {
+    const res = await axios.get(`${baseUrl}/propertyRequest/user/${userId}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       withCredentials: true,
     });

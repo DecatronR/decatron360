@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useSnackbar } from "notistack";
+import { createPropertyRequest } from "@/utils/api/propertyRequest/createPropertyRequest";
 import { fetchListingTypes } from "utils/api/propertyListing/fetchListingTypes";
 import { fetchPropertyTypes } from "@/utils/api/propertyListing/fetchPropertyTypes";
 import { fetchPropertyUsage } from "@/utils/api/propertyListing/fetchPropertyUsage";
@@ -11,6 +13,7 @@ import Spinner from "@/components/ui/Spinner";
 
 const PropertyRequestForm = () => {
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,6 +28,7 @@ const PropertyRequestForm = () => {
     note: "",
   });
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Data for dropdowns
   const [listingTypes, setListingTypes] = useState([]);
@@ -54,13 +58,11 @@ const PropertyRequestForm = () => {
           propertyTypesData,
           propertyUsagesData,
           statesData,
-          lgaData,
         ] = await Promise.all([
           fetchListingTypes(),
           fetchPropertyTypes(),
           fetchPropertyUsage(),
           fetchStates(),
-          fetchLga(),
         ]);
 
         // Log the fetched data here
@@ -68,13 +70,11 @@ const PropertyRequestForm = () => {
         console.log("Fetched property types:", propertyTypesData);
         console.log("Fetched property usages:", propertyUsagesData);
         console.log("Fetched states:", statesData);
-        console.log("Fetched lgas:", lgaData);
 
         setListingTypes(listingTypesData);
         setPropertyTypes(propertyTypesData);
         setPropertyUsages(propertyUsagesData);
         setStates(statesData);
-        setLgas(lgaData);
       } catch (error) {
         console.error("Failed to fetch form data:", error);
       } finally {
@@ -110,17 +110,41 @@ const PropertyRequestForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Always use user data if available
     const payload = {
       ...formData,
       name: hasUserData ? user.name : formData.name,
       email: hasUserData ? user.email : formData.email,
       phone: hasUserData ? user.phone : formData.phone,
     };
-    console.log("Submitting property request:", payload);
-    // TODO: Implement API call to submit the form data
+    setIsSubmitting(true);
+    try {
+      await createPropertyRequest(payload);
+      enqueueSnackbar("Property request submitted successfully!", {
+        variant: "success",
+      });
+      // Optionally reset form or redirect
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        category: "",
+        propertyType: "",
+        propertyUsage: "",
+        budget: "",
+        state: "",
+        lga: "",
+        neighbourhood: "",
+        note: "",
+      });
+    } catch (error) {
+      enqueueSnackbar("Failed to submit property request.", {
+        variant: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -381,8 +405,9 @@ const PropertyRequestForm = () => {
         <button
           type="submit"
           className="bg-primary-600 text-white px-6 py-3 rounded-full transition hover:bg-primary-700 shadow-md flex items-center justify-center w-full font-bold"
+          disabled={isSubmitting}
         >
-          Submit Request
+          {isSubmitting ? "Submitting..." : "Submit Request"}
         </button>
       </div>
     </form>
