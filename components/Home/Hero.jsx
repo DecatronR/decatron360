@@ -419,7 +419,7 @@ const Hero = () => {
                   </motion.button>
                 </div>
                 {/* Video Title */}
-                <div className="p-4 bg-white/10 backdrop-blur-sm">
+                <div className="p-4 bg-white/10 backdrop-blur-sm text-center">
                   {/* <h3 className="text-lg font-semibold text-white">
                     How it works
                   </h3> */}
