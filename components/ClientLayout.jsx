@@ -31,11 +31,11 @@ const MainLayout = ({ children }) => {
   };
 
   const handleViewAllRequests = () => {
-    if (!user) {
-      // Not authenticated: route to login with redirect param
+    const userId =
+      typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
+    if (!userId) {
       router.push(`/auth/login?redirect=/property-requests`);
     } else {
-      // Authenticated: go directly
       router.push("/property-requests");
     }
   };

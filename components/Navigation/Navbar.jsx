@@ -50,6 +50,16 @@ const Navbar = () => {
     router.push("/property-requests/create");
   };
 
+  const handleViewAllRequests = () => {
+    const userId =
+      typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
+    if (!userId) {
+      router.push("/auth/login?redirect=/property-requests");
+    } else {
+      router.push("/property-requests");
+    }
+  };
+
   const requestMenuItems = [
     {
       label: "Create New Request",
@@ -59,7 +69,7 @@ const Navbar = () => {
     {
       label: "View All Requests",
       icon: <LayoutList size={16} />,
-      onClick: () => router.push("/property-requests"), // This route doesn't exist yet
+      onClick: handleViewAllRequests,
     },
   ];
 
