@@ -5,9 +5,10 @@ import logo from "@/assets/images/logo-white.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { HousePlus, Search, FilePlus2 } from "lucide-react";
+import { HousePlus, Search, FilePlus2, LayoutList } from "lucide-react";
 import PropertySearchForm from "../Properties/PropertySearchForm";
 import NotificationBell from "../Notification/NotificationBell";
+import ActionMenu from "../ui/ActionMenu";
 
 const Navbar = () => {
   const router = useRouter();
@@ -48,6 +49,19 @@ const Navbar = () => {
   const handleRequestProperty = () => {
     console.log("Request property modal opened");
   };
+
+  const requestMenuItems = [
+    {
+      label: "Create New Request",
+      icon: <FilePlus2 size={16} />,
+      onClick: handleRequestProperty,
+    },
+    {
+      label: "View All Requests",
+      icon: <LayoutList size={16} />,
+      onClick: () => router.push("/property-requests"), // This route doesn't exist yet
+    },
+  ];
 
   return (
     <nav
@@ -165,7 +179,16 @@ const Navbar = () => {
           {/* Right side menu (Login button when not authenticated) */}
           {!user && (
             <div className="hidden md:block md:ml-6">
-              <div className="flex space-x-4">
+              <div className="flex items-center space-x-4">
+                <ActionMenu
+                  items={requestMenuItems}
+                  trigger={
+                    <button className="flex items-center gap-2 text-white bg-amber-500 hover:bg-amber-600 rounded-full px-4 py-2 transition">
+                      <FilePlus2 size={18} className="inline-block" />
+                      <span>Request Property</span>
+                    </button>
+                  }
+                />
                 <button
                   onClick={handleLogin}
                   className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-full px-4 py-2 transition"
@@ -174,7 +197,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="flex items-center text-gray-700 bg-gray-200 hover:bg-white rounded-full px-4 py-2 transition"
+                  className="flex items-center text-gray-300 hover:text-white hover:bg-white/10 rounded-full px-4 py-2 transition"
                 >
                   <span>Sign up</span>
                 </button>
@@ -187,13 +210,15 @@ const Navbar = () => {
             <div className="hidden sm:flex absolute inset-y-0 right-0 items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Conditional CTA Button */}
               {user.role === "buyer" ? (
-                <button
-                  onClick={handleRequestProperty}
-                  className="hidden sm:flex items-center gap-2 text-white bg-amber-500 hover:bg-amber-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
-                >
-                  <FilePlus2 size={18} className="inline-block" />
-                  <span className="hidden sm:inline">Request Property</span>
-                </button>
+                <ActionMenu
+                  items={requestMenuItems}
+                  trigger={
+                    <button className="hidden sm:flex items-center gap-2 text-white bg-amber-500 hover:bg-amber-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
+                      <FilePlus2 size={18} className="inline-block" />
+                      <span className="hidden sm:inline">Request Property</span>
+                    </button>
+                  }
+                />
               ) : ["owner", "agent", "property-manager", "caretaker"].includes(
                   user.role
                 ) ? (

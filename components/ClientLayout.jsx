@@ -9,6 +9,8 @@ import { SnackbarProvider } from "notistack";
 import NotificationListener from "./Notification/NotificationListener";
 import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
 import RequestPropertyFloatingBtn from "components/PropertyRequest/RequestPropertyFloatingBtn";
+import ActionMenu from "./ui/ActionMenu";
+import { FilePlus2, LayoutList } from "lucide-react";
 
 const Analytics = dynamic(() => import("@/components/Analytics"), {
   ssr: false,
@@ -29,13 +31,31 @@ const MainLayout = ({ children }) => {
     console.log("Request property modal opened");
   };
 
-  const renderFloatingButton = () => {
-    if (!user) return null;
+  const requestMenuItems = [
+    {
+      label: "Create New Request",
+      icon: <FilePlus2 size={16} />,
+      onClick: handleRequestProperty,
+    },
+    {
+      label: "View All Requests",
+      icon: <LayoutList size={16} />,
+      onClick: () => router.push("/property-requests"),
+    },
+  ];
 
-    if (user.role === "buyer") {
-      return <RequestPropertyFloatingBtn onClick={handleRequestProperty} />;
+  const renderFloatingButton = () => {
+    // Show request button for guests OR buyers
+    if (!user || user.role === "buyer") {
+      return (
+        <ActionMenu
+          items={requestMenuItems}
+          trigger={<RequestPropertyFloatingBtn />}
+        />
+      );
     }
 
+    // Show add button for other privileged users
     if (
       ["owner", "agent", "property-manager", "caretaker"].includes(user.role)
     ) {
