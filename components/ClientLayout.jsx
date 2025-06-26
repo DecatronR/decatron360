@@ -30,6 +30,16 @@ const MainLayout = ({ children }) => {
     router.push("/property-requests/create");
   };
 
+  const handleViewAllRequests = () => {
+    if (!user) {
+      // Not authenticated: route to login with redirect param
+      router.push(`/auth/login?redirect=/property-requests`);
+    } else {
+      // Authenticated: go directly
+      router.push("/property-requests");
+    }
+  };
+
   const requestMenuItems = [
     {
       label: "Create New Request",
@@ -39,7 +49,7 @@ const MainLayout = ({ children }) => {
     {
       label: "View All Requests",
       icon: <LayoutList size={16} />,
-      onClick: () => router.push("/property-requests"),
+      onClick: handleViewAllRequests,
     },
   ];
 
