@@ -9,6 +9,7 @@ import { fetchPropertyTypes } from "@/utils/api/propertyListing/fetchPropertyTyp
 import { fetchPropertyUsage } from "@/utils/api/propertyListing/fetchPropertyUsage";
 import { fetchStates } from "@/utils/api/propertyListing/fetchStates";
 import { fetchLga } from "@/utils/api/propertyListing/fetchLga";
+import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 import Spinner from "@/components/ui/Spinner";
 
 const PropertyRequestForm = () => {
@@ -18,6 +19,7 @@ const PropertyRequestForm = () => {
     name: "",
     email: "",
     phone: "",
+    role: "",
     category: "",
     propertyType: "",
     propertyUsage: "",
@@ -36,9 +38,11 @@ const PropertyRequestForm = () => {
   const [propertyUsages, setPropertyUsages] = useState([]);
   const [states, setStates] = useState([]);
   const [lgas, setLgas] = useState([]);
+  const [roles, setRoles] = useState([]);
 
   // Determine if we should show user details section
-  const hasUserData = user && user.name && user.email && user.phone;
+  const hasUserData =
+    user && user.name && user.email && user.phone && user.role;
 
   useEffect(() => {
     // Pre-fill user data if logged in
@@ -48,6 +52,7 @@ const PropertyRequestForm = () => {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
+        role: user.role || "",
       }));
     }
 
@@ -102,6 +107,21 @@ const PropertyRequestForm = () => {
     fetchLgasForState();
   }, [formData.state]);
 
+  useEffect(() => {
+    // Fetch roles dynamically
+    const getRoles = async () => {
+      try {
+        const fetchedRoles = await fetchRoles();
+        if (Array.isArray(fetchedRoles) && fetchedRoles.length > 0) {
+          setRoles(fetchedRoles);
+        }
+      } catch (error) {
+        // fallback to static roles already in state
+      }
+    };
+    getRoles();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -117,6 +137,7 @@ const PropertyRequestForm = () => {
       name: hasUserData ? user.name : formData.name,
       email: hasUserData ? user.email : formData.email,
       phone: hasUserData ? user.phone : formData.phone,
+      role: hasUserData ? user.role : formData.role,
     };
     setIsSubmitting(true);
     try {
@@ -128,6 +149,7 @@ const PropertyRequestForm = () => {
         name: "",
         email: "",
         phone: "",
+        role: "",
         category: "",
         propertyType: "",
         propertyUsage: "",
@@ -179,7 +201,7 @@ const PropertyRequestForm = () => {
           <h3 className="text-lg font-semibold mb-2 text-gray-900">
             Your Details
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div>
               <label
                 htmlFor="name"
@@ -230,6 +252,29 @@ const PropertyRequestForm = () => {
                 required
                 className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm"
               />
+            </div>
+            <div>
+              <label
+                htmlFor="role"
+                className="block text-gray-700 font-semibold mb-1 text-sm"
+              >
+                Role
+              </label>
+              <select
+                name="role"
+                id="role"
+                value={formData.role}
+                onChange={handleChange}
+                required
+                className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm"
+              >
+                <option value="">Select Role</option>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.slug}>
+                    {role.roleName}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
