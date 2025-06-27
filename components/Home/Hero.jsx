@@ -56,7 +56,7 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 relative z-20">
         {/* Left: Text + Search */}
         <motion.div
-          className="lg:w-1/2 text-center lg:text-left"
+          className="lg:w-1/2 text-left"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -75,12 +75,11 @@ const Hero = () => {
               </span>
             </motion.h1>
             <p
-              className="font-raleway text-lg sm:text-xl opacity-80 max-w-xl mx-auto lg:mx-0"
+              className="font-raleway text-lg sm:text-xl opacity-80 max-w-xl lg:mx-0"
               style={{ color: "#08253f" }}
             >
               Discover, request, and secure your next property with the ease of
-              online shopping. Experience a seamless, modern real estate
-              journey.
+              online shopping.
             </p>
           </div>
           {/* Glassmorphism card for search form */}
