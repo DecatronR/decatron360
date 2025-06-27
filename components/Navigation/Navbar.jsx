@@ -5,7 +5,7 @@ import logo from "@/assets/images/logo.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { HousePlus, Search, FilePlus2, LayoutList } from "lucide-react";
+import { HousePlus, Search, FilePlus2, LayoutList, X } from "lucide-react";
 import PropertySearchForm from "../Properties/PropertySearchForm";
 import NotificationBell from "../Notification/NotificationBell";
 import ActionMenu from "../ui/ActionMenu";
@@ -20,6 +20,7 @@ const Navbar = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showSearchInNavbar, setShowSearchInNavbar] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   const shouldShowSearch = pathname === "/" && showSearchInNavbar;
 
@@ -86,24 +87,46 @@ const Navbar = () => {
               <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
             </Link>
             {/* Desktop Search Bar: perfectly centered, wide, only on md+ */}
-            {shouldShowSearch && (
+            {shouldShowSearch && !showMobileSearch && (
               <div className="hidden md:flex absolute left-0 right-0 mx-auto justify-center items-center max-w-md lg:max-w-lg w-full h-full z-10">
                 <PropertySearchForm />
               </div>
             )}
-            {/* Mobile Search Bar: left-aligned, narrow, only on mobile */}
-            {shouldShowSearch && (
-              <div className="flex md:hidden items-center max-w-[220px] w-full">
-                <PropertySearchForm />
-              </div>
-            )}
           </div>
-          {/* Mobile Profile Button (Only shows Sign Out) */}
-          {user && (
-            <div className="relative ml-3 block md:hidden">
-              <div className="absolute -left-12">
-                <NotificationBell />
-              </div>
+          {/* Mobile right-side controls: search, notification, profile */}
+          <div className="flex items-center gap-2 md:hidden">
+            {/* Search Icon and Bar */}
+            {shouldShowSearch && (
+              <>
+                {!showMobileSearch && (
+                  <button
+                    className="flex items-center justify-center p-2 text-primary-500 hover:bg-primary-50 rounded-full"
+                    aria-label="Open search"
+                    onClick={() => setShowMobileSearch(true)}
+                  >
+                    <Search size={22} />
+                  </button>
+                )}
+                {showMobileSearch && (
+                  <div className="flex items-center w-full absolute left-0 right-0 top-0 bg-white z-50 px-4 py-2 gap-2">
+                    <PropertySearchForm />
+                    <button
+                      className="ml-2 p-2 text-primary-500 hover:bg-primary-50 rounded-full"
+                      aria-label="Close search"
+                      onClick={() => setShowMobileSearch(false)}
+                    >
+                      <X size={22} />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+            {/* Notification Icon */}
+            {user && (
+              <NotificationBell color="text-primary-500" iconSize="h-5 w-5" />
+            )}
+            {/* Profile Menu */}
+            {user && (
               <button
                 type="button"
                 className="relative flex rounded-full bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
@@ -114,66 +137,15 @@ const Navbar = () => {
               >
                 <span className="sr-only">Open user menu</span>
                 <Image
-                  className="h-8 w-8 rounded-full"
+                  className="h-8 w-8 rounded-full border-2 border-primary-500 bg-white"
                   src={user?.passport || profileDefault}
                   alt="User Profile"
-                  width={40}
-                  height={40}
+                  width={32}
+                  height={32}
                 />
               </button>
-              {isMobileProfileMenuOpen && (
-                <div
-                  className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="user-menu-button"
-                  tabIndex="-1"
-                >
-                  {/* User Information */}
-                  <div className="px-4 py-3 border-b border-gray-200 hover:bg-gray-100">
-                    <div className="flex items-center space-x-3 ">
-                      <Link
-                        href="/user-profile"
-                        className="flex items-center space-x-3 "
-                        role="menuitem"
-                        tabIndex="-1"
-                        onClick={() => setIsMobileProfileMenuOpen(false)}
-                      >
-                        <Image
-                          className="h-10 w-10 rounded-full"
-                          src={user?.passport || profileDefault}
-                          alt="User Profile"
-                          width={40}
-                          height={40}
-                        />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {user?.name || "User Name"}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {user?.role?.charAt(0).toUpperCase() +
-                              user?.role?.slice(1) || "Role"}
-                          </p>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setIsProfileMenuOpen(false);
-                      signOut();
-                    }}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    role="menuitem"
-                    tabIndex="-1"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
           {/* Right side menu (Login button when not authenticated) */}
           {!user && (
             <div className="hidden md:block md:ml-6">
@@ -229,7 +201,7 @@ const Navbar = () => {
               ) : null}
               {/* Notification Bell */}
               <div className="mr-4">
-                <NotificationBell />
+                <NotificationBell color="text-primary-500" iconSize="h-5 w-5" />
               </div>
               <div className="relative ml-3">
                 <button
@@ -242,11 +214,11 @@ const Navbar = () => {
                 >
                   <span className="sr-only">Open user menu</span>
                   <Image
-                    className="h-8 w-8 rounded-full"
+                    className="h-8 w-8 rounded-full border-2 border-primary-500 bg-white"
                     src={user?.passport || profileDefault}
                     alt="User Profile"
-                    width={40}
-                    height={40}
+                    width={32}
+                    height={32}
                   />
                 </button>
                 {isProfileMenuOpen && (
@@ -268,11 +240,11 @@ const Navbar = () => {
                           onClick={() => setIsProfileMenuOpen(false)}
                         >
                           <Image
-                            className="h-10 w-10 rounded-full"
+                            className="h-10 w-10 rounded-full border-2 border-primary-500 bg-white"
                             src={user?.passport || profileDefault}
                             alt="User Profile"
-                            width={40}
-                            height={40}
+                            width={32}
+                            height={32}
                           />
                           <div>
                             <p className="text-sm font-medium text-gray-900">

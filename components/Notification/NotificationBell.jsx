@@ -20,7 +20,7 @@ const deleteFcmTokenLocally = async () => {
   }
 };
 
-const NotificationBell = () => {
+const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [muted, setMuted] = useState(false);
@@ -139,14 +139,24 @@ const NotificationBell = () => {
   return (
     <div className="relative" ref={bellRef}>
       <button
-        className="relative p-2 rounded-full hover:bg-primary-700/80 focus:outline-none focus:ring-2 focus:ring-white transition-colors"
+        className={`group relative p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-200 transition-colors ${
+          muted ? "" : "hover:bg-primary-50"
+        }`}
         aria-label={muted ? "Notifications muted" : "Show notifications"}
         onClick={() => setOpen((prev) => !prev)}
       >
         {muted ? (
-          <BellOff className="w-6 h-6 text-gray-300 transition-colors" />
+          <BellOff
+            className={`${iconSize} transition-colors ${
+              color || "text-gray-300"
+            } group-hover:text-primary-600 group-focus-within:text-primary-600`}
+          />
         ) : (
-          <Bell className="w-6 h-6 text-white transition-colors" />
+          <Bell
+            className={`${iconSize} transition-colors ${
+              color || "text-white"
+            } group-hover:text-primary-600 group-focus-within:text-primary-600`}
+          />
         )}
         {!muted && unreadCount > 0 && (
           <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
