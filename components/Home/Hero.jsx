@@ -151,11 +151,11 @@ const Hero = () => {
                     </div>
                   </motion.button>
                 </div>
-                <div className="p-4 bg-white/10 backdrop-blur-sm text-center">
-                  <p className="text-sm text-gray-200">
+                {/* <div className="p-4 bg-primary-100 backdrop-blur-sm text-center">
+                  <p className="text-sm text-gray-700">
                     See how it works in a few minutes
                   </p>
-                </div>
+                </div> */}
               </>
             ) : (
               <>
