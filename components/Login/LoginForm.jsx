@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ButtonSpinner from "components/ui/ButtonSpinner";
 import { requestAndSendNotificationPermission } from "utils/api/pushNotification/requestPermission";
 
@@ -12,6 +12,7 @@ const LoginForm = () => {
   const { signIn } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
@@ -36,7 +37,9 @@ const LoginForm = () => {
       if (user?.id) {
         await requestAndSendNotificationPermission(user.id);
       }
-      router.replace("/");
+      // Redirect to intended page or home
+      const redirectPath = searchParams.get("redirect") || "/";
+      router.replace(redirectPath);
     } catch (error) {
       // Check if the error is due to unverified account
       if (
