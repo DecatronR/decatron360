@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import logo from "@/assets/images/logo-white.png";
+import logo from "@/assets/images/logo.png";
 import profileDefault from "@/assets/images/profile.png";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -75,25 +75,16 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 border-b border-primary-600 transition-all duration-300 ${
-        isScrolled
-          ? "bg-primary-500 bg-opacity-90 backdrop-blur-md"
-          : "bg-primary-600"
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-white/80 backdrop-blur-md shadow-md" : "bg-white"
       }`}
     >
-      <div className="absolute inset-0 bg-black opacity-15 z-0"></div>
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="relative flex h-16 items-center justify-between">
           <div className="flex flex-1 items-center gap-2">
-            {(!isScrolled || window.innerWidth >= 768) && (
-              <Link
-                className="flex flex-shrink-0 items-center md:block"
-                href="/"
-              >
-                <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
-              </Link>
-            )}
+            <Link className="flex flex-shrink-0 items-center md:block" href="/">
+              <Image className="h-7 w-auto" src={logo} alt="Decatron360" />
+            </Link>
             {/* Desktop Search Bar: perfectly centered, wide, only on md+ */}
             {shouldShowSearch && (
               <div className="hidden md:flex absolute left-0 right-0 mx-auto justify-center items-center max-w-md lg:max-w-lg w-full h-full z-10">
@@ -107,17 +98,15 @@ const Navbar = () => {
               </div>
             )}
           </div>
-
           {/* Mobile Profile Button (Only shows Sign Out) */}
           {user && (
             <div className="relative ml-3 block md:hidden">
               <div className="absolute -left-12">
                 <NotificationBell />
-              </div>{" "}
-              {/* Hides on md and larger */}
+              </div>
               <button
                 type="button"
-                className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                className="relative flex rounded-full bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
                 id="user-menu-button"
                 aria-expanded="false"
                 aria-haspopup="true"
@@ -185,7 +174,6 @@ const Navbar = () => {
               )}
             </div>
           )}
-
           {/* Right side menu (Login button when not authenticated) */}
           {!user && (
             <div className="hidden md:block md:ml-6">
@@ -193,7 +181,7 @@ const Navbar = () => {
                 <ActionMenu
                   items={requestMenuItems}
                   trigger={
-                    <button className="flex items-center gap-2 text-white bg-amber-500 hover:bg-amber-600 rounded-full px-4 py-2 transition">
+                    <button className="flex items-center gap-2 text-white bg-primary-500 hover:bg-primary-600 rounded-full px-4 py-2 transition">
                       <FilePlus2 size={18} className="inline-block" />
                       <span>Request Property</span>
                     </button>
@@ -201,20 +189,19 @@ const Navbar = () => {
                 />
                 <button
                   onClick={handleLogin}
-                  className="flex items-center text-white bg-gray-700 hover:bg-gray-800 rounded-full px-4 py-2 transition"
+                  className="flex items-center text-[#08253f] bg-gray-100 hover:bg-gray-200 rounded-full px-4 py-2 transition"
                 >
                   <span>Login</span>
                 </button>
                 <button
                   onClick={() => router.push("/auth/register")}
-                  className="flex items-center text-gray-300 hover:text-white hover:bg-white/10 rounded-full px-4 py-2 transition"
+                  className="flex items-center text-primary-500 hover:text-primary-600 hover:bg-primary-50 rounded-full px-4 py-2 transition"
                 >
                   <span>Sign up</span>
                 </button>
               </div>
             </div>
           )}
-
           {/* Right side menu (Profile and logout when authenticated) */}
           {user && (
             <div className="hidden sm:flex absolute inset-y-0 right-0 items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
@@ -223,7 +210,7 @@ const Navbar = () => {
                 <ActionMenu
                   items={requestMenuItems}
                   trigger={
-                    <button className="hidden sm:flex items-center gap-2 text-white bg-amber-500 hover:bg-amber-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
+                    <button className="hidden sm:flex items-center gap-2 text-white bg-primary-500 hover:bg-primary-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
                       <FilePlus2 size={18} className="inline-block" />
                       <span className="hidden sm:inline">Request Property</span>
                     </button>
@@ -240,7 +227,6 @@ const Navbar = () => {
                   <span className="hidden sm:inline">Add Property</span>
                 </button>
               ) : null}
-
               {/* Notification Bell */}
               <div className="mr-4">
                 <NotificationBell />
@@ -248,7 +234,7 @@ const Navbar = () => {
               <div className="relative ml-3">
                 <button
                   type="button"
-                  className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                  className="relative flex rounded-full bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2"
                   id="user-menu-button"
                   aria-expanded="false"
                   aria-haspopup="true"
