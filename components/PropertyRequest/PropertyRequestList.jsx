@@ -4,6 +4,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { fetchAllPropertyRequests } from "@/utils/api/propertyRequest/fetchAllPropertyRequests";
 import { fetchRoles } from "@/utils/api/registration/fetchRoles";
+import { fetchStates } from "@/utils/api/propertyListing/fetchStates";
+import { fetchLga } from "@/utils/api/propertyListing/fetchLga";
 import {
   Building2,
   MapPin,
@@ -42,12 +44,15 @@ const PropertyRequestList = () => {
     propertyUsage: "",
     phone: "",
     user: "",
+    neighbourhood: "",
   });
   const [sortBy, setSortBy] = useState("createdAt");
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [roles, setRoles] = useState([]);
+  const [states, setStates] = useState([]);
+  const [lgas, setLgas] = useState([]);
 
   const fetchRequests = async (page = 1, append = false) => {
     try {
@@ -114,6 +119,36 @@ const PropertyRequestList = () => {
     getRoles();
   }, []);
 
+  useEffect(() => {
+    // Fetch states on mount
+    const getStates = async () => {
+      try {
+        const statesData = await fetchStates();
+        setStates(statesData);
+      } catch (error) {
+        // fallback: do nothing, keep empty
+      }
+    };
+    getStates();
+  }, []);
+
+  useEffect(() => {
+    // Fetch LGAs when state changes
+    const getLgas = async () => {
+      if (filters.state) {
+        try {
+          const lgaData = await fetchLga(filters.state);
+          setLgas(lgaData);
+        } catch (error) {
+          setLgas([]);
+        }
+      } else {
+        setLgas([]);
+      }
+    };
+    getLgas();
+  }, [filters.state]);
+
   const handleLoadMore = () => {
     fetchRequests(currentPage + 1, true);
   };
@@ -133,19 +168,18 @@ const PropertyRequestList = () => {
       propertyUsage: "",
       phone: "",
       user: "",
+      neighbourhood: "",
     });
     setCurrentPage(1);
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "pending":
+      case "open":
         return "text-yellow-600 bg-yellow-50 border-yellow-200";
-      case "in_progress":
-        return "text-blue-600 bg-blue-50 border-blue-200";
-      case "fulfilled":
+      case "matched":
         return "text-green-600 bg-green-50 border-green-200";
-      case "cancelled":
+      case "closed":
         return "text-red-600 bg-red-50 border-red-200";
       default:
         return "text-gray-600 bg-gray-50 border-gray-200";
@@ -154,89 +188,135 @@ const PropertyRequestList = () => {
 
   // Filter/Sort Bar
   const FilterSortBar = () => (
-    <div className="flex flex-col sm:flex-row flex-wrap sm:flex-nowrap gap-3 sm:gap-4 items-stretch sm:items-center justify-between mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-      {/* Status Filter */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-        <label className="font-medium text-gray-700">Status:</label>
-        <select
-          value={filters.status}
-          onChange={(e) => handleFilterChange("status", e.target.value)}
-          className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-        >
-          <option value="all">All</option>
-          <option value="pending">Pending</option>
-          <option value="in_progress">In Progress</option>
-          <option value="fulfilled">Fulfilled</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+    <div className="flex flex-wrap gap-3 sm:gap-4 items-stretch justify-between mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full">
+        {/* Status Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <label className="font-medium text-gray-700">Status:</label>
+          <select
+            value={filters.status}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          >
+            <option value="all">All</option>
+            <option value="open">Open</option>
+            <option value="matched">Matched</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        {/* Role Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <label className="font-medium text-gray-700">Role:</label>
+          <select
+            value={filters.role}
+            onChange={(e) => handleFilterChange("role", e.target.value)}
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          >
+            <option value="">All</option>
+            {roles.map((role) => (
+              <option key={role.id} value={role.slug}>
+                {role.roleName}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* State Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <label className="font-medium text-gray-700">State:</label>
+          <select
+            value={filters.state}
+            onChange={(e) => handleFilterChange("state", e.target.value)}
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          >
+            <option value="">All</option>
+            {states.map((state) => (
+              <option key={state.id} value={state.slug}>
+                {state.state}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* LGA Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <label className="font-medium text-gray-700">LGA:</label>
+          <select
+            value={filters.lga}
+            onChange={(e) => handleFilterChange("lga", e.target.value)}
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            disabled={!filters.state}
+          >
+            <option value="">All</option>
+            {lgas.map((lga) => (
+              <option key={lga._id} value={lga.slug}>
+                {lga.lga}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* Neighbourhood Filter */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <label className="font-medium text-gray-700">Neighbourhood:</label>
+          <input
+            type="text"
+            value={filters.neighbourhood ?? ""}
+            onChange={(e) =>
+              handleFilterChange("neighbourhood", e.target.value)
+            }
+            placeholder="e.g. Setraco Gwarinpa"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            autoComplete="off"
+          />
+        </div>
       </div>
-
-      {/* Role Filter */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-        <label className="font-medium text-gray-700">Role:</label>
-        <select
-          value={filters.role}
-          onChange={(e) => handleFilterChange("role", e.target.value)}
-          className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-        >
-          <option value="">All</option>
-          {roles.map((role) => (
-            <option key={role.id} value={role.slug}>
-              {role.roleName}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Sort By */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-        <label className="font-medium text-gray-700">Sort by:</label>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-        >
-          <option value="createdAt">Date (Newest)</option>
-          <option value="createdAt-asc">Date (Oldest)</option>
-          <option value="budget">Budget (High to Low)</option>
-          <option value="budget-asc">Budget (Low to High)</option>
-        </select>
-      </div>
-
-      {/* View Mode Toggle */}
-      <div className="hidden sm:flex items-center gap-2 ml-auto">
+      <div className="flex flex-wrap gap-3 w-full mt-3 sm:mt-0 items-center justify-between">
+        {/* Sort By */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+          <label className="font-medium text-gray-700">Sort by:</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          >
+            <option value="createdAt">Date (Newest)</option>
+            <option value="createdAt-asc">Date (Oldest)</option>
+            <option value="budget">Budget (High to Low)</option>
+            <option value="budget-asc">Budget (Low to High)</option>
+          </select>
+        </div>
+        {/* View Mode Toggle */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setViewMode("list")}
+            className={`p-2 rounded-lg border ${
+              viewMode === "list"
+                ? "bg-primary-600 text-white border-primary-600"
+                : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
+            } transition-colors`}
+            aria-label="List view"
+          >
+            <ListIcon className="w-5 h-5" />
+          </button>
+          <button
+            onClick={() => setViewMode("grid")}
+            className={`p-2 rounded-lg border ${
+              viewMode === "grid"
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
+            } transition-colors`}
+            aria-label="Grid view"
+          >
+            <LayoutGrid className="w-5 h-5" />
+          </button>
+        </div>
+        {/* Clear Filters */}
         <button
-          onClick={() => setViewMode("list")}
-          className={`p-2 rounded-lg border ${
-            viewMode === "list"
-              ? "bg-primary-600 text-white border-primary-600"
-              : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
-          } transition-colors`}
-          aria-label="List view"
+          onClick={clearFilters}
+          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         >
-          <ListIcon className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => setViewMode("grid")}
-          className={`p-2 rounded-lg border ${
-            viewMode === "grid"
-              ? "bg-blue-600 text-white border-blue-600"
-              : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
-          } transition-colors`}
-          aria-label="Grid view"
-        >
-          <LayoutGrid className="w-5 h-5" />
+          <X className="w-4 h-4" />
+          Clear Filters
         </button>
       </div>
-
-      {/* Clear Filters */}
-      <button
-        onClick={clearFilters}
-        className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-      >
-        <X className="w-4 h-4" />
-        Clear Filters
-      </button>
     </div>
   );
 

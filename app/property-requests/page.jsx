@@ -47,9 +47,6 @@ const PropertyRequestsPage = () => {
                 <h1 className="text-xl font-semibold text-gray-900">
                   Property Requests
                 </h1>
-                <p className="text-sm text-gray-600">
-                  All property requests in the system
-                </p>
               </div>
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
