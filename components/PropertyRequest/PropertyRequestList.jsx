@@ -3,12 +3,13 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { fetchAllPropertyRequests } from "@/utils/api/propertyRequest/fetchAllPropertyRequests";
+import { fetchRoles } from "@/utils/api/registration/fetchRoles";
 import {
   Building2,
   MapPin,
   Calendar,
   User,
-  DollarSign,
+  Wallet,
   Filter,
   Search,
   Loader2,
@@ -18,6 +19,13 @@ import {
   X,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { truncateText } from "utils/helpers/truncateText";
+import { formatCurrency } from "utils/helpers/formatCurrency";
+
+function capitalize(str) {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 
 const PropertyRequestList = () => {
   const { user } = useAuth();
@@ -39,6 +47,7 @@ const PropertyRequestList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [roles, setRoles] = useState([]);
 
   const fetchRequests = async (page = 1, append = false) => {
     try {
@@ -92,6 +101,19 @@ const PropertyRequestList = () => {
     fetchRequests(1, false);
   }, [filters, sortBy]);
 
+  useEffect(() => {
+    // Fetch roles on mount
+    const getRoles = async () => {
+      try {
+        const rolesData = await fetchRoles();
+        setRoles(rolesData);
+      } catch (error) {
+        // fallback: do nothing, keep empty
+      }
+    };
+    getRoles();
+  }, []);
+
   const handleLoadMore = () => {
     fetchRequests(currentPage + 1, true);
   };
@@ -121,28 +143,13 @@ const PropertyRequestList = () => {
         return "text-yellow-600 bg-yellow-50 border-yellow-200";
       case "in_progress":
         return "text-blue-600 bg-blue-50 border-blue-200";
-      case "completed":
+      case "fulfilled":
         return "text-green-600 bg-green-50 border-green-200";
       case "cancelled":
         return "text-red-600 bg-red-50 border-red-200";
       default:
         return "text-gray-600 bg-gray-50 border-gray-200";
     }
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-NG", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const truncateText = (text, maxLength = 100) => {
-    if (!text) return "";
-    return text.length > maxLength
-      ? text.substring(0, maxLength) + "..."
-      : text;
   };
 
   // Filter/Sort Bar
@@ -159,25 +166,26 @@ const PropertyRequestList = () => {
           <option value="all">All</option>
           <option value="pending">Pending</option>
           <option value="in_progress">In Progress</option>
-          <option value="completed">Completed</option>
+          <option value="fulfilled">Fulfilled</option>
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
 
-      {/* Search */}
+      {/* Role Filter */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-        <label className="font-medium text-gray-700">Search:</label>
-        <input
-          type="text"
-          placeholder="Search by phone or user..."
-          value={filters.phone || filters.user}
-          onChange={(e) => {
-            const value = e.target.value;
-            handleFilterChange("phone", value);
-            handleFilterChange("user", value);
-          }}
+        <label className="font-medium text-gray-700">Role:</label>
+        <select
+          value={filters.role}
+          onChange={(e) => handleFilterChange("role", e.target.value)}
           className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
-        />
+        >
+          <option value="">All</option>
+          {roles.map((role) => (
+            <option key={role.id} value={role.slug}>
+              {role.roleName}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Sort By */}
@@ -259,11 +267,11 @@ const PropertyRequestList = () => {
                   Property Request
                 </h3>
                 <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-normal border ${getStatusColor(
                     request.status
                   )}`}
                 >
-                  {request.status?.replace("_", " ").toUpperCase() || "PENDING"}
+                  {capitalize(request.status?.replace("_", " ")) || "Pending"}
                 </span>
               </div>
 
@@ -272,13 +280,6 @@ const PropertyRequestList = () => {
                 <User className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
                 <span className="text-sm">
                   {request.name} • {request.role}
-                </span>
-              </div>
-
-              {/* Contact Info */}
-              <div className="flex items-center text-gray-600 mb-2">
-                <span className="text-sm">
-                  📧 {request.email} • 📞 {request.phone}
                 </span>
               </div>
             </div>
@@ -301,7 +302,7 @@ const PropertyRequestList = () => {
               </div>
 
               <div className="flex items-center text-gray-600">
-                <DollarSign className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
+                <Wallet className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
                 <span className="text-sm font-medium">
                   Budget: {formatCurrency(request.budget)}
                 </span>
@@ -332,45 +333,34 @@ const PropertyRequestList = () => {
     );
   };
 
-  if (loading && (!requests || requests.length === 0)) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-      </div>
-    );
-  }
-
-  if (!requests || requests.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <div className="bg-gray-50 rounded-xl p-8 max-w-md mx-auto">
-          <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            No Property Requests Found
-          </h3>
-          <p className="text-gray-600">
-            There are no property requests matching your criteria.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <FilterSortBar />
-
-      {/* Property Requests List/Grid */}
-      {viewMode === "grid" ? (
+      {loading && (!requests || requests.length === 0) ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        </div>
+      ) : !requests || requests.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="bg-gray-50 rounded-xl p-8 max-w-md mx-auto">
+            <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              No Property Requests Found
+            </h3>
+            <p className="text-gray-600">
+              There are no property requests matching your criteria.
+            </p>
+          </div>
+        </div>
+      ) : viewMode === "grid" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {requests.map(renderRequestCard)}
         </div>
       ) : (
         <div className="space-y-6">{requests.map(renderRequestCard)}</div>
       )}
-
       {/* Load More Button */}
-      {hasMore && (
+      {hasMore && requests && requests.length > 0 && (
         <div className="flex justify-center mt-8">
           <button
             onClick={handleLoadMore}
