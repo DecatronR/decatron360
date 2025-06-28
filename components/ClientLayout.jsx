@@ -92,6 +92,8 @@ const ClientLayout = ({ children }) => {
     <AuthProvider>
       <SnackbarProvider
         maxSnack={3}
+        preventDuplicates
+        autoHideDuration={4000}
         classes={{
           variantSuccess: "bg-green-500 text-white",
           variantError: "bg-red-500 text-white",
@@ -107,7 +109,23 @@ const ClientLayout = ({ children }) => {
           maxWidth: "100%",
           margin: "30 auto",
           bottom: "80px",
+          cursor: "pointer",
+          userSelect: "none",
+          touchAction: "pan-x",
         }}
+        action={(key) => (
+          <button
+            onClick={() => {
+              // This will close the snackbar
+              const event = new Event("keydown");
+              event.key = "Escape";
+              document.dispatchEvent(event);
+            }}
+            className="text-white hover:text-gray-200 ml-2"
+          >
+            ✕
+          </button>
+        )}
       >
         <MainLayout>{children}</MainLayout>
       </SnackbarProvider>
