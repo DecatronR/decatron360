@@ -36,7 +36,7 @@ const ArchiveModal = ({ open, onClose, inspections, renderInspection }) => {
           <CloseIcon className="w-5 h-5 text-gray-600" />
         </button>
         <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <ArchiveIcon className="w-5 h-5 text-blue-600" /> Archive
+          <ArchiveIcon className="w-5 h-5 text-primary-600" /> Archive
         </h2>
         {inspections.length === 0 ? (
           <div className="text-center py-8">
@@ -288,7 +288,7 @@ const MyInspections = ({ bookings, role }) => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         >
           <option value="all">All</option>
           <option value="upcoming">Upcoming</option>
@@ -304,14 +304,14 @@ const MyInspections = ({ bookings, role }) => {
           onChange={(e) =>
             setDateRange((r) => ({ ...r, start: e.target.value }))
           }
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         />
         <label className="font-medium text-gray-700">To:</label>
         <input
           type="date"
           value={dateRange.end}
           onChange={(e) => setDateRange((r) => ({ ...r, end: e.target.value }))}
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         />
       </div>
       {/* Sort By */}
@@ -320,7 +320,7 @@ const MyInspections = ({ bookings, role }) => {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         >
           <option value="date-desc">Date (Newest)</option>
           <option value="date-asc">Date (Oldest)</option>
@@ -345,7 +345,7 @@ const MyInspections = ({ bookings, role }) => {
           onClick={() => setViewMode("grid")}
           className={`p-2 rounded-lg border ${
             viewMode === "grid"
-              ? "bg-blue-600 text-white border-blue-600"
+              ? "bg-primary-600 text-white border-primary-600"
               : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
           } transition-colors`}
           aria-label="Grid view"
@@ -403,12 +403,13 @@ const MyInspections = ({ bookings, role }) => {
       return (
         <div
           key={booking.booking._id}
-          className="relative flex flex-col h-full min-h-[420px] max-h-[420px] bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
+          className="relative flex flex-col bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-300"
+          style={{ minHeight: "460px" }}
         >
           {ProfileBadge}
-          <div className="flex-1 flex flex-col p-3 sm:p-4 overflow-hidden">
+          <div className="flex-1 flex flex-col p-3 sm:p-4">
             {/* Property Image */}
-            <div className="relative w-full h-32 sm:h-40 mb-3 sm:mb-4 rounded-lg overflow-hidden flex-shrink-0">
+            <div className="relative w-full h-32 sm:h-36 mb-3 sm:mb-4 rounded-lg overflow-hidden flex-shrink-0">
               <Link
                 href={`/properties/${booking.propertyDetails._id}`}
                 className="block"
@@ -422,20 +423,21 @@ const MyInspections = ({ bookings, role }) => {
               </Link>
             </div>
             {/* Property Details */}
-            <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+            <div className="flex-1 flex flex-col">
               {/* Header */}
               <div className="mb-2">
                 <Link href={`/properties/${booking.propertyDetails._id}`}>
-                  <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate overflow-hidden whitespace-nowrap">
+                  <h2 className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors truncate overflow-hidden whitespace-nowrap">
                     {booking.propertyDetails.title || "Loading..."}
                   </h2>
                 </Link>
                 <p
-                  className="text-gray-600 mt-1 text-sm truncate overflow-hidden"
+                  className="text-gray-600 mt-1 text-sm"
                   style={{
                     display: "-webkit-box",
-                    WebkitLineClamp: 3,
+                    WebkitLineClamp: 2,
                     WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
                   }}
                 >
                   {booking.propertyDetails.propertyDetails}
@@ -443,7 +445,7 @@ const MyInspections = ({ bookings, role }) => {
               </div>
               {/* Location */}
               <div className="flex items-center text-gray-600 mb-2">
-                <MapPin className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+                <MapPin className="w-4 h-4 mr-2 text-primary-500 flex-shrink-0" />
                 <span className="text-sm truncate">
                   {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
                   {booking.propertyDetails.lga || "Loading..."},{" "}
@@ -465,8 +467,22 @@ const MyInspections = ({ bookings, role }) => {
                   )}
                 </span>
               </div>
+              {/* Inspection Time */}
+              <div className="flex items-center text-gray-600 mb-2">
+                <Clock className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+                <span className="text-sm">
+                  {new Date(booking.booking.bookingDateTime).toLocaleTimeString(
+                    "en-US",
+                    {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    }
+                  )}
+                </span>
+              </div>
               {/* Time Status */}
-              <div className="flex items-center mb-2">
+              <div className="flex items-center mb-4">
                 <div
                   className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
                     timeInfo?.status
@@ -477,7 +493,7 @@ const MyInspections = ({ bookings, role }) => {
                 </div>
               </div>
               {/* Action Button - always at bottom */}
-              <div className="mt-auto pt-2">
+              <div className="mt-auto">
                 <Link href={`/inspection/tracking/${booking.booking._id}`}>
                   <button
                     onClick={() => handleStartTracking(booking.booking._id)}
@@ -485,9 +501,9 @@ const MyInspections = ({ bookings, role }) => {
                     className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                       timeInfo?.status === "expired"
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 shadow-lg"
+                        : "bg-primary-600 hover:bg-primary-700 text-white hover:scale-105 shadow-lg"
                     }`}
-                    style={{ minHeight: 44, maxHeight: 44, overflow: "hidden" }}
+                    style={{ minHeight: 44 }}
                   >
                     {isLoading ? (
                       <>
@@ -540,7 +556,7 @@ const MyInspections = ({ bookings, role }) => {
             {/* Header */}
             <div className="mb-2">
               <Link href={`/properties/${booking.propertyDetails._id}`}>
-                <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate overflow-hidden whitespace-nowrap">
+                <h2 className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors truncate overflow-hidden whitespace-nowrap">
                   {booking.propertyDetails.title || "Loading..."}
                 </h2>
               </Link>
@@ -557,7 +573,7 @@ const MyInspections = ({ bookings, role }) => {
             </div>
             {/* Location */}
             <div className="flex items-center text-gray-600 mb-2">
-              <MapPin className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+              <MapPin className="w-4 h-4 mr-2 text-primary-500 flex-shrink-0" />
               <span className="text-sm truncate">
                 {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
                 {booking.propertyDetails.lga || "Loading..."},{" "}
@@ -575,6 +591,20 @@ const MyInspections = ({ bookings, role }) => {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
+                  }
+                )}
+              </span>
+            </div>
+            {/* Inspection Time */}
+            <div className="flex items-center text-gray-600 mb-2">
+              <Clock className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+              <span className="text-sm">
+                {new Date(booking.booking.bookingDateTime).toLocaleTimeString(
+                  "en-US",
+                  {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
                   }
                 )}
               </span>
@@ -599,7 +629,7 @@ const MyInspections = ({ bookings, role }) => {
                   className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                     timeInfo?.status === "expired"
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 shadow-lg"
+                      : "bg-primary-500 hover:bg-primary-600 text-white hover:scale-105 shadow-lg"
                   }`}
                   style={{ minHeight: 44, maxHeight: 44, overflow: "hidden" }}
                 >
@@ -657,7 +687,7 @@ const MyInspections = ({ bookings, role }) => {
         {archivedInspections.length > 0 && (
           <button
             onClick={() => setArchiveOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-50 hover:bg-primary-100 text-primary-700 font-medium transition-colors"
           >
             <ArchiveIcon className="w-4 h-4" />
             <span>View Archive</span>

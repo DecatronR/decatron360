@@ -25,6 +25,26 @@ const Registration = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [hasInspectionData, setHasInspectionData] = useState(false);
+
+  useEffect(() => {
+    // Check if there's inspection form data in sessionStorage
+    const inspectionFormData = sessionStorage.getItem("inspectionFormData");
+    if (inspectionFormData) {
+      try {
+        const parsedData = JSON.parse(inspectionFormData);
+        setFormData((prev) => ({
+          ...prev,
+          name: parsedData.name || "",
+          email: parsedData.email || "",
+          phone: parsedData.phone || "",
+        }));
+        setHasInspectionData(true);
+      } catch (error) {
+        console.error("Error parsing inspection form data:", error);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleFetchRoles = async () => {
@@ -109,6 +129,14 @@ const Registration = () => {
         <p className="text-center text-sm text-gray-600 mb-6">
           Join Decatron today
         </p>
+
+        {hasInspectionData && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              Complete your inspection booking by creating an account
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <input
@@ -206,14 +234,12 @@ const Registration = () => {
           </div>
           <button
             type="submit"
-            disabled={isButtonLoading}
-            className={`w-full px-4 py-3 text-white bg-primary-500 rounded-full hover:bg-primary-600 ${
-              isButtonLoading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
+            className="w-full px-4 py-3 text-white bg-primary-500 rounded-full hover:bg-primary-600"
           >
             {isButtonLoading ? <ButtonSpinner /> : "Sign up"}
           </button>
         </form>
+
         <div className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
           <a href="/auth/login" className="text-primary-500 hover:underline">

@@ -158,7 +158,27 @@ const Otp = () => {
       sessionStorage.setItem("userId", userData.id);
       sessionStorage.setItem("token", token);
 
-      // Redirect user after updating state
+      // Check if there's inspection form data to continue the booking flow
+      const inspectionFormData = sessionStorage.getItem("inspectionFormData");
+      if (inspectionFormData) {
+        try {
+          const parsedData = JSON.parse(inspectionFormData);
+          const { propertyId, inspectionFee } = parsedData;
+
+          // Determine the appropriate booking page based on inspection fee
+          const redirectPath =
+            inspectionFee && !isNaN(inspectionFee) && inspectionFee > 0
+              ? `/inspection/payment-booking/${propertyId}`
+              : `/inspection/non-payment-booking/${propertyId}`;
+
+          router.replace(redirectPath);
+          return;
+        } catch (error) {
+          console.error("Error parsing inspection form data:", error);
+        }
+      }
+
+      // Default redirect if no inspection data
       const queryParams = new URLSearchParams(window.location.search);
       const redirectPath = queryParams.get("redirect") || "/";
       router.replace(redirectPath);
