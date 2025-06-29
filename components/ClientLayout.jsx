@@ -11,14 +11,14 @@ import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
 import RequestPropertyFloatingBtn from "components/PropertyRequest/RequestPropertyFloatingBtn";
 import ActionMenu from "./ui/ActionMenu";
 import { FilePlus2, LayoutList } from "lucide-react";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, forwardRef } from "react";
 
 const Analytics = dynamic(() => import("@/components/Analytics"), {
   ssr: false,
 });
 
 // Custom Snackbar Component with Swipe Support
-const CustomSnackbar = ({ id, message, variant, ...other }) => {
+const CustomSnackbar = forwardRef(({ id, message, variant, ...other }, ref) => {
   const snackbarRef = useRef(null);
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
@@ -76,7 +76,14 @@ const CustomSnackbar = ({ id, message, variant, ...other }) => {
 
   return (
     <div
-      ref={snackbarRef}
+      ref={(el) => {
+        snackbarRef.current = el;
+        if (typeof ref === "function") {
+          ref(el);
+        } else if (ref) {
+          ref.current = el;
+        }
+      }}
       className={`px-4 py-3 rounded-2xl shadow-lg transition-all duration-300 ease-in-out ${
         variant === "success"
           ? "bg-green-500"
@@ -110,7 +117,9 @@ const CustomSnackbar = ({ id, message, variant, ...other }) => {
       )}
     </div>
   );
-};
+});
+
+CustomSnackbar.displayName = "CustomSnackbar";
 
 const MainLayout = ({ children }) => {
   const hideRoutes = ["/auth/login", "/auth/register", "auth/otp"];

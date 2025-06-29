@@ -36,7 +36,7 @@ const ArchiveModal = ({ open, onClose, inspections, renderInspection }) => {
           <CloseIcon className="w-5 h-5 text-gray-600" />
         </button>
         <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <ArchiveIcon className="w-5 h-5 text-blue-600" /> Archive
+          <ArchiveIcon className="w-5 h-5 text-primary-600" /> Archive
         </h2>
         {inspections.length === 0 ? (
           <div className="text-center py-8">
@@ -288,7 +288,7 @@ const MyInspections = ({ bookings, role }) => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         >
           <option value="all">All</option>
           <option value="upcoming">Upcoming</option>
@@ -304,14 +304,14 @@ const MyInspections = ({ bookings, role }) => {
           onChange={(e) =>
             setDateRange((r) => ({ ...r, start: e.target.value }))
           }
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         />
         <label className="font-medium text-gray-700">To:</label>
         <input
           type="date"
           value={dateRange.end}
           onChange={(e) => setDateRange((r) => ({ ...r, end: e.target.value }))}
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         />
       </div>
       {/* Sort By */}
@@ -320,7 +320,7 @@ const MyInspections = ({ bookings, role }) => {
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+          className="border rounded-lg px-2 py-1 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
         >
           <option value="date-desc">Date (Newest)</option>
           <option value="date-asc">Date (Oldest)</option>
@@ -345,7 +345,7 @@ const MyInspections = ({ bookings, role }) => {
           onClick={() => setViewMode("grid")}
           className={`p-2 rounded-lg border ${
             viewMode === "grid"
-              ? "bg-blue-600 text-white border-blue-600"
+              ? "bg-primary-600 text-white border-primary-600"
               : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
           } transition-colors`}
           aria-label="Grid view"
@@ -426,7 +426,7 @@ const MyInspections = ({ bookings, role }) => {
               {/* Header */}
               <div className="mb-2">
                 <Link href={`/properties/${booking.propertyDetails._id}`}>
-                  <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate overflow-hidden whitespace-nowrap">
+                  <h2 className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors truncate overflow-hidden whitespace-nowrap">
                     {booking.propertyDetails.title || "Loading..."}
                   </h2>
                 </Link>
@@ -443,7 +443,7 @@ const MyInspections = ({ bookings, role }) => {
               </div>
               {/* Location */}
               <div className="flex items-center text-gray-600 mb-2">
-                <MapPin className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+                <MapPin className="w-4 h-4 mr-2 text-primary-500 flex-shrink-0" />
                 <span className="text-sm truncate">
                   {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
                   {booking.propertyDetails.lga || "Loading..."},{" "}
@@ -485,7 +485,7 @@ const MyInspections = ({ bookings, role }) => {
                     className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                       timeInfo?.status === "expired"
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 shadow-lg"
+                        : "bg-primary-600 hover:bg-primary-700 text-white hover:scale-105 shadow-lg"
                     }`}
                     style={{ minHeight: 44, maxHeight: 44, overflow: "hidden" }}
                   >
@@ -540,7 +540,7 @@ const MyInspections = ({ bookings, role }) => {
             {/* Header */}
             <div className="mb-2">
               <Link href={`/properties/${booking.propertyDetails._id}`}>
-                <h2 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate overflow-hidden whitespace-nowrap">
+                <h2 className="text-lg font-semibold text-gray-900 hover:text-primary-600 transition-colors truncate overflow-hidden whitespace-nowrap">
                   {booking.propertyDetails.title || "Loading..."}
                 </h2>
               </Link>
@@ -557,7 +557,7 @@ const MyInspections = ({ bookings, role }) => {
             </div>
             {/* Location */}
             <div className="flex items-center text-gray-600 mb-2">
-              <MapPin className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+              <MapPin className="w-4 h-4 mr-2 text-primary-500 flex-shrink-0" />
               <span className="text-sm truncate">
                 {booking.propertyDetails.neighbourhood || "Loading..."},{" "}
                 {booking.propertyDetails.lga || "Loading..."},{" "}
@@ -599,7 +599,7 @@ const MyInspections = ({ bookings, role }) => {
                   className={`w-full flex items-center justify-center space-x-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 ${
                     timeInfo?.status === "expired"
                       ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700 text-white hover:scale-105 shadow-lg"
+                      : "bg-primary-500 hover:bg-primary-600 text-white hover:scale-105 shadow-lg"
                   }`}
                   style={{ minHeight: 44, maxHeight: 44, overflow: "hidden" }}
                 >
@@ -657,7 +657,7 @@ const MyInspections = ({ bookings, role }) => {
         {archivedInspections.length > 0 && (
           <button
             onClick={() => setArchiveOpen(true)}
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium transition-colors"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-primary-50 hover:bg-primary-100 text-primary-700 font-medium transition-colors"
           >
             <ArchiveIcon className="w-4 h-4" />
             <span>View Archive</span>
