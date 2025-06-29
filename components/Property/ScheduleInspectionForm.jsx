@@ -11,6 +11,7 @@ import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { fetchReferrerSchedule } from "utils/api/scheduler/fetchReferrerSchedule";
 import { useSnackbar } from "notistack";
+import { Calendar, Clock, User, Mail, Phone } from "lucide-react";
 
 const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   const router = useRouter();
@@ -20,7 +21,6 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
     name: "",
     email: "",
     phone: "",
-    message: "",
     date: null,
   });
   const [userData, setUserData] = useState({});
@@ -29,26 +29,43 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   const [slotIds, setSlotIds] = useState({});
   const [displayInspectionFee, setDisplayInspectionFee] = useState();
   const [inspectionFee, setInspectionFee] = useState();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     const userId = sessionStorage.getItem("userId");
     const handleFetchUser = async () => {
-      const res = await fetchUserData(userId);
-      setUserData(res);
+      try {
+        const res = await fetchUserData(userId);
+        setUserData(res);
+        setIsUserLoggedIn(true);
+
+        // Pre-populate form with user data
+        setFormData((prev) => ({
+          ...prev,
+          name: res.name || "",
+          email: res.email || "",
+          phone: res.phone || "",
+        }));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
     handleFetchUser();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handleFetchPropertyData = async () => {
-      const propertyDetails = await fetchPropertyData(propertyId);
-
-      const sanitizedInspectionFee = parseFloat(
-        propertyDetails.data?.inspectionFee?.replace(/[^0-9.]/g, "")
-      );
-      setDisplayInspectionFee(propertyDetails.data?.inspectionFee); //for display purpose
-      setInspectionFee(sanitizedInspectionFee); // for computation purpose
+      try {
+        const propertyDetails = await fetchPropertyData(propertyId);
+        const sanitizedInspectionFee = parseFloat(
+          propertyDetails.data?.inspectionFee?.replace(/[^0-9.]/g, "")
+        );
+        setDisplayInspectionFee(propertyDetails.data?.inspectionFee);
+        setInspectionFee(sanitizedInspectionFee);
+      } catch (error) {
+        console.error("Error fetching property data:", error);
+      }
     };
 
     handleFetchPropertyData();
@@ -76,7 +93,6 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
           return;
         }
 
-        // Create new objects for state updates
         const newSlotIds = {};
         const formattedAvailability = rawAvailability.reduce((acc, slot) => {
           if (slot.isAvailable === "0") {
@@ -92,7 +108,6 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
           return acc;
         }, {});
 
-        // Batch state updates together
         setAvailableDates(formattedAvailability);
         setSlotIds(newSlotIds);
       } catch (error) {
@@ -127,12 +142,9 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
       : "";
     const selectedTime = formData.date ? format(formData.date, "HH:mm") : "";
 
-    // Look up the slotId for the selected date and time
     const selectedSlotId = slotIds[selectedDate]?.[selectedTime];
 
-    // Check if a valid slotId is found
     if (selectedSlotId) {
-      // Store the slotId, inspection date, and time in sessionStorage
       sessionStorage.setItem("bookedSlotId", selectedSlotId);
       sessionStorage.setItem("inspectionDate", selectedDate);
       sessionStorage.setItem("inspectionTime", selectedTime);
@@ -143,24 +155,37 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
       return;
     }
 
-    // Check if the user is logged in
+    // If user is not logged in, store form data and redirect to login
     if (!user) {
-      // Redirect to login page, with the appropriate redirect based on the inspection fee
+      // Store form data in sessionStorage for login/signup flow
+      sessionStorage.setItem(
+        "inspectionFormData",
+        JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          propertyId,
+          agentId,
+          referralCode,
+          inspectionFee,
+          displayInspectionFee,
+        })
+      );
+
       const redirectPage =
         inspectionFee && !isNaN(inspectionFee) && inspectionFee > 0
           ? `/inspection/payment-booking/${propertyId}`
           : `/inspection/non-payment-booking/${propertyId}`;
+
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectPage)}`);
       setIsButtonLoading(false);
       return;
     }
 
-    // Determine the route based on inspection fee
+    // User is logged in, proceed to booking
     if (inspectionFee && !isNaN(inspectionFee) && inspectionFee > 0) {
-      // Redirect to the payment booking page
       router.push(`/inspection/payment-booking/${propertyId}`);
     } else {
-      // Redirect to the non-payment page
       router.push(`/inspection/non-payment-booking/${propertyId}`);
     }
 
@@ -179,22 +204,26 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
 
     if (!selectedDate || !availableDates[selectedDate]) return false;
 
-    // Convert `time` to "HH:mm" format
     const formattedTime = format(time, "HH:mm");
-
-    return availableDates[selectedDate].some(
-      (slot) => slot === formattedTime // Compare formatted time directly with available time slot
-    );
+    return availableDates[selectedDate].some((slot) => slot === formattedTime);
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h4 className="text-xl font-bold text-gray-900 mb-4">
-        Schedule an Inspection
-      </h4>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block">
-          <span className="text-gray-700">Your Name</span>
+    <div className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="flex items-center justify-center mb-6">
+        <Calendar className="w-6 h-6 text-gray-600 mr-2" />
+        <h3 className="text-xl font-semibold text-gray-800">
+          Schedule Inspection
+        </h3>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Name Field */}
+        <div className="space-y-2">
+          <label className="flex items-center text-sm font-medium text-gray-700">
+            <User className="w-4 h-4 mr-2" />
+            Your Name
+          </label>
           <input
             type="text"
             name="name"
@@ -202,11 +231,21 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
             onChange={handleChange}
             placeholder="John Doe"
             required
-            className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
+            disabled={isUserLoggedIn}
+            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+              isUserLoggedIn
+                ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+            }`}
           />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Email</span>
+        </div>
+
+        {/* Email Field */}
+        <div className="space-y-2">
+          <label className="flex items-center text-sm font-medium text-gray-700">
+            <Mail className="w-4 h-4 mr-2" />
+            Email Address
+          </label>
           <input
             type="email"
             name="email"
@@ -214,11 +253,21 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
             onChange={handleChange}
             placeholder="john.doe@example.com"
             required
-            className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
+            disabled={isUserLoggedIn}
+            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+              isUserLoggedIn
+                ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+            }`}
           />
-        </label>
-        <label className="block">
-          <span className="text-gray-700">Phone No</span>
+        </div>
+
+        {/* Phone Field */}
+        <div className="space-y-2">
+          <label className="flex items-center text-sm font-medium text-gray-700">
+            <Phone className="w-4 h-4 mr-2" />
+            Phone Number
+          </label>
           <input
             type="tel"
             name="phone"
@@ -226,25 +275,36 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
             onChange={handleChange}
             placeholder="08020000000"
             required
-            className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
+            disabled={isUserLoggedIn}
+            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+              isUserLoggedIn
+                ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+            }`}
           />
-        </label>
+        </div>
+
+        {/* Inspection Fee Display */}
         {inspectionFee > 0 && (
-          <label className="block">
-            <span className="text-gray-700">Inspection Fee</span>
-            <input
-              type="text"
-              name="inspectionFee"
-              value={displayInspectionFee}
-              disabled
-              className="mt-1 block w-full rounded-md border-2 border-gray-300 focus:outline-none bg-gray-100 text-gray-500 sm:text-sm px-4 py-2 cursor-not-allowed opacity-70"
-            />
-          </label>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">
+                Inspection Fee:
+              </span>
+              <span className="text-lg font-semibold text-gray-900">
+                {displayInspectionFee}
+              </span>
+            </div>
+          </div>
         )}
 
-        <label className="block">
-          <span className="text-gray-700 block">Preferred Date & Time</span>
-          <div className="mt-1">
+        {/* Date & Time Picker */}
+        <div className="space-y-2">
+          <label className="flex items-center text-sm font-medium text-gray-700">
+            <Clock className="w-4 h-4 mr-2" />
+            Preferred Date & Time
+          </label>
+          <div className="relative">
             <DatePicker
               selected={formData.date}
               onChange={handleDateChange}
@@ -252,7 +312,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
               timeIntervals={60}
               timeCaption="Time"
               dateFormat="MMMM d, yyyy h:mm aa"
-              className="w-full rounded-md border-2 border-gray-300 focus:border-indigo-500 sm:text-sm px-4 py-2"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
               required
               filterDate={(date) => isDateAvailable(date)}
               filterTime={(time) => isTimeAvailable(time)}
@@ -260,18 +320,35 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
               wrapperClassName="w-full"
             />
           </div>
-        </label>
+        </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={isButtonLoading}
-          className={`w-full py-2 px-4 rounded-full shadow-md ${
+          className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
             isButtonLoading
-              ? "bg-gray-400"
-              : "bg-indigo-600 hover:bg-indigo-700"
-          } text-white focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md"
+          }`}
         >
-          {isButtonLoading ? <ButtonSpinner /> : "Schedule Inspection"}
+          {isButtonLoading ? (
+            <ButtonSpinner />
+          ) : (
+            <>
+              <Calendar className="w-5 h-5 mr-2" />
+              {isUserLoggedIn ? "Schedule Inspection" : "Continue to Schedule"}
+            </>
+          )}
         </button>
+
+        {/* Info for guest users */}
+        {!isUserLoggedIn && (
+          <p className="text-xs text-gray-500 text-center">
+            You'll be prompted to sign in or create an account to complete your
+            booking
+          </p>
+        )}
       </form>
     </div>
   );

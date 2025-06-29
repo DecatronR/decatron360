@@ -39,7 +39,7 @@ const ShareButtons = ({ property }) => {
 
   return (
     <>
-      <div className="w-full bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300">
+      <div className="w-full bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all duration-300 mb-4">
         <div className="flex items-center justify-center mb-4">
           <Share2 className="w-5 h-5 text-gray-600 mr-2" />
           <h3 className="text-lg font-semibold text-gray-800">

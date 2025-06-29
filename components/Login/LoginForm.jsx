@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
@@ -16,6 +16,24 @@ const LoginForm = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [isButtonLoading, setIsButtonLoading] = useState(false);
+  const [hasInspectionData, setHasInspectionData] = useState(false);
+
+  useEffect(() => {
+    // Check if there's inspection form data in sessionStorage
+    const inspectionFormData = sessionStorage.getItem("inspectionFormData");
+    if (inspectionFormData) {
+      try {
+        const parsedData = JSON.parse(inspectionFormData);
+        setFormData((prev) => ({
+          ...prev,
+          email: parsedData.email || "",
+        }));
+        setHasInspectionData(true);
+      } catch (error) {
+        console.error("Error parsing inspection form data:", error);
+      }
+    }
+  }, []);
 
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
@@ -72,6 +90,14 @@ const LoginForm = () => {
         <p className="text-center text-sm text-gray-600 mb-6">
           Welcome back to Decatron
         </p>
+
+        {hasInspectionData && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              Complete your inspection booking by signing in to your account
+            </p>
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>

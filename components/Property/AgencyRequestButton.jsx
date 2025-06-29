@@ -105,21 +105,16 @@ const AgentRequestButton = ({ propertyId, ownerId }) => {
       type="button"
       onClick={handleSubmitRequest}
       disabled={false}
-      className={`w-full py-2 px-4 rounded-md shadow-lg flex items-center justify-center font-medium transition-transform duration-300 cursor-pointer ${
+      className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
         isAgent
-          ? "bg-red-500 hover:bg-red-600 text-white"
-          : "bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white"
-      } focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:scale-105`}
-      style={{ position: "relative", overflow: "hidden" }}
+          ? "bg-red-500 hover:bg-red-600 text-white shadow-sm hover:shadow-md"
+          : "bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md"
+      }`}
     >
-      <span
-        className="absolute inset-0 bg-white opacity-10 rounded-md transition-opacity duration-500 hover:opacity-20"
-        aria-hidden="true"
-      ></span>
       {isAgent ? (
         <FaUserCheck className="mr-2 text-lg" />
       ) : (
-        <FaUserPlus className="mr-2 text-lg animate-pulse" />
+        <FaUserPlus className="mr-2 text-lg" />
       )}
       <span>{isAgent ? "Stop being an agent" : "Request to be an agent"}</span>
     </button>

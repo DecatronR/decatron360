@@ -172,10 +172,10 @@ const PropertyPage = () => {
           <PropertyImages images={property.photos} />
 
           {/* Main content: property details and sticky sidebar */}
-          <div className="container mx-auto py-8 px-4 md:px-4">
-            <div className="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0">
+          <div className="container mx-auto py-8 px-4 md:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row lg:space-x-8 space-y-8 lg:space-y-0">
               {/* Scrollable Property details */}
-              <div className="flex-1 bg-white shadow-lg rounded-lg p-0 md:p-6 h-screen overflow-y-auto">
+              <div className="flex-1 bg-white shadow-lg rounded-xl p-0 md:p-6 lg:p-8 min-h-screen overflow-y-auto">
                 <PropertyDetails
                   property={property.data}
                   agentId={property.data.userID}
@@ -183,13 +183,16 @@ const PropertyPage = () => {
               </div>
 
               {/* Sticky Sidebar */}
-              <aside className="w-full md:w-1/3 sticky top-4 h-fit">
+              <aside className="w-full lg:w-1/3 lg:sticky lg:top-8 h-fit space-y-6">
+                {/* Agent Profile Card */}
                 <Link href={`/agent-profile/${agentId}`}>
                   <AgentProfileCard
                     agentData={agentData}
                     agentRating={agentRating}
                   />
                 </Link>
+
+                {/* Action Buttons */}
                 <div className="space-y-4">
                   <FavoriteButton property={property} />
 
@@ -199,10 +202,14 @@ const PropertyPage = () => {
                       ownerId={property.data.userID}
                     />
                   )}
-                  <ShareButtons property={property} />
                 </div>
+
+                {/* Share Buttons */}
+                <ShareButtons property={property} />
+
+                {/* Inspection Form or Proceed to Rent */}
                 {agentId && (
-                  <>
+                  <div className="mt-6">
                     {hasBookedInspection ? (
                       showScheduleForm ? (
                         <ScheduleInspectionForm
@@ -225,7 +232,7 @@ const PropertyPage = () => {
                         referralCode={referralCode}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </aside>
             </div>
