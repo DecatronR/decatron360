@@ -1,18 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { XIcon } from "lucide-react";
+import { useSnackbar } from "notistack";
 
-const Media = ({ fields, setFields, handleChange }) => {
+const Media = ({
+  fields,
+  setFields,
+  handleChange,
+  existingImages = [],
+  isEditMode = false,
+}) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [previewUrls, setPreviewUrls] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
+
+  // Initialize with existing images if in edit mode
+  useEffect(() => {
+    if (isEditMode && existingImages.length > 0) {
+      setFields((prevFields) => ({
+        ...prevFields,
+        photo: [...existingImages],
+      }));
+    }
+  }, [isEditMode, existingImages, setFields]);
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = [];
     const newPreviewUrls = [];
 
+    const currentImageCount = isEditMode
+      ? existingImages.length - imagesToDelete.length + uploadedImages.length
+      : uploadedImages.length;
+
     for (
       let i = 0;
-      i < files.length && uploadedImages.length + newImages.length < 7;
+      i < files.length && currentImageCount + newImages.length < 7;
       i++
     ) {
       const file = files[i];
@@ -45,17 +68,41 @@ const Media = ({ fields, setFields, handleChange }) => {
     }));
   };
 
-  const handleImageRemove = (index) => {
-    URL.revokeObjectURL(previewUrls[index]);
+  const handleImageRemove = (index, isExisting = false) => {
+    if (isExisting) {
+      // Remove existing image
+      const imageToRemove = existingImages[index];
+      setImagesToDelete((prev) => [...prev, imageToRemove]);
 
-    setPreviewUrls(previewUrls.filter((_, i) => i !== index));
-    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+      setFields((prevFields) => ({
+        ...prevFields,
+        photo: prevFields.photo.filter((img) => img !== imageToRemove),
+      }));
+    } else {
+      // Remove newly uploaded image
+      const imageToRemove = uploadedImages[index];
+      URL.revokeObjectURL(previewUrls[index]);
 
-    setFields((prevFields) => ({
-      ...prevFields,
-      photo: prevFields.photo.filter((_, i) => i !== index),
-    }));
+      setPreviewUrls(previewUrls.filter((_, i) => i !== index));
+      setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+
+      setFields((prevFields) => ({
+        ...prevFields,
+        photo: prevFields.photo.filter((img) => img !== imageToRemove),
+      }));
+    }
   };
+
+  const getCurrentImageCount = () => {
+    if (isEditMode) {
+      return (
+        existingImages.length - imagesToDelete.length + uploadedImages.length
+      );
+    }
+    return uploadedImages.length;
+  };
+
+  const canAddMoreImages = getCurrentImageCount() < 7;
 
   return (
     <div className="shadow-md rounded-lg p-6 bg-white max-w-md mx-auto md:max-w-full">
@@ -99,7 +146,7 @@ const Media = ({ fields, setFields, handleChange }) => {
         {/* Images */}
         <div className="col-span-2">
           <label htmlFor="photo" className="text-sm text-gray-600 block mb-1">
-            Images (Max 7)
+            Images (Max 7) - {getCurrentImageCount()}/7
           </label>
           <input
             type="file"
@@ -109,16 +156,49 @@ const Media = ({ fields, setFields, handleChange }) => {
             accept="image/*"
             multiple
             onChange={handleImageChange}
-            required
+            disabled={!canAddMoreImages}
             aria-label="Upload images for your property listing (Max 7)"
           />
+          {!canAddMoreImages && (
+            <p className="text-sm text-orange-600 mt-1">
+              Maximum 7 images reached. Remove some images to add more.
+            </p>
+          )}
 
           {/* Image Preview Section */}
-          {previewUrls.length > 0 && (
+          {(existingImages.length > 0 || previewUrls.length > 0) && (
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3">
+              {/* Existing Images */}
+              {isEditMode &&
+                existingImages.map((imageUrl, index) => {
+                  const isDeleted = imagesToDelete.includes(imageUrl);
+                  if (isDeleted) return null;
+
+                  return (
+                    <div
+                      key={`existing-${index}`}
+                      className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-md border border-gray-300 overflow-hidden"
+                    >
+                      <img
+                        src={imageUrl}
+                        alt={`Existing ${index}`}
+                        className="object-cover w-full h-full"
+                      />
+                      <button
+                        type="button"
+                        className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs"
+                        onClick={() => handleImageRemove(index, true)}
+                      >
+                        <XIcon size={10} />
+                      </button>
+                    </div>
+                  );
+                })}
+
+              {/* New Uploaded Images */}
               {previewUrls.map((previewUrl, index) => (
                 <div
-                  key={index}
+                  key={`new-${index}`}
                   className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-md border border-gray-300 overflow-hidden"
                 >
                   <img
@@ -129,7 +209,7 @@ const Media = ({ fields, setFields, handleChange }) => {
                   <button
                     type="button"
                     className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs"
-                    onClick={() => handleImageRemove(index)}
+                    onClick={() => handleImageRemove(index, false)}
                   >
                     <XIcon size={10} />
                   </button>

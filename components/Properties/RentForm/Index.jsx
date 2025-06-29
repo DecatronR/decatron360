@@ -38,10 +38,8 @@ const RentForm = () => {
     houseNoStreet: "",
     size: "",
     propertyDetails: "",
-    livingrooms: "null",
     bedrooms: "",
     bathrooms: "",
-    parkingSpace: "null",
     price: "",
     inspectionFee: "",
     cautionFee: "",
@@ -50,6 +48,7 @@ const RentForm = () => {
     virtualTour: "",
     video: "",
     photo: [],
+    titleDocument: "",
   });
 
   //prefill userId
@@ -154,10 +153,8 @@ const RentForm = () => {
     formData.append("houseNoStreet", fields.houseNoStreet);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
-    formData.append("livingrooms", fields.livingrooms);
     formData.append("bedrooms", fields.bedrooms);
     formData.append("bathrooms", fields.bathrooms);
-    formData.append("parkingSpace", fields.parkingSpace);
     formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
     formData.append("cautionFee", fields.cautionFee);
@@ -165,6 +162,7 @@ const RentForm = () => {
     formData.append("latePaymentFee", fields.latePaymentFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
+    formData.append("titleDocument", fields.titleDocument);
 
     // Append image files (each file)
     fields.photo.forEach((photo, index) => {
@@ -293,7 +291,7 @@ const RentForm = () => {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end gap-4 mt-6 sm:flex-col sm:items-center">
+        <div className="flex justify-end gap-4 mt-6">
           <button
             type="submit"
             className="bg-primary-600 text-white px-6 py-3 rounded-full transition hover:bg-primary-700 shadow-md flex items-center justify-center w-full sm:w-auto"

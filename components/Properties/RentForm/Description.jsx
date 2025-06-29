@@ -35,7 +35,15 @@ const SelectField = ({ label, id, name, value, options, onChange }) => (
   </div>
 );
 
-const InputField = ({ label, id, name, value, placeholder, onChange }) => (
+const InputField = ({
+  label,
+  id,
+  name,
+  value,
+  placeholder,
+  onChange,
+  required = true,
+}) => (
   <div className="w-full">
     <label htmlFor={id} className="text-sm text-gray-600">
       {label}
@@ -46,7 +54,7 @@ const InputField = ({ label, id, name, value, placeholder, onChange }) => (
       name={name}
       className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
       placeholder={placeholder}
-      required
+      required={required}
       value={value}
       onChange={onChange}
     />
@@ -126,6 +134,18 @@ const Description = ({ fields, handleChange }) => {
             value={fields.usageType}
             options={propertyUsage}
             onChange={handleChange}
+          />
+        </div>
+
+        <div className="col-span-1 md:col-span-2">
+          <InputField
+            label="Title Document"
+            id="titleDocument"
+            name="titleDocument"
+            placeholder="e.g. C of O, Deed of Assignment"
+            value={fields.titleDocument}
+            onChange={handleChange}
+            required={false}
           />
         </div>
 
