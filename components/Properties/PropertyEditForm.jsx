@@ -36,10 +36,8 @@ const PropertyEditForm = ({ propertyId }) => {
     houseNoStreet: "",
     size: "",
     propertyDetails: "",
-    livingrooms: "null",
     bedrooms: "",
     bathrooms: "",
-    parkingSpace: "null",
     price: "",
     inspectionFee: "",
     cautionFee: "",
@@ -73,10 +71,8 @@ const PropertyEditForm = ({ propertyId }) => {
           houseNoStreet: res?.data?.houseNoStreet || "",
           size: res?.data?.size || "",
           propertyDetails: res?.data?.propertyDetails || "",
-          livingrooms: res?.data?.livingrooms || "null",
           bedrooms: res?.data?.bedrooms || "",
           bathrooms: res?.data?.bathrooms || "",
-          parkingSpace: res?.data?.parkingSpace || "null",
           price: res?.data?.price || "",
           inspectionFee: res?.data?.inspectionFee || "",
           cautionFee: res?.data?.cautionFee || "",
@@ -145,10 +141,8 @@ const PropertyEditForm = ({ propertyId }) => {
     formData.append("houseNoStreet", fields.houseNoStreet);
     formData.append("size", fields.size);
     formData.append("propertyDetails", fields.propertyDetails);
-    formData.append("livingrooms", fields.livingrooms);
     formData.append("bedrooms", fields.bedrooms);
     formData.append("bathrooms", fields.bathrooms);
-    formData.append("parkingSpace", fields.parkingSpace);
     formData.append("price", fields.price);
     formData.append("inspectionFee", fields.inspectionFee);
     formData.append("cautionFee", fields.cautionFee);
@@ -242,7 +236,7 @@ const PropertyEditForm = ({ propertyId }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end gap-4 mt-6 md:flex-row sm:flex-col sm:items-center">
+        <div className="flex justify-between gap-4 mt-6">
           <button
             type="button"
             onClick={handleCancel}

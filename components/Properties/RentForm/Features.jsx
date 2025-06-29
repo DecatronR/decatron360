@@ -49,36 +49,6 @@ const Features = ({ fields, handleChange }) => {
             onChange={handleChange}
           />
         </div>
-
-        {/* Living Rooms */}
-        <div>
-          <label htmlFor="livingrooms" className="text-sm text-gray-600">
-            Living Rooms
-          </label>
-          <input
-            type="number"
-            id="livingrooms"
-            name="livingrooms"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            value={fields.livingrooms}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Parking Space */}
-        <div>
-          <label htmlFor="parkingSpace" className="text-sm text-gray-600">
-            Parking Space
-          </label>
-          <input
-            type="number"
-            id="parkingSpace"
-            name="parkingSpace"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            value={fields.parkingSpace}
-            onChange={handleChange}
-          />
-        </div>
       </div>
     </div>
   );
