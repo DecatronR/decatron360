@@ -30,9 +30,13 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   const [displayInspectionFee, setDisplayInspectionFee] = useState();
   const [inspectionFee, setInspectionFee] = useState();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setIsInitialLoading(false);
+      return;
+    }
     const userId = sessionStorage.getItem("userId");
     const handleFetchUser = async () => {
       try {
@@ -49,6 +53,8 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
         }));
       } catch (error) {
         console.error("Error fetching user data:", error);
+      } finally {
+        setIsInitialLoading(false);
       }
     };
     handleFetchUser();
@@ -74,7 +80,10 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   useEffect(() => {
     const handleFetchAgentSchedule = async () => {
       try {
-        if (referralCode === undefined) return;
+        if (referralCode === undefined) {
+          setIsInitialLoading(false);
+          return;
+        }
 
         let rawAvailability;
         if (referralCode) {
@@ -83,6 +92,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
         } else if (agentId) {
           rawAvailability = await fetchAgentSchedule(agentId);
         } else {
+          setIsInitialLoading(false);
           return;
         }
 
@@ -90,6 +100,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
           enqueueSnackbar("No available inspection slots found.", {
             variant: "warning",
           });
+          setIsInitialLoading(false);
           return;
         }
 
@@ -112,6 +123,8 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
         setSlotIds(newSlotIds);
       } catch (error) {
         enqueueSnackbar("Error fetching schedule", { variant: "error" });
+      } finally {
+        setIsInitialLoading(false);
       }
     };
 
@@ -209,7 +222,7 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
   };
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 relative">
       <div className="flex items-center justify-center mb-6">
         <Calendar className="w-6 h-6 text-gray-600 mr-2" />
         <h3 className="text-xl font-semibold text-gray-800">
@@ -217,139 +230,183 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
         </h3>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Name Field */}
-        <div className="space-y-2">
-          <label className="flex items-center text-sm font-medium text-gray-700">
-            <User className="w-4 h-4 mr-2" />
-            Your Name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="John Doe"
-            required
-            disabled={isUserLoggedIn}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
-              isUserLoggedIn
-                ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
-                : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-            }`}
-          />
-        </div>
-
-        {/* Email Field */}
-        <div className="space-y-2">
-          <label className="flex items-center text-sm font-medium text-gray-700">
-            <Mail className="w-4 h-4 mr-2" />
-            Email Address
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="john.doe@example.com"
-            required
-            disabled={isUserLoggedIn}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
-              isUserLoggedIn
-                ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
-                : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-            }`}
-          />
-        </div>
-
-        {/* Phone Field */}
-        <div className="space-y-2">
-          <label className="flex items-center text-sm font-medium text-gray-700">
-            <Phone className="w-4 h-4 mr-2" />
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="08020000000"
-            required
-            disabled={isUserLoggedIn}
-            className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
-              isUserLoggedIn
-                ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
-                : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
-            }`}
-          />
-        </div>
-
-        {/* Inspection Fee Display */}
-        {inspectionFee > 0 && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">
-                Inspection Fee:
-              </span>
-              <span className="text-lg font-semibold text-gray-900">
-                {displayInspectionFee}
-              </span>
-            </div>
+      {isInitialLoading ? (
+        <div className="space-y-4">
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
           </div>
-        )}
-
-        {/* Date & Time Picker */}
-        <div className="space-y-2">
-          <label className="flex items-center text-sm font-medium text-gray-700">
-            <Clock className="w-4 h-4 mr-2" />
-            Preferred Date & Time
-          </label>
-          <div className="relative">
-            <DatePicker
-              selected={formData.date}
-              onChange={handleDateChange}
-              showTimeSelect
-              timeIntervals={60}
-              timeCaption="Time"
-              dateFormat="MMMM d, yyyy h:mm aa"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-200"
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+          <div className="animate-pulse">
+            <div className="h-12 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name Field */}
+          <div className="space-y-2">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <User className="w-4 h-4 mr-2" />
+              Your Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="John Doe"
               required
-              filterDate={(date) => isDateAvailable(date)}
-              filterTime={(time) => isTimeAvailable(time)}
-              placeholderText="Select a date and time"
-              wrapperClassName="w-full"
+              disabled={isUserLoggedIn || isButtonLoading}
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+                isUserLoggedIn || isButtonLoading
+                  ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                  : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+              }`}
             />
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isButtonLoading}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
-            isButtonLoading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md"
-          }`}
-        >
-          {isButtonLoading ? (
-            <ButtonSpinner />
-          ) : (
-            <>
-              <Calendar className="w-5 h-5 mr-2" />
-              {isUserLoggedIn ? "Schedule Inspection" : "Continue to Schedule"}
-            </>
+          {/* Email Field */}
+          <div className="space-y-2">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <Mail className="w-4 h-4 mr-2" />
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="john.doe@example.com"
+              required
+              disabled={isUserLoggedIn || isButtonLoading}
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+                isUserLoggedIn || isButtonLoading
+                  ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                  : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+              }`}
+            />
+          </div>
+
+          {/* Phone Field */}
+          <div className="space-y-2">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <Phone className="w-4 h-4 mr-2" />
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="08020000000"
+              required
+              disabled={isUserLoggedIn || isButtonLoading}
+              className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+                isUserLoggedIn || isButtonLoading
+                  ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                  : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+              }`}
+            />
+          </div>
+
+          {/* Inspection Fee Display */}
+          {inspectionFee > 0 && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">
+                  Inspection Fee:
+                </span>
+                <span className="text-lg font-semibold text-gray-900">
+                  {displayInspectionFee}
+                </span>
+              </div>
+            </div>
           )}
-        </button>
 
-        {/* Info for guest users */}
-        {!isUserLoggedIn && (
-          <p className="text-xs text-gray-500 text-center">
-            You'll be prompted to sign in or create an account to complete your
-            booking
-          </p>
-        )}
-      </form>
+          {/* Date & Time Picker */}
+          <div className="space-y-2">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <Clock className="w-4 h-4 mr-2" />
+              Preferred Date & Time
+            </label>
+            <div className="relative">
+              <DatePicker
+                selected={formData.date}
+                onChange={handleDateChange}
+                showTimeSelect
+                timeIntervals={60}
+                timeCaption="Time"
+                dateFormat="MMMM d, yyyy h:mm aa"
+                className={`w-full px-4 py-3 rounded-lg border transition-all duration-200 ${
+                  isButtonLoading
+                    ? "bg-gray-50 border-gray-200 text-gray-600 cursor-not-allowed"
+                    : "border-gray-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+                }`}
+                required
+                filterDate={(date) => isDateAvailable(date)}
+                filterTime={(time) => isTimeAvailable(time)}
+                placeholderText="Select a date and time"
+                wrapperClassName="w-full"
+                disabled={isButtonLoading}
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isButtonLoading}
+            className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
+              isButtonLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md"
+            }`}
+          >
+            {isButtonLoading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                <span>Processing...</span>
+              </>
+            ) : (
+              <>
+                <Calendar className="w-5 h-5 mr-2" />
+                {isUserLoggedIn
+                  ? "Schedule Inspection"
+                  : "Continue to Schedule"}
+              </>
+            )}
+          </button>
+
+          {/* Info for guest users */}
+          {!isUserLoggedIn && !isButtonLoading && (
+            <p className="text-xs text-gray-500 text-center">
+              You'll be prompted to sign in or create an account to complete
+              your booking
+            </p>
+          )}
+        </form>
+      )}
+
+      {/* Loading overlay for form submission */}
+      {isButtonLoading && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-xl z-10">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+            <p className="text-sm text-gray-600">Processing your request...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
