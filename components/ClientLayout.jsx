@@ -86,7 +86,7 @@ const CustomSnackbar = forwardRef(({ id, message, variant, ...other }, ref) => {
       }}
       className={`px-4 py-3 rounded-2xl shadow-lg transition-all duration-300 ease-in-out ${
         variant === "success"
-          ? "bg-green-500"
+          ? "bg-primary-500"
           : variant === "error"
           ? "bg-red-500"
           : variant === "warning"
