@@ -56,6 +56,15 @@ const PropertyEditForm = ({ propertyId }) => {
         const res = await editPropertyListing(propertyId);
         setPropertyData(res);
 
+        // Debug logging
+        console.log("PropertyEditForm - API response:", res);
+        console.log("PropertyEditForm - photos:", res?.photos);
+        console.log("PropertyEditForm - photos length:", res?.photos?.length);
+        console.log(
+          "PropertyEditForm - photo paths:",
+          res?.photos?.map((photo) => photo.path)
+        );
+
         // Set fields with existing property data
         setFields({
           id: res?.data?._id || "",
@@ -80,7 +89,7 @@ const PropertyEditForm = ({ propertyId }) => {
           latePaymentFee: res?.data?.latePaymentFee || "",
           virtualTour: res?.data?.virtualTour || "",
           video: res?.data?.video || "",
-          photo: res?.data?.photos || [],
+          photo: res?.photos?.map((photo) => photo.path) || [],
           titleDocument: res?.data?.titleDocument || "",
         });
 
@@ -153,7 +162,8 @@ const PropertyEditForm = ({ propertyId }) => {
     formData.append("titleDocument", fields.titleDocument);
 
     // Handle images - separate existing images from new uploaded images
-    const existingImages = propertyData?.data?.photos || [];
+    const existingImages =
+      propertyData?.photos?.map((photo) => photo.path) || [];
     const newImages = fields.photo.filter((photo) => photo instanceof File);
     const existingImageUrls = fields.photo.filter(
       (photo) => typeof photo === "string"
@@ -230,7 +240,9 @@ const PropertyEditForm = ({ propertyId }) => {
             fields={fields}
             handleChange={handleChange}
             setFields={setFields}
-            existingImages={propertyData?.data?.photos || []}
+            existingImages={
+              propertyData?.photos?.map((photo) => photo.path) || []
+            }
             isEditMode={true}
           />
         </div>
