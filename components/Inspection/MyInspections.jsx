@@ -465,6 +465,20 @@ const MyInspections = ({ bookings, role }) => {
                   )}
                 </span>
               </div>
+              {/* Inspection Time */}
+              <div className="flex items-center text-gray-600 mb-2">
+                <Clock className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+                <span className="text-sm">
+                  {new Date(booking.booking.bookingDateTime).toLocaleTimeString(
+                    "en-US",
+                    {
+                      hour: "numeric",
+                      minute: "2-digit",
+                      hour12: true,
+                    }
+                  )}
+                </span>
+              </div>
               {/* Time Status */}
               <div className="flex items-center mb-2">
                 <div
@@ -575,6 +589,20 @@ const MyInspections = ({ bookings, role }) => {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
+                  }
+                )}
+              </span>
+            </div>
+            {/* Inspection Time */}
+            <div className="flex items-center text-gray-600 mb-2">
+              <Clock className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+              <span className="text-sm">
+                {new Date(booking.booking.bookingDateTime).toLocaleTimeString(
+                  "en-US",
+                  {
+                    hour: "numeric",
+                    minute: "2-digit",
+                    hour12: true,
                   }
                 )}
               </span>

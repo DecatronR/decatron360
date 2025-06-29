@@ -62,6 +62,13 @@ const NonPaymentInspectionBooking = () => {
 
         const propertyResponse = await fetchPropertyData(propertyId);
         setProperty(propertyResponse);
+
+        // Debug: Log property data to see if photos exist
+        console.log("Property data:", propertyResponse);
+        console.log("Property photos:", propertyResponse.photos);
+        if (propertyResponse.photos && propertyResponse.photos.length > 0) {
+          console.log("First photo URL:", propertyResponse.photos[0].path);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -261,7 +268,7 @@ const NonPaymentInspectionBooking = () => {
       // Notify agent
       if (agentData?.fcmToken) {
         const msg = getAgentInspectionBookedMessage(
-          property?.data?.title || "Property",
+          property?.data.title || "Property",
           dateStr,
           timeStr
         );
@@ -278,7 +285,7 @@ const NonPaymentInspectionBooking = () => {
       // Notify client
       if (clientData?.fcmToken) {
         const msg = getClientInspectionConfirmedMessage(
-          property?.data?.title || "Property",
+          property?.data.title || "Property",
           dateStr,
           timeStr
         );
@@ -465,6 +472,45 @@ const NonPaymentInspectionBooking = () => {
           <p className="text-gray-600">
             Review your inspection details and confirm your free booking
           </p>
+        </div>
+
+        {/* Property Image */}
+        <div className="mb-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            {property?.photos && property.photos.length > 0 ? (
+              <img
+                src={property.photos[0].path}
+                alt={propertyTitle || "Property"}
+                className="w-full h-64 object-cover"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  e.target.nextSibling.style.display = "flex";
+                }}
+              />
+            ) : (
+              <div className="w-full h-64 bg-gray-100 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-gray-400" />
+                  </div>
+                  <p className="text-gray-500 text-sm">
+                    Property image not available
+                  </p>
+                </div>
+              </div>
+            )}
+            <div
+              className="hidden w-full h-64 bg-gray-100 items-center justify-center"
+              style={{ display: "none" }}
+            >
+              <div className="text-center">
+                <div className="w-12 h-12 bg-gray-200 rounded-full mx-auto mb-2 flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-gray-400" />
+                </div>
+                <p className="text-gray-500 text-sm">Image not available</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main Card */}
