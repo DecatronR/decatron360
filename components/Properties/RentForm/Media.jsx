@@ -14,16 +14,6 @@ const Media = ({
   const [uploadedImages, setUploadedImages] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
 
-  // Initialize with existing images if in edit mode
-  useEffect(() => {
-    if (isEditMode && existingImages.length > 0) {
-      setFields((prevFields) => ({
-        ...prevFields,
-        photo: [...existingImages],
-      }));
-    }
-  }, [isEditMode, existingImages, setFields]);
-
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = [];
@@ -183,10 +173,14 @@ const Media = ({
                         src={imageUrl}
                         alt={`Existing ${index}`}
                         className="object-cover w-full h-full"
+                        onError={(e) => {
+                          console.error("Failed to load image:", imageUrl);
+                          e.target.style.display = "none";
+                        }}
                       />
                       <button
                         type="button"
-                        className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs"
+                        className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600 transition"
                         onClick={() => handleImageRemove(index, true)}
                       >
                         <XIcon size={10} />
@@ -208,7 +202,7 @@ const Media = ({
                   />
                   <button
                     type="button"
-                    className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs"
+                    className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600 transition"
                     onClick={() => handleImageRemove(index, false)}
                   >
                     <XIcon size={10} />
@@ -217,6 +211,15 @@ const Media = ({
               ))}
             </div>
           )}
+
+          {/* No images message for debugging */}
+          {isEditMode &&
+            existingImages.length === 0 &&
+            previewUrls.length === 0 && (
+              <div className="mt-3 p-3 bg-gray-100 rounded-md text-sm text-gray-600">
+                No existing images found. You can upload new images above.
+              </div>
+            )}
         </div>
       </div>
     </div>
