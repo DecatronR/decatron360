@@ -50,6 +50,7 @@ const RentForm = () => {
     virtualTour: "",
     video: "",
     photo: [],
+    titleDocument: "",
   });
 
   //prefill userId
@@ -165,6 +166,7 @@ const RentForm = () => {
     formData.append("latePaymentFee", fields.latePaymentFee);
     formData.append("virtualTour", fields.virtualTour);
     formData.append("video", fields.video);
+    formData.append("titleDocument", fields.titleDocument);
 
     // Append image files (each file)
     fields.photo.forEach((photo, index) => {
