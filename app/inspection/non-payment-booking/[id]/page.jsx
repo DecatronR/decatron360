@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Swal from "sweetalert2";
 
 const NonPaymentInspectionBooking = () => {
   const router = useRouter();
@@ -97,12 +98,23 @@ const NonPaymentInspectionBooking = () => {
           rawAvailability = await fetchAgentSchedule(agentId);
         } else {
           setIsLoadingSlots(false);
+          await Swal.fire({
+            icon: "warning",
+            title: "No Agent Found",
+            text: "Unable to fetch available slots. Please try again or contact support.",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#F59E0B",
+          });
           return;
         }
 
         if (!rawAvailability || rawAvailability.length === 0) {
-          enqueueSnackbar("No available inspection slots found.", {
-            variant: "warning",
+          await Swal.fire({
+            icon: "warning",
+            title: "No Available Slots",
+            text: "No available inspection slots found. Please contact the agent for scheduling.",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#F59E0B",
           });
           setIsLoadingSlots(false);
           return;
@@ -126,14 +138,21 @@ const NonPaymentInspectionBooking = () => {
         setAvailableDates(formattedAvailability);
         setSlotIds(newSlotIds);
       } catch (error) {
-        enqueueSnackbar("Error fetching available slots", { variant: "error" });
+        console.error("Error fetching available slots:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Error Loading Slots",
+          text: "Failed to load available inspection slots. Please try again.",
+          confirmButtonText: "OK",
+          confirmButtonColor: "#EF4444",
+        });
       } finally {
         setIsLoadingSlots(false);
       }
     };
 
     fetchAvailableSlots();
-  }, [isEditing, enqueueSnackbar]);
+  }, [isEditing]);
 
   // Save edited data to state
   const handleSave = () => {
@@ -329,21 +348,87 @@ const NonPaymentInspectionBooking = () => {
 
       if (referralCode) {
         await handleReferaralBookInspection();
-        enqueueSnackbar("Inspection successfully booked with your referrer!", {
-          variant: "success",
+        await handleBookedSlot();
+
+        const result = await Swal.fire({
+          icon: "success",
+          title: "Booking Successful!",
+          text: "Your inspection has been successfully booked with your referrer.",
+          showCancelButton: true,
+          confirmButtonText: "View My Inspections",
+          cancelButtonText: "Go Home",
+          confirmButtonColor: "#3B82F6",
+          cancelButtonColor: "#6B7280",
+          reverseButtons: true,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp",
+          },
         });
+
+        if (result.isConfirmed) {
+          const userId = sessionStorage.getItem("userId");
+          if (userId) {
+            router.push(`/my-inspections/${userId}`);
+          } else {
+            // Fallback to home page if userId is not available
+            router.push("/");
+          }
+        } else {
+          router.push("/");
+        }
       } else {
         await handleBookInspection();
-        enqueueSnackbar(
-          "Inspection successfully booked with the lister of this property!",
-          { variant: "success" }
-        );
-      }
+        await handleBookedSlot();
 
-      await handleBookedSlot();
-      router.push("/inspection/success");
+        const result = await Swal.fire({
+          icon: "success",
+          title: "Booking Successful!",
+          text: "Your inspection has been successfully booked with the lister of this property.",
+          showCancelButton: true,
+          confirmButtonText: "View My Inspections",
+          cancelButtonText: "Go Home",
+          confirmButtonColor: "#3B82F6",
+          cancelButtonColor: "#6B7280",
+          reverseButtons: true,
+          showClass: {
+            popup: "animate__animated animate__fadeInDown",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp",
+          },
+        });
+
+        if (result.isConfirmed) {
+          const userId = sessionStorage.getItem("userId");
+          if (userId) {
+            router.push(`/my-inspections/${userId}`);
+          } else {
+            // Fallback to home page if userId is not available
+            router.push("/");
+          }
+        } else {
+          router.push("/");
+        }
+      }
     } catch (error) {
-      enqueueSnackbar("Failed to book inspection", { variant: "error" });
+      console.error("Failed to book inspection:", error);
+
+      await Swal.fire({
+        icon: "error",
+        title: "Booking Failed",
+        text: "There was an error processing your booking. Please try again or contact support.",
+        confirmButtonText: "OK",
+        confirmButtonColor: "#EF4444",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp",
+        },
+      });
     } finally {
       setIsButtonLoading(false);
     }
