@@ -163,7 +163,10 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
       sessionStorage.setItem("inspectionTime", selectedTime);
       sessionStorage.setItem("agentId", agentId);
     } else {
-      console.error("Selected slot is unavailable or not found.");
+      enqueueSnackbar(
+        "The selected date and time is not available. Please choose a different slot.",
+        { variant: "error" }
+      );
       setIsButtonLoading(false);
       return;
     }
@@ -219,6 +222,16 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
 
     const formattedTime = format(time, "HH:mm");
     return availableDates[selectedDate].some((slot) => slot === formattedTime);
+  };
+
+  // Helper function to check if the current selection is valid
+  const isCurrentSelectionValid = () => {
+    if (!formData.date) return false;
+
+    const selectedDate = format(formData.date, "yyyy-MM-dd");
+    const selectedTime = format(formData.date, "HH:mm");
+
+    return !!slotIds[selectedDate]?.[selectedTime];
   };
 
   return (
@@ -366,10 +379,12 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isButtonLoading}
+            disabled={isButtonLoading || !isCurrentSelectionValid()}
             className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 flex items-center justify-center ${
               isButtonLoading
                 ? "bg-gray-400 cursor-not-allowed"
+                : !isCurrentSelectionValid()
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md"
             }`}
           >
@@ -377,6 +392,11 @@ const ScheduleInspectionForm = ({ propertyId, agentId, referralCode }) => {
               <>
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 <span>Processing...</span>
+              </>
+            ) : !isCurrentSelectionValid() ? (
+              <>
+                <Calendar className="w-5 h-5 mr-2" />
+                <span>Please select an available date and time</span>
               </>
             ) : (
               <>
