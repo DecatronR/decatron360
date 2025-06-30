@@ -276,7 +276,7 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
       </button>
       {open && (
         <div
-          className="fixed sm:absolute left-0 right-0 sm:right-0 sm:left-auto mx-auto sm:mx-0 top-14 sm:top-2 mt-0 sm:mt-2 w-full max-w-sm sm:w-96 bg-white rounded-xl shadow-lg border border-gray-100 z-50 font-sans px-2 sm:px-0 max-h-[80vh] overflow-y-auto overflow-x-hidden"
+          className="fixed sm:absolute left-0 right-0 sm:right-0 sm:left-auto mx-auto sm:mx-0 top-14 sm:top-2 mt-0 sm:mt-2 w-full max-w-xs sm:w-96 bg-white rounded-xl shadow-lg border border-gray-100 z-50 font-sans px-2 sm:px-0 max-h-[80vh] overflow-y-auto overflow-x-hidden"
           role="menu"
           aria-label="Notifications"
         >
@@ -397,7 +397,7 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                           </div>
                         </div>
                         <span className="truncate min-w-0 flex-1 text-xs text-gray-600">
-                          {n.body}
+                          {truncateText(n.body, 50)}
                         </span>
                         {isExpanded && (
                           <div className="mt-2 text-xs text-gray-700 break-words max-w-full">
