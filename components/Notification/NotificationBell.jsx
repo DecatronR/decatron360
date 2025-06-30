@@ -1,5 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Bell, BellOff, X, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  Info,
+  CheckCircle,
+  AlertTriangle,
+  XCircle,
+  User,
+  Home,
+} from "lucide-react";
 import { requestAndSendNotificationPermission } from "../../utils/api/pushNotification/requestPermission";
 import { fetchNotifications } from "../../utils/api/pushNotification/fetchNotifications";
 import { markNotificationAsRead } from "../../utils/api/pushNotification/markNotificationAsRead";
@@ -8,6 +21,10 @@ import { useRouter } from "next/navigation";
 import { messaging } from "lib/firebase";
 import { SwipeableList, SwipeableListItem } from "react-swipeable-list";
 import "react-swipeable-list/dist/styles.css";
+import { deleteNotification } from "../../utils/api/pushNotification/deleteNotification";
+import { formatDistanceToNow } from "date-fns";
+import { useSnackbar } from "notistack";
+import { truncateText } from "utils/helpers/truncateText";
 
 // Helper to delete FCM token from client
 const deleteFcmTokenLocally = async () => {
@@ -22,6 +39,42 @@ const deleteFcmTokenLocally = async () => {
   }
 };
 
+// Helper: get icon and color for notification type
+const getTypeIcon = (type) => {
+  switch (type) {
+    case "success":
+      return {
+        icon: <CheckCircle className="text-success w-4 h-4" />,
+        color: "bg-success/10",
+      };
+    case "error":
+      return {
+        icon: <XCircle className="text-error w-4 h-4" />,
+        color: "bg-error/10",
+      };
+    case "warning":
+      return {
+        icon: <AlertTriangle className="text-yellow-500 w-4 h-4" />,
+        color: "bg-yellow-100",
+      };
+    case "user":
+      return {
+        icon: <User className="text-primary-500 w-4 h-4" />,
+        color: "bg-primary-100",
+      };
+    case "property":
+      return {
+        icon: <Home className="text-primary-400 w-4 h-4" />,
+        color: "bg-primary-100",
+      };
+    default:
+      return {
+        icon: <Info className="text-primary-400 w-4 h-4" />,
+        color: "bg-primary-100",
+      };
+  }
+};
+
 const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -33,8 +86,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   const bellRef = useRef(null);
   const [error, setError] = useState("");
   const router = useRouter();
-  const [expandedId, setExpandedId] = useState(null);
+  const [expandedIds, setExpandedIds] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const [lastDeleted, setLastDeleted] = useState(null);
 
   // Get userId from sessionStorage (or context if available)
   const userId =
@@ -45,11 +100,11 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
     if (open && userId) {
       fetchNotifications(userId)
         .then((data) => {
-          // Sort by createdAt descending if present
+          // Sort by createdAt descending if present, and normalize id
           const sorted = Array.isArray(data)
-            ? [...data].sort(
-                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-              )
+            ? [...data]
+                .map((n) => ({ ...n, id: n._id?.$oid || n.id }))
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             : [];
           setNotifications(sorted);
         })
@@ -147,9 +202,32 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   };
 
   // Clear a single notification from the list
-  const handleClearNotification = (id) => {
+  const handleClearNotification = async (id) => {
+    const toDelete = notifications.find((n) => n.id === id);
     setNotifications((prev) => prev.filter((n) => n.id !== id));
-    // Optionally, call backend to delete notification
+    setLastDeleted(toDelete);
+    enqueueSnackbar("Notification deleted", {
+      variant: "info",
+      action: (key) => (
+        <button
+          className="text-primary-600 font-semibold ml-2"
+          onClick={() => {
+            setNotifications((prev) => [toDelete, ...prev]);
+            setLastDeleted(null);
+            closeSnackbar(key);
+          }}
+        >
+          Undo
+        </button>
+      ),
+      autoHideDuration: 4000,
+      onClose: () => {
+        if (lastDeleted) {
+          deleteNotification(id);
+          setLastDeleted(null);
+        }
+      },
+    });
   };
 
   // Clear all notifications
@@ -160,13 +238,21 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
+  const toggleExpand = (id) => {
+    setExpandedIds((prev) =>
+      prev.includes(id) ? prev.filter((eid) => eid !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className="relative" ref={bellRef}>
       <button
         className={`group relative p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-200 transition-colors ${
           muted ? "" : "hover:bg-primary-50"
-        }`}
+        } animate-bounce`}
         aria-label={muted ? "Notifications muted" : "Show notifications"}
+        aria-haspopup="true"
+        aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
       >
         {muted ? (
@@ -183,18 +269,22 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
           />
         )}
         {!muted && unreadCount > 0 && (
-          <span className="absolute top-1 right-1 min-w-[18px] h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">
+          <span className="absolute top-1 right-1 min-w-[18px] h-5 px-1 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white animate-pulse">
             {unreadCount}
           </span>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 mt-2 w-[320px] sm:w-96 max-w-xs bg-white rounded-xl shadow-lg border border-gray-100 z-50">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <span className="font-semibold text-gray-900 text-base">
+        <div
+          className="fixed sm:absolute left-0 right-0 sm:right-0 sm:left-auto mx-auto sm:mx-0 top-14 sm:top-2 mt-0 sm:mt-2 w-full max-w-sm sm:w-96 bg-white rounded-xl shadow-lg border border-gray-100 z-50 font-sans px-2 sm:px-0 max-h-[80vh] overflow-y-auto overflow-x-hidden"
+          role="menu"
+          aria-label="Notifications"
+        >
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 gap-x-2">
+            <span className="font-semibold text-gray-900 text-base truncate min-w-0 flex-1">
               Notifications
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <button
                 className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-600 p-1 rounded-full"
                 aria-label={
@@ -222,7 +312,7 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
               )}
             </div>
             <button
-              className="p-1 rounded-full hover:bg-gray-100 ml-2"
+              className="p-1 rounded-full hover:bg-gray-100 ml-2 shrink-0"
               aria-label="Close notifications"
               onClick={() => setOpen(false)}
             >
@@ -236,18 +326,21 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
           )}
           <div className="max-h-96 overflow-y-auto divide-y divide-gray-100">
             {muted ? (
-              <div className="p-4 text-center text-gray-400 text-sm">
-                Notifications muted
+              <div className="p-6 flex flex-col items-center text-center text-gray-400 text-sm gap-2">
+                <BellOff className="w-8 h-8 mb-2" />
+                <span>Notifications muted</span>
               </div>
             ) : notifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 text-sm">
-                No notifications
+              <div className="p-6 flex flex-col items-center text-center text-gray-500 text-sm gap-2">
+                <Bell className="w-8 h-8 mb-2 text-primary-200" />
+                <span>No notifications</span>
               </div>
             ) : isMobile ? (
               <SwipeableList threshold={0.25}>
                 {notifications.map((n) => {
                   const isUnread = !n.read;
-                  const isExpanded = expandedId === n.id;
+                  const isExpanded = expandedIds.includes(n.id);
+                  const { icon, color } = getTypeIcon(n.type);
                   return (
                     <SwipeableListItem
                       key={n.id}
@@ -261,31 +354,19 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                       }}
                     >
                       <div
-                        className={`group px-4 py-3 flex flex-col gap-1 transition cursor-pointer relative ${
-                          isUnread
-                            ? "bg-blue-50 border-l-4 border-blue-400 font-semibold"
-                            : "bg-white"
-                        } hover:bg-primary-50`}
-                        onClick={() =>
-                          setExpandedId((prev) => (prev === n.id ? null : n.id))
-                        }
+                        className={`group px-2 py-2 text-sm sm:px-4 sm:py-3 sm:text-base flex flex-col gap-1 transition cursor-pointer relative flex-wrap min-w-0`}
+                        onClick={() => toggleExpand(n.id)}
+                        tabIndex={0}
+                        role="menuitem"
+                        aria-label={n.title}
                       >
-                        <div className="flex items-center justify-between gap-2">
-                          <span
-                            className={`text-gray-800 text-sm truncate ${
-                              isUnread ? "font-bold" : "font-medium"
-                            }`}
-                          >
-                            {n.title}
-                          </span>
+                        <div className="flex items-center justify-between gap-2 min-w-0">
                           <button
-                            className="p-1 rounded-full hover:bg-gray-200"
+                            className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                             aria-label={isExpanded ? "Collapse" : "Expand"}
                             onClick={(e) => {
                               e.stopPropagation();
-                              setExpandedId((prev) =>
-                                prev === n.id ? null : n.id
-                              );
+                              toggleExpand(n.id);
                             }}
                           >
                             {isExpanded ? (
@@ -294,21 +375,55 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                               <ChevronDown className="w-4 h-4" />
                             )}
                           </button>
+                          <div
+                            className={`flex items-center gap-2 ${color} rounded-full p-1 shrink-0`}
+                          >
+                            {icon}
+                          </div>
+                          <span className="truncate min-w-0 flex-1 text-gray-800 text-sm font-medium">
+                            {n.title}
+                          </span>
+                          <div className="flex items-center gap-3 ml-2 shrink-0">
+                            <button
+                              className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              aria-label="Clear notification"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleClearNotification(n.id);
+                              }}
+                            >
+                              <X className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
+                            </button>
+                          </div>
                         </div>
-                        <span className="text-xs text-gray-600 truncate">
-                          {n.description || n.body}
+                        <span className="truncate min-w-0 flex-1 text-xs text-gray-600">
+                          {n.body}
                         </span>
                         {isExpanded && (
-                          <div className="mt-2 text-xs text-gray-700 whitespace-pre-line">
-                            {n.body || n.description}
+                          <div className="mt-2 text-xs text-gray-700 break-words max-w-full">
+                            {n.body}
                           </div>
                         )}
-                        <span className="text-xs text-gray-400 mt-1">
-                          {n.time ||
-                            (n.createdAt
-                              ? new Date(n.createdAt).toLocaleString()
-                              : "")}
-                        </span>
+                        <div className="flex items-center justify-between mt-1">
+                          <span className="text-xs text-gray-400">
+                            {n.createdAt
+                              ? formatDistanceToNow(new Date(n.createdAt), {
+                                  addSuffix: true,
+                                })
+                              : ""}
+                          </span>
+                          {isUnread && (
+                            <button
+                              className="text-primary-600 text-xs font-semibold ml-2 hover:underline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNotificationClick(n);
+                              }}
+                            >
+                              Mark as Read
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </SwipeableListItem>
                   );
@@ -317,30 +432,47 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
             ) : (
               notifications.map((n) => {
                 const isUnread = !n.read;
-                const isExpanded = expandedId === n.id;
+                const isExpanded = expandedIds.includes(n.id);
+                const { icon, color } = getTypeIcon(n.type);
                 return (
                   <div
                     key={n.id}
-                    className={`group px-4 py-3 flex flex-col gap-1 transition cursor-pointer relative ${
+                    className={`group px-2 py-2 text-sm sm:px-4 sm:py-3 sm:text-base flex flex-col gap-1 transition cursor-pointer relative flex-wrap min-w-0 ${
                       isUnread
-                        ? "bg-blue-50 border-l-4 border-blue-400 font-semibold"
-                        : "bg-white"
+                        ? "bg-blue-50 border-l-4 border-blue-400 font-semibold animate-fade-in"
+                        : "bg-white animate-fade-in"
                     } hover:bg-primary-50`}
-                    onClick={() =>
-                      setExpandedId((prev) => (prev === n.id ? null : n.id))
-                    }
+                    onClick={() => toggleExpand(n.id)}
+                    tabIndex={0}
+                    role="menuitem"
+                    aria-label={n.title}
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <span
-                        className={`text-gray-800 text-sm truncate ${
-                          isUnread ? "font-bold" : "font-medium"
-                        }`}
+                    <div className="flex items-center justify-between gap-2 min-w-0">
+                      <button
+                        className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        aria-label={isExpanded ? "Collapse" : "Expand"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleExpand(n.id);
+                        }}
                       >
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                      </button>
+                      <div
+                        className={`flex items-center gap-2 ${color} rounded-full p-1 shrink-0`}
+                      >
+                        {icon}
+                      </div>
+                      <span className="truncate min-w-0 flex-1 text-gray-800 text-sm font-medium">
                         {n.title}
                       </span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-3 ml-2 shrink-0">
                         <button
-                          className="p-1 rounded-full hover:bg-gray-200"
+                          className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                           aria-label="Clear notification"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -349,38 +481,36 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                         >
                           <X className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
                         </button>
-                        <button
-                          className="p-1 rounded-full hover:bg-gray-200"
-                          aria-label={isExpanded ? "Collapse" : "Expand"}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setExpandedId((prev) =>
-                              prev === n.id ? null : n.id
-                            );
-                          }}
-                        >
-                          {isExpanded ? (
-                            <ChevronUp className="w-4 h-4" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4" />
-                          )}
-                        </button>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-600 truncate">
-                      {n.description || n.body}
+                    <span className="min-w-0 flex-1 text-xs text-gray-600">
+                      {truncateText(n.body, 50)}
                     </span>
                     {isExpanded && (
-                      <div className="mt-2 text-xs text-gray-700 whitespace-pre-line">
-                        {n.body || n.description}
+                      <div className="mt-2 text-xs text-gray-700 break-words max-w-full">
+                        {n.body}
                       </div>
                     )}
-                    <span className="text-xs text-gray-400 mt-1">
-                      {n.time ||
-                        (n.createdAt
-                          ? new Date(n.createdAt).toLocaleString()
-                          : "")}
-                    </span>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-gray-400">
+                        {n.createdAt
+                          ? formatDistanceToNow(new Date(n.createdAt), {
+                              addSuffix: true,
+                            })
+                          : ""}
+                      </span>
+                      {isUnread && (
+                        <button
+                          className="text-primary-600 text-xs font-semibold ml-2 hover:underline"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNotificationClick(n);
+                          }}
+                        >
+                          Mark as Read
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })
