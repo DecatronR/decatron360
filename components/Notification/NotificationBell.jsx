@@ -106,6 +106,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                 .map((n) => ({ ...n, id: n._id?.$oid || n.id }))
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             : [];
+          console.log(
+            "Fetched notifications with IDs:",
+            sorted.map((n) => ({ id: n.id, title: n.title }))
+          );
           setNotifications(sorted);
         })
         .catch((err) => setError("Failed to load notifications"));
@@ -185,7 +189,8 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   };
 
   const handleNotificationClick = async (notification) => {
-    if (!notification.read) {
+    console.log("Marking as read:", notification.id, notification.title);
+    if (!notification.read && notification.id) {
       // Optimistically update UI
       setNotifications((prev) =>
         prev.map((n) => (n.id === notification.id ? { ...n, read: true } : n))
@@ -193,6 +198,7 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
       try {
         await markNotificationAsRead(notification.id);
       } catch (err) {
+        console.error("Error marking as read:", err);
         // Optionally revert UI or show error
       }
     }
@@ -203,7 +209,18 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
 
   // Clear a single notification from the list
   const handleClearNotification = async (id) => {
+    console.log("Deleting notification:", id);
+    if (!id) {
+      console.error("No notification ID provided");
+      return;
+    }
+
     const toDelete = notifications.find((n) => n.id === id);
+    if (!toDelete) {
+      console.error("Notification not found:", id);
+      return;
+    }
+
     setNotifications((prev) => prev.filter((n) => n.id !== id));
     setLastDeleted(toDelete);
     enqueueSnackbar("Notification deleted", {
@@ -222,8 +239,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
       ),
       autoHideDuration: 4000,
       onClose: () => {
-        if (lastDeleted) {
-          deleteNotification(id);
+        if (lastDeleted && lastDeleted.id) {
+          deleteNotification(lastDeleted.id).catch((err) => {
+            console.error("Error deleting from backend:", err);
+          });
           setLastDeleted(null);
         }
       },
@@ -239,6 +258,11 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   const toggleExpand = (id) => {
+    console.log("Toggling expand for:", id);
+    if (!id) {
+      console.error("No notification ID provided for expand");
+      return;
+    }
     setExpandedIds((prev) =>
       prev.includes(id) ? prev.filter((eid) => eid !== id) : [...prev, id]
     );
@@ -362,9 +386,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                       >
                         <div className="flex items-center justify-between gap-2 min-w-0">
                           <button
-                            className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            className="p-2 rounded-full hover:bg-gray-200 shrink-0 min-w-10 min-h-10"
                             aria-label={isExpanded ? "Collapse" : "Expand"}
                             onClick={(e) => {
+                              console.log("Expand button clicked for:", n.id);
                               e.stopPropagation();
                               toggleExpand(n.id);
                             }}
@@ -385,9 +410,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                           </span>
                           <div className="flex items-center gap-3 ml-2 shrink-0">
                             <button
-                              className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              className="p-2 rounded-full hover:bg-gray-200 shrink-0 min-w-10 min-h-10"
                               aria-label="Clear notification"
                               onClick={(e) => {
+                                console.log("Delete button clicked for:", n.id);
                                 e.stopPropagation();
                                 handleClearNotification(n.id);
                               }}
@@ -416,6 +442,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                             <button
                               className="text-primary-600 text-xs font-semibold ml-2 hover:underline"
                               onClick={(e) => {
+                                console.log(
+                                  "Mark as read button clicked for:",
+                                  n.id
+                                );
                                 e.stopPropagation();
                                 handleNotificationClick(n);
                               }}
@@ -452,6 +482,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                         className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                         aria-label={isExpanded ? "Collapse" : "Expand"}
                         onClick={(e) => {
+                          console.log(
+                            "Desktop expand button clicked for:",
+                            n.id
+                          );
                           e.stopPropagation();
                           toggleExpand(n.id);
                         }}
@@ -475,6 +509,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                           className="p-1 rounded-full hover:bg-gray-200 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
                           aria-label="Clear notification"
                           onClick={(e) => {
+                            console.log(
+                              "Desktop delete button clicked for:",
+                              n.id
+                            );
                             e.stopPropagation();
                             handleClearNotification(n.id);
                           }}
@@ -484,7 +522,7 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                       </div>
                     </div>
                     <span className="min-w-0 flex-1 text-xs text-gray-600">
-                      {truncateText(n.body, 50)}
+                      {truncateText(n.body, 40)}
                     </span>
                     {isExpanded && (
                       <div className="mt-2 text-xs text-gray-700 break-words max-w-full">
@@ -503,6 +541,10 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
                         <button
                           className="text-primary-600 text-xs font-semibold ml-2 hover:underline"
                           onClick={(e) => {
+                            console.log(
+                              "Desktop mark as read button clicked for:",
+                              n.id
+                            );
                             e.stopPropagation();
                             handleNotificationClick(n);
                           }}
