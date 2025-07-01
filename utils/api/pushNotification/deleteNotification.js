@@ -5,7 +5,7 @@ export const deleteNotification = async (notificationId) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   try {
     const response = await axios.delete(
-      `${baseUrl}/notifications/${notificationId}`,
+      `${baseUrl}/notification/${notificationId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
