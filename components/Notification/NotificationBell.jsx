@@ -97,29 +97,37 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
 
   // Fetch notifications when dropdown opens
   useEffect(() => {
+    console.log("[DEBUG] useEffect - open:", open, "userId:", userId);
     if (open && userId) {
       fetchNotifications(userId)
         .then((data) => {
-          // Sort by createdAt descending if present, and normalize id
+          console.log("[DEBUG] Raw notifications data:", data);
           const sorted = Array.isArray(data)
             ? [...data]
-                .map((n) => ({ ...n, id: n._id?.$oid || n.id }))
+                .map((n) => ({ ...n, id: n._id || n.id }))
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             : [];
-          console.log(
-            "Fetched notifications with IDs:",
-            sorted.map((n) => ({ id: n.id, title: n.title }))
-          );
+          console.log("[DEBUG] After mapping, notifications:", sorted);
           setNotifications(sorted);
         })
-        .catch((err) => setError("Failed to load notifications"));
+        .catch((err) => {
+          console.error("[DEBUG] Failed to load notifications:", err);
+          setError("Failed to load notifications");
+        });
     }
   }, [open, userId]);
 
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
+      console.log(
+        "[DEBUG] handleClickOutside - event.target:",
+        event.target,
+        "bellRef.current:",
+        bellRef.current
+      );
       if (bellRef.current && !bellRef.current.contains(event.target)) {
+        console.log("[DEBUG] Outside click detected, closing dropdown");
         setOpen(false);
       }
     }
@@ -209,15 +217,15 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
 
   // Clear a single notification from the list
   const handleClearNotification = async (id) => {
-    console.log("Deleting notification:", id);
+    console.log("[DEBUG] Deleting notification:", id);
     if (!id) {
-      console.error("No notification ID provided");
+      console.error("[DEBUG] No notification ID provided");
       return;
     }
 
     const toDelete = notifications.find((n) => n.id === id);
     if (!toDelete) {
-      console.error("Notification not found:", id);
+      console.error("[DEBUG] Notification not found:", id);
       return;
     }
 
@@ -229,6 +237,7 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
         <button
           className="text-primary-600 font-semibold ml-2"
           onClick={() => {
+            console.log("[DEBUG] Undo delete for notification:", id);
             setNotifications((prev) => [toDelete, ...prev]);
             setLastDeleted(null);
             closeSnackbar(key);
@@ -240,8 +249,12 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
       autoHideDuration: 4000,
       onClose: () => {
         if (lastDeleted && lastDeleted.id) {
+          console.log(
+            "[DEBUG] Actually deleting from backend:",
+            lastDeleted.id
+          );
           deleteNotification(lastDeleted.id).catch((err) => {
-            console.error("Error deleting from backend:", err);
+            console.error("[DEBUG] Error deleting from backend:", err);
           });
           setLastDeleted(null);
         }
@@ -277,7 +290,15 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
         aria-label={muted ? "Notifications muted" : "Show notifications"}
         aria-haspopup="true"
         aria-expanded={open}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          console.log(
+            "[DEBUG] Bell button clicked, toggling open from",
+            open,
+            "to",
+            !open
+          );
+          setOpen((prev) => !prev);
+        }}
       >
         {muted ? (
           <BellOff
