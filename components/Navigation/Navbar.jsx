@@ -8,7 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import { HousePlus, Search, FilePlus2, LayoutList, X } from "lucide-react";
 import PropertySearchForm from "../Properties/PropertySearchForm";
 import NotificationBell from "../Notification/NotificationBell";
-import ActionMenu from "../ui/ActionMenu";
+import PropertyRequestAction from "../ui/PropertyRequestAction";
+import AddPropertyAction from "../ui/AddPropertyAction";
 
 const Navbar = () => {
   const router = useRouter();
@@ -202,7 +203,7 @@ const Navbar = () => {
           {!user && (
             <div className="hidden md:block md:ml-6">
               <div className="flex items-center space-x-4">
-                <ActionMenu
+                <PropertyRequestAction
                   items={requestMenuItems}
                   trigger={
                     <button className="flex items-center gap-2 text-white bg-primary-500 hover:bg-primary-600 rounded-full px-4 py-2 transition">
@@ -231,7 +232,7 @@ const Navbar = () => {
             <div className="hidden sm:flex absolute inset-y-0 right-0 items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               {/* Conditional CTA Button */}
               {user.role === "buyer" ? (
-                <ActionMenu
+                <PropertyRequestAction
                   items={requestMenuItems}
                   trigger={
                     <button className="hidden sm:flex items-center gap-2 text-white bg-primary-500 hover:bg-primary-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
@@ -243,13 +244,14 @@ const Navbar = () => {
               ) : ["owner", "agent", "property-manager", "caretaker"].includes(
                   user.role
                 ) ? (
-                <button
-                  onClick={() => router.push("/properties/add/for-rent")}
-                  className="hidden sm:flex items-center gap-2 text-white bg-primary-500 hover:bg-primary-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4"
-                >
-                  <HousePlus size={18} className="inline-block" />
-                  <span className="hidden sm:inline">Add Property</span>
-                </button>
+                <AddPropertyAction
+                  trigger={
+                    <button className="hidden sm:flex items-center gap-2 text-white bg-primary-500 hover:bg-primary-600 rounded-full px-4 py-2 transition shadow-lg transform hover:scale-105 mr-4">
+                      <HousePlus size={18} className="inline-block" />
+                      <span className="hidden sm:inline">Add Property</span>
+                    </button>
+                  }
+                />
               ) : null}
               {/* Notification Bell */}
               <div className="mr-4">

@@ -7,9 +7,10 @@ import Navbar from "./Navigation/Navbar";
 import MobileNavbar from "./Navigation/MobileNavbar";
 import { SnackbarProvider, closeSnackbar } from "notistack";
 import NotificationListener from "./Notification/NotificationListener";
-import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
+
 import RequestPropertyFloatingBtn from "components/PropertyRequest/RequestPropertyFloatingBtn";
-import ActionMenu from "./ui/ActionMenu";
+import PropertyRequestAction from "./ui/PropertyRequestAction";
+import AddPropertyAction from "./ui/AddPropertyAction";
 import { FilePlus2, LayoutList } from "lucide-react";
 import { useRef, useEffect, useState, forwardRef } from "react";
 
@@ -162,9 +163,10 @@ const MainLayout = ({ children }) => {
     // Show request button for guests OR buyers
     if (!user || user.role === "buyer") {
       return (
-        <ActionMenu
+        <PropertyRequestAction
           items={requestMenuItems}
-          trigger={<RequestPropertyFloatingBtn />}
+          isFloating={true}
+          position="bottom-right"
         />
       );
     }
@@ -173,7 +175,7 @@ const MainLayout = ({ children }) => {
     if (
       ["owner", "agent", "property-manager", "caretaker"].includes(user.role)
     ) {
-      return <AddPropertyFloatingBtn onClick={handleAddProperty} />;
+      return <AddPropertyAction isFloating={true} />;
     }
 
     return null;
