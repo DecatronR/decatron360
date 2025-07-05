@@ -13,7 +13,8 @@ import Features from "./Features";
 import Pricing from "./Pricing";
 import Media from "./Media";
 import { fetchAllUser } from "utils/api/user/fetchAllUsers";
-import { Home, Plus, Upload, DollarSign, MapPin, Settings } from "lucide-react";
+import Swal from "sweetalert2";
+import { Home, Plus, Upload, Settings } from "lucide-react";
 
 const RentForm = () => {
   const router = useRouter();
@@ -177,7 +178,99 @@ const RentForm = () => {
       enqueueSnackbar("Successfully listed new property!", {
         variant: "success",
       });
-      router.push(`/user-properties/${userId}`);
+
+      // Show SweetAlert2 confirmation dialog with three options
+      const result = await Swal.fire({
+        title: "Property Listed Successfully! 🎉",
+        html: `
+          <div class="text-left">
+            <p class="text-gray-600 mb-4">Your property has been successfully listed. What would you like to do next?</p>
+            <div class="space-y-3">
+              <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                <div class="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-full mr-3">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-blue-900">View your property listings</span>
+              </div>
+              <div class="flex items-center p-3 bg-orange-50 rounded-lg">
+                <div class="flex items-center justify-center w-8 h-8 bg-orange-100 rounded-full mr-3">
+                  <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-orange-900">Set inspection availability</span>
+              </div>
+              <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                <div class="flex items-center justify-center w-8 h-8 bg-green-100 rounded-full mr-3">
+                  <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-green-900">Create another listing</span>
+              </div>
+            </div>
+          </div>
+        `,
+        icon: "success",
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: "View Listings",
+        denyButtonText: "Set Availability",
+        cancelButtonText: "Create Another",
+        confirmButtonColor: "#3B82F6",
+        denyButtonColor: "#F97316",
+        cancelButtonColor: "#10B981",
+        reverseButtons: true,
+        customClass: {
+          popup: "rounded-2xl",
+          title: "text-xl font-semibold text-gray-900",
+          content: "text-gray-600",
+          confirmButton: "rounded-xl px-6 py-3 font-medium",
+          denyButton: "rounded-xl px-6 py-3 font-medium",
+          cancelButton: "rounded-xl px-6 py-3 font-medium",
+        },
+      });
+
+      if (result.isConfirmed) {
+        // User clicked "View Listings" - redirect to their property listings page
+        router.push(`/user-properties/${userId}`);
+      } else if (result.isDenied) {
+        // User clicked "Set Availability" - redirect to scheduler page
+        router.push(`/agent-scheduler/${userId}`);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User clicked "Create Another" - reset form and stay on page
+        setFields({
+          userID: fields.userID, // Keep the userID
+          title: "",
+          listingType: "",
+          usageType: "",
+          propertyType: "",
+          propertySubType: "null",
+          propertyCondition: "",
+          state: "",
+          lga: "",
+          neighbourhood: "",
+          houseNoStreet: "",
+          size: "",
+          propertyDetails: "",
+          bedrooms: "",
+          bathrooms: "",
+          price: "",
+          inspectionFee: "",
+          cautionFee: "",
+          agencyFee: "",
+          latePaymentFee: "",
+          virtualTour: "",
+          video: "",
+          photo: [],
+          titleDocument: "",
+        });
+        // Scroll to top of form
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } catch (error) {
       if (error.response && error.response.data) {
         const errorMessage = error.response.data.message;
