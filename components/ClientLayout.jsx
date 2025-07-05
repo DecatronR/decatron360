@@ -164,7 +164,8 @@ const MainLayout = ({ children }) => {
       return (
         <ActionMenu
           items={requestMenuItems}
-          trigger={<RequestPropertyFloatingBtn />}
+          isFloating={true}
+          position="bottom-right"
         />
       );
     }
