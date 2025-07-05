@@ -7,7 +7,7 @@ import { fetchProperties } from "@/utils/api/properties/fetchProperties";
 import { addFavoriteProperties } from "utils/api/properties/addFavoriteProperties";
 import { fetchFavoriteProperties } from "utils/api/properties/fetchFavoriteProperties";
 import { deleteFavoriteProperties } from "utils/api/properties/deleteFavoriteProperties";
-import AddPropertyFloatingBtn from "components/ui/AddPropertyFloatingBtn";
+import AddPropertyAction from "components/ui/AddPropertyAction";
 import { useAuth } from "context/AuthContext";
 import { trackVisitor } from "utils/api/analytics/trackVisitor";
 import { getOrCreateVisitorId } from "utils/api/analytics/getVisitor";
@@ -180,9 +180,7 @@ const HomeProperties = () => {
           </button>
         </section>
       )}
-      {user && isPrivilegedUser && (
-        <AddPropertyFloatingBtn onClick={handleAddProperty} />
-      )}
+      {user && isPrivilegedUser && <AddPropertyAction isFloating={true} />}
     </>
   );
 };

@@ -10,7 +10,8 @@ import NotificationListener from "./Notification/NotificationListener";
 
 import RequestPropertyFloatingBtn from "components/PropertyRequest/RequestPropertyFloatingBtn";
 import PropertyRequestAction from "./ui/PropertyRequestAction";
-import { FilePlus2, LayoutList, HousePlus } from "lucide-react";
+import AddPropertyAction from "./ui/AddPropertyAction";
+import { FilePlus2, LayoutList } from "lucide-react";
 import { useRef, useEffect, useState, forwardRef } from "react";
 
 const Analytics = dynamic(() => import("@/components/Analytics"), {
@@ -158,19 +159,6 @@ const MainLayout = ({ children }) => {
     },
   ];
 
-  const addPropertyMenuItems = [
-    {
-      label: "List Property",
-      icon: <HousePlus size={16} />,
-      onClick: handleAddProperty,
-    },
-    {
-      label: "Match a Request",
-      icon: <LayoutList size={16} />,
-      onClick: handleViewAllRequests,
-    },
-  ];
-
   const renderFloatingButton = () => {
     // Show request button for guests OR buyers
     if (!user || user.role === "buyer") {
@@ -187,13 +175,7 @@ const MainLayout = ({ children }) => {
     if (
       ["owner", "agent", "property-manager", "caretaker"].includes(user.role)
     ) {
-      return (
-        <PropertyRequestAction
-          items={addPropertyMenuItems}
-          isFloating={true}
-          position="bottom-right"
-        />
-      );
+      return <AddPropertyAction isFloating={true} />;
     }
 
     return null;

@@ -1,15 +1,15 @@
 "use client";
 
 import React from "react";
-import { FilePlus2, LayoutList } from "lucide-react";
+import { HousePlus, LayoutList } from "lucide-react";
 import { useRouter } from "next/navigation";
 import FloatingActionMenu from "./FloatingActionMenu";
 
-const PropertyRequestAction = ({ trigger, isFloating = false }) => {
+const AddPropertyAction = ({ trigger, isFloating = false }) => {
   const router = useRouter();
 
-  const handleRequestProperty = () => {
-    router.push("/property-requests/create");
+  const handleAddProperty = () => {
+    router.push("/properties/add/for-rent");
   };
 
   const handleViewAllRequests = () => {
@@ -22,14 +22,14 @@ const PropertyRequestAction = ({ trigger, isFloating = false }) => {
     }
   };
 
-  const requestMenuItems = [
+  const addPropertyMenuItems = [
     {
-      label: "Create New Request",
-      icon: <FilePlus2 size={16} />,
-      onClick: handleRequestProperty,
+      label: "List Property",
+      icon: <HousePlus size={16} />,
+      onClick: handleAddProperty,
     },
     {
-      label: "View All Requests",
+      label: "Match a Request",
       icon: <LayoutList size={16} />,
       onClick: handleViewAllRequests,
     },
@@ -38,7 +38,7 @@ const PropertyRequestAction = ({ trigger, isFloating = false }) => {
   return (
     <FloatingActionMenu
       trigger={trigger}
-      items={requestMenuItems}
+      items={addPropertyMenuItems}
       isFloating={isFloating}
       position="bottom-right"
       theme="primary"
@@ -46,4 +46,4 @@ const PropertyRequestAction = ({ trigger, isFloating = false }) => {
   );
 };
 
-export default PropertyRequestAction;
+export default AddPropertyAction;
