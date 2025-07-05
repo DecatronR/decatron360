@@ -211,8 +211,7 @@ const PropertyRequestForm = () => {
             Find Your Perfect Property
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Tell us what you're looking for and we'll help you find the perfect
-            match
+            Tell us what you're looking for and we'll let everyone know
           </p>
         </div>
 
@@ -408,7 +407,6 @@ const PropertyRequestForm = () => {
             {/* Budget Section */}
             <div className="mb-8">
               <div className="flex items-center mb-4">
-                <DollarSign className="w-5 h-5 text-primary-600 mr-2" />
                 <label
                   htmlFor="budget"
                   className="block text-sm font-medium text-gray-700"

@@ -1,3 +1,5 @@
+import { DollarSign, CreditCard, Shield, Clock, Percent } from "lucide-react";
+
 const Pricing = ({ fields, setFields }) => {
   const formatPrice = (price) => {
     if (typeof price !== "string") {
@@ -27,104 +29,158 @@ const Pricing = ({ fields, setFields }) => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-xl p-6 space-y-4">
-      <label className="block text-lg font-semibold text-gray-900">
-        Pricing
-      </label>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Price Input */}
-        <div>
-          <label htmlFor="price" className="text-sm text-gray-600">
-            Price
-          </label>
-          <input
-            type="text"
-            id="price"
-            name="price"
-            placeholder="NGN 0.00"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            required
-            value={fields.price || ""}
-            onChange={handleChange}
-            onBlur={() => handleBlur("price")}
-          />
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="flex items-center mb-6">
+        <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
+          <DollarSign className="w-5 h-5 text-primary-600" />
+        </div>
+        <h2 className="text-2xl font-semibold text-gray-900">Pricing & Fees</h2>
+      </div>
+
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Price Input */}
+          <div className="space-y-2">
+            <label
+              htmlFor="price"
+              className="block text-sm font-medium text-gray-700"
+            >
+              <div className="flex items-center">
+                <DollarSign className="w-4 h-4 mr-2 text-primary-600" />
+                Monthly Rent
+              </div>
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                ₦
+              </span>
+              <input
+                type="text"
+                id="price"
+                name="price"
+                placeholder="0.00"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                required
+                value={fields.price || ""}
+                onChange={handleChange}
+                onBlur={() => handleBlur("price")}
+              />
+            </div>
+          </div>
+
+          {/* Inspection Fee Input */}
+          <div className="space-y-2">
+            <label
+              htmlFor="inspectionFee"
+              className="block text-sm font-medium text-gray-700"
+            >
+              <div className="flex items-center">
+                <Shield className="w-4 h-4 mr-2 text-primary-600" />
+                Inspection Fee
+              </div>
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                ₦
+              </span>
+              <input
+                type="text"
+                id="inspectionFee"
+                name="inspectionFee"
+                placeholder="0.00"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                value={fields.inspectionFee || ""}
+                onChange={handleChange}
+                onBlur={() => handleBlur("inspectionFee")}
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Inspection Fee Input */}
-        <div>
-          <label htmlFor="inspectionFee" className="text-sm text-gray-600">
-            Inspection Fee
-          </label>
-          <input
-            type="text"
-            id="inspectionFee"
-            name="inspectionFee"
-            placeholder="NGN 0.00"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            value={fields.inspectionFee || ""}
-            onChange={handleChange}
-            onBlur={() => handleBlur("inspectionFee")}
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Refundable Caution Fee Input */}
+          <div className="space-y-2">
+            <label
+              htmlFor="cautionFee"
+              className="block text-sm font-medium text-gray-700"
+            >
+              <div className="flex items-center">
+                <CreditCard className="w-4 h-4 mr-2 text-primary-600" />
+                Refundable Caution Fee
+              </div>
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                ₦
+              </span>
+              <input
+                type="text"
+                id="cautionFee"
+                name="cautionFee"
+                placeholder="0.00"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                value={fields.cautionFee || ""}
+                onChange={handleChange}
+                onBlur={() => handleBlur("cautionFee")}
+              />
+            </div>
+          </div>
 
-        {/* Refundable Caution Fee Input */}
-        <div>
-          <label
-            htmlFor="refundableCautionFee"
-            className="text-sm text-gray-600"
-          >
-            Refundable Caution Fee
-          </label>
-          <input
-            type="text"
-            id="cautionFee"
-            name="cautionFee"
-            placeholder="NGN 0.00"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            value={fields.cautionFee || ""}
-            onChange={handleChange}
-            onBlur={() => handleBlur("cautionFee")}
-          />
-        </div>
-
-        {/* Transaction Commission Input */}
-        <div>
-          <label
-            htmlFor="transactionCommission"
-            className="text-sm text-gray-600"
-          >
-            Transaction Commission
-          </label>
-          <input
-            type="text"
-            id="agencyFee"
-            name="agencyFee"
-            placeholder="NGN 0.00"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            value={fields.agencyFee || ""}
-            onChange={handleChange}
-            onBlur={() => handleBlur("agencyFee")}
-          />
+          {/* Transaction Commission Input */}
+          <div className="space-y-2">
+            <label
+              htmlFor="agencyFee"
+              className="block text-sm font-medium text-gray-700"
+            >
+              <div className="flex items-center">
+                <Percent className="w-4 h-4 mr-2 text-primary-600" />
+                Agency Commission
+              </div>
+            </label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                ₦
+              </span>
+              <input
+                type="text"
+                id="agencyFee"
+                name="agencyFee"
+                placeholder="0.00"
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                value={fields.agencyFee || ""}
+                onChange={handleChange}
+                onBlur={() => handleBlur("agencyFee")}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Monthly Late Payment Fee Input */}
-        <div>
+        <div className="space-y-2">
           <label
-            htmlFor="transactionCommission"
-            className="text-sm text-gray-600"
+            htmlFor="latePaymentFee"
+            className="block text-sm font-medium text-gray-700"
           >
-            Monthly Late Payment Fee
+            <div className="flex items-center">
+              <Clock className="w-4 h-4 mr-2 text-primary-600" />
+              Monthly Late Payment Fee
+            </div>
           </label>
-          <input
-            type="text"
-            id="latePaymentFee"
-            name="latePaymentFee"
-            placeholder="NGN 0.00"
-            className="border rounded-lg w-full py-3 px-4 bg-gray-50 focus:ring-blue-300"
-            value={fields.latePaymentFee || ""}
-            onChange={handleChange}
-            onBlur={() => handleBlur("latePaymentFee")}
-          />
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+              ₦
+            </span>
+            <input
+              type="text"
+              id="latePaymentFee"
+              name="latePaymentFee"
+              placeholder="0.00"
+              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+              value={fields.latePaymentFee || ""}
+              onChange={handleChange}
+              onBlur={() => handleBlur("latePaymentFee")}
+            />
+          </div>
         </div>
       </div>
     </div>

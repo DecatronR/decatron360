@@ -13,6 +13,7 @@ import Features from "./Features";
 import Pricing from "./Pricing";
 import Media from "./Media";
 import { fetchAllUser } from "utils/api/user/fetchAllUsers";
+import { Home, Plus, Upload, DollarSign, MapPin, Settings } from "lucide-react";
 
 const RentForm = () => {
   const router = useRouter();
@@ -193,113 +194,154 @@ const RentForm = () => {
     }
   };
 
-  return loading ? (
-    <Spinner />
-  ) : (
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
     mounted && (
-      <form
-        data-testid="rent-form"
-        onSubmit={handleSubmit}
-        className="space-y-6 bg-white shadow-lg rounded-none sm:rounded-xl p-6 max-w-3xl w-full mx-auto border border-gray-200 sm:p-6"
-      >
-        <h2 className="text-2xl text-center font-bold mb-10 text-gray-900 sm:text-xl">
-          Add Property For{" "}
-          {fields.listingType
-            ? listingTypes.find((type) => type.slug === fields.listingType)
-                ?.listingType
-            : "...."}
-        </h2>
-
-        {userRole === "admin" && (
-          <div className="mb-6">
-            <label
-              htmlFor="userID"
-              className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base"
-            >
-              User
-            </label>
-            <select
-              id="userID"
-              name="userID"
-              className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm sm:text-base"
-              required
-              value={fields.userID}
-              onChange={handleChange}
-            >
-              <option disabled value="">
-                Select User
-              </option>
-              {users.map((type) => (
-                <option key={type._id} value={type._id}>
-                  {type.name}
-                </option>
-              ))}
-            </select>
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-6">
+              <Plus className="w-8 h-8 text-primary-600" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              List Your Property
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              {fields.listingType
+                ? `Add a new ${
+                    listingTypes.find(
+                      (type) => type.slug === fields.listingType
+                    )?.listingType
+                  } to your portfolio`
+                : "Tell us about your property and we'll help you list it"}
+            </p>
           </div>
-        )}
 
-        {/* Listing Type Selection */}
-        <div className="mb-6">
-          <label
-            htmlFor="listingType"
-            className="block text-gray-700 font-semibold mb-2 text-sm sm:text-base"
+          <form
+            data-testid="rent-form"
+            onSubmit={handleSubmit}
+            className="space-y-8"
           >
-            Listing Type
-          </label>
-          <select
-            id="listingType"
-            name="listingType"
-            className="border rounded-lg w-full py-3 px-4 text-gray-700 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 transition text-sm sm:text-base"
-            required
-            value={fields.listingType}
-            onChange={handleChange}
-          >
-            <option disabled value="">
-              Select Listing Type
-            </option>
-            {listingTypes.map((type) => (
-              <option key={type._id} value={type.slug}>
-                {type.listingType}
-              </option>
-            ))}
-          </select>
-        </div>
+            {/* Admin User Selection */}
+            {userRole === "admin" && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+                <div className="flex items-center mb-6">
+                  <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
+                    <Settings className="w-5 h-5 text-primary-600" />
+                  </div>
+                  <h2 className="text-2xl font-semibold text-gray-900">
+                    Select User
+                  </h2>
+                </div>
 
-        {/* Responsive Section Wrappers */}
-        <div className="bg-gray-50  rounded-lg shadow-sm ">
-          <Description fields={fields} handleChange={handleChange} />
-        </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="userID"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Property Owner
+                  </label>
+                  <select
+                    id="userID"
+                    name="userID"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 bg-white"
+                    required
+                    value={fields.userID}
+                    onChange={handleChange}
+                  >
+                    <option disabled value="">
+                      Select the property owner
+                    </option>
+                    {users.map((type) => (
+                      <option key={type._id} value={type._id}>
+                        {type.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
 
-        <div className="bg-gray-50 rounded-lg shadow-sm ">
-          <Location fields={fields} handleChange={handleChange} />
-        </div>
+            {/* Listing Type Selection */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <div className="flex items-center mb-6">
+                <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
+                  <Home className="w-5 h-5 text-primary-600" />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-900">
+                  Listing Type
+                </h2>
+              </div>
 
-        <div className="bg-gray-50 rounded-lg shadow-sm ">
-          <Features fields={fields} handleChange={handleChange} />
-        </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="listingType"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  How would you like to list this property?
+                </label>
+                <select
+                  id="listingType"
+                  name="listingType"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 bg-white"
+                  required
+                  value={fields.listingType}
+                  onChange={handleChange}
+                >
+                  <option disabled value="">
+                    Select listing type
+                  </option>
+                  {listingTypes.map((type) => (
+                    <option key={type._id} value={type.slug}>
+                      {type.listingType}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-        <div className="bg-gray-50 rounded-lg shadow-sm">
-          <Pricing fields={fields} setFields={setFields} />
-        </div>
+            {/* Form Sections */}
+            <Description fields={fields} handleChange={handleChange} />
+            <Location fields={fields} handleChange={handleChange} />
+            <Features fields={fields} handleChange={handleChange} />
+            <Pricing fields={fields} setFields={setFields} />
+            <Media
+              fields={fields}
+              handleChange={handleChange}
+              setFields={setFields}
+            />
 
-        <div className="bg-gray-50 rounded-lg shadow-sm">
-          <Media
-            fields={fields}
-            handleChange={handleChange}
-            setFields={setFields}
-          />
+            {/* Submit Button */}
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                disabled={isbuttonLoading}
+                className="bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white px-12 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none shadow-lg hover:shadow-xl disabled:shadow-md flex items-center space-x-2"
+              >
+                {isbuttonLoading ? (
+                  <>
+                    <ButtonSpinner />
+                    <span>Creating Listing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5" />
+                    <span>Create Listing</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
-
-        {/* Buttons */}
-        <div className="flex justify-end gap-4 mt-6">
-          <button
-            type="submit"
-            className="bg-primary-600 text-white px-6 py-3 rounded-full transition hover:bg-primary-700 shadow-md flex items-center justify-center w-full sm:w-auto"
-          >
-            {isbuttonLoading ? <ButtonSpinner /> : "Submit"}
-          </button>
-        </div>
-      </form>
+      </div>
     )
   );
 };
