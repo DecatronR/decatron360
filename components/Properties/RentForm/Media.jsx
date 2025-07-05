@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { XIcon } from "lucide-react";
+import { XIcon, Upload, Video, Globe, Image } from "lucide-react";
 import { useSnackbar } from "notistack";
 
 const Media = ({
@@ -95,37 +95,55 @@ const Media = ({
   const canAddMoreImages = getCurrentImageCount() < 7;
 
   return (
-    <div className="shadow-md rounded-lg p-6 bg-white max-w-md mx-auto md:max-w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        {/* Virtual Tour & Video - Stacked on Mobile, Side-by-Side on Desktop */}
-        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div className="flex items-center mb-6">
+        <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
+          <Image className="w-5 h-5 text-primary-600" />
+        </div>
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+          Media & Links
+        </h2>
+      </div>
+
+      <div className="space-y-8">
+        {/* Virtual Tour & Video Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
             <label
               htmlFor="virtualTour"
-              className="text-sm text-gray-600 block mb-1"
+              className="block text-sm font-medium text-gray-700"
             >
-              Virtual Tour
+              <div className="flex items-center">
+                <Globe className="w-4 h-4 mr-2 text-primary-600" />
+                Virtual Tour URL
+              </div>
             </label>
             <input
               type="text"
               id="virtualTour"
               name="virtualTour"
-              className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
               placeholder="https://my.matterport.com/show/?m=virtual-tour-id"
               value={fields.virtualTour}
               onChange={handleChange}
             />
           </div>
 
-          <div>
-            <label htmlFor="video" className="text-sm text-gray-600 block mb-1">
-              Video
+          <div className="space-y-2">
+            <label
+              htmlFor="video"
+              className="block text-sm font-medium text-gray-700"
+            >
+              <div className="flex items-center">
+                <Video className="w-4 h-4 mr-2 text-primary-600" />
+                Video URL
+              </div>
             </label>
             <input
               type="text"
               id="video"
               name="video"
-              className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
               placeholder="https://www.youtube.com/watch?v=video-id"
               value={fields.video}
               onChange={handleChange}
@@ -133,31 +151,45 @@ const Media = ({
           </div>
         </div>
 
-        {/* Images */}
-        <div className="col-span-2">
-          <label htmlFor="photo" className="text-sm text-gray-600 block mb-1">
-            Images (Max 7) - {getCurrentImageCount()}/7
-          </label>
-          <input
-            type="file"
-            id="photo"
-            name="photo"
-            className="border rounded-md w-full py-2 px-3 text-gray-700 bg-gray-50 focus:outline-none focus:ring focus:ring-blue-300 transition"
-            accept="image/*"
-            multiple
-            onChange={handleImageChange}
-            disabled={!canAddMoreImages}
-            aria-label="Upload images for your property listing (Max 7)"
-          />
-          {!canAddMoreImages && (
-            <p className="text-sm text-orange-600 mt-1">
-              Maximum 7 images reached. Remove some images to add more.
-            </p>
-          )}
+        {/* Images Section */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="photo"
+              className="block text-sm font-medium text-gray-700"
+            >
+              <div className="flex items-center">
+                <Upload className="w-4 h-4 mr-2 text-primary-600" />
+                Property Images
+              </div>
+            </label>
+            <span className="text-sm text-gray-500">
+              {getCurrentImageCount()}/7 images
+            </span>
+          </div>
+
+          <div className="relative">
+            <input
+              type="file"
+              id="photo"
+              name="photo"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 bg-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              accept="image/*"
+              multiple
+              onChange={handleImageChange}
+              disabled={!canAddMoreImages}
+              aria-label="Upload images for your property listing (Max 7)"
+            />
+            {!canAddMoreImages && (
+              <p className="text-sm text-orange-600 mt-2">
+                Maximum 7 images reached. Remove some images to add more.
+              </p>
+            )}
+          </div>
 
           {/* Image Preview Section */}
           {(existingImages.length > 0 || previewUrls.length > 0) && (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
               {/* Existing Images */}
               {isEditMode &&
                 existingImages.map((imageUrl, index) => {
@@ -167,7 +199,7 @@ const Media = ({
                   return (
                     <div
                       key={`existing-${index}`}
-                      className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-md border border-gray-300 overflow-hidden"
+                      className="relative aspect-square rounded-xl border border-gray-200 overflow-hidden group"
                     >
                       <img
                         src={imageUrl}
@@ -180,10 +212,10 @@ const Media = ({
                       />
                       <button
                         type="button"
-                        className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600 transition"
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 text-xs hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
                         onClick={() => handleImageRemove(index, true)}
                       >
-                        <XIcon size={10} />
+                        <XIcon size={12} />
                       </button>
                     </div>
                   );
@@ -193,7 +225,7 @@ const Media = ({
               {previewUrls.map((previewUrl, index) => (
                 <div
                   key={`new-${index}`}
-                  className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-md border border-gray-300 overflow-hidden"
+                  className="relative aspect-square rounded-xl border border-gray-200 overflow-hidden group"
                 >
                   <img
                     src={previewUrl}
@@ -202,10 +234,10 @@ const Media = ({
                   />
                   <button
                     type="button"
-                    className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600 transition"
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 text-xs hover:bg-red-600 transition opacity-0 group-hover:opacity-100"
                     onClick={() => handleImageRemove(index, false)}
                   >
-                    <XIcon size={10} />
+                    <XIcon size={12} />
                   </button>
                 </div>
               ))}
@@ -216,7 +248,7 @@ const Media = ({
           {isEditMode &&
             existingImages.length === 0 &&
             previewUrls.length === 0 && (
-              <div className="mt-3 p-3 bg-gray-100 rounded-md text-sm text-gray-600">
+              <div className="mt-4 p-4 bg-gray-50 rounded-xl text-sm text-gray-600 text-center">
                 No existing images found. You can upload new images above.
               </div>
             )}

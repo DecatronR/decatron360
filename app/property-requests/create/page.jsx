@@ -3,8 +3,8 @@ import PropertyRequestForm from "components/PropertyRequest/PropertyRequestForm"
 
 const CreatePropertyRequestPage = () => {
   return (
-    <section className="bg-grey-50">
-      <div className="bg-white mb-4 rounded-md border m-4 md:m-0">
+    <section className="bg-white min-h-screen flex items-center">
+      <div className="container mx-auto max-w-3xl py-6">
         <PropertyRequestForm />
       </div>
     </section>

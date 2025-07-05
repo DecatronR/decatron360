@@ -24,7 +24,7 @@ const AddPropertyAction = ({ trigger, isFloating = false }) => {
 
   const addPropertyMenuItems = [
     {
-      label: "List Property",
+      label: "Create New Listing",
       icon: <HousePlus size={16} />,
       onClick: handleAddProperty,
     },

@@ -9,7 +9,14 @@ import { updateSchedule } from "utils/api/scheduler/updateSchedule";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import ButtonSpinner from "components/ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
-import { X } from "lucide-react";
+import {
+  X,
+  Calendar,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Info,
+} from "lucide-react";
 // import "@fullcalendar/common/main.css";
 
 const AgentScheduler = () => {
@@ -112,6 +119,9 @@ const AgentScheduler = () => {
         [dateStr]: [...(prev[dateStr] || []), timeSlot],
       }));
     }
+
+    // Remove auto-close - let user manually close when done
+    // This prevents the drawer from closing too aggressively
   };
 
   const handleSetAvailability = async () => {
@@ -167,189 +177,314 @@ const AgentScheduler = () => {
     }
   };
 
+  const formatSelectedDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   return (
-    <section className="px-2 sm:px-4 py-6 bg-gray-50">
-      <div className="container mx-auto max-w-3xl p-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-center">
-          Set Availability
-        </h2>
-      </div>
-
-      <div className="container max-w-5xl mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-8">
-        <p className="text-center text-gray-800 mb-4 sm:mb-6 text-sm sm:text-base">
-          Select available times for property inspections
-        </p>
-
-        {/* Legend */}
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4">
-          {[
-            { color: "bg-yellow-100", label: "Today" },
-            { color: "bg-white", label: "Unavailable" },
-            { color: "bg-green-500", label: "Available" },
-            { color: "bg-red-500", label: "Booked" },
-          ].map((item, index) => (
-            <div key={index} className="flex items-center">
-              <div
-                className={`w-4 h-4 ${item.color} border border-gray-400 rounded-full mr-2`}
-              ></div>
-              <span className="text-gray-600 text-sm">{item.label}</span>
-            </div>
-          ))}
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Compact Header Section */}
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-primary-100 rounded-full mb-4 sm:mb-6">
+            <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-primary-600" />
+          </div>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
+            Set Inspection Availability
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
+            Choose when you're available for property inspections
+          </p>
         </div>
 
-        <div className="flex flex-col lg:flex-row">
-          {/* Calendar */}
-          <div className="lg:w-2/3 w-full">
-            <div className="w-full rounded-lg border border-gray-300 shadow-lg overflow-hidden">
-              <div className="h-[50vh] sm:h-[60vh] lg:h-[69vh] overflow-y-auto sm:text-lg text-xs">
-                <FullCalendar
-                  plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                  initialView="dayGridMonth"
-                  headerToolbar={{
-                    left: "prev,next",
-                    center: "title",
-                    right: "dayGridMonth",
-                  }}
-                  selectable={true}
-                  dayMaxEvents={true}
-                  dateClick={handleDateClick}
-                  events={[
-                    ...Object.keys(availableTimes).map((date) => ({
-                      start: date,
-                      end: date,
-                      display: "background",
-                      backgroundColor: "green",
-                    })),
-                    ...Object.keys(bookedDates).map((date) => ({
-                      start: date,
-                      end: date,
-                      display: "background",
-                      backgroundColor: "red",
-                    })),
-                  ]}
-                  height="auto"
-                />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 lg:p-8">
+          {/* Compact Legend */}
+          <div className="flex flex-wrap justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+            {[
+              {
+                color: "bg-yellow-100 border-yellow-300",
+                label: "Today",
+                icon: Clock,
+              },
+              {
+                color: "bg-gray-100 border-gray-300",
+                label: "Unavailable",
+                icon: X,
+              },
+              {
+                color: "bg-green-100 border-green-300",
+                label: "Available",
+                icon: CheckCircle,
+              },
+              {
+                color: "bg-red-100 border-red-300",
+                label: "Booked",
+                icon: AlertCircle,
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-white px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-gray-200 shadow-sm"
+              >
+                <div
+                  className={`w-2 h-2 sm:w-3 sm:h-3 ${item.color} rounded-full mr-1.5 sm:mr-2 border`}
+                ></div>
+                <item.icon className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600 mr-1.5 sm:mr-2" />
+                <span className="text-xs sm:text-sm font-medium text-gray-700">
+                  {item.label}
+                </span>
               </div>
-            </div>
+            ))}
           </div>
 
-          {/* Desktop Time Slots */}
-          <div className="lg:w-1/3 w-full lg:pl-4 mt-4 lg:mt-0 hidden sm:block">
-            {selectedDate && (
-              <div className="bg-white rounded-lg shadow-lg p-4">
-                <h4 className="font-semibold text-lg mb-2 text-primary-600">
-                  {selectedDate}
-                </h4>
-                <div className="h-[40vh] sm:h-[50vh] overflow-y-auto">
-                  <div className="flex flex-col mb-3">
-                    <button
-                      onClick={handleSelectAllTimeSlots}
-                      className="w-full sm:w-auto px-4 py-2 rounded bg-gradient-to-r from-green-400 to-green-600 text-white hover:bg-green-500 transition duration-200"
-                    >
-                      All Day
-                    </button>
-                    {timeSlots.map((slot) => {
-                      const isAvailable =
-                        availableTimes[selectedDate]?.includes(slot) || false;
-                      const isBooked =
-                        bookedDates[selectedDate]?.includes(slot) || false;
-                      return (
-                        <button
-                          key={slot}
-                          onClick={() =>
-                            handleTimeSlotClick(selectedDate, slot)
-                          }
-                          className={`mb-2 w-full px-4 py-2 rounded transition duration-200 ${
-                            isBooked
-                              ? "bg-red-500 text-white cursor-not-allowed"
-                              : isAvailable
-                              ? "bg-green-500 text-white hover:bg-green-500"
-                              : "bg-gray-200 hover:bg-gray-300"
-                          }`}
-                          disabled={isBooked}
-                        >
-                          {formatTimeTo12Hour(slot)}
-                        </button>
-                      );
-                    })}
-                  </div>
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
+            {/* Calendar */}
+            <div className="lg:w-2/3 w-full">
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <div className="h-[45vh] sm:h-[55vh] lg:h-[65vh] overflow-y-auto">
+                  <FullCalendar
+                    plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                    initialView="dayGridMonth"
+                    headerToolbar={{
+                      left: "prev,next",
+                      center: "title",
+                      right: "dayGridMonth",
+                    }}
+                    selectable={true}
+                    dayMaxEvents={true}
+                    dateClick={handleDateClick}
+                    events={[
+                      ...Object.keys(availableTimes).map((date) => ({
+                        start: date,
+                        end: date,
+                        display: "background",
+                        backgroundColor: "#10B981",
+                      })),
+                      ...Object.keys(bookedDates).map((date) => ({
+                        start: date,
+                        end: date,
+                        display: "background",
+                        backgroundColor: "#EF4444",
+                      })),
+                    ]}
+                    height="auto"
+                    dayCellClassNames="hover:bg-gray-50 cursor-pointer transition-colors"
+                    buttonText={{
+                      prev: "‹",
+                      next: "›",
+                    }}
+                    titleFormat={{ month: "long", year: "numeric" }}
+                  />
                 </div>
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* Mobile Time Slot Drawer */}
-        {/* Sidebar for Time Slots */}
-        <div
-          className={`fixed top-[10rem] right-0 h-[40vh] w-[60%] max-w-md bg-white shadow-lg p-6 transform sm:hidden transition-transform duration-300 z-50
-    ${
-      selectedDate
-        ? "translate-x-0 pointer-events-auto"
-        : "translate-x-full pointer-events-none"
-    }`}
-          style={{
-            backgroundColor: "#fff",
-            overflowY: "clip",
-            maxHeight: "40vh",
-          }}
-        >
-          <button
-            onClick={() => setSelectedDate(null)}
-            className="absolute top-4 left-4 text-gray-500 hover:text-gray-800"
-          >
-            <X className="w-5 h-5" />
-          </button>
+            {/* Desktop Time Slots */}
+            <div className="lg:w-1/3 w-full hidden sm:block">
+              {selectedDate ? (
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
+                  <div className="flex items-center mb-4 sm:mb-6">
+                    <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 rounded-full mr-3 sm:mr-4">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                        Time Slots
+                      </h3>
+                      <p className="text-xs sm:text-sm text-gray-600">
+                        {formatSelectedDate(selectedDate)}
+                      </p>
+                    </div>
+                  </div>
 
-          <h4 className="font-semibold text-lg mb-2 text-primary-600 text-center">
-            {selectedDate}
-          </h4>
+                  <div className="space-y-3 sm:space-y-4">
+                    <button
+                      onClick={handleSelectAllTimeSlots}
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white text-sm sm:text-base font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 shadow-md"
+                    >
+                      Select All Day
+                    </button>
 
-          <div className="h-[30vh] overflow-y-auto">
-            <div className="flex flex-col mb-3">
-              <button
-                onClick={handleSelectAllTimeSlots}
-                className="w-full px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-              >
-                All Day
-              </button>
-              {timeSlots.map((slot) => {
-                const isAvailable =
-                  availableTimes[selectedDate]?.includes(slot);
-                const isBooked = bookedDates[selectedDate]?.includes(slot);
+                    <div className="max-h-[45vh] sm:max-h-[50vh] overflow-y-auto space-y-2">
+                      {timeSlots.map((slot) => {
+                        const isAvailable =
+                          availableTimes[selectedDate]?.includes(slot) || false;
+                        const isBooked =
+                          bookedDates[selectedDate]?.includes(slot) || false;
 
-                return (
-                  <button
-                    key={slot}
-                    onClick={() => handleTimeSlotClick(selectedDate, slot)}
-                    className={`mb-2 w-full px-4 py-2 rounded transition duration-200 ${
-                      isBooked
-                        ? "bg-red-500 text-white cursor-not-allowed"
-                        : isAvailable
-                        ? "bg-green-500 text-white hover:bg-green-600"
-                        : "bg-gray-200 hover:bg-gray-300"
-                    }`}
-                    disabled={isBooked}
-                  >
-                    {formatTimeTo12Hour(slot)}
-                  </button>
-                );
-              })}
+                        return (
+                          <button
+                            key={slot}
+                            onClick={() =>
+                              handleTimeSlotClick(selectedDate, slot)
+                            }
+                            className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium ${
+                              isBooked
+                                ? "bg-red-100 text-red-500 border border-red-200 cursor-not-allowed"
+                                : isAvailable
+                                ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
+                                : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
+                            }`}
+                            disabled={isBooked}
+                          >
+                            {formatTimeTo12Hour(slot)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-gray-50 rounded-xl border border-gray-200 p-6 sm:p-8 text-center">
+                  <Clock className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
+                    Select a Date
+                  </h3>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    Click on any date in the calendar to set your availability
+                    for that day.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
 
-        {/* Save Button */}
-        <div className="text-center mt-5">
-          <button
-            onClick={handleSaveChanges}
-            className="w-full sm:w-auto bg-primary-500 text-white px-6 py-3 rounded-full transition hover:bg-primary-600"
+          {/* Mobile Time Slot Drawer */}
+          <div
+            className={`fixed top-0 right-0 h-full w-full sm:w-[85%] max-w-md bg-white shadow-2xl transform sm:hidden transition-transform duration-300 z-50 ${
+              selectedDate ? "translate-x-0" : "translate-x-full"
+            }`}
           >
-            {isButtonLoading ? <ButtonSpinner /> : "Save Changes"}
-          </button>
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+              <div className="flex-1">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
+                  Time Slots
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {formatSelectedDate(selectedDate)}
+                </p>
+                <p className="text-xs text-green-600 font-medium mt-1">
+                  {availableTimes[selectedDate]?.length || 0} slots selected
+                </p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setSelectedDate(null);
+                    enqueueSnackbar(
+                      `Time slots updated for ${formatSelectedDate(
+                        selectedDate
+                      )}`,
+                      {
+                        variant: "success",
+                        autoHideDuration: 2000,
+                      }
+                    );
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>
+                    Done ({availableTimes[selectedDate]?.length || 0})
+                  </span>
+                </button>
+                <button
+                  onClick={() => setSelectedDate(null)}
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 sm:p-6">
+              <button
+                onClick={handleSelectAllTimeSlots}
+                className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white text-sm sm:text-base font-medium hover:from-green-600 hover:to-green-700 transition-all duration-200 mb-4 sm:mb-6"
+              >
+                Select All Day
+              </button>
+
+              <div className="space-y-2 sm:space-y-3 max-h-[60vh] overflow-y-auto">
+                {timeSlots.map((slot) => {
+                  const isAvailable =
+                    availableTimes[selectedDate]?.includes(slot);
+                  const isBooked = bookedDates[selectedDate]?.includes(slot);
+
+                  return (
+                    <button
+                      key={slot}
+                      onClick={() => handleTimeSlotClick(selectedDate, slot)}
+                      className={`w-full px-4 py-3 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium relative ${
+                        isBooked
+                          ? "bg-red-100 text-red-500 border border-red-200 cursor-not-allowed"
+                          : isAvailable
+                          ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 transform hover:scale-105"
+                          : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 transform hover:scale-105"
+                      }`}
+                      disabled={isBooked}
+                    >
+                      {formatTimeTo12Hour(slot)}
+                      {isAvailable && (
+                        <div className="absolute top-2 right-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Important Note - Moved to bottom */}
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 sm:p-6 mt-6 sm:mt-8">
+            <div className="flex items-start">
+              <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 mr-2 sm:mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="text-xs sm:text-sm font-medium text-blue-900 mb-1">
+                  Important Note
+                </h3>
+                <p className="text-xs sm:text-sm text-blue-700">
+                  Without setting your availability, potential clients won't be
+                  able to book inspections for your properties. Make sure to
+                  select all the times you're comfortable showing your
+                  properties.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="flex justify-center mt-6 sm:mt-8">
+            <button
+              onClick={handleSaveChanges}
+              disabled={isButtonLoading}
+              className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 disabled:bg-primary-400 text-white px-8 sm:px-12 py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none shadow-lg hover:shadow-xl disabled:shadow-md flex items-center justify-center space-x-2"
+            >
+              {isButtonLoading ? (
+                <>
+                  <ButtonSpinner />
+                  <span>Saving Changes...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Save Availability</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

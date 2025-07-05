@@ -196,7 +196,7 @@ const PropertyRequestList = () => {
           <select
             value={filters.status}
             onChange={(e) => handleFilterChange("status", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
           >
             <option value="all">All</option>
             <option value="open">Open</option>
@@ -210,7 +210,7 @@ const PropertyRequestList = () => {
           <select
             value={filters.role}
             onChange={(e) => handleFilterChange("role", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
           >
             <option value="">All</option>
             {roles.map((role) => (
@@ -226,7 +226,7 @@ const PropertyRequestList = () => {
           <select
             value={filters.state}
             onChange={(e) => handleFilterChange("state", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
           >
             <option value="">All</option>
             {states.map((state) => (
@@ -242,7 +242,7 @@ const PropertyRequestList = () => {
           <select
             value={filters.lga}
             onChange={(e) => handleFilterChange("lga", e.target.value)}
-            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
             disabled={!filters.state}
           >
             <option value="">All</option>
@@ -263,7 +263,7 @@ const PropertyRequestList = () => {
               handleFilterChange("neighbourhood", e.target.value)
             }
             placeholder="e.g. Setraco Gwarinpa"
-            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
             autoComplete="off"
           />
         </div>
@@ -275,7 +275,7 @@ const PropertyRequestList = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+            className="border rounded-lg px-3 py-2 text-gray-700 focus:ring-2 focus:ring-primary-500 w-full sm:w-auto"
           >
             <option value="createdAt">Date (Newest)</option>
             <option value="createdAt-asc">Date (Oldest)</option>
@@ -300,7 +300,7 @@ const PropertyRequestList = () => {
             onClick={() => setViewMode("grid")}
             className={`p-2 rounded-lg border ${
               viewMode === "grid"
-                ? "bg-blue-600 text-white border-blue-600"
+                ? "bg-primary-600 text-white border-primary-600"
                 : "bg-white text-gray-700 border-gray-200 hover:bg-gray-100"
             } transition-colors`}
             aria-label="Grid view"
@@ -357,7 +357,7 @@ const PropertyRequestList = () => {
 
               {/* User Info */}
               <div className="flex items-center text-gray-600 mb-2">
-                <User className="w-4 h-4 mr-2 text-blue-500 flex-shrink-0" />
+                <User className="w-4 h-4 mr-2 text-primary-500 flex-shrink-0" />
                 <span className="text-sm">
                   {request.name} • {request.role}
                 </span>
@@ -418,7 +418,7 @@ const PropertyRequestList = () => {
       <FilterSortBar />
       {loading && (!requests || requests.length === 0) ? (
         <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
         </div>
       ) : !requests || requests.length === 0 ? (
         <div className="text-center py-12">
@@ -427,9 +427,6 @@ const PropertyRequestList = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               No Property Requests Found
             </h3>
-            <p className="text-gray-600">
-              There are no property requests matching your criteria.
-            </p>
           </div>
         </div>
       ) : viewMode === "grid" ? (
@@ -445,7 +442,7 @@ const PropertyRequestList = () => {
           <button
             onClick={handleLoadMore}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-full hover:bg-priamry-700 transition-colors disabled:opacity-50"
           >
             {loading ? (
               <>

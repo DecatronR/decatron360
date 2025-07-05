@@ -1,38 +1,172 @@
-import React from "react";
-import { MapPin, Wallet, CalendarDays } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import {
+  MapPin,
+  Wallet,
+  CalendarDays,
+  Home,
+  User,
+  Tag,
+  Image as ImageIcon,
+} from "lucide-react";
+import { parseAmount } from "utils/helpers/formatCurrency";
+import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 
-const PropertyDetails = ({ contract }) => {
+const PropertyDetails = ({ contract, propertyData }) => {
+  const [fullPropertyData, setFullPropertyData] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch full property data using property ID
+  useEffect(() => {
+    const fetchFullPropertyData = async () => {
+      if (!contract?.propertyId) return;
+
+      try {
+        setLoading(true);
+        const res = await fetchPropertyData(contract.propertyId);
+        console.log("property data from property: ", res);
+        setFullPropertyData(res);
+      } catch (error) {
+        console.error("Failed to fetch property data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFullPropertyData();
+  }, [contract?.propertyId]);
+
+  const totalAmount = fullPropertyData?.data
+    ? parseAmount(fullPropertyData.data.price) +
+      parseAmount(fullPropertyData.data.cautionFee) +
+      parseAmount(fullPropertyData.data.agencyFee)
+    : 0;
+
   return (
-    <div className="space-y-3 md:space-y-4">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold mb-4">Property Details</h3>
+    <div className="space-y-6">
+      {/* Property Image - Enhanced */}
+      {fullPropertyData?.photos && fullPropertyData.photos.length > 0 && (
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="relative h-48 sm:h-56">
+            <img
+              src={fullPropertyData.photos[0].path}
+              alt="Property"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "flex";
+              }}
+            />
+            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center hidden">
+              <div className="text-center">
+                <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">Property Image</p>
+              </div>
+            </div>
+            {/* Property Badge */}
+            <div className="absolute top-3 left-3">
+              <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                {fullPropertyData.data?.listingType || "Property"}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Property Information */}
+      <div className="border border-gray-200 rounded-lg p-4">
+        <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center">
+          <Home className="w-4 h-4 text-gray-600 mr-2" />
+          Property Information
+        </h3>
+        <div className="space-y-3">
+          {fullPropertyData?.data?.title && (
+            <div>
+              <p className="font-medium text-gray-800">
+                {fullPropertyData.data.title}
+              </p>
+            </div>
+          )}
+
+          <div className="flex items-center text-sm text-gray-700 space-x-2">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            <span>
+              {fullPropertyData?.data?.neighbourhood &&
+              fullPropertyData?.data?.state
+                ? `${fullPropertyData.data.neighbourhood}, ${fullPropertyData.data.state}`
+                : contract.propertyLocation || "Location not specified"}
+            </span>
+          </div>
+
+          {fullPropertyData?.data?.listingType && (
+            <div className="flex items-center text-sm text-gray-700 space-x-2">
+              <Tag className="w-4 h-4 text-gray-500" />
+              <span className="capitalize">
+                {fullPropertyData.data.listingType}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Financial Details */}
+      {fullPropertyData?.data && (
+        <div className="border border-gray-200 rounded-lg p-4">
+          <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center">
+            <Wallet className="w-4 h-4 text-gray-600 mr-2" />
+            Financial Details
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-500 mb-1">Rent</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {fullPropertyData.data.price?.toLocaleString() || "N/A"}
+              </p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-500 mb-1">Caution Fee</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {fullPropertyData.data.cautionFee?.toLocaleString() || "N/A"}
+              </p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-xs text-gray-500 mb-1">Agency Fee</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {fullPropertyData.data.agencyFee?.toLocaleString() || "N/A"}
+              </p>
+            </div>
+            <div className="text-center p-3 bg-primary-50 rounded-lg border border-primary-200">
+              <p className="text-xs text-gray-500 mb-1">Total</p>
+              <p className="text-sm font-semibold text-primary-700">
+                ₦{totalAmount.toLocaleString()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contract Information */}
+      <div className="border border-gray-200 rounded-lg p-4">
+        <h3 className="text-base font-semibold text-gray-900 mb-3 flex items-center">
+          <User className="w-4 h-4 text-gray-600 mr-2" />
+          Contract Information
+        </h3>
         <div className="space-y-3">
           <div>
+            <p className="font-medium text-gray-800">
+              Client: {contract.clientName}
+            </p>
+          </div>
+
+          <div className="flex items-center text-sm text-gray-700 space-x-2">
+            <Wallet className="w-4 h-4 text-gray-500" />
             <span>
-              {" "}
-              <p className="font-medium text-gray-800">
-                Client: {contract.clientName}
-              </p>
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm md:text-base text-gray-700 space-x-2">
-            <MapPin className="w-4 h-4 text-blue-600" />
-            <span className="text-sm md:text-base">
-              {contract.propertyLocation}
-            </span>
-          </div>
-
-          <div className="flex items-center text-sm md:text-base text-gray-700 space-x-2">
-            <Wallet className="w-4 h-4 text-green-600" />
-            <span className="text-sm md:text-base">
               NGN {new Intl.NumberFormat().format(contract.propertyPrice)}
             </span>
           </div>
 
-          <div className="flex items-center text-sm md:text-base text-gray-700 space-x-2">
+          <div className="flex items-center text-sm text-gray-700 space-x-2">
             <CalendarDays className="w-4 h-4 text-gray-500" />
-            <span className="text-sm md:text-base">
+            <span>
               {new Date(contract.createdAt).toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
@@ -42,7 +176,7 @@ const PropertyDetails = ({ contract }) => {
           </div>
 
           <span
-            className={`inline-block mt-2 px-3 py-1 text-xs font-medium text-white rounded-full w-max ${
+            className={`inline-block px-3 py-1 text-xs font-medium text-white rounded-full w-max ${
               STATUS_COLORS[contract.status]
             }`}
           >
