@@ -9,6 +9,7 @@ import { bookInspection } from "utils/api/inspection/bookInspection";
 import { referralBookInspection } from "utils/api/inspection/referralBookInspection";
 import { scheduleBooked } from "utils/api/scheduler/scheduleBooked";
 import { sendNotification } from "@/utils/api/pushNotification/sendNotification";
+import { createNotification } from "@/utils/api/pushNotification/createNotification";
 import { fetchAgentSchedule } from "utils/api/scheduler/fetchAgentSchedule";
 import { fetchReferrerSchedule } from "utils/api/scheduler/fetchReferrerSchedule";
 import {
@@ -281,6 +282,14 @@ const NonPaymentInspectionBooking = () => {
             route: `/my-inspections/${agentData._id}`,
           },
         });
+        // Save notification to database for agent
+        await createNotification({
+          userId: agentData._id,
+          title: msg.title,
+          body: msg.body,
+          type: "inspection",
+          route: `/my-inspections/${agentData._id}`,
+        });
       }
       // Notify client
       if (clientData?.fcmToken) {
@@ -297,6 +306,14 @@ const NonPaymentInspectionBooking = () => {
             type: "inspection",
             route: `/my-inspections/${clientData._id}`,
           },
+        });
+        // Save notification to database for client
+        await createNotification({
+          userId: clientData._id,
+          title: msg.title,
+          body: msg.body,
+          type: "inspection",
+          route: `/my-inspections/${clientData._id}`,
         });
       }
       // --- End notification logic ---
