@@ -119,6 +119,9 @@ const AgentScheduler = () => {
         [dateStr]: [...(prev[dateStr] || []), timeSlot],
       }));
     }
+
+    // Remove auto-close - let user manually close when done
+    // This prevents the drawer from closing too aggressively
   };
 
   const handleSetAvailability = async () => {
@@ -324,7 +327,7 @@ const AgentScheduler = () => {
                             }
                             className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium ${
                               isBooked
-                                ? "bg-red-100 text-red-700 border border-red-200 cursor-not-allowed"
+                                ? "bg-red-100 text-red-500 border border-red-200 cursor-not-allowed"
                                 : isAvailable
                                 ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
                                 : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
@@ -367,13 +370,38 @@ const AgentScheduler = () => {
                 <p className="text-xs sm:text-sm text-gray-600">
                   {formatSelectedDate(selectedDate)}
                 </p>
+                <p className="text-xs text-green-600 font-medium mt-1">
+                  {availableTimes[selectedDate]?.length || 0} slots selected
+                </p>
               </div>
-              <button
-                onClick={() => setSelectedDate(null)}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors ml-2"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => {
+                    setSelectedDate(null);
+                    enqueueSnackbar(
+                      `Time slots updated for ${formatSelectedDate(
+                        selectedDate
+                      )}`,
+                      {
+                        variant: "success",
+                        autoHideDuration: 2000,
+                      }
+                    );
+                  }}
+                  className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-1"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>
+                    Done ({availableTimes[selectedDate]?.length || 0})
+                  </span>
+                </button>
+                <button
+                  onClick={() => setSelectedDate(null)}
+                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div className="p-4 sm:p-6">
@@ -394,16 +422,21 @@ const AgentScheduler = () => {
                     <button
                       key={slot}
                       onClick={() => handleTimeSlotClick(selectedDate, slot)}
-                      className={`w-full px-4 py-3 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium ${
+                      className={`w-full px-4 py-3 rounded-xl transition-all duration-200 text-sm sm:text-base font-medium relative ${
                         isBooked
-                          ? "bg-red-100 text-red-700 border border-red-200 cursor-not-allowed"
+                          ? "bg-red-100 text-red-500 border border-red-200 cursor-not-allowed"
                           : isAvailable
-                          ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
-                          : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100"
+                          ? "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 transform hover:scale-105"
+                          : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100 transform hover:scale-105"
                       }`}
                       disabled={isBooked}
                     >
                       {formatTimeTo12Hour(slot)}
+                      {isAvailable && (
+                        <div className="absolute top-2 right-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                        </div>
+                      )}
                     </button>
                   );
                 })}
