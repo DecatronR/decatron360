@@ -157,10 +157,6 @@ const ContractDashboard = () => {
         const res = await fetchPropertyData(contract.propertyId);
         setPropertyData(res);
         console.log("property data: ", res);
-        console.log("property data.data: ", res.data);
-        console.log("property photos: ", res.data?.photos);
-        console.log("first photo: ", res.data?.photos?.[0]);
-        console.log("first photo path: ", res.data?.photos?.[0]?.path);
       } catch (error) {
         console.log("Failed to fetch property data: ", error);
       }
@@ -453,49 +449,6 @@ const ContractDashboard = () => {
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
               <div className="flex items-center space-x-3">
-                {/* Property Image in Header */}
-                {(() => {
-                  console.log(
-                    "Rendering ContractDashboard header - propertyData:",
-                    propertyData
-                  );
-                  console.log("propertyData?.photos:", propertyData?.photos);
-                  console.log("photos length:", propertyData?.photos?.length);
-                  console.log(
-                    "first photo path:",
-                    propertyData?.photos?.[0]?.path
-                  );
-
-                  return (
-                    propertyData?.photos &&
-                    propertyData.photos.length > 0 && (
-                      <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
-                        <img
-                          src={propertyData.photos[0].path}
-                          alt="Property"
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            console.log(
-                              "ContractDashboard header image failed to load:",
-                              propertyData.photos[0].path
-                            );
-                            e.target.style.display = "none";
-                            e.target.nextSibling.style.display = "flex";
-                          }}
-                          onLoad={() => {
-                            console.log(
-                              "ContractDashboard header image loaded successfully:",
-                              propertyData.photos[0].path
-                            );
-                          }}
-                        />
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center hidden">
-                          <ImageIcon className="w-5 h-5 text-gray-400" />
-                        </div>
-                      </div>
-                    )
-                  );
-                })()}
                 <div>
                   <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
                     Contract Dashboard
@@ -525,60 +478,6 @@ const ContractDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Main Content (Scrollable) */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Property Image Card - Simplified */}
-            {(() => {
-              console.log(
-                "Rendering ContractDashboard property card - propertyData:",
-                propertyData
-              );
-              console.log("propertyData?.photos:", propertyData?.photos);
-              console.log("photos length:", propertyData?.photos?.length);
-              console.log("first photo path:", propertyData?.photos?.[0]?.path);
-
-              return (
-                propertyData?.photos &&
-                propertyData.photos.length > 0 && (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="relative h-32 sm:h-40">
-                      <img
-                        src={propertyData.photos[0].path}
-                        alt="Property"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log(
-                            "ContractDashboard property card image failed to load:",
-                            propertyData.photos[0].path
-                          );
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "flex";
-                        }}
-                        onLoad={() => {
-                          console.log(
-                            "ContractDashboard property card image loaded successfully:",
-                            propertyData.photos[0].path
-                          );
-                        }}
-                      />
-                      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center hidden">
-                        <div className="text-center">
-                          <ImageIcon className="w-8 h-8 text-gray-400 mx-auto mb-1" />
-                          <p className="text-xs text-gray-500">
-                            Property Image
-                          </p>
-                        </div>
-                      </div>
-                      {/* Property Badge */}
-                      <div className="absolute top-2 left-2">
-                        <div className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700 shadow-sm">
-                          {propertyData.data.listingType || "Property"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              );
-            })()}
-
             {/* Signature Status Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="p-4 sm:p-6">

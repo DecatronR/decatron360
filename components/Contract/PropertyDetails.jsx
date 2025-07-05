@@ -24,10 +24,6 @@ const PropertyDetails = ({ contract, propertyData }) => {
         setLoading(true);
         const res = await fetchPropertyData(contract.propertyId);
         console.log("property data from property: ", res);
-        console.log("property data.data: ", res.data);
-        console.log("property photos: ", res.photos);
-        console.log("first photo: ", res.photos?.[0]);
-        console.log("first photo path: ", res.photos?.[0]?.path);
         setFullPropertyData(res);
       } catch (error) {
         console.error("Failed to fetch property data:", error);
@@ -47,51 +43,34 @@ const PropertyDetails = ({ contract, propertyData }) => {
 
   return (
     <div className="space-y-6">
-      {/* Property Image */}
-      {(() => {
-        console.log(
-          "Rendering PropertyDetails - fullPropertyData:",
-          fullPropertyData
-        );
-        console.log("fullPropertyData?.photos:", fullPropertyData?.photos);
-        console.log("photos length:", fullPropertyData?.photos?.length);
-        console.log("first photo path:", fullPropertyData?.photos?.[0]?.path);
-
-        return (
-          fullPropertyData?.photos &&
-          fullPropertyData.photos.length > 0 && (
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className="relative h-48">
-                <img
-                  src={fullPropertyData.photos[0].path}
-                  alt="Property"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    console.log(
-                      "PropertyDetails image failed to load:",
-                      fullPropertyData.photos[0].path
-                    );
-                    e.target.style.display = "none";
-                    e.target.nextSibling.style.display = "flex";
-                  }}
-                  onLoad={() => {
-                    console.log(
-                      "PropertyDetails image loaded successfully:",
-                      fullPropertyData.photos[0].path
-                    );
-                  }}
-                />
-                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center hidden">
-                  <div className="text-center">
-                    <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">Property Image</p>
-                  </div>
-                </div>
+      {/* Property Image - Enhanced */}
+      {fullPropertyData?.photos && fullPropertyData.photos.length > 0 && (
+        <div className="border border-gray-200 rounded-lg overflow-hidden">
+          <div className="relative h-48 sm:h-56">
+            <img
+              src={fullPropertyData.photos[0].path}
+              alt="Property"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextSibling.style.display = "flex";
+              }}
+            />
+            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center hidden">
+              <div className="text-center">
+                <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">Property Image</p>
               </div>
             </div>
-          )
-        );
-      })()}
+            {/* Property Badge */}
+            <div className="absolute top-3 left-3">
+              <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 shadow-sm">
+                {fullPropertyData.data?.listingType || "Property"}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Property Information */}
       <div className="border border-gray-200 rounded-lg p-4">
