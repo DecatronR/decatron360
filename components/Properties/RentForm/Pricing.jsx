@@ -1,4 +1,11 @@
-import { DollarSign, CreditCard, Shield, Clock, Percent } from "lucide-react";
+import {
+  DollarSign,
+  Banknote,
+  CreditCard,
+  Shield,
+  Clock,
+  Percent,
+} from "lucide-react";
 
 const Pricing = ({ fields, setFields }) => {
   const formatPrice = (price) => {
@@ -32,7 +39,7 @@ const Pricing = ({ fields, setFields }) => {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
       <div className="flex items-center mb-6">
         <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
-          <DollarSign className="w-5 h-5 text-primary-600" />
+          <Banknote className="w-5 h-5 text-primary-600" />
         </div>
         <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
           Pricing & Fees
@@ -48,8 +55,8 @@ const Pricing = ({ fields, setFields }) => {
               className="block text-sm font-medium text-gray-700"
             >
               <div className="flex items-center">
-                <DollarSign className="w-4 h-4 mr-2 text-primary-600" />
-                Monthly Rent
+                <Banknote className="w-4 h-4 mr-2 text-primary-600" />
+                Rent Price
               </div>
             </label>
             <div className="relative">
