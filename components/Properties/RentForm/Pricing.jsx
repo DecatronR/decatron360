@@ -148,7 +148,7 @@ const Pricing = ({ fields, setFields }) => {
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
-                ₦
+                %
               </span>
               <input
                 type="text"

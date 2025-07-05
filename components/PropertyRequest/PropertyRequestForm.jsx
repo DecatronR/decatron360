@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
+import { useRouter } from "next/navigation";
 import { createPropertyRequest } from "@/utils/api/propertyRequest/createPropertyRequest";
 import { fetchListingTypes } from "utils/api/propertyListing/fetchListingTypes";
 import { fetchPropertyTypes } from "@/utils/api/propertyListing/fetchPropertyTypes";
@@ -11,6 +12,7 @@ import { fetchStates } from "@/utils/api/propertyListing/fetchStates";
 import { fetchLga } from "@/utils/api/propertyListing/fetchLga";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 import Spinner from "@/components/ui/Spinner";
+import Swal from "sweetalert2";
 import {
   Search,
   MapPin,
@@ -24,6 +26,7 @@ import {
 const PropertyRequestForm = () => {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -154,20 +157,49 @@ const PropertyRequestForm = () => {
       enqueueSnackbar("Property request submitted successfully!", {
         variant: "success",
       });
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        role: "",
-        category: "",
-        propertyType: "",
-        propertyUsage: "",
-        budget: "",
-        state: "",
-        lga: "",
-        neighbourhood: "",
-        note: "",
+
+      // Show SweetAlert2 confirmation dialog
+      const result = await Swal.fire({
+        title: "Property Request Submitted! 🎉",
+        text: "Your property request has been successfully submitted. What would you like to do next?",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "View Other Requests",
+        cancelButtonText: "Submit Another Request",
+        confirmButtonColor: "#3B82F6",
+        cancelButtonColor: "#10B981",
+        reverseButtons: true,
+        customClass: {
+          popup: "rounded-2xl",
+          title: "text-xl font-semibold text-gray-900",
+          content: "text-gray-600",
+          confirmButton: "rounded-xl px-6 py-3 font-medium",
+          cancelButton: "rounded-xl px-6 py-3 font-medium",
+        },
       });
+
+      if (result.isConfirmed) {
+        // User clicked "View Other Requests" - redirect to property requests page
+        router.push("/property-requests");
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User clicked "Submit Another Request" - reset form and stay on page
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          role: "",
+          category: "",
+          propertyType: "",
+          propertyUsage: "",
+          budget: "",
+          state: "",
+          lga: "",
+          neighbourhood: "",
+          note: "",
+        });
+        // Scroll to top of form
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } catch (error) {
       let message = "Failed to submit property request.";
       if (error.response) {
