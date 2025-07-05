@@ -1,7 +1,20 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { MapPin, Wallet, CalendarDays, MessageSquare, X } from "lucide-react";
+import {
+  MapPin,
+  Wallet,
+  CalendarDays,
+  MessageSquare,
+  X,
+  ArrowLeft,
+  FileText,
+  Maximize2,
+  Pencil,
+  Loader2,
+  Image as ImageIcon,
+  UserPlus,
+} from "lucide-react";
 import { fetchContractById } from "utils/api/contract/fetchContractById";
 import { truncateText } from "utils/helpers/truncateText";
 import OwnerModificationChat from "components/RentalAgreement/Chat/OwnerModificationChat";
@@ -9,7 +22,6 @@ import ClientModificationChat from "components/RentalAgreement/Chat/ClientModifi
 import { fetchUserData } from "utils/api/user/fetchUserData";
 import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { Pencil, Maximize2, ArrowLeft, FileText } from "lucide-react";
 import EditAgreementDialog from "./EditAgreementDialogue";
 import { useAuth } from "context/AuthContext";
 import { updateAgreement } from "utils/api/contract/updateAgreement";
@@ -24,31 +36,40 @@ import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
 import RentalAgreementTemplate from "components/RentalAgreement/RentalAgreementTemplate";
 import ReactDOM from "react-dom/client";
 import { parseAmount } from "utils/helpers/formatCurrency";
+import { fetchUserPaymentsByContractId } from "utils/api/manualPayment/fetchUserPaymentsByContractId";
+import SignatureDialog from "./SignatureDialogue";
+import WitnessInviteDialog from "./WitnessInviteDialog";
+
 const ContractDashboard = () => {
   const { id } = useParams();
   const router = useRouter();
   const { user } = useAuth();
   const rentalAgreementTemplateId =
     process.env.NEXT_PUBLIC_ZOHO_SIGN_RENTAL_AGREEMENT_TEMPLATE_ID;
+
   const [userRole, setUserRole] = useState();
   const [contract, setContract] = useState(null);
-  const [leftWidth, setLeftWidth] = useState(70); // Default 70% for the left section
-  const [isDragging, setIsDragging] = useState(false);
   const [propertyData, setPropertyData] = useState();
   const [ownerData, setOwnerData] = useState();
   const [tenantData, setTenantData] = useState();
-  const [isFullScreen, setIsFullScreen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [isSignatureOpen, setIsSignatureOpen] = useState(false);
   const [signedRoles, setSignedRoles] = useState([]);
   const [signatures, setSignatures] = useState([]);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [isPaymentButtonDisabled, setIsPaymentButtonDisabled] = useState(false);
+  const [isActionButtonsDisabled, setIsActionButtonsDisabled] = useState(false);
+  const [isSignatureDialogOpen, setIsSignatureDialogOpen] = useState(false);
+  const [isWitnessDialogOpen, setIsWitnessDialogOpen] = useState(false);
+
   const [rentAndDurationText, setRentAndDurationText] = useState([
     "Loading tenancy details...",
     "Loading caution fee details...",
     "Loading agency fee details...",
   ]);
-  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [tenantObligations, setTenantObligations] = useState([
     "Pay all applicable utility and security charges promptly.",
@@ -76,9 +97,11 @@ const ContractDashboard = () => {
   const handleSignatureSave = (signatureDataUrlOrFileUrl) => {
     console.log("Saved signature:", signatureDataUrlOrFileUrl);
   };
+
   useEffect(() => {
     const handleFetchContractDetails = async () => {
       try {
+        setLoading(true);
         const res = await fetchContractById(id);
         console.log("Contract details: ", res);
 
@@ -118,6 +141,8 @@ const ContractDashboard = () => {
         setRentAndDurationText(agreement["Rent and Duration"]);
         setTenantObligations(agreement["Tenant's Obligation"]);
         setLandlordObligations(agreement["Landlord's Obligation"]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -126,6 +151,8 @@ const ContractDashboard = () => {
 
   useEffect(() => {
     const handleFetchPropertyData = async () => {
+      if (!contract?.propertyId) return;
+
       try {
         const res = await fetchPropertyData(contract.propertyId);
         setPropertyData(res);
@@ -232,19 +259,10 @@ const ContractDashboard = () => {
     return () => clearInterval(pollInterval);
   }, [fetchSignedRolesData]);
 
-  const handleMouseMove = (e) => {
-    if (isDragging) {
-      const newWidth = (e.clientX / window.innerWidth) * 100;
-      setLeftWidth(Math.min(Math.max(newWidth, 20), 80)); // Constrain between 20% and 80%
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
   useEffect(() => {
     const handleFetchOwnerData = async () => {
+      if (!contract?.ownerId) return;
+
       try {
         const res = await fetchUserData(contract.ownerId);
         setOwnerData(res);
@@ -259,6 +277,8 @@ const ContractDashboard = () => {
 
   useEffect(() => {
     const handleFetchClientData = async () => {
+      if (!contract?.clientId) return;
+
       try {
         const res = await fetchUserData(contract.clientId);
         console.log("Tenant data: ", res);
@@ -285,6 +305,37 @@ const ContractDashboard = () => {
     };
     handleFetchTemplateDetails();
   }, [rentalAgreementTemplateId]);
+
+  // Fetch payment status for mobile actions
+  useEffect(() => {
+    const handleFetchPaymentStatus = async () => {
+      if (!contract?._id) return;
+
+      try {
+        const res = await fetchUserPaymentsByContractId(contract._id);
+        console.log("Payment status: ", res);
+        const payments = res.data;
+        setPaymentStatus(payments.status);
+
+        // Update button states
+        const paymentDisabled =
+          payments.status === "pending" || payments.status === "confirmed";
+        setIsPaymentButtonDisabled(paymentDisabled);
+
+        const actionDisabled = ["buyer", "renter"].includes(user?.role)
+          ? payments.status !== "confirmed"
+          : false;
+        setIsActionButtonsDisabled(actionDisabled);
+      } catch (error) {
+        console.error("Error fetching payment status:", error);
+        setPaymentStatus(null);
+        setIsPaymentButtonDisabled(false);
+        setIsActionButtonsDisabled(false);
+      }
+    };
+
+    handleFetchPaymentStatus();
+  }, [contract?._id, user?.role]);
 
   const handleAgreementUpdate = async (updatedValue) => {
     try {
@@ -343,439 +394,719 @@ const ContractDashboard = () => {
     router.push(`/manual-payment/${contractId}?amount=${totalAmount}`);
   };
 
-  const toggleFullScreen = () => {
-    setIsFullScreen(!isFullScreen);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Loading contract details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!contract || !propertyData || !propertyData.data) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600">Loading contract details...</p>
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <X className="w-8 h-8 text-red-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            Contract Not Found
+          </h3>
+          <p className="text-gray-600 mb-6">
+            The contract you're looking for doesn't exist or has been removed.
+          </p>
+          <button
+            onClick={() => router.back()}
+            className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="flex flex-col md:flex-row h-screen bg-gray-50 overflow-hidden px-2 md:px-6 py-2 md:py-4 mt-4 md:mt-0"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      {/* Left Section - Contract Details */}
-      <div
-        className={`transition-all duration-200 ease-in-out overflow-auto max-w-screen-lg mx-auto 
-        w-full md:w-auto md:flex-1 mb-4 md:mb-0 pb-4 md:pb-0`}
-        style={{ width: window.innerWidth >= 768 ? `${leftWidth}%` : "100%" }}
-      >
-        <button
-          onClick={() => router.back()}
-          className="hidden md:flex items-center text-sm text-blue-600 mb-4 hover:underline"
-        >
-          <ArrowLeft className="mr-2" /> Back
-        </button>
-
-        <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 px-2 md:px-0">
-          Contract:{" "}
-          {truncateText(
-            contract.propertyName,
-            window.innerWidth < 768 ? 25 : 40
-          )}
-        </h1>
-
-        {/* Signature Status Section */}
-        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0">
-          <SignatureStatus contractId={contract._id} />
-        </div>
-
-        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0">
-          <PropertyDetails contract={contract} />
-        </div>
-
-        {/* Tenancy Agreement Template */}
-        <div className="bg-white rounded-xl md:rounded-2xl p-4 md:p-6 shadow-sm border mb-4 md:mb-6 mx-2 md:mx-0">
-          <div className="flex items-center justify-between mb-3 md:mb-4">
-            <h3 className="text-lg md:text-xl font-bold">
-              Tenancy Agreement Terms
-            </h3>
-            <div className="flex items-center space-x-2 md:space-x-4">
-              {contract?.ownerId === user?.id && (
-                <Tooltip.Provider>
-                  <Tooltip.Root>
-                    <Tooltip.Trigger asChild>
-                      <button
-                        onClick={() =>
-                          signedRoles.length === 0 && setIsEditDialogOpen(true)
-                        }
-                        className={`p-1 md:p-2 rounded-full ${
-                          signedRoles.length > 0
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:bg-gray-100"
-                        }`}
-                        disabled={signedRoles.length > 0}
-                      >
-                        <Pencil className="w-5 h-5 md:w-6 md:h-6 text-primary-600" />
-                      </button>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content
-                      side="bottom"
-                      sideOffset={4}
-                      className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
-                      style={{ zIndex: 9999 }}
-                    >
-                      {signedRoles.length > 0
-                        ? "Cannot edit after signatures have been added. Please create a new contract if changes are needed."
-                        : "Edit Agreement"}
-                    </Tooltip.Content>
-                  </Tooltip.Root>
-                </Tooltip.Provider>
-              )}
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <button
-                      onClick={() => {
-                        if (!propertyData || !ownerData || !tenantData) {
-                          Swal.fire({
-                            icon: "error",
-                            title: "Missing Data",
-                            text: "Please wait while we load all the required data.",
-                          });
-                          return;
-                        }
-
-                        Swal.fire({
-                          title: "Tenancy Agreement Preview",
-                          html: `
-                            <div style="height: 80vh; width: 100%;">
-                              <div id="pdf-preview" style="height: 100%; width: 100%;"></div>
-                            </div>
-                          `,
-                          width: "80%",
-                          showConfirmButton: true,
-                          showCancelButton: true,
-                          confirmButtonText: "Download PDF",
-                          cancelButtonText: "Close",
-                          didOpen: () => {
-                            const pdfPreview =
-                              document.getElementById("pdf-preview");
-                            const pdfViewer = document.createElement("div");
-                            pdfViewer.style.height = "100%";
-                            pdfViewer.style.width = "100%";
-                            pdfPreview.appendChild(pdfViewer);
-
-                            const root = ReactDOM.createRoot(pdfViewer);
-                            root.render(
-                              <PDFViewer width="100%" height="100%">
-                                <RentalAgreementTemplate
-                                  ownerName={ownerData.name}
-                                  tenantName={tenantData.name}
-                                  propertyNeighbourhood={
-                                    propertyData.data.neighbourhood
-                                  }
-                                  propertyState={propertyData.data.state}
-                                  rentPrice={propertyData.data.price}
-                                  cautionFee={propertyData.data.cautionFee}
-                                  agencyFee={propertyData.data.agencyFee}
-                                  latePaymentFee={
-                                    propertyData.data.latePaymentFee
-                                  }
-                                  rentAndDurationText={rentAndDurationText}
-                                  tenantObligations={tenantObligations}
-                                  landlordObligations={landlordObligations}
-                                  signatures={signatures.map((sig) => ({
-                                    role: sig.role
-                                      .replace(/([A-Z])/g, " $1")
-                                      .trim(),
-                                    signerName: sig.signerName,
-                                    timestamp: sig.timestamp,
-                                    signature: sig.signature,
-                                    witness: sig.witness
-                                      ? {
-                                          name: sig.witness.name,
-                                          email: sig.witness.email,
-                                          signature: sig.witness.signature,
-                                          timestamp: sig.witness.timestamp,
-                                        }
-                                      : null,
-                                  }))}
-                                  contractId={id}
-                                />
-                              </PDFViewer>
-                            );
-                          },
-                          willClose: () => {
-                            const pdfPreview =
-                              document.getElementById("pdf-preview");
-                            if (pdfPreview) {
-                              pdfPreview.innerHTML = "";
-                            }
-                          },
-                        }).then((result) => {
-                          if (result.isConfirmed) {
-                            // Create a hidden PDFDownloadLink
-                            const downloadContainer =
-                              document.createElement("div");
-                            downloadContainer.style.display = "none";
-                            document.body.appendChild(downloadContainer);
-
-                            const root = ReactDOM.createRoot(downloadContainer);
-                            root.render(
-                              <PDFDownloadLink
-                                document={
-                                  <RentalAgreementTemplate
-                                    ownerName={ownerData.name}
-                                    tenantName={tenantData.name}
-                                    propertyNeighbourhood={
-                                      propertyData.data.neighbourhood
-                                    }
-                                    propertyState={propertyData.data.state}
-                                    rentPrice={propertyData.data.price}
-                                    cautionFee={propertyData.data.cautionFee}
-                                    agencyFee={propertyData.data.agencyFee}
-                                    latePaymentFee={
-                                      propertyData.data.latePaymentFee
-                                    }
-                                    rentAndDurationText={rentAndDurationText}
-                                    tenantObligations={tenantObligations}
-                                    landlordObligations={landlordObligations}
-                                    signatures={signatures.map((sig) => ({
-                                      role: sig.role
-                                        .replace(/([A-Z])/g, " $1")
-                                        .trim(),
-                                      signerName: sig.signerName,
-                                      timestamp: sig.timestamp,
-                                      signature: sig.signature,
-                                      witness: sig.witness
-                                        ? {
-                                            name: sig.witness.name,
-                                            email: sig.witness.email,
-                                            signature: sig.witness.signature,
-                                            timestamp: sig.witness.timestamp,
-                                          }
-                                        : null,
-                                    }))}
-                                  />
-                                }
-                                fileName={`tenancy-agreement-${id}.pdf`}
-                              >
-                                {({ url, loading }) => {
-                                  if (loading) {
-                                    return null;
-                                  }
-                                  // Create and click a temporary link
-                                  const link = document.createElement("a");
-                                  link.href = url;
-                                  link.click();
-                                  // Clean up after a short delay
-                                  setTimeout(() => {
-                                    document.body.removeChild(
-                                      downloadContainer
-                                    );
-                                  }, 100);
-                                  return null;
-                                }}
-                              </PDFDownloadLink>
-                            );
-                          }
-                        });
-                      }}
-                      className="p-1 md:p-2 rounded-full hover:bg-gray-100"
-                    >
-                      <FileText className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-                    </button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    side="bottom"
-                    sideOffset={4}
-                    className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
-                    style={{ zIndex: 9999 }}
-                  >
-                    View PDF Version
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
-              <Tooltip.Provider>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <button
-                      onClick={() => {
-                        Swal.fire({
-                          title: "Tenancy Agreement",
-                          html: `
-                            <div class="text-left space-y-6 p-4">
-                              ${Object.entries(agreementData)
-                                .map(
-                                  ([title, content]) => `
-                                <div class="mb-6">
-                                  <h3 class="text-xl font-semibold text-black-600 mb-3">${title}</h3>
-                                  <div class="prose max-w-none">
-                                    ${
-                                      Array.isArray(content)
-                                        ? content
-                                            .map(
-                                              (item) =>
-                                                `<p class="mb-2">• ${item}</p>`
-                                            )
-                                            .join("")
-                                        : `<p>${content}</p>`
-                                    }
-                                  </div>
-                                </div>
-                              `
-                                )
-                                .join("")}
-                            </div>
-                          `,
-                          width: "80%",
-                          showCloseButton: true,
-                          showConfirmButton: false,
-                          customClass: {
-                            container: "agreement-modal",
-                            popup: "agreement-modal-popup",
-                            content: "agreement-modal-content",
-                          },
-                          didOpen: () => {
-                            const signaturesContainer = document.getElementById(
-                              "signatures-container"
-                            );
-                            if (signaturesContainer) {
-                              const root =
-                                ReactDOM.createRoot(signaturesContainer);
-                              root.render(<SignatureDisplay contractId={id} />);
-                            }
-                          },
-                          willClose: () => {
-                            const signaturesContainer = document.getElementById(
-                              "signatures-container"
-                            );
-                            if (signaturesContainer) {
-                              signaturesContainer.innerHTML = "";
-                            }
-                          },
-                        });
-                      }}
-                      className="p-1 md:p-2 rounded-full hover:bg-gray-100"
-                    >
-                      <Maximize2 className="w-5 h-5 md:w-6 md:h-6 text-gray-600" />
-                    </button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    side="bottom"
-                    sideOffset={4}
-                    className="bg-gray-800 text-white text-xs rounded px-2 py-1 hidden md:block"
-                    style={{ zIndex: 9999 }}
-                  >
-                    Fullscreen
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </Tooltip.Provider>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 pb-20 md:pb-6">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => router.back()}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <div>
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                  Contract Dashboard
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+                  {truncateText(contract.propertyName || "Property", 40)}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
+              <Wallet className="w-4 h-4" />
+              <span className="hidden sm:inline">Contract #{id.slice(-8)}</span>
+              <span className="sm:hidden">#{id.slice(-6)}</span>
             </div>
           </div>
+        </div>
+      </div>
 
-          <div
-            id="agreement-content"
-            className="overflow-auto h-[calc(100vh-32rem)] md:h-[calc(100vh-40rem)] custom-scrollbar"
-          >
-            <div className="space-y-4 md:space-y-6">
-              {Object.entries(agreementData).map(([title, content]) => (
-                <div
-                  key={title}
-                  className="border-b border-gray-100 last:border-0 pb-3 md:pb-4"
-                >
-                  <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">
-                    {title}
-                  </h3>
-                  <div className="prose max-w-none">
-                    {Array.isArray(content) ? (
-                      <ul className="list-disc pl-4 md:pl-6 space-y-1 md:space-y-2">
-                        {content.map((item, index) => (
-                          <li
-                            key={index}
-                            className="text-sm md:text-base text-gray-700"
-                          >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-sm md:text-base text-gray-700">
-                        {content}
-                      </p>
-                    )}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Property Image Card */}
+            {propertyData?.data?.photos &&
+              propertyData.data.photos.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="relative h-48 sm:h-64">
+                    <img
+                      src={propertyData.data.photos[0]}
+                      alt="Property"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.nextSibling.style.display = "flex";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gray-100 flex items-center justify-center hidden">
+                      <div className="text-center">
+                        <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">Property Image</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      {propertyData.data.title || "Property"}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {propertyData.data.neighbourhood},{" "}
+                      {propertyData.data.state}
+                    </p>
                   </div>
                 </div>
-              ))}
-              <SignatureDisplay contractId={id} />
+              )}
+
+            {/* Signature Status Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary-100 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-primary-600" />
+                  </div>
+                  Signature Status
+                </h2>
+                <SignatureStatus contractId={contract._id} />
+              </div>
+            </div>
+
+            {/* Property Details Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-4 sm:p-6">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
+                    <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                  </div>
+                  Property Details
+                </h2>
+                <PropertyDetails contract={contract} />
+              </div>
+            </div>
+
+            {/* Tenancy Agreement Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h2 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
+                      <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                    </div>
+                    Tenancy Agreement Terms
+                  </h2>
+                  <div className="flex items-center space-x-1 sm:space-x-2">
+                    {contract?.ownerId === user?.id && (
+                      <Tooltip.Provider>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger asChild>
+                            <button
+                              onClick={() =>
+                                signedRoles.length === 0 &&
+                                setIsEditDialogOpen(true)
+                              }
+                              className={`p-1.5 sm:p-2 rounded-lg transition-colors ${
+                                signedRoles.length > 0
+                                  ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                  : "hover:bg-gray-100 bg-white border border-gray-200"
+                              }`}
+                              disabled={signedRoles.length > 0}
+                            >
+                              <Pencil className="w-3 h-3 sm:w-4 sm:h-4 text-primary-600" />
+                            </button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            side="bottom"
+                            sideOffset={4}
+                            className="bg-gray-800 text-white text-xs rounded px-2 py-1"
+                          >
+                            {signedRoles.length > 0
+                              ? "Cannot edit after signatures"
+                              : "Edit Agreement"}
+                          </Tooltip.Content>
+                        </Tooltip.Root>
+                      </Tooltip.Provider>
+                    )}
+
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button
+                            onClick={() => {
+                              if (!propertyData || !ownerData || !tenantData) {
+                                Swal.fire({
+                                  icon: "error",
+                                  title: "Missing Data",
+                                  text: "Please wait while we load all the required data.",
+                                });
+                                return;
+                              }
+
+                              Swal.fire({
+                                title: "Tenancy Agreement Preview",
+                                html: `
+                                  <div style="height: 80vh; width: 100%;">
+                                    <div id="pdf-preview" style="height: 100%; width: 100%;"></div>
+                                  </div>
+                                `,
+                                width: "80%",
+                                showConfirmButton: true,
+                                showCancelButton: true,
+                                confirmButtonText: "Download PDF",
+                                cancelButtonText: "Close",
+                                didOpen: () => {
+                                  const pdfPreview =
+                                    document.getElementById("pdf-preview");
+                                  const pdfViewer =
+                                    document.createElement("div");
+                                  pdfViewer.style.height = "100%";
+                                  pdfViewer.style.width = "100%";
+                                  pdfPreview.appendChild(pdfViewer);
+
+                                  const root = ReactDOM.createRoot(pdfViewer);
+                                  root.render(
+                                    <PDFViewer width="100%" height="100%">
+                                      <RentalAgreementTemplate
+                                        ownerName={ownerData.name}
+                                        tenantName={tenantData.name}
+                                        propertyNeighbourhood={
+                                          propertyData.data.neighbourhood
+                                        }
+                                        propertyState={propertyData.data.state}
+                                        rentPrice={propertyData.data.price}
+                                        cautionFee={
+                                          propertyData.data.cautionFee
+                                        }
+                                        agencyFee={propertyData.data.agencyFee}
+                                        latePaymentFee={
+                                          propertyData.data.latePaymentFee
+                                        }
+                                        rentAndDurationText={
+                                          rentAndDurationText
+                                        }
+                                        tenantObligations={tenantObligations}
+                                        landlordObligations={
+                                          landlordObligations
+                                        }
+                                        signatures={signatures.map((sig) => ({
+                                          role: sig.role
+                                            .replace(/([A-Z])/g, " $1")
+                                            .trim(),
+                                          signerName: sig.signerName,
+                                          timestamp: sig.timestamp,
+                                          signature: sig.signature,
+                                          witness: sig.witness
+                                            ? {
+                                                name: sig.witness.name,
+                                                email: sig.witness.email,
+                                                signature:
+                                                  sig.witness.signature,
+                                                timestamp:
+                                                  sig.witness.timestamp,
+                                              }
+                                            : null,
+                                        }))}
+                                        contractId={id}
+                                      />
+                                    </PDFViewer>
+                                  );
+                                },
+                                willClose: () => {
+                                  const pdfPreview =
+                                    document.getElementById("pdf-preview");
+                                  if (pdfPreview) {
+                                    pdfPreview.innerHTML = "";
+                                  }
+                                },
+                              }).then((result) => {
+                                if (result.isConfirmed) {
+                                  // Create a hidden PDFDownloadLink
+                                  const downloadContainer =
+                                    document.createElement("div");
+                                  downloadContainer.style.display = "none";
+                                  document.body.appendChild(downloadContainer);
+
+                                  const root =
+                                    ReactDOM.createRoot(downloadContainer);
+                                  root.render(
+                                    <PDFDownloadLink
+                                      document={
+                                        <RentalAgreementTemplate
+                                          ownerName={ownerData.name}
+                                          tenantName={tenantData.name}
+                                          propertyNeighbourhood={
+                                            propertyData.data.neighbourhood
+                                          }
+                                          propertyState={
+                                            propertyData.data.state
+                                          }
+                                          rentPrice={propertyData.data.price}
+                                          cautionFee={
+                                            propertyData.data.cautionFee
+                                          }
+                                          agencyFee={
+                                            propertyData.data.agencyFee
+                                          }
+                                          latePaymentFee={
+                                            propertyData.data.latePaymentFee
+                                          }
+                                          rentAndDurationText={
+                                            rentAndDurationText
+                                          }
+                                          tenantObligations={tenantObligations}
+                                          landlordObligations={
+                                            landlordObligations
+                                          }
+                                          signatures={signatures.map((sig) => ({
+                                            role: sig.role
+                                              .replace(/([A-Z])/g, " $1")
+                                              .trim(),
+                                            signerName: sig.signerName,
+                                            timestamp: sig.timestamp,
+                                            signature: sig.signature,
+                                            witness: sig.witness
+                                              ? {
+                                                  name: sig.witness.name,
+                                                  email: sig.witness.email,
+                                                  signature:
+                                                    sig.witness.signature,
+                                                  timestamp:
+                                                    sig.witness.timestamp,
+                                                }
+                                              : null,
+                                          }))}
+                                        />
+                                      }
+                                      fileName={`tenancy-agreement-${id}.pdf`}
+                                    >
+                                      {({ url, loading }) => {
+                                        if (loading) {
+                                          return null;
+                                        }
+                                        // Create and click a temporary link
+                                        const link =
+                                          document.createElement("a");
+                                        link.href = url;
+                                        link.click();
+                                        // Clean up after a short delay
+                                        setTimeout(() => {
+                                          document.body.removeChild(
+                                            downloadContainer
+                                          );
+                                        }, 100);
+                                        return null;
+                                      }}
+                                    </PDFDownloadLink>
+                                  );
+                                }
+                              });
+                            }}
+                            className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 bg-white border border-gray-200 transition-colors"
+                          >
+                            <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          side="bottom"
+                          sideOffset={4}
+                          className="bg-gray-800 text-white text-xs rounded px-2 py-1"
+                        >
+                          View PDF Version
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+
+                    <Tooltip.Provider>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <button
+                            onClick={() => {
+                              Swal.fire({
+                                title: "Tenancy Agreement",
+                                html: `
+                                  <div class="text-left space-y-6 p-4">
+                                    ${Object.entries(agreementData)
+                                      .map(
+                                        ([title, content]) => `
+                                      <div class="mb-6">
+                                        <h3 class="text-xl font-semibold text-black-600 mb-3">${title}</h3>
+                                        <div class="prose max-w-none">
+                                          ${
+                                            Array.isArray(content)
+                                              ? content
+                                                  .map(
+                                                    (item) =>
+                                                      `<p class="mb-2">• ${item}</p>`
+                                                  )
+                                                  .join("")
+                                              : `<p>${content}</p>`
+                                          }
+                                        </div>
+                                      </div>
+                                    `
+                                      )
+                                      .join("")}
+                                  </div>
+                                `,
+                                width: "80%",
+                                showCloseButton: true,
+                                showConfirmButton: false,
+                                customClass: {
+                                  container: "agreement-modal",
+                                  popup: "agreement-modal-popup",
+                                  content: "agreement-modal-content",
+                                },
+                                didOpen: () => {
+                                  const signaturesContainer =
+                                    document.getElementById(
+                                      "signatures-container"
+                                    );
+                                  if (signaturesContainer) {
+                                    const root =
+                                      ReactDOM.createRoot(signaturesContainer);
+                                    root.render(
+                                      <SignatureDisplay contractId={id} />
+                                    );
+                                  }
+                                },
+                                willClose: () => {
+                                  const signaturesContainer =
+                                    document.getElementById(
+                                      "signatures-container"
+                                    );
+                                  if (signaturesContainer) {
+                                    signaturesContainer.innerHTML = "";
+                                  }
+                                },
+                              });
+                            }}
+                            className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-100 bg-white border border-gray-200 transition-colors"
+                          >
+                            <Maximize2 className="w-3 h-3 sm:w-4 sm:h-4 text-gray-600" />
+                          </button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          side="bottom"
+                          sideOffset={4}
+                          className="bg-gray-800 text-white text-xs rounded px-2 py-1"
+                        >
+                          Fullscreen
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                    </Tooltip.Provider>
+                  </div>
+                </div>
+
+                <div className="space-y-4 sm:space-y-6 max-h-64 sm:max-h-96 overflow-y-auto custom-scrollbar">
+                  {Object.entries(agreementData).map(([title, content]) => (
+                    <div
+                      key={title}
+                      className="border-b border-gray-100 last:border-0 pb-3 sm:pb-4"
+                    >
+                      <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">
+                        {title}
+                      </h3>
+                      <div className="prose max-w-none">
+                        {Array.isArray(content) ? (
+                          <ul className="list-disc pl-4 sm:pl-6 space-y-1 sm:space-y-2">
+                            {content.map((item, index) => (
+                              <li
+                                key={index}
+                                className="text-xs sm:text-sm text-gray-700"
+                              >
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-xs sm:text-sm text-gray-700">
+                            {content}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  <SignatureDisplay contractId={id} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Chat & Actions (Hidden on mobile) */}
+          <div className="hidden lg:block space-y-6">
+            {/* Contract Actions Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-6">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <Wallet className="w-4 h-4 text-purple-600" />
+                  </div>
+                  Contract Actions
+                </h2>
+                <ContractActions
+                  contractId={contract._id}
+                  handlePayment={handlePayment}
+                />
+              </div>
+            </div>
+
+            {/* Chat Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold text-gray-900 flex items-center">
+                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                      <MessageSquare className="w-4 h-4 text-orange-600" />
+                    </div>
+                    Chat
+                  </h2>
+                </div>
+
+                <div className="h-96 overflow-y-auto">
+                  {["owner", "property manager", "careTaker"].includes(
+                    userRole
+                  ) ? (
+                    <OwnerModificationChat
+                      contractId={contract._id}
+                      ownerId={contract.ownerId}
+                      clientId={contract.clientId}
+                    />
+                  ) : userRole === "buyer" ? (
+                    <ClientModificationChat
+                      contractId={contract._id}
+                      clientId={contract.clientId}
+                      ownerId={contract.ownerId}
+                    />
+                  ) : (
+                    <div className="text-center py-8">
+                      <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-600">
+                        Chat not available for your role
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile Action Bar */}
-      <div className="md:hidden fixed bottom-12 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
-        <div className="flex items-center justify-between max-w-screen-lg mx-auto">
-          <div className="flex-1">
-            <ContractActions
-              contractId={contract._id}
-              handlePayment={handlePayment}
-            />
-          </div>
-          <button
-            onClick={() => setIsChatOpen(!isChatOpen)}
-            className="ml-4 bg-primary-600 text-white p-3 rounded-full shadow-lg"
-          >
-            {isChatOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <MessageSquare className="w-6 h-6" />
-            )}
-          </button>
-        </div>
+      {/* Mobile Sticky Chat Trigger */}
+      <div className="lg:hidden fixed bottom-44 right-6 z-50">
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className={`w-12 h-12 rounded-2xl shadow-xl transition-all duration-300 transform hover:scale-110 ${
+            isChatOpen
+              ? "bg-red-500 hover:bg-red-600"
+              : "bg-primary-600 hover:bg-primary-700"
+          } flex items-center justify-center`}
+        >
+          {isChatOpen ? (
+            <X className="w-7 h-7 text-white" />
+          ) : (
+            <MessageSquare className="w-6 h-6 text-white" />
+          )}
+        </button>
       </div>
 
-      {/* Right Section Wrapper */}
-      <div
-        className={`fixed md:relative inset-0 md:inset-auto bg-white md:bg-transparent z-40 md:z-auto
-          transform transition-transform duration-300 ease-in-out
-          ${isChatOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"}
-          w-full md:w-auto mx-2 md:mx-0 pt-16 md:pt-0 pb-20 md:pb-0`}
-        style={{
-          width: window.innerWidth >= 768 ? `${100 - leftWidth}%` : "100%",
-        }}
-      >
-        {/* Chat Section */}
-        <div className="bg-white rounded-md p-3 md:p-6 w-full h-[calc(100vh-20rem)] md:h-[calc(100vh-14rem)]">
-          <div className="flex justify-between items-center mb-4 md:hidden">
-            <h3 className="text-lg font-semibold">Chat</h3>
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          {["owner", "property manager", "careTaker"].includes(userRole) ? (
-            <OwnerModificationChat
-              contractId={contract._id}
-              ownerId={contract.ownerId}
-              clientId={contract.clientId}
-            />
-          ) : userRole === "buyer" ? (
-            <ClientModificationChat
-              contractId={contract._id}
-              clientId={contract.clientId}
-              ownerId={contract.ownerId}
-            />
-          ) : null}
-        </div>
+      {/* Mobile Chat Overlay */}
+      {isChatOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end"
+          onClick={(e) => {
+            // Close chat when clicking on backdrop
+            if (e.target === e.currentTarget) {
+              setIsChatOpen(false);
+            }
+          }}
+        >
+          <div className="w-full bg-white rounded-t-3xl shadow-2xl animate-slide-up">
+            {/* Chat Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Contract Chat
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {["owner", "property manager", "careTaker"].includes(
+                      userRole
+                    )
+                      ? "Chat with tenant"
+                      : "Chat with property owner"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsChatOpen(false)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-600" />
+              </button>
+            </div>
 
-        {/* Proceed to Sign Button Section - Desktop Only */}
-        <div className="hidden md:flex justify-center px-4 bg-white shadow-md rounded-md p-3 md:p-6 w-full max-h-fit md:h-fit my-4">
-          <ContractActions
-            contractId={contract._id}
-            handlePayment={handlePayment}
-          />
+            {/* Chat Content */}
+            <div className="h-96 overflow-hidden">
+              {["owner", "property manager", "careTaker"].includes(userRole) ? (
+                <OwnerModificationChat
+                  contractId={contract._id}
+                  ownerId={contract.ownerId}
+                  clientId={contract.clientId}
+                />
+              ) : userRole === "buyer" ? (
+                <ClientModificationChat
+                  contractId={contract._id}
+                  clientId={contract.clientId}
+                  ownerId={contract.ownerId}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full space-y-4 p-8">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <MessageSquare className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-gray-600 font-medium">
+                      Chat not available
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Chat is not available for your role
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Sticky Contract Actions - Compact */}
+      <div className="lg:hidden fixed bottom-14 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40">
+        <div className="p-3">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-gray-900 flex items-center">
+                  <div className="w-5 h-5 bg-purple-100 rounded-lg flex items-center justify-center mr-2">
+                    <Wallet className="w-3 h-3 text-purple-600" />
+                  </div>
+                  Actions
+                </h2>
+                {/* Payment Status - Compact */}
+                {["buyer", "renter"].includes(user.role) && (
+                  <div className="flex items-center space-x-1">
+                    {loading ? (
+                      <div className="w-2 h-2 bg-gray-300 rounded-full animate-pulse"></div>
+                    ) : (
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          paymentStatus === "confirmed"
+                            ? "bg-green-500"
+                            : paymentStatus === "pending"
+                            ? "bg-yellow-500"
+                            : paymentStatus === "failed"
+                            ? "bg-red-500"
+                            : "bg-gray-400"
+                        }`}
+                      ></div>
+                    )}
+                    <span className="text-xs text-gray-500">
+                      {paymentStatus
+                        ? paymentStatus.charAt(0).toUpperCase() +
+                          paymentStatus.slice(1)
+                        : "Not Paid"}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Compact Action Buttons */}
+              <div className="grid grid-cols-3 gap-2">
+                {["buyer", "renter"].includes(user.role) && (
+                  <button
+                    onClick={() => handlePayment(contract._id)}
+                    disabled={isPaymentButtonDisabled}
+                    className={`flex flex-col items-center justify-center p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                      isPaymentButtonDisabled
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-md hover:shadow-lg hover:from-emerald-600 hover:to-emerald-700"
+                    }`}
+                  >
+                    <Wallet className="w-4 h-4 mb-1" />
+                    <span>Payment</span>
+                  </button>
+                )}
+
+                <button
+                  onClick={() => setIsSignatureDialogOpen(true)}
+                  disabled={isActionButtonsDisabled}
+                  className={`flex flex-col items-center justify-center p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
+                    isActionButtonsDisabled
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : "bg-primary-600 text-white shadow-md hover:shadow-lg hover:bg-primary-700"
+                  }`}
+                >
+                  <FileText className="w-4 h-4 mb-1" />
+                  <span>Sign</span>
+                </button>
+
+                <button
+                  onClick={() => setIsWitnessDialogOpen(true)}
+                  disabled={isActionButtonsDisabled}
+                  className={`flex flex-col items-center justify-center p-2 rounded-lg text-xs font-medium transition-all duration-200 border ${
+                    isActionButtonsDisabled
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                      : "border-primary-600 text-primary-600 bg-white hover:bg-primary-50 hover:border-primary-700 hover:text-primary-700"
+                  }`}
+                >
+                  <UserPlus className="w-4 h-4 mb-1" />
+                  <span>Witness</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -788,6 +1119,19 @@ const ContractDashboard = () => {
         setTenantObligations={setTenantObligations}
         setLandlordObligations={setLandlordObligations}
         signedRoles={signedRoles}
+      />
+
+      {/* Mobile Dialog Components */}
+      <SignatureDialog
+        open={isSignatureDialogOpen}
+        onOpenChange={setIsSignatureDialogOpen}
+        contractId={contract?._id}
+      />
+
+      <WitnessInviteDialog
+        open={isWitnessDialogOpen}
+        onOpenChange={setIsWitnessDialogOpen}
+        contractId={contract?._id}
       />
     </div>
   );

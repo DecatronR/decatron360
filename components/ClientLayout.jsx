@@ -160,6 +160,11 @@ const MainLayout = ({ children }) => {
   ];
 
   const renderFloatingButton = () => {
+    // Don't show FAB on contract dashboard pages to avoid conflicts with chat trigger
+    if (pathname.startsWith("/contract-dashboard")) {
+      return null;
+    }
+
     // Show request button for guests OR buyers
     if (!user || user.role === "buyer") {
       return (

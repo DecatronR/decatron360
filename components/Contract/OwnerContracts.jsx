@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { fetchOwnerContracts } from "utils/api/contract/fetchOwnerContracts";
+import { fetchPropertyData } from "utils/api/properties/fetchPropertyData";
 import { truncateText } from "utils/helpers/truncateText";
 import {
   MapPin,
@@ -57,6 +58,7 @@ const OwnerContract = () => {
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [showSortDropdown, setShowSortDropdown] = useState(false);
+  const [propertyImages, setPropertyImages] = useState({}); // { propertyId: imageUrl }
   const sortDropdownRef = useRef(null);
 
   useEffect(() => {
@@ -75,6 +77,50 @@ const OwnerContract = () => {
 
     handleFetchOwnerContract();
   }, []);
+
+  // Fetch property images for contracts
+  useEffect(() => {
+    const fetchPropertyImages = async () => {
+      if (!contracts.length) return;
+
+      const imagesToFetch = {};
+      contracts.forEach((contract) => {
+        if (contract.propertyId && !propertyImages[contract.propertyId]) {
+          imagesToFetch[contract.propertyId] = true;
+        }
+      });
+
+      const propertyIds = Object.keys(imagesToFetch);
+      if (propertyIds.length === 0) return;
+
+      try {
+        const imagePromises = propertyIds.map(async (propertyId) => {
+          try {
+            const propertyData = await fetchPropertyData(propertyId);
+            return {
+              propertyId,
+              imageUrl: propertyData.photos?.[0]?.path || null,
+            };
+          } catch (error) {
+            console.error(`Failed to fetch property ${propertyId}:`, error);
+            return { propertyId, imageUrl: null };
+          }
+        });
+
+        const results = await Promise.all(imagePromises);
+        const newImages = {};
+        results.forEach(({ propertyId, imageUrl }) => {
+          newImages[propertyId] = imageUrl;
+        });
+
+        setPropertyImages((prev) => ({ ...prev, ...newImages }));
+      } catch (error) {
+        console.error("Failed to fetch property images:", error);
+      }
+    };
+
+    fetchPropertyImages();
+  }, [contracts, propertyImages]);
 
   // Close sort dropdown when clicking outside
   useEffect(() => {
@@ -191,173 +237,176 @@ const OwnerContract = () => {
     dateRange.end;
 
   const FilterSortBar = () => (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        {/* Search */}
-        <div className="relative flex-1 max-w-md">
+    <div className="bg-white rounded-xl border border-gray-200 p-3 sm:p-4 mb-4 sm:mb-6">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        {/* Search - Full width on mobile */}
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search properties, clients, locations..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm sm:text-base"
           />
         </div>
 
-        {/* View Mode Toggle */}
-        <div className="flex items-center bg-gray-100 rounded-lg p-1">
-          <button
-            onClick={() => setViewMode("grid")}
-            className={`p-2 rounded-md transition-colors ${
-              viewMode === "grid"
-                ? "bg-white text-primary-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setViewMode("list")}
-            className={`p-2 rounded-md transition-colors ${
-              viewMode === "list"
-                ? "bg-white text-primary-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
-            }`}
-          >
-            <ListIcon className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Sort Dropdown */}
-        <div className="relative" ref={sortDropdownRef}>
-          <button
-            onClick={() => setShowSortDropdown(!showSortDropdown)}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <span className="text-sm font-medium text-gray-700">
-              {SORT_OPTIONS.find((option) => option.value === sortBy)?.label ||
-                "Sort by"}
-            </span>
-            <ChevronDown className="w-4 h-4 text-gray-500" />
-          </button>
-
-          {showSortDropdown && (
-            <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-              {SORT_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => {
-                    setSortBy(option.value);
-                    setShowSortDropdown(false);
-                  }}
-                  className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
-                    sortBy === option.value
-                      ? "bg-primary-50 text-primary-600"
-                      : "text-gray-700"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Filter Toggle */}
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-            showFilters || hasActiveFilters
-              ? "bg-primary-100 text-primary-700 border border-primary-200"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-          }`}
-        >
-          <Filter className="w-4 h-4" />
-          <span className="text-sm font-medium">Filters</span>
-          {hasActiveFilters && (
-            <span className="w-2 h-2 bg-primary-600 rounded-full"></span>
-          )}
-        </button>
-      </div>
-
-      {/* Advanced Filters */}
-      {showFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Price Range */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Min Price
-              </label>
-              <input
-                type="number"
-                placeholder="Min"
-                value={priceRange.min}
-                onChange={(e) =>
-                  setPriceRange((prev) => ({ ...prev, min: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Max Price
-              </label>
-              <input
-                type="number"
-                placeholder="Max"
-                value={priceRange.max}
-                onChange={(e) =>
-                  setPriceRange((prev) => ({ ...prev, max: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                From Date
-              </label>
-              <input
-                type="date"
-                value={dateRange.start}
-                onChange={(e) =>
-                  setDateRange((prev) => ({ ...prev, start: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                To Date
-              </label>
-              <input
-                type="date"
-                value={dateRange.end}
-                onChange={(e) =>
-                  setDateRange((prev) => ({ ...prev, end: e.target.value }))
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </div>
+        {/* Controls Row - Stack on mobile, row on desktop */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-gray-100 rounded-lg p-1 self-start sm:self-auto">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "grid"
+                  ? "bg-white text-primary-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === "list"
+                  ? "bg-white text-primary-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <ListIcon className="w-4 h-4" />
+            </button>
           </div>
 
-          {hasActiveFilters && (
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-gray-600">
-                {sortedContracts.length} of {contracts.length} contracts
+          {/* Sort Dropdown */}
+          <div className="relative flex-1 sm:flex-none" ref={sortDropdownRef}>
+            <button
+              onClick={() => setShowSortDropdown(!showSortDropdown)}
+              className="w-full sm:w-auto flex items-center justify-between sm:justify-start space-x-2 px-3 sm:px-4 py-2.5 sm:py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
+            >
+              <span className="font-medium text-gray-700 truncate">
+                {SORT_OPTIONS.find((option) => option.value === sortBy)
+                  ?.label || "Sort by"}
               </span>
-              <button
-                onClick={clearFilters}
-                className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                <CloseIcon className="w-4 h-4" />
-                <span>Clear filters</span>
-              </button>
-            </div>
-          )}
+              <ChevronDown className="w-4 h-4 text-gray-500 flex-shrink-0" />
+            </button>
+
+            {showSortDropdown && (
+              <div className="absolute left-0 right-0 sm:right-auto top-full mt-1 w-full sm:w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                {SORT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      setSortBy(option.value);
+                      setShowSortDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors ${
+                      sortBy === option.value
+                        ? "bg-primary-50 text-primary-600"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Filter Toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center justify-center space-x-2 px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg transition-colors text-sm sm:text-base font-medium ${
+              showFilters || hasActiveFilters
+                ? "bg-primary-100 text-primary-700 border border-primary-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            <span>Filters</span>
+            {hasActiveFilters && (
+              <span className="w-2 h-2 bg-primary-600 rounded-full"></span>
+            )}
+          </button>
         </div>
-      )}
+
+        {/* Advanced Filters */}
+        {showFilters && (
+          <div className="pt-3 sm:pt-4 border-t border-gray-200">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              {/* Price Range */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Min Price
+                </label>
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={priceRange.min}
+                  onChange={(e) =>
+                    setPriceRange((prev) => ({ ...prev, min: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Max Price
+                </label>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={priceRange.max}
+                  onChange={(e) =>
+                    setPriceRange((prev) => ({ ...prev, max: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  From Date
+                </label>
+                <input
+                  type="date"
+                  value={dateRange.start}
+                  onChange={(e) =>
+                    setDateRange((prev) => ({ ...prev, start: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  To Date
+                </label>
+                <input
+                  type="date"
+                  value={dateRange.end}
+                  onChange={(e) =>
+                    setDateRange((prev) => ({ ...prev, end: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                />
+              </div>
+            </div>
+
+            {hasActiveFilters && (
+              <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <span className="text-sm text-gray-600">
+                  {sortedContracts.length} of {contracts.length} contracts
+                </span>
+                <button
+                  onClick={clearFilters}
+                  className="flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  <CloseIcon className="w-4 h-4" />
+                  <span>Clear filters</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -370,9 +419,9 @@ const OwnerContract = () => {
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:border-primary-200 transition-all duration-200 transform hover:-translate-y-1">
         {/* Property Image */}
         <div className="relative h-48 bg-gray-100">
-          {contract.propertyImage ? (
+          {propertyImages[contract.propertyId] ? (
             <Image
-              src={contract.propertyImage}
+              src={propertyImages[contract.propertyId]}
               alt={contract.propertyName}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-200"
@@ -383,7 +432,7 @@ const OwnerContract = () => {
                 <div className="w-12 h-12 bg-gray-300 rounded-lg mx-auto mb-2 flex items-center justify-center">
                   <MapPin className="w-6 h-6 text-gray-500" />
                 </div>
-                <p className="text-sm text-gray-500">No image</p>
+                <p className="text-sm text-gray-500">Loading image...</p>
               </div>
             </div>
           )}
@@ -453,9 +502,9 @@ const OwnerContract = () => {
         <div className="flex items-center space-x-4">
           {/* Property Image */}
           <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-            {contract.propertyImage ? (
+            {propertyImages[contract.propertyId] ? (
               <Image
-                src={contract.propertyImage}
+                src={propertyImages[contract.propertyId]}
                 alt={contract.propertyName}
                 fill
                 className="object-cover"
@@ -554,7 +603,7 @@ const OwnerContract = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Status Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="flex flex-wrap justify-center gap-1 sm:gap-2 mb-4 sm:mb-6">
           {[
             {
               name: "All",
@@ -585,7 +634,7 @@ const OwnerContract = () => {
             <button
               key={tab.name}
               onClick={() => setActiveTab(tab.name)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${
+              className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border ${
                 activeTab === tab.name
                   ? `${tab.activeColor} shadow-md`
                   : `${tab.color} hover:shadow-sm hover:scale-105`
