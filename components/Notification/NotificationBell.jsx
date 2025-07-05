@@ -17,6 +17,7 @@ import { requestAndSendNotificationPermission } from "../../utils/api/pushNotifi
 import { fetchNotifications } from "../../utils/api/pushNotification/fetchNotifications";
 import { markNotificationAsRead } from "../../utils/api/pushNotification/markNotificationAsRead";
 import { unregisterFcmTokenOnServer } from "../../utils/api/pushNotification/unregisterFcmTokenOnServer";
+import { clearAllNotifications } from "../../utils/api/pushNotification/clearAllNotifications";
 import { useRouter } from "next/navigation";
 import { messaging } from "lib/firebase";
 import { SwipeableList, SwipeableListItem } from "react-swipeable-list";
@@ -263,9 +264,27 @@ const NotificationBell = ({ color = null, iconSize = "h-5 w-5" }) => {
   };
 
   // Clear all notifications
-  const handleClearAll = () => {
-    setNotifications([]);
-    // Optionally, call backend to clear all notifications
+  const handleClearAll = async () => {
+    if (!userId) {
+      console.error("[DEBUG] No userId available for clearing notifications");
+      return;
+    }
+
+    try {
+      console.log("[DEBUG] Clearing all notifications for user:", userId);
+      await clearAllNotifications(userId);
+      setNotifications([]);
+      enqueueSnackbar("All notifications cleared", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
+    } catch (error) {
+      console.error("[DEBUG] Error clearing all notifications:", error);
+      enqueueSnackbar("Failed to clear notifications", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   const unreadCount = notifications.filter((n) => !n.read).length;
