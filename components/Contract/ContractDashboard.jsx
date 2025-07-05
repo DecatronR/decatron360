@@ -326,6 +326,12 @@ const ContractDashboard = () => {
           ? payments.status !== "confirmed"
           : false;
         setIsActionButtonsDisabled(actionDisabled);
+
+        // Debug logging
+        console.log("Mobile Debug - User role:", user?.role);
+        console.log("Mobile Debug - Payment status:", payments.status);
+        console.log("Mobile Debug - Action buttons disabled:", actionDisabled);
+        console.log("Mobile Debug - Payment button disabled:", paymentDisabled);
       } catch (error) {
         console.error("Error fetching payment status:", error);
         setPaymentStatus(null);
@@ -442,13 +448,38 @@ const ContractDashboard = () => {
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </button>
-              <div>
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  Contract Dashboard
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
-                  {truncateText(contract.propertyName || "Property", 40)}
-                </p>
+              <div className="flex items-center space-x-3">
+                {/* Property Image in Header */}
+                {propertyData?.data?.photos &&
+                  propertyData.data.photos.length > 0 && (
+                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                      <img
+                        src={propertyData.data.photos[0]}
+                        alt="Property"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center hidden">
+                        <ImageIcon className="w-5 h-5 text-gray-400" />
+                      </div>
+                    </div>
+                  )}
+                <div>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
+                    Contract Dashboard
+                  </h1>
+                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">
+                    {truncateText(
+                      propertyData?.data?.title ||
+                        contract.propertyName ||
+                        "Property",
+                      40
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
             <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
@@ -463,13 +494,13 @@ const ContractDashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Main Content */}
+          {/* Left Column - Main Content (Scrollable) */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Property Image Card */}
+            {/* Property Image Card - Simplified */}
             {propertyData?.data?.photos &&
               propertyData.data.photos.length > 0 && (
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="relative h-48 sm:h-64">
+                  <div className="relative h-32 sm:h-40">
                     <img
                       src={propertyData.data.photos[0]}
                       alt="Property"
@@ -481,19 +512,16 @@ const ContractDashboard = () => {
                     />
                     <div className="absolute inset-0 bg-gray-100 flex items-center justify-center hidden">
                       <div className="text-center">
-                        <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">Property Image</p>
+                        <ImageIcon className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                        <p className="text-xs text-gray-500">Property Image</p>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      {propertyData.data.title || "Property"}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {propertyData.data.neighbourhood},{" "}
-                      {propertyData.data.state}
-                    </p>
+                    {/* Property Badge */}
+                    <div className="absolute top-2 left-2">
+                      <div className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700 shadow-sm">
+                        {propertyData.data.listingType || "Property"}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -520,7 +548,10 @@ const ContractDashboard = () => {
                   </div>
                   Property Details
                 </h2>
-                <PropertyDetails contract={contract} />
+                <PropertyDetails
+                  contract={contract}
+                  propertyData={propertyData}
+                />
               </div>
             </div>
 
@@ -871,8 +902,8 @@ const ContractDashboard = () => {
             </div>
           </div>
 
-          {/* Right Column - Chat & Actions (Hidden on mobile) */}
-          <div className="hidden lg:block space-y-6">
+          {/* Right Column - Chat & Actions (Fixed/Sticky) */}
+          <div className="hidden lg:block lg:sticky lg:top-6 lg:self-start space-y-6 max-h-[calc(100vh-3rem)] overflow-y-auto">
             {/* Contract Actions Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="p-6">
@@ -1058,6 +1089,10 @@ const ContractDashboard = () => {
                           paymentStatus.slice(1)
                         : "Not Paid"}
                     </span>
+                    {/* Debug indicator */}
+                    <span className="text-xs text-gray-400 ml-1">
+                      {isActionButtonsDisabled ? "(Disabled)" : "(Enabled)"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -1080,28 +1115,42 @@ const ContractDashboard = () => {
                 )}
 
                 <button
-                  onClick={() => setIsSignatureDialogOpen(true)}
+                  onClick={() =>
+                    !isActionButtonsDisabled && setIsSignatureDialogOpen(true)
+                  }
                   disabled={isActionButtonsDisabled}
                   className={`flex flex-col items-center justify-center p-2 rounded-lg text-xs font-medium transition-all duration-200 ${
                     isActionButtonsDisabled
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed opacity-50"
                       : "bg-primary-600 text-white shadow-md hover:shadow-lg hover:bg-primary-700"
                   }`}
                 >
-                  <FileText className="w-4 h-4 mb-1" />
+                  <FileText
+                    className={`w-4 h-4 mb-1 ${
+                      isActionButtonsDisabled ? "text-gray-400" : "text-white"
+                    }`}
+                  />
                   <span>Sign</span>
                 </button>
 
                 <button
-                  onClick={() => setIsWitnessDialogOpen(true)}
+                  onClick={() =>
+                    !isActionButtonsDisabled && setIsWitnessDialogOpen(true)
+                  }
                   disabled={isActionButtonsDisabled}
                   className={`flex flex-col items-center justify-center p-2 rounded-lg text-xs font-medium transition-all duration-200 border ${
                     isActionButtonsDisabled
-                      ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50"
+                      ? "border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50 opacity-50"
                       : "border-primary-600 text-primary-600 bg-white hover:bg-primary-50 hover:border-primary-700 hover:text-primary-700"
                   }`}
                 >
-                  <UserPlus className="w-4 h-4 mb-1" />
+                  <UserPlus
+                    className={`w-4 h-4 mb-1 ${
+                      isActionButtonsDisabled
+                        ? "text-gray-400"
+                        : "text-primary-600"
+                    }`}
+                  />
                   <span>Witness</span>
                 </button>
               </div>
