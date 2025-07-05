@@ -427,9 +427,6 @@ const PropertyRequestList = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               No Property Requests Found
             </h3>
-            <p className="text-gray-600">
-              There are no property requests matching your criteria.
-            </p>
           </div>
         </div>
       ) : viewMode === "grid" ? (
