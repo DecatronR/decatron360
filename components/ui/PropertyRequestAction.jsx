@@ -13,7 +13,7 @@ import { Plus, X } from "lucide-react";
  * @param {string} props.theme - Theme color ('primary', 'secondary', 'success', 'warning', 'error').
  * @param {boolean} props.isFloating - Whether to use floating FAB mode (true) or dropdown mode (false).
  */
-const ActionMenu = ({
+const PropertyRequestAction = ({
   trigger,
   items = [],
   position = "bottom-right",
@@ -276,4 +276,4 @@ const ActionMenu = ({
   );
 };
 
-export default ActionMenu;
+export default PropertyRequestAction;

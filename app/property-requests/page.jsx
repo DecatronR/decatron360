@@ -6,20 +6,20 @@ import { ArrowLeft, Calendar, Building2, Loader2 } from "lucide-react";
 import PropertyRequestList from "@/components/PropertyRequest/PropertyRequestList";
 
 const PropertyRequestsPage = () => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!user) {
       router.replace("/auth/login?redirect=/property-requests");
     }
-  }, [user, loading, router]);
+  }, [user, router]);
 
   const handleBack = () => {
     router.back();
   };
 
-  if (loading || !user) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
