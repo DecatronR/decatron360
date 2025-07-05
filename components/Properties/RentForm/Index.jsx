@@ -211,10 +211,10 @@ const RentForm = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-6">
               <Plus className="w-8 h-8 text-primary-600" />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               List Your Property
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
               {fields.listingType
                 ? `Add a new ${
                     listingTypes.find(
@@ -237,7 +237,7 @@ const RentForm = () => {
                   <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
                     <Settings className="w-5 h-5 text-primary-600" />
                   </div>
-                  <h2 className="text-2xl font-semibold text-gray-900">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
                     Select User
                   </h2>
                 </div>
@@ -276,7 +276,7 @@ const RentForm = () => {
                 <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
                   <Home className="w-5 h-5 text-primary-600" />
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-900">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
                   Listing Type
                 </h2>
               </div>

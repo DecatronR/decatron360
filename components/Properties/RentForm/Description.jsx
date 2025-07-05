@@ -94,7 +94,7 @@ const Description = ({ fields, handleChange }) => {
         <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
           <FileText className="w-5 h-5 text-primary-600" />
         </div>
-        <h2 className="text-2xl font-semibold text-gray-900">
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
           Property Details
         </h2>
       </div>

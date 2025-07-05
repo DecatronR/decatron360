@@ -34,7 +34,9 @@ const Pricing = ({ fields, setFields }) => {
         <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
           <DollarSign className="w-5 h-5 text-primary-600" />
         </div>
-        <h2 className="text-2xl font-semibold text-gray-900">Pricing & Fees</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+          Pricing & Fees
+        </h2>
       </div>
 
       <div className="space-y-6">

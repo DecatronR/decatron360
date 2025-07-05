@@ -207,10 +207,10 @@ const PropertyRequestForm = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-6">
             <Search className="w-8 h-8 text-primary-600" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Find Your Perfect Property
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
             Tell us what you're looking for and we'll let everyone know
           </p>
         </div>
@@ -223,7 +223,7 @@ const PropertyRequestForm = () => {
                 <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
                   <User className="w-5 h-5 text-primary-600" />
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-900">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
                   Your Information
                 </h2>
               </div>
@@ -325,7 +325,7 @@ const PropertyRequestForm = () => {
               <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
                 <Home className="w-5 h-5 text-primary-600" />
               </div>
-              <h2 className="text-2xl font-semibold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
                 Property Preferences
               </h2>
             </div>
@@ -438,7 +438,7 @@ const PropertyRequestForm = () => {
               <div className="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-full mr-4">
                 <MapPin className="w-5 h-5 text-primary-600" />
               </div>
-              <h2 className="text-2xl font-semibold text-gray-900">
+              <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
                 Preferred Location
               </h2>
             </div>
@@ -516,7 +516,7 @@ const PropertyRequestForm = () => {
 
           {/* Additional Notes Section */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">
               Additional Details
             </h3>
             <div className="space-y-2">
