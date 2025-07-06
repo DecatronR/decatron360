@@ -327,11 +327,10 @@ const TermsAndConditions = () => {
                   Transactions & Payments
                 </h2>
               </div>
-
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                    Payment Terms
+                    Payment Terms & Markup Fees
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -342,20 +341,24 @@ const TermsAndConditions = () => {
                         <li className="flex items-start">
                           <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                           <span>
-                            Agency fees are typically 15% of the transaction
-                            value
+                            Inspection Fee: Decatron charges a markup of{" "}
+                            <strong>10% to 15%</strong> on inspection fees,
+                            depending on the property and location.
                           </span>
                         </li>
                         <li className="flex items-start">
                           <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                           <span>
-                            Inspection fees apply for property viewings
+                            Transaction Contract Markup: For each successful
+                            transaction contract, a <strong>3%</strong> markup
+                            is applied to the total contract value.
                           </span>
                         </li>
                         <li className="flex items-start">
                           <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
                           <span>
-                            All fees are clearly disclosed before payment
+                            All fees are disclosed before payment and are
+                            subject to change with notice.
                           </span>
                         </li>
                       </ul>
@@ -388,7 +391,6 @@ const TermsAndConditions = () => {
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">
                     Transaction Disclaimers
@@ -419,6 +421,77 @@ const TermsAndConditions = () => {
                     </ul>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* E-Signature Compliance */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
+                  E-Signature Compliance
+                </h2>
+              </div>
+              <div className="space-y-6">
+                <p className="text-gray-700">
+                  Decatron enables users to sign documents electronically. By
+                  using our e-signature features, you acknowledge and agree to
+                  the following:
+                </p>
+                <ul className="space-y-4 text-gray-700">
+                  <li className="flex items-start">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    <span>
+                      <strong>Intent to Sign:</strong> You demonstrate a clear
+                      intention to sign by clicking "I agree," typing your name,
+                      drawing a signature, or using our certified e-signature
+                      service.
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    <span>
+                      <strong>Consent to Do Business Electronically:</strong> By
+                      using our platform, you and all parties to a transaction
+                      consent to conduct business electronically, as required by
+                      law and as outlined in this agreement.
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    <span>
+                      <strong>Association of Signature with Document:</strong>{" "}
+                      Each e-signature is securely linked to the specific
+                      document being signed. We maintain an audit trail that
+                      includes metadata such as timestamps, signers' details,
+                      and IP addresses.
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    <span>
+                      <strong>Record Retention:</strong> Signed documents are
+                      stored securely and are accessible for future reference.
+                      You may download signed PDFs at any time. We retain
+                      records in compliance with applicable laws.
+                    </span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="w-2 h-2 bg-primary-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    <span>
+                      <strong>Legal Validity in Nigeria and Africa:</strong>{" "}
+                      E-signatures on Decatron are legally recognized under the
+                      Nigerian Evidence Act 2011 (Section 93) and are generally
+                      enforceable across Africa, provided the above requirements
+                      are met. We recommend you consult local counsel for
+                      specific legal advice.
+                    </span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
