@@ -384,7 +384,14 @@ const PropertyRequestList = () => {
               <div className="flex items-center text-gray-600">
                 <Wallet className="w-4 h-4 mr-2 text-green-500 flex-shrink-0" />
                 <span className="text-sm font-medium">
-                  Budget: {formatCurrency(request.budget)}
+                  Budget:{" "}
+                  {request.minBudget &&
+                  request.maxBudget &&
+                  request.minBudget !== request.maxBudget
+                    ? `${formatCurrency(request.minBudget)} – ${formatCurrency(
+                        request.maxBudget
+                      )}`
+                    : formatCurrency(request.minBudget || request.maxBudget)}
                 </span>
               </div>
             </div>
