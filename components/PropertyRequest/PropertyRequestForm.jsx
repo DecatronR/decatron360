@@ -35,11 +35,13 @@ const PropertyRequestForm = () => {
     category: "",
     propertyType: "",
     propertyUsage: "",
-    budget: "",
+    minBudget: "",
+    maxBudget: "",
     state: "",
     lga: "",
     neighbourhood: "",
     note: "",
+    bedrooms: "",
   });
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,6 +53,24 @@ const PropertyRequestForm = () => {
   const [states, setStates] = useState([]);
   const [lgas, setLgas] = useState([]);
   const [roles, setRoles] = useState([]);
+
+  // List of residential property types for which bedrooms is relevant
+  const RESIDENTIAL_TYPES = [
+    "Fully Detached Duplex",
+    "Semi Detached Duplex",
+    "Terrace Duplex",
+    "Fully Detached Bungalow",
+    "Semi Detached Bungalow",
+    "Apartment",
+    "Villa",
+  ];
+
+  // Helper to check if selected propertyType is residential
+  const isResidential = propertyTypes.find(
+    (type) =>
+      type.slug === formData.propertyType &&
+      RESIDENTIAL_TYPES.includes(type.propertyType)
+  );
 
   // Determine if we should show user details section
   const hasUserData =
@@ -151,6 +171,9 @@ const PropertyRequestForm = () => {
       phone: hasUserData ? user.phone : formData.phone,
       role: hasUserData ? user.role : formData.role,
     };
+    // Convert minBudget and maxBudget to numbers if present
+    if (payload.minBudget) payload.minBudget = Number(payload.minBudget);
+    if (payload.maxBudget) payload.maxBudget = Number(payload.maxBudget);
     setIsSubmitting(true);
     try {
       await createPropertyRequest(payload);
@@ -191,7 +214,8 @@ const PropertyRequestForm = () => {
           category: "",
           propertyType: "",
           propertyUsage: "",
-          budget: "",
+          minBudget: "",
+          maxBudget: "",
           state: "",
           lga: "",
           neighbourhood: "",
@@ -411,6 +435,29 @@ const PropertyRequestForm = () => {
                 </select>
               </div>
 
+              {/* Bedrooms field for residential types */}
+              {isResidential && (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="bedrooms"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Number of Bedrooms{" "}
+                    <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="bedrooms"
+                    id="bedrooms"
+                    min="0"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    placeholder="e.g., 3"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 <label
                   htmlFor="propertyUsage"
@@ -439,28 +486,46 @@ const PropertyRequestForm = () => {
             {/* Budget Section */}
             <div className="mb-8">
               <div className="flex items-center mb-4">
-                <label
-                  htmlFor="budget"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label className="block text-sm font-medium text-gray-700">
                   Budget Range
                 </label>
               </div>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
-                  ₦
-                </span>
-                <input
-                  type="number"
-                  name="budget"
-                  id="budget"
-                  value={formData.budget}
-                  onChange={handleChange}
-                  required
-                  placeholder="5,000,000"
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                    ₦
+                  </span>
+                  <input
+                    type="number"
+                    name="minBudget"
+                    id="minBudget"
+                    value={formData.minBudget}
+                    onChange={handleChange}
+                    required={!formData.maxBudget}
+                    placeholder="Minimum budget"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                    ₦
+                  </span>
+                  <input
+                    type="number"
+                    name="maxBudget"
+                    id="maxBudget"
+                    value={formData.maxBudget}
+                    onChange={handleChange}
+                    required={!formData.minBudget}
+                    placeholder="Maximum budget"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  />
+                </div>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                You can enter either a minimum, maximum, or both to specify your
+                budget range.
+              </p>
             </div>
           </div>
 
