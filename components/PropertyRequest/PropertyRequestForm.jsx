@@ -41,6 +41,7 @@ const PropertyRequestForm = () => {
     lga: "",
     neighbourhood: "",
     note: "",
+    bedrooms: "",
   });
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,6 +53,24 @@ const PropertyRequestForm = () => {
   const [states, setStates] = useState([]);
   const [lgas, setLgas] = useState([]);
   const [roles, setRoles] = useState([]);
+
+  // List of residential property types for which bedrooms is relevant
+  const RESIDENTIAL_TYPES = [
+    "Fully Detached Duplex",
+    "Semi Detached Duplex",
+    "Terrace Duplex",
+    "Fully Detached Bungalow",
+    "Semi Detached Bungalow",
+    "Apartment",
+    "Villa",
+  ];
+
+  // Helper to check if selected propertyType is residential
+  const isResidential = propertyTypes.find(
+    (type) =>
+      type.slug === formData.propertyType &&
+      RESIDENTIAL_TYPES.includes(type.propertyType)
+  );
 
   // Determine if we should show user details section
   const hasUserData =
@@ -415,6 +434,29 @@ const PropertyRequestForm = () => {
                   ))}
                 </select>
               </div>
+
+              {/* Bedrooms field for residential types */}
+              {isResidential && (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="bedrooms"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Number of Bedrooms{" "}
+                    <span className="text-gray-400">(optional)</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="bedrooms"
+                    id="bedrooms"
+                    min="0"
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    placeholder="e.g., 3"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+              )}
 
               <div className="space-y-2">
                 <label
