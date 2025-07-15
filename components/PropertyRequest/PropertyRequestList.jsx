@@ -29,6 +29,12 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+function formatRole(role) {
+  if (!role) return "";
+  if (role.toLowerCase() === "buyer") return "buyer/renter";
+  return role;
+}
+
 const PropertyRequestList = () => {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -359,7 +365,7 @@ const PropertyRequestList = () => {
               <div className="flex items-center text-gray-600 mb-2">
                 <User className="w-4 h-4 mr-2 text-primary-500 flex-shrink-0" />
                 <span className="text-sm">
-                  {request.name} • {request.role}
+                  {request.name} • {formatRole(request.role)}
                 </span>
               </div>
             </div>
