@@ -8,19 +8,13 @@ const STATES = [
   // Add more states and LGAs as needed
 ];
 
-const LISTING_TYPES = [
-  "For Rent",
-  "For Sale",
-  "Shortlet",
-  "Lease",
-  // Add more as needed
-];
+const LISTING_TYPES = ["For Rent", "For Sale", "Shortlet"];
 
 const steps = [
   "Personal Info",
-  "Account Security",
   "Coverage Area",
   "Listing Preferences",
+  "Account Security",
 ];
 
 const initialForm = {
@@ -57,27 +51,31 @@ function RegisterPage() {
     form.states.includes(s.name)
   ).flatMap((s) => s.lgas);
 
-  // Validation per step
+  // Validation per step - reordered to match new step sequence
   const validateStep = () => {
     let err = {};
     if (step === 0) {
+      // Personal Info
       if (!form.fullName) err.fullName = "Full name is required";
       if (!form.email) err.email = "Email is required";
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email))
         err.email = "Invalid email";
       if (!form.phone) err.phone = "Phone number is required";
     } else if (step === 1) {
+      // Coverage Area
+      if (form.states.length === 0) err.states = "Select at least one state";
+      if (form.lgas.length === 0) err.lgas = "Select at least one LGA";
+    } else if (step === 2) {
+      // Listing Preferences
+      if (form.listingTypes.length === 0)
+        err.listingTypes = "Select at least one listing type";
+    } else if (step === 3) {
+      // Account Security (Password - now last)
       if (!form.password) err.password = "Password is required";
       if (form.password.length < 6)
         err.password = "Password must be at least 6 characters";
       if (form.password !== form.confirmPassword)
         err.confirmPassword = "Passwords do not match";
-    } else if (step === 2) {
-      if (form.states.length === 0) err.states = "Select at least one state";
-      if (form.lgas.length === 0) err.lgas = "Select at least one LGA";
-    } else if (step === 3) {
-      if (form.listingTypes.length === 0)
-        err.listingTypes = "Select at least one listing type";
     }
     setErrors(err);
     return Object.keys(err).length === 0;
@@ -129,6 +127,7 @@ function RegisterPage() {
           {steps[step]}
         </h2>
         <form onSubmit={handleSubmit}>
+          {/* Step 0: Personal Info */}
           {step === 0 && (
             <div className="space-y-4">
               <div>
@@ -179,43 +178,9 @@ function RegisterPage() {
               </div>
             </div>
           )}
+
+          {/* Step 1: Coverage Area (moved from step 2) */}
           {step === 1 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  className="mt-1 w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500"
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  className="mt-1 w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500"
-                />
-                {errors.confirmPassword && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-          {step === 2 && (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -282,7 +247,9 @@ function RegisterPage() {
               </div>
             </div>
           )}
-          {step === 3 && (
+
+          {/* Step 2: Listing Preferences (moved from step 3) */}
+          {step === 2 && (
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -312,6 +279,75 @@ function RegisterPage() {
               </div>
             </div>
           )}
+
+          {/* Step 3: Account Security (Password - now last) */}
+          {step === 3 && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="mt-1 w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className="mt-1 w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-500"
+                />
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
+              {/* Summary of previous steps */}
+              <div className="bg-gray-50 rounded-xl p-4 mt-6">
+                <h4 className="font-semibold text-gray-900 mb-3">
+                  Registration Summary
+                </h4>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <p>
+                    <span className="font-medium">Name:</span> {form.fullName}
+                  </p>
+                  <p>
+                    <span className="font-medium">Email:</span> {form.email}
+                  </p>
+                  <p>
+                    <span className="font-medium">Phone:</span> {form.phone}
+                  </p>
+                  <p>
+                    <span className="font-medium">States:</span>{" "}
+                    {form.states.join(", ")}
+                  </p>
+                  <p>
+                    <span className="font-medium">LGAs:</span>{" "}
+                    {form.lgas.join(", ")}
+                  </p>
+                  <p>
+                    <span className="font-medium">Listing Types:</span>{" "}
+                    {form.listingTypes.join(", ")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-8">
             {step > 0 ? (
@@ -338,7 +374,7 @@ function RegisterPage() {
                 type="submit"
                 className="px-6 py-3 rounded-xl bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-all"
               >
-                Submit
+                Complete Registration
               </button>
             )}
           </div>
