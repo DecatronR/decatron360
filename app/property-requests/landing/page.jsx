@@ -32,7 +32,7 @@ const features = [
   },
   {
     title: "Easy to Use",
-    desc: "Sign up in minutes and start receiving leads directly on your phone.",
+    desc: "Sign up in minutes and start receiving leads directly on your whatsapp.",
     icon: Smartphone,
     color: "text-primary-600",
     bgColor: "bg-primary-50",
@@ -58,8 +58,8 @@ const testimonials = [
 ];
 
 const stats = [
-  { label: "Active Agents", value: "500+", icon: Users },
-  { label: "Leads Generated", value: "12K+", icon: TrendingUp },
+  { label: "Active Agents", value: "150+", icon: Users },
+  { label: "Leads Generated", value: "1K+", icon: TrendingUp },
   { label: "Success Rate", value: "87%", icon: Zap },
 ];
 
@@ -143,7 +143,7 @@ export default function PropertyRequestLanding() {
                 style={{ transitionDelay: "0.2s" }}
               >
                 <Zap className="w-4 h-4" />
-                Join 500+ Successful Agents
+                Join 150+ Successful Agents
               </div>
 
               <h1
