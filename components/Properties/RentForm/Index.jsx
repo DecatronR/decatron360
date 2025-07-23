@@ -272,15 +272,30 @@ const RentForm = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (error) {
-      if (error.response && error.response.data) {
-        const errorMessage = error.response.data.message;
-        enqueueSnackbar(`Failed to list new property: ${errorMessage}`, {
-          variant: "error",
-        });
-      } else {
-        enqueueSnackbar(`Failed to list new property: ${error.message}`, {
-          variant: "error",
-        });
+      try {
+        const responseMessage = error?.response?.data?.responseMessage;
+
+        if (Array.isArray(responseMessage)) {
+          responseMessage.forEach((err) => {
+            enqueueSnackbar(`${err.msg}`, { variant: "error" });
+          });
+        } else {
+          enqueueSnackbar(
+            `Failed to list new property: ${
+              error?.response?.data?.message || "Unknown error"
+            }`,
+            {
+              variant: "error",
+            }
+          );
+        }
+      } catch (err) {
+        enqueueSnackbar(
+          `An unexpected error occurred: ${err.message || error.message}`,
+          {
+            variant: "error",
+          }
+        );
       }
     } finally {
       setIsButtonLoading(false);
