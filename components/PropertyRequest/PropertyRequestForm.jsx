@@ -5,11 +5,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { useRouter } from "next/navigation";
 import { createPropertyRequest } from "@/utils/api/propertyRequest/createPropertyRequest";
-import { fetchListingTypes } from "utils/api/propertyListing/fetchListingTypes";
+import { fetchListingTypes } from "@/utils/api/propertyListing/fetchListingTypes";
 import { fetchPropertyTypes } from "@/utils/api/propertyListing/fetchPropertyTypes";
 import { fetchPropertyUsage } from "@/utils/api/propertyListing/fetchPropertyUsage";
-import { fetchStates } from "@/utils/api/propertyListing/fetchStates";
-import { fetchLga } from "@/utils/api/propertyListing/fetchLga";
+import { fetchLGAsByStateId } from "@/utils/api/propertyListing/location/fetchLGAsByStateId";
+import { fetchStates } from "@/utils/api/propertyListing/location/fetchStates";
 import { fetchRoles } from "../../utils/api/registration/fetchRoles";
 import Spinner from "@/components/ui/Spinner";
 import Swal from "sweetalert2";
@@ -63,6 +63,8 @@ const PropertyRequestForm = () => {
     "Semi Detached Bungalow",
     "Apartment",
     "Villa",
+    "Self Contain",
+    "Flat",
   ];
 
   // Helper to check if selected propertyType is residential
@@ -126,8 +128,19 @@ const PropertyRequestForm = () => {
     const fetchLgasForState = async () => {
       if (formData.state) {
         try {
-          const lgaData = await fetchLga(formData.state);
-          setLgas(lgaData);
+          // Find the selected state to get its ID
+          const selectedState = states.find(
+            (state) => state.slug === formData.state
+          );
+          if (!selectedState) {
+            console.error("Selected state not found");
+            return;
+          }
+
+          const response = await fetchLGAsByStateId(selectedState._id);
+          // Handle the API response structure (extract data if needed)
+          const lgaData = response.data || response;
+          setLgas(lgaData || []);
         } catch (error) {
           console.error("Failed to fetch LGAs:", error);
           setLgas([]);
@@ -137,7 +150,7 @@ const PropertyRequestForm = () => {
       }
     };
     fetchLgasForState();
-  }, [formData.state]);
+  }, [formData.state, states]);
 
   useEffect(() => {
     // Fetch roles dynamically

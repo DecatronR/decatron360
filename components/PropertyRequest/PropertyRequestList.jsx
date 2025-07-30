@@ -4,16 +4,14 @@ import { useAuth } from "@/context/AuthContext";
 import { useSnackbar } from "notistack";
 import { fetchAllPropertyRequests } from "@/utils/api/propertyRequest/fetchAllPropertyRequests";
 import { fetchRoles } from "@/utils/api/registration/fetchRoles";
-import { fetchStates } from "@/utils/api/propertyListing/fetchStates";
-import { fetchLga } from "@/utils/api/propertyListing/fetchLga";
+import { fetchStates } from "@/utils/api/propertyListing/location/fetchStates";
+import { fetchLga } from "@/utils/api/propertyListing/location/fetchLga";
 import {
   Building2,
   MapPin,
   Calendar,
   User,
   Wallet,
-  Filter,
-  Search,
   Loader2,
   LayoutGrid,
   List as ListIcon,
