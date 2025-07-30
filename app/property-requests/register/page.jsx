@@ -18,6 +18,8 @@ import { fetchLGAsByStateId } from "@/utils/api/location/fetchLGAsByStateId";
 import { PropertyRequestRegistration } from "@/utils/api/propertyRequest/propertyRequestRegistration";
 import { fetchRoles } from "@/utils/api/registration/fetchRoles";
 import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
+import { Eye, EyeOff } from "lucide-react";
 
 const steps = [
   {
@@ -64,6 +66,7 @@ const initialForm = {
 
 function RegisterPage() {
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
@@ -73,6 +76,8 @@ function RegisterPage() {
   const [availableLGAs, setAvailableLGAs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
@@ -215,9 +220,9 @@ function RegisterPage() {
         email: form.email,
         phone: form.phone,
         role: form.role, // Use selected role from form
-        state: form.states.join(", "), // Join multiple states
-        lga: form.lgas.join(", "), // Join multiple LGAs
-        listingType: form.listingTypes.join(", "), // Join multiple listing types
+        state: form.states, // Send as array
+        lga: form.lgas, // Send as array
+        listingType: form.listingTypes, // Send as array
         password: form.password,
         confirmpassword: form.confirmPassword,
       };
@@ -237,7 +242,12 @@ function RegisterPage() {
 
       // Handle successful registration
       if (response.responseCode === "200" || response.success) {
-        alert("Registration successful! Redirecting to OTP verification...");
+        enqueueSnackbar(
+          "Registration successful! Redirecting to OTP verification...",
+          {
+            variant: "success",
+          }
+        );
         // Redirect to OTP verification page
         router.push("/property-requests/otp");
       } else {
@@ -246,7 +256,9 @@ function RegisterPage() {
           response.responseMessage ||
           response.message ||
           "Registration failed. Please try again.";
-        alert(errorMessage);
+        enqueueSnackbar(errorMessage, {
+          variant: "error",
+        });
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -262,7 +274,9 @@ function RegisterPage() {
         errorMessage = error.message;
       }
 
-      alert(errorMessage);
+      enqueueSnackbar(errorMessage, {
+        variant: "error",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -722,17 +736,28 @@ function RegisterPage() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
-                      type="password"
+                      type={showPassword ? "text" : "password"}
                       name="password"
                       value={form.password}
                       onChange={handleChange}
-                      className={`w-full pl-12 pr-4 py-3  border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                      className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
                         errors.password
                           ? "border-red-300 bg-red-50"
                           : "border-gray-200"
                       }`}
                       placeholder="Create a secure password"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
                   </div>
                   {errors.password && (
                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
@@ -750,17 +775,30 @@ function RegisterPage() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
-                      type="password"
+                      type={showConfirmPassword ? "text" : "password"}
                       name="confirmPassword"
                       value={form.confirmPassword}
                       onChange={handleChange}
-                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                      className={`w-full pl-12 pr-12 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
                         errors.confirmPassword
                           ? "border-red-300 bg-red-50"
                           : "border-gray-200"
                       }`}
                       placeholder="Confirm your password"
                     />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
                   </div>
                   {errors.confirmPassword && (
                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
@@ -891,9 +929,12 @@ function RegisterPage() {
             <div className="text-center">
               <p className="text-xs text-gray-500">
                 Need help?{" "}
-                <button className="text-primary-600 hover:text-primary-700 font-medium">
+                <a
+                  href="mailto:contact@decatron.com.ng"
+                  className="text-primary-600 hover:text-primary-700 font-medium"
+                >
                   Contact Support
-                </button>
+                </a>
               </p>
             </div>
           </div>
