@@ -12,9 +12,9 @@ import {
   Phone,
   Lock,
 } from "lucide-react";
-import { fetchStates } from "@/utils/api/location/fetchStates";
-import { fetchListingTypes } from "@/utils/api/listing/fetchListingTypes";
-import { fetchLGAsByStateId } from "@/utils/api/location/fetchLGAsByStateId";
+import { fetchStates } from "@/utils/api/propertyListing/location/fetchStates";
+import { fetchListingTypes } from "@/utils/api/propertyListing/fetchListingTypes";
+import { fetchLGAsByStateId } from "@/utils/api/propertyListing/location/fetchLGAsByStateId";
 import { PropertyRequestRegistration } from "@/utils/api/propertyRequest/propertyRequestRegistration";
 import { fetchRoles } from "@/utils/api/registration/fetchRoles";
 import { useRouter } from "next/navigation";

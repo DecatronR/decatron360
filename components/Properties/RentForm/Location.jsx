@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { fetchStates } from "@/utils/api/location/fetchStates";
-import { fetchLGAsByStateId } from "@/utils/api/location/fetchLGAsByStateId";
+import { fetchStates } from "@/utils/api/propertyListing/location/fetchStates";
+import { fetchLGAsByStateId } from "@/utils/api/propertyListing/location/fetchLGAsByStateId";
 import { MapPin, Home, Navigation } from "lucide-react";
 
 const Location = ({ fields, handleChange }) => {

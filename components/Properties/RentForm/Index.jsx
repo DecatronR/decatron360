@@ -6,7 +6,7 @@ import ButtonSpinner from "components/ui/ButtonSpinner";
 import { useSnackbar } from "notistack";
 import { createPropertyListing } from "@/utils/api/propertyListing/createPropertyListing";
 import { fetchUserData } from "utils/api/user/fetchUserData";
-import { fetchListingTypes } from "@/utils/api/listing/fetchListingTypes";
+import { fetchListingTypes } from "@/utils/api/propertyListing/fetchListingTypes";
 import Location from "./Location";
 import Features from "./Features";
 import Pricing from "./Pricing";
