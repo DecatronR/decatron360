@@ -60,7 +60,6 @@ const initialForm = {
   states: [],
   lgas: [],
   listingTypes: [],
-  neighborhood: "",
 };
 
 function RegisterPage() {
@@ -218,7 +217,6 @@ function RegisterPage() {
         role: form.role, // Use selected role from form
         state: form.states.join(", "), // Join multiple states
         lga: form.lgas.join(", "), // Join multiple LGAs
-        neighborhood: form.neighborhood || "Not specified", // Use form value or default
         listingType: form.listingTypes.join(", "), // Join multiple listing types
         password: form.password,
         confirmpassword: form.confirmPassword,
@@ -232,7 +230,6 @@ function RegisterPage() {
         registrationData.role,
         registrationData.state,
         registrationData.lga,
-        registrationData.neighborhood,
         registrationData.listingType,
         registrationData.password,
         registrationData.confirmpassword
@@ -567,24 +564,6 @@ function RegisterPage() {
                     </div>
                   </div>
                 )}
-
-                {/* Neighborhood Field */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Neighborhood (Optional)
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      name="neighborhood"
-                      value={form.neighborhood}
-                      onChange={handleChange}
-                      className="w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all border-gray-200"
-                      placeholder="Enter your neighborhood (optional)"
-                    />
-                  </div>
-                </div>
               </div>
             )}
 
@@ -847,10 +826,6 @@ function RegisterPage() {
                     <p>
                       <span className="font-medium">LGAs:</span>{" "}
                       {form.lgas.join(", ")}
-                    </p>
-                    <p>
-                      <span className="font-medium">Neighborhood:</span>{" "}
-                      {form.neighborhood || "Not specified"}
                     </p>
                     <p>
                       <span className="font-medium">Listing Types:</span>{" "}
