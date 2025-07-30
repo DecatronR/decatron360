@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { fetchStates } from "utils/api/propertyListing/fetchStates";
-import { fetchLga } from "utils/api/propertyListing/fetchLga";
+import { fetchStates } from "@/utils/api/location/fetchStates";
+import { fetchLGAsByStateId } from "@/utils/api/location/fetchLGAsByStateId";
 import { MapPin, Home, Navigation } from "lucide-react";
 
 const Location = ({ fields, handleChange }) => {
@@ -34,7 +34,18 @@ const Location = ({ fields, handleChange }) => {
     const fetchLGAData = async () => {
       setLoadingLGA(true);
       try {
-        const data = await fetchLga(fields.state);
+        // Find the selected state to get its ID
+        const selectedState = states.find(
+          (state) => state.slug === fields.state
+        );
+        if (!selectedState) {
+          console.error("Selected state not found");
+          return;
+        }
+
+        const response = await fetchLGAsByStateId(selectedState._id);
+        // Handle the API response structure (extract data if needed)
+        const data = response.data || response;
         setLga(data || []);
       } catch (err) {
         console.error("Error fetching LGAs:", err);
@@ -44,7 +55,7 @@ const Location = ({ fields, handleChange }) => {
     };
 
     fetchLGAData();
-  }, [fields.state]);
+  }, [fields.state, states]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
