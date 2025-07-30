@@ -1,19 +1,40 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 import { CheckCircle, RefreshCw, ArrowLeft, Shield, Mail } from "lucide-react";
+import ButtonSpinner from "@/components/ui/ButtonSpinner";
+import { useAuth } from "@/context/AuthContext";
+import { fetchUserData } from "@/utils/api/user/fetchUserData";
+import axios from "axios";
 
 function OTPVerificationPage() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const { setUser } = useAuth();
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes
   const [error, setError] = useState("");
   const [isVerified, setIsVerified] = useState(false);
+  const [email, setEmail] = useState("");
   const inputRefs = useRef([]);
 
-  // Mock user data (would come from registration)
-  const userEmail = "john.doe@example.com";
-  const maskedEmail = userEmail.replace(/(.{2})(.*)(@.*)/, "$1***$3");
+  useEffect(() => {
+    // Get email from sessionStorage (set during registration)
+    const storedEmail = sessionStorage.getItem("propertyRequestEmail");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    } else {
+      // If no email found, redirect back to registration
+      enqueueSnackbar("No registration data found. Please register again.", {
+        variant: "error",
+      });
+      router.push("/property-requests/register");
+    }
+  }, [router, enqueueSnackbar]);
 
   useEffect(() => {
     // Countdown timer
@@ -69,46 +90,108 @@ function OTPVerificationPage() {
   };
 
   const handleVerifyOtp = async (otpCode) => {
+    if (!email) {
+      enqueueSnackbar("No email found. Please register again.", {
+        variant: "error",
+      });
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const res = await axios.post(
+        `${baseUrl}/auth/confirmOTP`,
+        { email: email, otp: otpCode },
+        { withCredentials: true }
+      );
 
-      // Mock verification (in real app, check against backend)
-      if (otpCode === "123456") {
-        setIsVerified(true);
-        // Redirect to dashboard after success
-        setTimeout(() => {
-          alert("Registration successful! Redirecting to dashboard...");
-        }, 2000);
-      } else {
-        setError("Invalid OTP code. Please try again.");
-        setOtp(["", "", "", "", "", ""]);
-        inputRefs.current[0].focus();
+      console.log("OTP Response before:", res);
+      const response = res.data;
+      console.log("OTP Response after:", response);
+
+      // Show success message immediately
+      enqueueSnackbar("OTP verified successfully! Welcome to Decatron!", {
+        variant: "success",
+      });
+
+      // Store authentication data for automatic login
+      if (response.token) {
+        sessionStorage.setItem("token", response.token);
+        sessionStorage.setItem("authToken", response.token);
       }
+      if (response.user) {
+        sessionStorage.setItem("userId", response.user);
+      }
+
+      // Clear property request email from session storage
+      sessionStorage.removeItem("propertyRequestEmail");
+
+      // Set verified state
+      setIsVerified(true);
+
+      // Fetch and set user data in AuthContext (separate try-catch to not break main flow)
+      if (response.user) {
+        fetchUserData(response.user)
+          .then((userData) => {
+            setUser(userData);
+          })
+          .catch((error) => {
+            console.error("Failed to fetch user data:", error);
+          });
+      }
+
+      // Redirect to home page after success
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
     } catch (err) {
-      setError("Verification failed. Please try again.");
+      let errorMessage = "Verification failed. Please try again.";
+
+      if (err.response?.data?.responseMessage) {
+        errorMessage = Array.isArray(err.response.data.responseMessage)
+          ? err.response.data.responseMessage[0].msg
+          : err.response.data.responseMessage;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
+      setOtp(["", "", "", "", "", ""]);
+      inputRefs.current[0].focus();
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResendOtp = async () => {
-    if (timeLeft > 0) return;
+    if (timeLeft > 0 || !email) return;
 
     setIsResending(true);
     setError("");
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setTimeLeft(300); // Reset timer
-      setOtp(["", "", "", "", "", ""]);
-      alert("New OTP sent to your email!");
+      const response = await axios.post(`${baseUrl}/auth/resendOTP`, { email });
+      if (response.status === 200) {
+        enqueueSnackbar("New OTP sent to your email!", {
+          variant: "success",
+        });
+        setTimeLeft(300); // Reset timer
+        setOtp(["", "", "", "", "", ""]);
+      }
     } catch (err) {
-      setError("Failed to resend OTP. Please try again.");
+      let errorMessage = "Failed to resend OTP. Please try again.";
+
+      if (err.response?.data?.responseMessage) {
+        errorMessage = Array.isArray(err.response.data.responseMessage)
+          ? err.response.data.responseMessage[0].msg
+          : err.response.data.responseMessage;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setIsResending(false);
     }
@@ -116,8 +199,10 @@ function OTPVerificationPage() {
 
   const handleBack = () => {
     // Navigate back to registration
-    alert("Going back to registration...");
+    router.push("/property-requests/register");
   };
+
+  const maskedEmail = email ? email.replace(/(.{2})(.*)(@.*)/, "$1***$3") : "";
 
   if (isVerified) {
     return (
@@ -130,13 +215,12 @@ function OTPVerificationPage() {
             Registration Complete!
           </h2>
           <p className="text-gray-600 mb-6">
-            Your account has been successfully verified. Welcome to Property
-            Request Alerts!
+            Your account has been successfully verified. Welcome to Decatron!
           </p>
           <div className="bg-green-50 rounded-xl p-4">
             <p className="text-sm text-green-800">
-              You'll start receiving property alerts based on your preferences
-              immediately.
+              You're now logged in and will be redirected to the home page
+              shortly.
             </p>
           </div>
         </div>
@@ -278,9 +362,12 @@ function OTPVerificationPage() {
         <div className="text-center mt-6">
           <p className="text-xs text-gray-500">
             Still need help?{" "}
-            <button className="text-primary-600 hover:text-primary-700 font-medium">
+            <a
+              href="mailto:contact@decatron.com.ng"
+              className="text-primary-600 hover:text-primary-700 font-medium"
+            >
               Contact Support
-            </button>
+            </a>
           </p>
         </div>
       </div>

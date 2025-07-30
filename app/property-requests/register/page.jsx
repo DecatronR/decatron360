@@ -222,26 +222,30 @@ function RegisterPage() {
         role: form.role, // Use selected role from form
         state: form.states, // Send as array
         lga: form.lgas, // Send as array
-        listingType: form.listingTypes, // Send as array
+        listingType: form.listingTypes.join(", "), // Send as comma-separated string
         password: form.password,
         confirmpassword: form.confirmPassword,
       };
 
+      // Debug: Log what we're sending
+      console.log("Registration data being sent:", registrationData);
+      console.log("States array:", form.states);
+      console.log("States joined:", form.states.join(", "));
+      console.log("ListingTypes array:", form.listingTypes);
+      console.log("ListingTypes joined:", form.listingTypes.join(", "));
+
       // Call the registration API
-      const response = await PropertyRequestRegistration(
-        registrationData.name,
-        registrationData.email,
-        registrationData.phone,
-        registrationData.role,
-        registrationData.state,
-        registrationData.lga,
-        registrationData.listingType,
-        registrationData.password,
-        registrationData.confirmpassword
-      );
+      const response = await PropertyRequestRegistration(registrationData);
 
       // Handle successful registration
-      if (response.responseCode === "200" || response.success) {
+      if (
+        response.responseCode === "200" ||
+        response.responseCode === 201 ||
+        response.success
+      ) {
+        // Store email in sessionStorage for OTP verification
+        sessionStorage.setItem("propertyRequestEmail", form.email);
+
         enqueueSnackbar(
           "Registration successful! Redirecting to OTP verification...",
           {
