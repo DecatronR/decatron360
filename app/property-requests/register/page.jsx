@@ -15,6 +15,9 @@ import {
 import { fetchStates } from "@/utils/api/location/fetchStates";
 import { fetchListingTypes } from "@/utils/api/listing/fetchListingTypes";
 import { fetchLGAsByStateId } from "@/utils/api/location/fetchLGAsByStateId";
+import { PropertyRequestRegistration } from "@/utils/api/propertyRequest/propertyRequestRegistration";
+import { fetchRoles } from "@/utils/api/registration/fetchRoles";
+import { useRouter } from "next/navigation";
 
 const steps = [
   {
@@ -51,38 +54,46 @@ const initialForm = {
   fullName: "",
   email: "",
   phone: "",
+  role: "",
   password: "",
   confirmPassword: "",
   states: [],
   lgas: [],
   listingTypes: [],
+  neighborhood: "",
 };
 
 function RegisterPage() {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [listingTypes, setListingTypes] = useState([]);
   const [states, setStates] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [availableLGAs, setAvailableLGAs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   // Fetch initial data
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
         setLoading(true);
-        const [statesData, listingTypesData] = await Promise.all([
+        const [statesData, listingTypesData, rolesData] = await Promise.all([
           fetchStates(),
           fetchListingTypes(),
+          fetchRoles(),
         ]);
 
         // Handle the API response structure: {responseCode, responseMessage, data}
         const states = statesData?.data || statesData || [];
         const listingTypes = listingTypesData?.data || listingTypesData || [];
+        const roles = rolesData?.data || rolesData || [];
 
         setStates(states);
         setListingTypes(listingTypes);
+        setRoles(roles);
       } catch (error) {
         console.error("Failed to fetch initial data:", error);
       } finally {
@@ -160,6 +171,7 @@ function RegisterPage() {
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email))
         err.email = "Invalid email address";
       if (!form.phone) err.phone = "Phone number is required";
+      if (!form.role) err.role = "Please select what best describes you";
     } else if (step === 1) {
       if (form.states.length === 0) err.states = "Select at least one state";
       if (form.lgas.length === 0) err.lgas = "Select at least one LGA";
@@ -192,9 +204,70 @@ function RegisterPage() {
     }
   };
 
-  const handleSubmit = () => {
-    if (validateStep()) {
-      alert("Registration complete! Redirecting to OTP verification...");
+  const handleSubmit = async () => {
+    if (!validateStep()) return;
+
+    try {
+      setSubmitting(true);
+
+      // Prepare the registration data
+      const registrationData = {
+        name: form.fullName,
+        email: form.email,
+        phone: form.phone,
+        role: form.role, // Use selected role from form
+        state: form.states.join(", "), // Join multiple states
+        lga: form.lgas.join(", "), // Join multiple LGAs
+        neighborhood: form.neighborhood || "Not specified", // Use form value or default
+        listingType: form.listingTypes.join(", "), // Join multiple listing types
+        password: form.password,
+        confirmpassword: form.confirmPassword,
+      };
+
+      // Call the registration API
+      const response = await PropertyRequestRegistration(
+        registrationData.name,
+        registrationData.email,
+        registrationData.phone,
+        registrationData.role,
+        registrationData.state,
+        registrationData.lga,
+        registrationData.neighborhood,
+        registrationData.listingType,
+        registrationData.password,
+        registrationData.confirmpassword
+      );
+
+      // Handle successful registration
+      if (response.responseCode === "200" || response.success) {
+        alert("Registration successful! Redirecting to OTP verification...");
+        // Redirect to OTP verification page
+        router.push("/property-requests/otp");
+      } else {
+        // Handle API error response
+        const errorMessage =
+          response.responseMessage ||
+          response.message ||
+          "Registration failed. Please try again.";
+        alert(errorMessage);
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      // Handle different types of errors
+      let errorMessage = "Registration failed. Please try again.";
+
+      if (error.response?.data?.responseMessage) {
+        errorMessage = error.response.data.responseMessage;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      alert(errorMessage);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -216,30 +289,30 @@ function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-4 px-4">
       <div className="w-full max-w-lg sm:max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header with Icon */}
-        <div className={`${currentStep.bgColor} p-8 text-center relative`}>
+        <div className={`${currentStep.bgColor} p-4 text-center relative`}>
           {step > 0 && (
             <button
               onClick={handleBack}
-              className="absolute top-6 left-6 p-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="absolute top-3 left-3 p-1.5 text-gray-600 hover:text-gray-800 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
           )}
 
           <div
-            className={`w-16 h-16 ${currentStep.bgColor} border-4 border-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg`}
+            className={`w-10 h-10 ${currentStep.bgColor} border-2 border-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-md`}
           >
-            <StepIcon className={`w-8 h-8 ${currentStep.color}`} />
+            <StepIcon className={`w-5 h-5 ${currentStep.color}`} />
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-lg font-bold text-gray-900 mb-1">
             {currentStep.title}
           </h2>
-          <p className="text-gray-600">{currentStep.subtitle}</p>
+          <p className="text-sm text-gray-600">{currentStep.subtitle}</p>
         </div>
 
         {/* Progress Indicator */}
-        <div className="px-6 py-4 bg-gray-50">
+        <div className="px-4 py-3 bg-gray-50">
           <div className="flex items-center justify-between relative">
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 rounded-full">
               <div
@@ -251,7 +324,7 @@ function RegisterPage() {
             {steps.map((stepItem, idx) => (
               <div key={stepItem.title} className="relative z-10">
                 <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-full border-2 bg-white transition-all duration-300 ${
+                  className={`w-6 h-6 flex items-center justify-center rounded-full border-2 bg-white transition-all duration-300 ${
                     idx === step
                       ? "border-primary-600 text-primary-600 shadow-md scale-110"
                       : idx < step
@@ -260,7 +333,7 @@ function RegisterPage() {
                   }`}
                 >
                   {idx < step ? (
-                    <CheckCircle className="w-4 h-4" />
+                    <CheckCircle className="w-3 h-3" />
                   ) : (
                     <span className="font-bold text-xs">{idx + 1}</span>
                   )}
@@ -269,7 +342,7 @@ function RegisterPage() {
             ))}
           </div>
 
-          <div className="mt-3 text-center">
+          <div className="mt-2 text-center">
             <p className="text-xs text-gray-500">
               Step {step + 1} of {steps.length}
             </p>
@@ -366,6 +439,54 @@ function RegisterPage() {
                     </div>
                   )}
                 </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    What Best Describes You
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <select
+                      name="role"
+                      value={form.role}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all appearance-none bg-white ${
+                        errors.role
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
+                      }`}
+                    >
+                      <option value="">Select your role</option>
+                      {roles.map((role) => (
+                        <option key={role._id} value={role.slug}>
+                          {role.roleName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <svg
+                        className="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  {errors.role && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.role}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -446,6 +567,24 @@ function RegisterPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Neighborhood Field */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Neighborhood (Optional)
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="neighborhood"
+                      value={form.neighborhood}
+                      onChange={handleChange}
+                      className="w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all border-gray-200"
+                      placeholder="Enter your neighborhood (optional)"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 
@@ -699,12 +838,19 @@ function RegisterPage() {
                       <span className="font-medium">Phone:</span> {form.phone}
                     </p>
                     <p>
+                      <span className="font-medium">Role:</span> {form.role}
+                    </p>
+                    <p>
                       <span className="font-medium">States:</span>{" "}
                       {form.states.join(", ")}
                     </p>
                     <p>
                       <span className="font-medium">LGAs:</span>{" "}
                       {form.lgas.join(", ")}
+                    </p>
+                    <p>
+                      <span className="font-medium">Neighborhood:</span>{" "}
+                      {form.neighborhood || "Not specified"}
                     </p>
                     <p>
                       <span className="font-medium">Listing Types:</span>{" "}
@@ -743,10 +889,24 @@ function RegisterPage() {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="flex items-center gap-2 px-8 py-3 bg-primary-600  hover:bgprimary-700  text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+                disabled={submitting}
+                className={`flex items-center gap-2 px-8 py-3 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                  submitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primary-600 hover:bg-primary-700 text-white"
+                }`}
               >
-                Complete Registration
-                <CheckCircle className="w-4 h-4" />
+                {submitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Registering...
+                  </>
+                ) : (
+                  <>
+                    Complete Registration
+                    <CheckCircle className="w-4 h-4" />
+                  </>
+                )}
               </button>
             )}
           </div>
