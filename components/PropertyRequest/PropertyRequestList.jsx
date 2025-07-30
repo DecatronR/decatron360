@@ -12,8 +12,6 @@ import {
   Calendar,
   User,
   Wallet,
-  Filter,
-  Search,
   Loader2,
   LayoutGrid,
   List as ListIcon,
