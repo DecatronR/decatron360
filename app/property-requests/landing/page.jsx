@@ -12,6 +12,7 @@ import {
   Play,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const features = [
   {
@@ -64,6 +65,7 @@ const stats = [
 ];
 
 export default function PropertyRequestLanding() {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [hoveredFeature, setHoveredFeature] = useState(null);
@@ -76,6 +78,10 @@ export default function PropertyRequestLanding() {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleStartTrialBtn = () => {
+    router.push(`/property-requests/register`);
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col overflow-hidden">
@@ -202,7 +208,10 @@ export default function PropertyRequestLanding() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3">
-                <button className="flex-1 bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                <button
+                  className="flex-1 bg-primary-600 hover:bg-primary-700 text-white px-6 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  onClick={handleStartTrialBtn}
+                >
                   Start Free Trial
                 </button>
                 <button className="flex-1 bg-white/80 hover:bg-white text-primary-600 px-6 py-4 rounded-xl font-semibold border border-primary-200 transition-all duration-300 transform hover:scale-105 shadow-md">
@@ -409,7 +418,10 @@ export default function PropertyRequestLanding() {
                 </span>
               </div>
 
-              <button className="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+              <button
+                className="w-full bg-primary-600 hover:bg-primary-700 text-white py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                onClick={handleStartTrialBtn}
+              >
                 Start Free Trial
               </button>
             </div>
@@ -627,7 +639,10 @@ export default function PropertyRequestLanding() {
               instant property alerts.
             </p>
 
-            <button className="group bg-primary-600 hover:bg-primary-700 text-white px-10 py-5 rounded-2xl font-bold text-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+            <button
+              className="group bg-primary-600 hover:bg-primary-700 text-white px-10 py-5 rounded-2xl font-bold text-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              onClick={handleStartTrialBtn}
+            >
               <span className="flex items-center gap-3">
                 Start Your Free Trial Now
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

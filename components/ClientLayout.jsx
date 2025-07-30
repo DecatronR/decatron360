@@ -123,7 +123,14 @@ const CustomSnackbar = forwardRef(({ id, message, variant, ...other }, ref) => {
 CustomSnackbar.displayName = "CustomSnackbar";
 
 const MainLayout = ({ children }) => {
-  const hideRoutes = ["/auth/login", "/auth/register", "auth/otp"];
+  const hideRoutes = [
+    "/auth/login",
+    "/auth/register",
+    "/auth/otp",
+    "/property-requests/register",
+    "/register",
+    "/login",
+  ];
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
@@ -191,7 +198,7 @@ const MainLayout = ({ children }) => {
       <Analytics />
       {!hideRoutes.includes(pathname) && <Navbar />}
       <main className="flex-1">{children}</main>
-      {renderFloatingButton()}
+      {!hideRoutes.includes(pathname) && renderFloatingButton()}
       {!hideRoutes.includes(pathname) && <MobileNavbar />}
       {!hideRoutes.includes(pathname) && <Footer className="mt-auto" />}
       <NotificationListener />

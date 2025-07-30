@@ -49,6 +49,14 @@ const HomeProperties = () => {
 
       try {
         const allProperties = await fetchProperties();
+
+        // Ensure allProperties is an array
+        if (!Array.isArray(allProperties)) {
+          console.error("Properties data is not an array:", allProperties);
+          setProperties([]);
+          return;
+        }
+
         const userId = sessionStorage.getItem("userId");
 
         if (userId) {
@@ -80,6 +88,7 @@ const HomeProperties = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setProperties([]);
       } finally {
         setLoading(false);
       }
