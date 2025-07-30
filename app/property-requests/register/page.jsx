@@ -222,7 +222,7 @@ function RegisterPage() {
         role: form.role, // Use selected role from form
         state: form.states, // Send as array
         lga: form.lgas, // Send as array
-        listingType: form.listingTypes.join(", "), // Send as comma-separated string
+        listingType: form.listingTypes, // Send as array for consistency
         password: form.password,
         confirmpassword: form.confirmPassword,
       };
@@ -230,9 +230,8 @@ function RegisterPage() {
       // Debug: Log what we're sending
       console.log("Registration data being sent:", registrationData);
       console.log("States array:", form.states);
-      console.log("States joined:", form.states.join(", "));
+      console.log("LGAs array:", form.lgas);
       console.log("ListingTypes array:", form.listingTypes);
-      console.log("ListingTypes joined:", form.listingTypes.join(", "));
 
       // Call the registration API
       const response = await PropertyRequestRegistration(registrationData);
