@@ -213,8 +213,8 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-4 px-4">
+      <div className="w-full max-w-lg sm:max-w-md bg-white rounded-2xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header with Icon */}
         <div className={`${currentStep.bgColor} p-8 text-center relative`}>
           {step > 0 && (
@@ -277,333 +277,449 @@ function RegisterPage() {
         </div>
 
         {/* Form Content */}
-        <div className="p-8">
-          {/* Step 0: Personal Info */}
-          {step === 0 && (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={form.fullName}
-                    onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
-                      errors.fullName
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="Enter your full name"
-                    autoFocus
-                  />
-                </div>
-                {errors.fullName && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm font-medium">
-                      {errors.fullName}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
-                      errors.email
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="your.email@example.com"
-                  />
-                </div>
-                {errors.email && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm font-medium">
-                      {errors.email}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={form.phone}
-                    onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
-                      errors.phone
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="+234 800 000 0000"
-                  />
-                </div>
-                {errors.phone && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm font-medium">
-                      {errors.phone}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Step 1: Coverage Area */}
-          {step === 1 && (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Select States You Cover
-                </label>
-                <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-xl">
-                  {states.map((state) => (
-                    <button
-                      key={state._id}
-                      type="button"
-                      className={`p-4 rounded-xl border-2 text-center transition-all duration-300 transform hover:scale-105 ${
-                        form.states.includes(state.state)
-                          ? "border-primary-600 bg-primary-50 text-primary-700 shadow-lg"
-                          : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50 text-gray-700"
-                      }`}
-                      onClick={() => handleStateToggle(state.state, state._id)}
-                    >
-                      <div className="font-semibold">{state.state}</div>
-                    </button>
-                  ))}
-                </div>
-                {errors.states && (
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
-                    <p className="text-red-600 text-sm font-medium text-center">
-                      {errors.states}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {form.states.length > 0 && availableLGAs.length > 0 && (
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6 sm:p-8">
+            {/* Step 0: Personal Info */}
+            {step === 0 && (
+              <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    Select Local Government Areas
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Full Name
                   </label>
-                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-xl">
-                    {availableLGAs.map((lga) => (
-                      <button
-                        key={lga}
-                        type="button"
-                        className={`p-3 rounded-lg border text-sm transition-all duration-200 ${
-                          form.lgas.includes(lga)
-                            ? "border-primary-600 bg-primary-50 text-primary-700"
-                            : "border-gray-200 bg-white hover:border-primary-300 text-gray-700"
-                        }`}
-                        onClick={() => toggleMultiSelect("lgas", lga)}
-                      >
-                        {lga}
-                      </button>
-                    ))}
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={form.fullName}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                        errors.fullName
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
+                      }`}
+                      placeholder="Enter your full name"
+                      autoFocus
+                    />
                   </div>
-                  {errors.lgas && (
-                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
-                      <p className="text-red-600 text-sm font-medium text-center">
-                        {errors.lgas}
+                  {errors.fullName && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.fullName}
                       </p>
                     </div>
                   )}
                 </div>
-              )}
 
-              {form.states.length > 0 && availableLGAs.length === 0 && (
-                <div className="text-center py-4">
-                  <p className="text-gray-500 text-sm">Loading LGAs...</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Step 2: Listing Preferences */}
-          {step === 2 && (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                  Types of Properties You're Interested In
-                </label>
-                <div className="grid grid-cols-1 gap-3">
-                  {listingTypes.map((type) => (
-                    <button
-                      key={type._id}
-                      type="button"
-                      className={`p-4 rounded-xl border-2 text-left transition-all duration-300 transform hover:scale-105 ${
-                        form.listingTypes.includes(type.listingType)
-                          ? "border-primary-600 bg-primary-50 text-primary-700 shadow-lg"
-                          : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50 text-gray-700"
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                        errors.email
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
                       }`}
-                      onClick={() =>
-                        toggleMultiSelect("listingTypes", type.listingType)
-                      }
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold">
-                          {type.listingType}
-                        </span>
-                        {form.listingTypes.includes(type.listingType) && (
-                          <CheckCircle className="w-5 h-5 text-primary-600" />
-                        )}
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                  {errors.email && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.email}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                        errors.phone
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
+                      }`}
+                      placeholder="+234 800 000 0000"
+                    />
+                  </div>
+                  {errors.phone && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.phone}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Step 1: Coverage Area */}
+            {step === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Select States You Cover
+                  </label>
+                  <div className="bg-gray-50 rounded-xl p-3 h-32">
+                    <div className="flex flex-wrap gap-2 h-full overflow-y-auto">
+                      {states.map((state) => (
+                        <button
+                          key={state._id}
+                          type="button"
+                          className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                            form.states.includes(state.state)
+                              ? "border-primary-600 bg-primary-50 text-primary-700 shadow-sm"
+                              : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50 text-gray-700"
+                          }`}
+                          onClick={() =>
+                            handleStateToggle(state.state, state._id)
+                          }
+                        >
+                          {state.state}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {errors.states && (
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <p className="text-red-600 text-sm font-medium text-center">
+                        {errors.states}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {form.states.length > 0 && availableLGAs.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Select Local Government Areas
+                    </label>
+                    <div className="bg-gray-50 rounded-xl p-3 h-36">
+                      <div className="flex flex-wrap gap-2 h-full overflow-y-auto">
+                        {availableLGAs.map((lga) => (
+                          <button
+                            key={lga}
+                            type="button"
+                            className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                              form.lgas.includes(lga)
+                                ? "border-primary-600 bg-primary-50 text-primary-700 shadow-sm"
+                                : "border-gray-200 bg-white hover:border-primary-300 text-gray-700"
+                            }`}
+                            onClick={() => toggleMultiSelect("lgas", lga)}
+                          >
+                            {lga}
+                          </button>
+                        ))}
                       </div>
-                    </button>
-                  ))}
-                </div>
-                {errors.listingTypes && (
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
-                    <p className="text-red-600 text-sm font-medium text-center">
-                      {errors.listingTypes}
-                    </p>
+                    </div>
+                    {errors.lgas && (
+                      <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                        <p className="text-red-600 text-sm font-medium text-center">
+                          {errors.lgas}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {form.states.length > 0 && availableLGAs.length === 0 && (
+                  <div className="bg-gray-50 rounded-xl p-3 h-36 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 mx-auto mb-2"></div>
+                      <p className="text-gray-500 text-sm">Loading LGAs...</p>
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Step 3: Account Security */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Create Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="password"
-                    name="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3  border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
-                      errors.password
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="Create a secure password"
-                  />
-                </div>
-                {errors.password && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm font-medium">
-                      {errors.password}
-                    </p>
+            {/* Step 2: Listing Preferences */}
+            {step === 2 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">
+                    Types of Properties You're Interested In
+                  </label>
+
+                  {/* Simplified Grid Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {listingTypes.map((type) => (
+                      <button
+                        key={type._id}
+                        type="button"
+                        className={`group relative p-4 rounded-xl border-2 transition-all duration-200 hover:scale-[1.01] ${
+                          form.listingTypes.includes(type.listingType)
+                            ? "border-primary-600 bg-primary-50 shadow-sm"
+                            : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50"
+                        }`}
+                        onClick={() =>
+                          toggleMultiSelect("listingTypes", type.listingType)
+                        }
+                      >
+                        {/* Selection Indicator */}
+                        <div
+                          className={`absolute top-2 right-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                            form.listingTypes.includes(type.listingType)
+                              ? "border-primary-600 bg-primary-600"
+                              : "border-gray-300 bg-white group-hover:border-primary-400"
+                          }`}
+                        >
+                          {form.listingTypes.includes(type.listingType) && (
+                            <CheckCircle className="w-3 h-3 text-white" />
+                          )}
+                        </div>
+
+                        {/* Content */}
+                        <div className="text-left">
+                          <div className="flex items-center gap-3">
+                            {/* Simple Icon */}
+                            <div
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                form.listingTypes.includes(type.listingType)
+                                  ? "bg-primary-100 text-primary-600"
+                                  : "bg-gray-100 text-gray-600 group-hover:bg-primary-50 group-hover:text-primary-600"
+                              }`}
+                            >
+                              {type.listingType
+                                .toLowerCase()
+                                .includes("rent") && (
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+                                  />
+                                </svg>
+                              )}
+                              {type.listingType
+                                .toLowerCase()
+                                .includes("sale") && (
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+                                  />
+                                </svg>
+                              )}
+                              {type.listingType
+                                .toLowerCase()
+                                .includes("shortlet") && (
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              )}
+                            </div>
+
+                            <div>
+                              <h3
+                                className={`font-semibold text-base ${
+                                  form.listingTypes.includes(type.listingType)
+                                    ? "text-primary-700"
+                                    : "text-gray-800"
+                                }`}
+                              >
+                                {type.listingType}
+                              </h3>
+                              <p
+                                className={`text-xs ${
+                                  form.listingTypes.includes(type.listingType)
+                                    ? "text-primary-600"
+                                    : "text-gray-500"
+                                }`}
+                              >
+                                {type.listingType
+                                  .toLowerCase()
+                                  .includes("rent") && "Long-term rentals"}
+                                {type.listingType
+                                  .toLowerCase()
+                                  .includes("sale") && "Properties for sale"}
+                                {type.listingType
+                                  .toLowerCase()
+                                  .includes("shortlet") && "Short-term rentals"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                )}
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Confirm Password
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
-                      errors.confirmPassword
-                        ? "border-red-300 bg-red-50"
-                        : "border-gray-200"
-                    }`}
-                    placeholder="Confirm your password"
-                  />
+                  {errors.listingTypes && (
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <p className="text-red-600 text-sm font-medium text-center">
+                        {errors.listingTypes}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {errors.confirmPassword && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-600 text-sm font-medium">
-                      {errors.confirmPassword}
-                    </p>
-                  </div>
-                )}
               </div>
+            )}
 
-              {/* Password Requirements */}
-              <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
-                <h4 className="font-semibold text-gray-800 text-sm mb-2">
-                  Password Requirements:
-                </h4>
-                <div className="space-y-1 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        form.password.length >= 6
-                          ? "bg-green-500"
-                          : "bg-gray-300"
+            {/* Step 3: Account Security */}
+            {step === 3 && (
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Create Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3  border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                        errors.password
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
                       }`}
+                      placeholder="Create a secure password"
                     />
-                    At least 6 characters long
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        form.password === form.confirmPassword && form.password
-                          ? "bg-green-500"
-                          : "bg-gray-300"
+                  {errors.password && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.password}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={form.confirmPassword}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                        errors.confirmPassword
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-200"
                       }`}
+                      placeholder="Confirm your password"
                     />
-                    Passwords match
+                  </div>
+                  {errors.confirmPassword && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.confirmPassword}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Password Requirements */}
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                  <h4 className="font-semibold text-gray-800 text-sm mb-2">
+                    Password Requirements:
+                  </h4>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          form.password.length >= 6
+                            ? "bg-green-500"
+                            : "bg-gray-300"
+                        }`}
+                      />
+                      At least 6 characters long
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-2 h-2 rounded-full ${
+                          form.password === form.confirmPassword &&
+                          form.password
+                            ? "bg-green-500"
+                            : "bg-gray-300"
+                        }`}
+                      />
+                      Passwords match
+                    </div>
+                  </div>
+                </div>
+
+                {/* Registration Summary */}
+                <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl p-4 border border-primary-200">
+                  <h4 className="font-bold text-gray-800 mb-3">
+                    Registration Summary
+                  </h4>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>
+                      <span className="font-medium">Name:</span> {form.fullName}
+                    </p>
+                    <p>
+                      <span className="font-medium">Email:</span> {form.email}
+                    </p>
+                    <p>
+                      <span className="font-medium">Phone:</span> {form.phone}
+                    </p>
+                    <p>
+                      <span className="font-medium">States:</span>{" "}
+                      {form.states.join(", ")}
+                    </p>
+                    <p>
+                      <span className="font-medium">LGAs:</span>{" "}
+                      {form.lgas.join(", ")}
+                    </p>
+                    <p>
+                      <span className="font-medium">Listing Types:</span>{" "}
+                      {form.listingTypes.join(", ")}
+                    </p>
                   </div>
                 </div>
               </div>
+            )}
+          </div>
+        </div>
 
-              {/* Registration Summary */}
-              <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-xl p-4 border border-primary-200">
-                <h4 className="font-bold text-gray-800 mb-3">
-                  Registration Summary
-                </h4>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <p>
-                    <span className="font-medium">Name:</span> {form.fullName}
-                  </p>
-                  <p>
-                    <span className="font-medium">Email:</span> {form.email}
-                  </p>
-                  <p>
-                    <span className="font-medium">Phone:</span> {form.phone}
-                  </p>
-                  <p>
-                    <span className="font-medium">States:</span>{" "}
-                    {form.states.join(", ")}
-                  </p>
-                  <p>
-                    <span className="font-medium">LGAs:</span>{" "}
-                    {form.lgas.join(", ")}
-                  </p>
-                  <p>
-                    <span className="font-medium">Listing Types:</span>{" "}
-                    {form.listingTypes.join(", ")}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-100">
+        {/* Navigation Buttons - Fixed at bottom */}
+        <div className="border-t border-gray-100 bg-white p-6">
+          <div className="flex justify-between items-center">
             <div>
               {step > 0 && (
                 <button
@@ -627,24 +743,24 @@ function RegisterPage() {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-700 hover:to-blue-700 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="flex items-center gap-2 px-8 py-3 bg-primary-600  hover:bgprimary-700  text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Complete Registration
                 <CheckCircle className="w-4 h-4" />
               </button>
             )}
           </div>
-        </div>
 
-        {/* Help Section */}
-        <div className="px-8 pb-8">
-          <div className="bg-gray-50 rounded-xl p-4 text-center">
-            <p className="text-xs text-gray-500">
-              Need help?{" "}
-              <button className="text-primary-600 hover:text-primary-700 font-medium">
-                Contact Support
-              </button>
-            </p>
+          {/* Help Section */}
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="text-center">
+              <p className="text-xs text-gray-500">
+                Need help?{" "}
+                <button className="text-primary-600 hover:text-primary-700 font-medium">
+                  Contact Support
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
