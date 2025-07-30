@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   User,
   MapPin,
@@ -12,20 +12,9 @@ import {
   Phone,
   Lock,
 } from "lucide-react";
-
-const STATES = [
-  { name: "Lagos", lgas: ["Ikeja", "Lekki", "Yaba", "Surulere"] },
-  { name: "Abuja", lgas: ["Garki", "Wuse", "Maitama", "Asokoro"] },
-  { name: "Rivers", lgas: ["Port Harcourt", "Obio-Akpor", "Bonny"] },
-  { name: "Lagos", lgas: ["Ikeja", "Lekki", "Yaba", "Surulere"] },
-  { name: "Abuja", lgas: ["Garki", "Wuse", "Maitama", "Asokoro"] },
-  { name: "Rivers", lgas: ["Port Harcourt", "Obio-Akpor", "Bonny"] },
-  { name: "Lagos", lgas: ["Ikeja", "Lekki", "Yaba", "Surulere"] },
-  { name: "Abuja", lgas: ["Garki", "Wuse", "Maitama", "Asokoro"] },
-  { name: "Rivers", lgas: ["Port Harcourt", "Obio-Akpor", "Bonny"] },
-];
-
-const LISTING_TYPES = ["For Rent", "For Sale", "Shortlet"];
+import { fetchStates } from "@/utils/api/location/fetchStates";
+import { fetchListingTypes } from "@/utils/api/listing/fetchListingTypes";
+import { fetchLGAsByStateId } from "@/utils/api/location/fetchLGAsByStateId";
 
 const steps = [
   {
@@ -73,6 +62,61 @@ function RegisterPage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
+  const [listingTypes, setListingTypes] = useState([]);
+  const [states, setStates] = useState([]);
+  const [availableLGAs, setAvailableLGAs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch initial data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setLoading(true);
+        const [statesData, listingTypesData] = await Promise.all([
+          fetchStates(),
+          fetchListingTypes(),
+        ]);
+
+        // Handle the API response structure: {responseCode, responseMessage, data}
+        const states = statesData?.data || statesData || [];
+        const listingTypes = listingTypesData?.data || listingTypesData || [];
+
+        setStates(states);
+        setListingTypes(listingTypes);
+      } catch (error) {
+        console.error("Failed to fetch initial data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  const fetchLGAsForSelectedStates = async (selectedStateIds) => {
+    try {
+      const lgaPromises = selectedStateIds.map((stateId) =>
+        fetchLGAsByStateId(stateId)
+      );
+      const lgaResults = await Promise.all(lgaPromises);
+
+      // Extract data from the API response structure
+      const allLGAs = lgaResults
+        .flatMap((response) => {
+          // Handle the API response structure: {responseCode, responseMessage, data}
+          const lgaData = response.data || response;
+          return Array.isArray(lgaData) ? lgaData : [];
+        })
+        .map((lga) => lga.lga || lga);
+
+      // Remove duplicates and filter out any undefined values
+      const uniqueLGAs = [...new Set(allLGAs)].filter(Boolean);
+      setAvailableLGAs(uniqueLGAs);
+    } catch (error) {
+      console.error("Failed to fetch LGAs for selected states:", error);
+      setAvailableLGAs([]);
+    }
+  };
 
   const toggleMultiSelect = (field, value) => {
     setForm((prev) => {
@@ -86,9 +130,27 @@ function RegisterPage() {
     });
   };
 
-  const availableLGAs = STATES.filter((s) =>
-    form.states.includes(s.name)
-  ).flatMap((s) => s.lgas);
+  const handleStateToggle = async (stateName, stateId) => {
+    const isSelected = form.states.includes(stateName);
+    const updatedStates = isSelected
+      ? form.states.filter((s) => s !== stateName)
+      : [...form.states, stateName];
+
+    // Update the form
+    setForm((prev) => ({
+      ...prev,
+      states: updatedStates,
+      lgas: [], // Reset LGAs when states change
+    }));
+
+    // Get state IDs of currently selected states
+    const selectedStateIds = states
+      .filter((s) => updatedStates.includes(s.state))
+      .map((s) => s._id);
+
+    // Fetch LGAs for selected states
+    await fetchLGAsForSelectedStates(selectedStateIds);
+  };
 
   const validateStep = () => {
     let err = {};
@@ -138,6 +200,17 @@ function RegisterPage() {
 
   const currentStep = steps[step];
   const StepIcon = currentStep.icon;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
@@ -303,32 +376,18 @@ function RegisterPage() {
                   Select States You Cover
                 </label>
                 <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto p-2 bg-gray-50 rounded-xl">
-                  {STATES.map((state) => (
+                  {states.map((state) => (
                     <button
-                      key={state.name}
+                      key={state._id}
                       type="button"
                       className={`p-4 rounded-xl border-2 text-center transition-all duration-300 transform hover:scale-105 ${
-                        form.states.includes(state.name)
+                        form.states.includes(state.state)
                           ? "border-primary-600 bg-primary-50 text-primary-700 shadow-lg"
                           : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50 text-gray-700"
                       }`}
-                      onClick={() => {
-                        toggleMultiSelect("states", state.name);
-                        setForm((prev) => ({
-                          ...prev,
-                          lgas: prev.lgas.filter((lga) =>
-                            STATES.filter(
-                              (s) =>
-                                prev.states.includes(s.name) ||
-                                state.name === s.name
-                            )
-                              .flatMap((s) => s.lgas)
-                              .includes(lga)
-                          ),
-                        }));
-                      }}
+                      onClick={() => handleStateToggle(state.state, state._id)}
                     >
-                      <div className="font-semibold">{state.name}</div>
+                      <div className="font-semibold">{state.state}</div>
                     </button>
                   ))}
                 </div>
@@ -341,7 +400,7 @@ function RegisterPage() {
                 )}
               </div>
 
-              {form.states.length > 0 && (
+              {form.states.length > 0 && availableLGAs.length > 0 && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
                     Select Local Government Areas
@@ -371,6 +430,12 @@ function RegisterPage() {
                   )}
                 </div>
               )}
+
+              {form.states.length > 0 && availableLGAs.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-gray-500 text-sm">Loading LGAs...</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -382,20 +447,24 @@ function RegisterPage() {
                   Types of Properties You're Interested In
                 </label>
                 <div className="grid grid-cols-1 gap-3">
-                  {LISTING_TYPES.map((type) => (
+                  {listingTypes.map((type) => (
                     <button
-                      key={type}
+                      key={type._id}
                       type="button"
                       className={`p-4 rounded-xl border-2 text-left transition-all duration-300 transform hover:scale-105 ${
-                        form.listingTypes.includes(type)
+                        form.listingTypes.includes(type.listingType)
                           ? "border-primary-600 bg-primary-50 text-primary-700 shadow-lg"
                           : "border-gray-200 bg-white hover:border-primary-300 hover:bg-gray-50 text-gray-700"
                       }`}
-                      onClick={() => toggleMultiSelect("listingTypes", type)}
+                      onClick={() =>
+                        toggleMultiSelect("listingTypes", type.listingType)
+                      }
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold">{type}</span>
-                        {form.listingTypes.includes(type) && (
+                        <span className="font-semibold">
+                          {type.listingType}
+                        </span>
+                        {form.listingTypes.includes(type.listingType) && (
                           <CheckCircle className="w-5 h-5 text-primary-600" />
                         )}
                       </div>
