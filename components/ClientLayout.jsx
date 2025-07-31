@@ -128,6 +128,8 @@ const MainLayout = ({ children }) => {
     "/auth/register",
     "/auth/otp",
     "/property-requests/register",
+    "/property-requests/otp",
+    "/property-requests/login",
     "/register",
     "/login",
   ];
@@ -147,7 +149,7 @@ const MainLayout = ({ children }) => {
     const userId =
       typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
     if (!userId) {
-      router.push(`/auth/login?redirect=/property-requests`);
+      router.push(`/property-requests/login?redirect=/property-requests`);
     } else {
       router.push("/property-requests");
     }

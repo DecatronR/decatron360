@@ -1,31 +1,11 @@
 import axios from "axios";
 
-export const PropertyRequestRegistration = async (
-  name,
-  email,
-  phone,
-  role,
-  state,
-  lga,
-  listingType,
-  password,
-  confirmpassword
-) => {
+export const PropertyRequestRegistration = async (registrationData) => {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   try {
     const res = await axios.post(
       `${baseUrl}/auth/propertyRequestRegistration`,
-      {
-        name,
-        email,
-        phone,
-        role,
-        state,
-        lga,
-        listingType,
-        password,
-        confirmpassword,
-      }
+      registrationData
     );
     return res.data;
   } catch (error) {

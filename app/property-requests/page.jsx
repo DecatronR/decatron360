@@ -11,7 +11,8 @@ const PropertyRequestsPage = () => {
 
   useEffect(() => {
     if (!user) {
-      router.replace("/auth/login?redirect=/property-requests");
+      router.replace("/property-requests/login?redirect=/property-requests");
+      return;
     }
   }, [user, router]);
 

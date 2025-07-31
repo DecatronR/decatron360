@@ -16,10 +16,10 @@ const PropertyRequestAction = ({ trigger, isFloating = false }) => {
     const userId =
       typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
     if (!userId) {
-      router.push(`/auth/login?redirect=/property-requests`);
-    } else {
-      router.push("/property-requests");
+      router.push(`/property-requests/login?redirect=/property-requests`);
+      return;
     }
+    router.push("/property-requests");
   };
 
   const requestMenuItems = [

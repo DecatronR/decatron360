@@ -20,6 +20,7 @@ import { fetchRoles } from "@/utils/api/registration/fetchRoles";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 const steps = [
   {
@@ -51,6 +52,9 @@ const steps = [
     bgColor: "bg-primary-100",
   },
 ];
+
+// Define which roles need business-specific steps
+const BUSINESS_ROLES = ["agent", "owner", "property-manager", "careTaker"];
 
 const initialForm = {
   fullName: "",
@@ -176,13 +180,16 @@ function RegisterPage() {
         err.email = "Invalid email address";
       if (!form.phone) err.phone = "Phone number is required";
       if (!form.role) err.role = "Please select what best describes you";
-    } else if (step === 1) {
+    } else if (step === 1 && BUSINESS_ROLES.includes(form.role)) {
       if (form.states.length === 0) err.states = "Select at least one state";
       if (form.lgas.length === 0) err.lgas = "Select at least one LGA";
-    } else if (step === 2) {
+    } else if (step === 2 && BUSINESS_ROLES.includes(form.role)) {
       if (form.listingTypes.length === 0)
         err.listingTypes = "Select at least one listing type";
-    } else if (step === 3) {
+    } else if (
+      step === 3 ||
+      (step === 1 && !BUSINESS_ROLES.includes(form.role))
+    ) {
       if (!form.password) err.password = "Password is required";
       if (form.password.length < 6)
         err.password = "Password must be at least 6 characters";
@@ -194,10 +201,24 @@ function RegisterPage() {
   };
 
   const handleNext = () => {
-    if (validateStep()) setStep((s) => s + 1);
+    if (validateStep()) {
+      // For non-business roles, skip steps 2 and 3
+      if (step === 0 && !BUSINESS_ROLES.includes(form.role)) {
+        setStep(3); // Jump directly to account security
+      } else {
+        setStep((s) => s + 1);
+      }
+    }
   };
 
-  const handleBack = () => setStep((s) => s - 1);
+  const handleBack = () => {
+    // For non-business roles, when going back from step 3, go to step 0
+    if (step === 3 && !BUSINESS_ROLES.includes(form.role)) {
+      setStep(0);
+    } else {
+      setStep((s) => s - 1);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -214,51 +235,78 @@ function RegisterPage() {
     try {
       setSubmitting(true);
 
-      // Prepare the registration data
-      const registrationData = {
-        name: form.fullName,
-        email: form.email,
-        phone: form.phone,
-        role: form.role, // Use selected role from form
-        state: form.states, // Send as array
-        lga: form.lgas, // Send as array
-        listingType: form.listingTypes, // Send as array
-        password: form.password,
-        confirmpassword: form.confirmPassword,
-      };
+      // Use different endpoints based on role
+      if (BUSINESS_ROLES.includes(form.role)) {
+        // Business roles use PropertyRequestRegistration endpoint
+        const registrationData = {
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          role: form.role,
+          state: form.states,
+          lga: form.lgas,
+          listingType: form.listingTypes,
+          password: form.password,
+          confirmpassword: form.confirmPassword,
+        };
 
-      // Call the registration API
-      const response = await PropertyRequestRegistration(
-        registrationData.name,
-        registrationData.email,
-        registrationData.phone,
-        registrationData.role,
-        registrationData.state,
-        registrationData.lga,
-        registrationData.listingType,
-        registrationData.password,
-        registrationData.confirmpassword
-      );
+        const response = await PropertyRequestRegistration(registrationData);
 
-      // Handle successful registration
-      if (response.responseCode === "200" || response.success) {
-        enqueueSnackbar(
-          "Registration successful! Redirecting to OTP verification...",
-          {
-            variant: "success",
-          }
-        );
-        // Redirect to OTP verification page
-        router.push("/property-requests/otp");
+        // Handle successful registration
+        if (
+          response.responseCode === "200" ||
+          response.responseCode === 201 ||
+          response.success
+        ) {
+          // Store email in sessionStorage for OTP verification
+          sessionStorage.setItem("propertyRequestEmail", form.email);
+
+          enqueueSnackbar(
+            "Registration successful! Redirecting to OTP verification...",
+            {
+              variant: "success",
+            }
+          );
+          // Redirect to OTP verification page
+          router.push("/property-requests/otp");
+        } else {
+          // Handle API error response
+          const errorMessage =
+            response.responseMessage ||
+            response.message ||
+            "Registration failed. Please try again.";
+          enqueueSnackbar(errorMessage, {
+            variant: "error",
+          });
+        }
       } else {
-        // Handle API error response
-        const errorMessage =
-          response.responseMessage ||
-          response.message ||
-          "Registration failed. Please try again.";
-        enqueueSnackbar(errorMessage, {
-          variant: "error",
-        });
+        // Non-business roles use generic auth/register endpoint
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const registrationData = {
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          role: form.role,
+          password: form.password,
+          confirmpassword: form.confirmPassword,
+        };
+
+        const response = await axios.post(
+          `${baseUrl}/auth/register`,
+          registrationData
+        );
+
+        if (response.status === 201) {
+          // Store email and userId in sessionStorage for OTP verification
+          sessionStorage.setItem("propertyRequestEmail", form.email);
+          sessionStorage.setItem("userId", response.data.user);
+
+          enqueueSnackbar("Please complete OTP verification!", {
+            variant: "success",
+          });
+          // Redirect to property request OTP page (same endpoint, better UI)
+          router.push("/property-requests/otp");
+        }
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -266,10 +314,20 @@ function RegisterPage() {
       // Handle different types of errors
       let errorMessage = "Registration failed. Please try again.";
 
-      if (error.response?.data?.responseMessage) {
-        errorMessage = error.response.data.responseMessage;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
+      if (error.response) {
+        const responseData = error.response.data;
+
+        if (Array.isArray(responseData.responseMessage)) {
+          errorMessage = responseData.responseMessage
+            .map((msg) => msg.msg)
+            .join(", ");
+        } else if (typeof responseData.responseMessage === "string") {
+          errorMessage = responseData.responseMessage;
+        } else {
+          errorMessage = responseData.message || "Something went wrong!";
+        }
+      } else if (error.request) {
+        errorMessage = "No response from the server. Please try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -328,34 +386,58 @@ function RegisterPage() {
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 rounded-full">
               <div
                 className="h-full bg-primary-600 rounded-full transition-all duration-500"
-                style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+                style={{
+                  width: `${
+                    BUSINESS_ROLES.includes(form.role)
+                      ? ((step + 1) / steps.length) * 100
+                      : step === 0
+                      ? 50
+                      : 100
+                  }%`,
+                }}
               />
             </div>
 
-            {steps.map((stepItem, idx) => (
-              <div key={stepItem.title} className="relative z-10">
-                <div
-                  className={`w-6 h-6 flex items-center justify-center rounded-full border-2 bg-white transition-all duration-300 ${
-                    idx === step
-                      ? "border-primary-600 text-primary-600 shadow-md scale-110"
-                      : idx < step
-                      ? "border-green-500 bg-green-500 text-white shadow-sm"
-                      : "border-gray-300 text-gray-400"
-                  }`}
-                >
-                  {idx < step ? (
-                    <CheckCircle className="w-3 h-3" />
-                  ) : (
-                    <span className="font-bold text-xs">{idx + 1}</span>
-                  )}
+            {steps.map((stepItem, idx) => {
+              // Hide steps 2 and 3 for non-business roles
+              if (
+                !BUSINESS_ROLES.includes(form.role) &&
+                (idx === 1 || idx === 2)
+              ) {
+                return null;
+              }
+
+              return (
+                <div key={stepItem.title} className="relative z-10">
+                  <div
+                    className={`w-6 h-6 flex items-center justify-center rounded-full border-2 bg-white transition-all duration-300 ${
+                      idx === step
+                        ? "border-primary-600 text-primary-600 shadow-md scale-110"
+                        : idx < step
+                        ? "border-green-500 bg-green-500 text-white shadow-sm"
+                        : "border-gray-300 text-gray-400"
+                    }`}
+                  >
+                    {idx < step ? (
+                      <CheckCircle className="w-3 h-3" />
+                    ) : (
+                      <span className="font-bold text-xs">{idx + 1}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-2 text-center">
             <p className="text-xs text-gray-500">
-              Step {step + 1} of {steps.length}
+              Step{" "}
+              {BUSINESS_ROLES.includes(form.role)
+                ? step + 1
+                : step === 0
+                ? 1
+                : 2}{" "}
+              of {BUSINESS_ROLES.includes(form.role) ? steps.length : 2}
             </p>
           </div>
         </div>
@@ -501,8 +583,8 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Step 1: Coverage Area */}
-            {step === 1 && (
+            {/* Step 1: Coverage Area - Only show for business roles */}
+            {step === 1 && BUSINESS_ROLES.includes(form.role) && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -581,8 +663,8 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Step 2: Listing Preferences */}
-            {step === 2 && (
+            {/* Step 2: Listing Preferences - Only show for business roles */}
+            {step === 2 && BUSINESS_ROLES.includes(form.role) && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -726,8 +808,9 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Step 3: Account Security */}
-            {step === 3 && (
+            {/* Step 3: Account Security - Show for all roles, but for non-business roles it's step 1 */}
+            {(step === 3 ||
+              (step === 1 && !BUSINESS_ROLES.includes(form.role))) && (
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -857,18 +940,22 @@ function RegisterPage() {
                     <p>
                       <span className="font-medium">Role:</span> {form.role}
                     </p>
-                    <p>
-                      <span className="font-medium">States:</span>{" "}
-                      {form.states.join(", ")}
-                    </p>
-                    <p>
-                      <span className="font-medium">LGAs:</span>{" "}
-                      {form.lgas.join(", ")}
-                    </p>
-                    <p>
-                      <span className="font-medium">Listing Types:</span>{" "}
-                      {form.listingTypes.join(", ")}
-                    </p>
+                    {BUSINESS_ROLES.includes(form.role) && (
+                      <>
+                        <p>
+                          <span className="font-medium">States:</span>{" "}
+                          {form.states.join(", ") || "Not selected"}
+                        </p>
+                        <p>
+                          <span className="font-medium">LGAs:</span>{" "}
+                          {form.lgas.join(", ") || "Not selected"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Listing Types:</span>{" "}
+                          {form.listingTypes.join(", ") || "Not selected"}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -891,7 +978,8 @@ function RegisterPage() {
               )}
             </div>
 
-            {step < steps.length - 1 ? (
+            {(step < steps.length - 1 && BUSINESS_ROLES.includes(form.role)) ||
+            (step === 0 && !BUSINESS_ROLES.includes(form.role)) ? (
               <button
                 onClick={handleNext}
                 className="flex items-center gap-2 px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
@@ -928,12 +1016,12 @@ function RegisterPage() {
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="text-center">
               <p className="text-xs text-gray-500">
-                Need help?{" "}
+                Already have an account?{" "}
                 <a
-                  href="mailto:contact@decatron.com.ng"
+                  href="/property-requests/login"
                   className="text-primary-600 hover:text-primary-700 font-medium"
                 >
-                  Contact Support
+                  Login
                 </a>
               </p>
             </div>

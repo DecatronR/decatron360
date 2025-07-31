@@ -12,7 +12,10 @@ const MobileNavbar = () => {
   const renderMenuItems = () => {
     if (!user) {
       return (
-        <Link className="flex flex-col items-center" href="/auth/login">
+        <Link
+          className="flex flex-col items-center"
+          href="/property-requests/login"
+        >
           <LogIn className="h-6 w-6" />
           <span className="text-xs">Login</span>
         </Link>
