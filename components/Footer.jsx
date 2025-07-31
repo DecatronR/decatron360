@@ -164,7 +164,7 @@ const Footer = () => {
                     href="/host"
                     className="text-gray-600 hover:text-primary-600 transition-colors duration-300 text-sm hover:translate-x-1 inline-block"
                   >
-                    Become an Agent
+                    Property Request
                   </a>
                 </li>
                 <li>
