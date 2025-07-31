@@ -20,6 +20,7 @@ import { fetchRoles } from "@/utils/api/registration/fetchRoles";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 const steps = [
   {
@@ -234,52 +235,78 @@ function RegisterPage() {
     try {
       setSubmitting(true);
 
-      // Prepare the registration data
-      const registrationData = {
-        name: form.fullName,
-        email: form.email,
-        phone: form.phone,
-        role: form.role,
-        password: form.password,
-        confirmpassword: form.confirmPassword,
-      };
-
-      // Only include business-specific fields for business roles
+      // Use different endpoints based on role
       if (BUSINESS_ROLES.includes(form.role)) {
-        registrationData.state = form.states;
-        registrationData.lga = form.lgas;
-        registrationData.listingType = form.listingTypes;
-      }
+        // Business roles use PropertyRequestRegistration endpoint
+        const registrationData = {
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          role: form.role,
+          state: form.states,
+          lga: form.lgas,
+          listingType: form.listingTypes,
+          password: form.password,
+          confirmpassword: form.confirmPassword,
+        };
 
-      // Call the registration API
-      const response = await PropertyRequestRegistration(registrationData);
+        const response = await PropertyRequestRegistration(registrationData);
 
-      // Handle successful registration
-      if (
-        response.responseCode === "200" ||
-        response.responseCode === 201 ||
-        response.success
-      ) {
-        // Store email in sessionStorage for OTP verification
-        sessionStorage.setItem("propertyRequestEmail", form.email);
+        // Handle successful registration
+        if (
+          response.responseCode === "200" ||
+          response.responseCode === 201 ||
+          response.success
+        ) {
+          // Store email in sessionStorage for OTP verification
+          sessionStorage.setItem("propertyRequestEmail", form.email);
 
-        enqueueSnackbar(
-          "Registration successful! Redirecting to OTP verification...",
-          {
-            variant: "success",
-          }
-        );
-        // Redirect to OTP verification page
-        router.push("/property-requests/otp");
+          enqueueSnackbar(
+            "Registration successful! Redirecting to OTP verification...",
+            {
+              variant: "success",
+            }
+          );
+          // Redirect to OTP verification page
+          router.push("/property-requests/otp");
+        } else {
+          // Handle API error response
+          const errorMessage =
+            response.responseMessage ||
+            response.message ||
+            "Registration failed. Please try again.";
+          enqueueSnackbar(errorMessage, {
+            variant: "error",
+          });
+        }
       } else {
-        // Handle API error response
-        const errorMessage =
-          response.responseMessage ||
-          response.message ||
-          "Registration failed. Please try again.";
-        enqueueSnackbar(errorMessage, {
-          variant: "error",
-        });
+        // Non-business roles use generic auth/register endpoint
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const registrationData = {
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          role: form.role,
+          password: form.password,
+          confirmpassword: form.confirmPassword,
+        };
+
+        const response = await axios.post(
+          `${baseUrl}/auth/register`,
+          registrationData
+        );
+
+        if (response.status === 201) {
+          // Store email and userId in sessionStorage for OTP verification
+          sessionStorage.setItem("propertyRequestEmail", form.email);
+          sessionStorage.setItem("userId", response.data.user);
+
+          enqueueSnackbar("Please complete OTP verification!", {
+            variant: "success",
+          });
+          // Redirect to property request OTP page (same endpoint, better UI)
+          router.push("/property-requests/otp");
+        }
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -287,10 +314,20 @@ function RegisterPage() {
       // Handle different types of errors
       let errorMessage = "Registration failed. Please try again.";
 
-      if (error.response?.data?.responseMessage) {
-        errorMessage = error.response.data.responseMessage;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
+      if (error.response) {
+        const responseData = error.response.data;
+
+        if (Array.isArray(responseData.responseMessage)) {
+          errorMessage = responseData.responseMessage
+            .map((msg) => msg.msg)
+            .join(", ");
+        } else if (typeof responseData.responseMessage === "string") {
+          errorMessage = responseData.responseMessage;
+        } else {
+          errorMessage = responseData.message || "Something went wrong!";
+        }
+      } else if (error.request) {
+        errorMessage = "No response from the server. Please try again.";
       } else if (error.message) {
         errorMessage = error.message;
       }
