@@ -52,6 +52,9 @@ const steps = [
   },
 ];
 
+// Define which roles need business-specific steps
+const BUSINESS_ROLES = ["agent", "owner", "property-manager", "careTaker"];
+
 const initialForm = {
   fullName: "",
   email: "",
@@ -176,13 +179,16 @@ function RegisterPage() {
         err.email = "Invalid email address";
       if (!form.phone) err.phone = "Phone number is required";
       if (!form.role) err.role = "Please select what best describes you";
-    } else if (step === 1) {
+    } else if (step === 1 && BUSINESS_ROLES.includes(form.role)) {
       if (form.states.length === 0) err.states = "Select at least one state";
       if (form.lgas.length === 0) err.lgas = "Select at least one LGA";
-    } else if (step === 2) {
+    } else if (step === 2 && BUSINESS_ROLES.includes(form.role)) {
       if (form.listingTypes.length === 0)
         err.listingTypes = "Select at least one listing type";
-    } else if (step === 3) {
+    } else if (
+      step === 3 ||
+      (step === 1 && !BUSINESS_ROLES.includes(form.role))
+    ) {
       if (!form.password) err.password = "Password is required";
       if (form.password.length < 6)
         err.password = "Password must be at least 6 characters";
@@ -194,10 +200,24 @@ function RegisterPage() {
   };
 
   const handleNext = () => {
-    if (validateStep()) setStep((s) => s + 1);
+    if (validateStep()) {
+      // For non-business roles, skip steps 2 and 3
+      if (step === 0 && !BUSINESS_ROLES.includes(form.role)) {
+        setStep(3); // Jump directly to account security
+      } else {
+        setStep((s) => s + 1);
+      }
+    }
   };
 
-  const handleBack = () => setStep((s) => s - 1);
+  const handleBack = () => {
+    // For non-business roles, when going back from step 3, go to step 0
+    if (step === 3 && !BUSINESS_ROLES.includes(form.role)) {
+      setStep(0);
+    } else {
+      setStep((s) => s - 1);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -219,19 +239,17 @@ function RegisterPage() {
         name: form.fullName,
         email: form.email,
         phone: form.phone,
-        role: form.role, // Use selected role from form
-        state: form.states, // Send as array
-        lga: form.lgas, // Send as array
-        listingType: form.listingTypes, // Send as array for consistency
+        role: form.role,
         password: form.password,
         confirmpassword: form.confirmPassword,
       };
 
-      // Debug: Log what we're sending
-      console.log("Registration data being sent:", registrationData);
-      console.log("States array:", form.states);
-      console.log("LGAs array:", form.lgas);
-      console.log("ListingTypes array:", form.listingTypes);
+      // Only include business-specific fields for business roles
+      if (BUSINESS_ROLES.includes(form.role)) {
+        registrationData.state = form.states;
+        registrationData.lga = form.lgas;
+        registrationData.listingType = form.listingTypes;
+      }
 
       // Call the registration API
       const response = await PropertyRequestRegistration(registrationData);
@@ -331,34 +349,58 @@ function RegisterPage() {
             <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 rounded-full">
               <div
                 className="h-full bg-primary-600 rounded-full transition-all duration-500"
-                style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+                style={{
+                  width: `${
+                    BUSINESS_ROLES.includes(form.role)
+                      ? ((step + 1) / steps.length) * 100
+                      : step === 0
+                      ? 50
+                      : 100
+                  }%`,
+                }}
               />
             </div>
 
-            {steps.map((stepItem, idx) => (
-              <div key={stepItem.title} className="relative z-10">
-                <div
-                  className={`w-6 h-6 flex items-center justify-center rounded-full border-2 bg-white transition-all duration-300 ${
-                    idx === step
-                      ? "border-primary-600 text-primary-600 shadow-md scale-110"
-                      : idx < step
-                      ? "border-green-500 bg-green-500 text-white shadow-sm"
-                      : "border-gray-300 text-gray-400"
-                  }`}
-                >
-                  {idx < step ? (
-                    <CheckCircle className="w-3 h-3" />
-                  ) : (
-                    <span className="font-bold text-xs">{idx + 1}</span>
-                  )}
+            {steps.map((stepItem, idx) => {
+              // Hide steps 2 and 3 for non-business roles
+              if (
+                !BUSINESS_ROLES.includes(form.role) &&
+                (idx === 1 || idx === 2)
+              ) {
+                return null;
+              }
+
+              return (
+                <div key={stepItem.title} className="relative z-10">
+                  <div
+                    className={`w-6 h-6 flex items-center justify-center rounded-full border-2 bg-white transition-all duration-300 ${
+                      idx === step
+                        ? "border-primary-600 text-primary-600 shadow-md scale-110"
+                        : idx < step
+                        ? "border-green-500 bg-green-500 text-white shadow-sm"
+                        : "border-gray-300 text-gray-400"
+                    }`}
+                  >
+                    {idx < step ? (
+                      <CheckCircle className="w-3 h-3" />
+                    ) : (
+                      <span className="font-bold text-xs">{idx + 1}</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-2 text-center">
             <p className="text-xs text-gray-500">
-              Step {step + 1} of {steps.length}
+              Step{" "}
+              {BUSINESS_ROLES.includes(form.role)
+                ? step + 1
+                : step === 0
+                ? 1
+                : 2}{" "}
+              of {BUSINESS_ROLES.includes(form.role) ? steps.length : 2}
             </p>
           </div>
         </div>
@@ -504,8 +546,8 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Step 1: Coverage Area */}
-            {step === 1 && (
+            {/* Step 1: Coverage Area - Only show for business roles */}
+            {step === 1 && BUSINESS_ROLES.includes(form.role) && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -584,8 +626,8 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Step 2: Listing Preferences */}
-            {step === 2 && (
+            {/* Step 2: Listing Preferences - Only show for business roles */}
+            {step === 2 && BUSINESS_ROLES.includes(form.role) && (
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -729,8 +771,9 @@ function RegisterPage() {
               </div>
             )}
 
-            {/* Step 3: Account Security */}
-            {step === 3 && (
+            {/* Step 3: Account Security - Show for all roles, but for non-business roles it's step 1 */}
+            {(step === 3 ||
+              (step === 1 && !BUSINESS_ROLES.includes(form.role))) && (
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -860,18 +903,22 @@ function RegisterPage() {
                     <p>
                       <span className="font-medium">Role:</span> {form.role}
                     </p>
-                    <p>
-                      <span className="font-medium">States:</span>{" "}
-                      {form.states.join(", ")}
-                    </p>
-                    <p>
-                      <span className="font-medium">LGAs:</span>{" "}
-                      {form.lgas.join(", ")}
-                    </p>
-                    <p>
-                      <span className="font-medium">Listing Types:</span>{" "}
-                      {form.listingTypes.join(", ")}
-                    </p>
+                    {BUSINESS_ROLES.includes(form.role) && (
+                      <>
+                        <p>
+                          <span className="font-medium">States:</span>{" "}
+                          {form.states.join(", ") || "Not selected"}
+                        </p>
+                        <p>
+                          <span className="font-medium">LGAs:</span>{" "}
+                          {form.lgas.join(", ") || "Not selected"}
+                        </p>
+                        <p>
+                          <span className="font-medium">Listing Types:</span>{" "}
+                          {form.listingTypes.join(", ") || "Not selected"}
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -894,7 +941,8 @@ function RegisterPage() {
               )}
             </div>
 
-            {step < steps.length - 1 ? (
+            {(step < steps.length - 1 && BUSINESS_ROLES.includes(form.role)) ||
+            (step === 0 && !BUSINESS_ROLES.includes(form.role)) ? (
               <button
                 onClick={handleNext}
                 className="flex items-center gap-2 px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
