@@ -1016,12 +1016,12 @@ function RegisterPage() {
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="text-center">
               <p className="text-xs text-gray-500">
-                Need help?{" "}
+                Already have an account?{" "}
                 <a
-                  href="mailto:contact@decatron.com.ng"
+                  href="/property-requests/login"
                   className="text-primary-600 hover:text-primary-700 font-medium"
                 >
-                  Contact Support
+                  Login
                 </a>
               </p>
             </div>

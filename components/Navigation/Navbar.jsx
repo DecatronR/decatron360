@@ -45,7 +45,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogin = () => {
-    router.replace("/auth/login");
+    router.replace("/property-requests/login");
   };
 
   const handleRequestProperty = () => {
@@ -56,7 +56,7 @@ const Navbar = () => {
     const userId =
       typeof window !== "undefined" ? sessionStorage.getItem("userId") : null;
     if (!userId) {
-      router.push("/auth/login?redirect=/property-requests");
+      router.push("/property-requests/login?redirect=/property-requests");
     } else {
       router.push("/property-requests");
     }
@@ -219,7 +219,7 @@ const Navbar = () => {
                   <span>Login</span>
                 </button>
                 <button
-                  onClick={() => router.push("/auth/register")}
+                  onClick={() => router.push("/property-requests/register")}
                   className="flex items-center text-primary-500 hover:text-primary-600 hover:bg-primary-50 rounded-full px-4 py-2 transition"
                 >
                   <span>Sign up</span>
