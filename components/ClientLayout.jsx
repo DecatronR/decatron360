@@ -128,6 +128,7 @@ const MainLayout = ({ children }) => {
     "/auth/register",
     "/auth/otp",
     "/property-requests/register",
+    "/property-requests/otp",
     "/register",
     "/login",
   ];
