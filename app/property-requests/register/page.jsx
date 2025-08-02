@@ -465,12 +465,12 @@ function RegisterPage() {
 
         {/* Form Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="p-6 sm:p-8">
+          <div className="p-4 sm:p-6">
             {/* Step 0: Personal Info */}
             {step === 0 && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Full Name
                   </label>
                   <div className="relative">
@@ -480,7 +480,7 @@ function RegisterPage() {
                       name="fullName"
                       value={form.fullName}
                       onChange={handleChange}
-                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                      className={`w-full pl-12 pr-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
                         errors.fullName
                           ? "border-red-300 bg-red-50"
                           : "border-gray-200"
@@ -490,7 +490,7 @@ function RegisterPage() {
                     />
                   </div>
                   {errors.fullName && (
-                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="mt-1.5 p-2 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
                         {errors.fullName}
                       </p>
@@ -499,7 +499,7 @@ function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Email Address
                   </label>
                   <div className="relative">
@@ -509,7 +509,7 @@ function RegisterPage() {
                       name="email"
                       value={form.email}
                       onChange={handleChange}
-                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                      className={`w-full pl-12 pr-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
                         errors.email
                           ? "border-red-300 bg-red-50"
                           : "border-gray-200"
@@ -518,7 +518,7 @@ function RegisterPage() {
                     />
                   </div>
                   {errors.email && (
-                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="mt-1.5 p-2 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
                         {errors.email}
                       </p>
@@ -527,7 +527,7 @@ function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Phone Number
                   </label>
                   <div className="relative">
@@ -537,7 +537,7 @@ function RegisterPage() {
                       name="phone"
                       value={form.phone}
                       onChange={handleChange}
-                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                      className={`w-full pl-12 pr-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
                         errors.phone
                           ? "border-red-300 bg-red-50"
                           : "border-gray-200"
@@ -546,7 +546,7 @@ function RegisterPage() {
                     />
                   </div>
                   {errors.phone && (
-                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="mt-1.5 p-2 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
                         {errors.phone}
                       </p>
@@ -555,7 +555,7 @@ function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     What Best Describes You
                   </label>
                   <div className="relative">
@@ -564,7 +564,7 @@ function RegisterPage() {
                       name="role"
                       value={form.role}
                       onChange={handleChange}
-                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all appearance-none bg-white ${
+                      className={`w-full pl-12 pr-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all appearance-none bg-white ${
                         errors.role
                           ? "border-red-300 bg-red-50"
                           : "border-gray-200"
@@ -594,7 +594,7 @@ function RegisterPage() {
                     </div>
                   </div>
                   {errors.role && (
-                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="mt-1.5 p-2 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
                         {errors.role}
                       </p>
@@ -604,7 +604,7 @@ function RegisterPage() {
 
                 {/* Referral Code Field */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                     Referral Code{" "}
                     <span className="text-gray-400 font-normal">
                       (Optional)
@@ -618,7 +618,7 @@ function RegisterPage() {
                       value={form.referralCode}
                       onChange={handleChange}
                       disabled={!isReferralCodeEditable}
-                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                      className={`w-full pl-12 pr-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
                         errors.referralCode
                           ? "border-red-300 bg-red-50"
                           : !isReferralCodeEditable
@@ -638,14 +638,14 @@ function RegisterPage() {
                     )}
                   </div>
                   {!isReferralCodeEditable && (
-                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="mt-1.5 p-2 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-green-600 text-sm font-medium">
                         Referral code applied from invite link
                       </p>
                     </div>
                   )}
                   {errors.referralCode && (
-                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="mt-1.5 p-2 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
                         {errors.referralCode}
                       </p>

@@ -15,6 +15,7 @@ import {
   Star,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { generateReferralLink } from "@/utils/helpers/generateReferralLink";
 
 const DashboardOverview = ({
   userData,
@@ -122,26 +123,38 @@ const DashboardOverview = ({
   const recentActivities = getRecentActivity();
 
   const handleCopyReferralCode = async () => {
-    const referralUrl = `${window.location.origin}?ref=${userData?.referralCode}`;
     try {
-      await navigator.clipboard.writeText(referralUrl);
+      const referralCode = userData?.referralCode;
+      if (!referralCode) {
+        alert("No referral code available");
+        return;
+      }
+
+      const referralLink = generateReferralLink(referralCode);
+      await navigator.clipboard.writeText(referralLink);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
     } catch (error) {
-      console.error("Failed to copy referral code:", error);
+      console.error("Failed to copy referral link:", error);
     }
   };
 
   const handleShareReferral = async () => {
-    const referralUrl = `${window.location.origin}?ref=${userData?.referralCode}`;
-    const shareText = `Join Decatron360 - Nigeria's premier real estate platform! Use my referral code: ${userData?.referralCode}`;
+    const referralCode = userData?.referralCode;
+    if (!referralCode) {
+      alert("No referral code available");
+      return;
+    }
+
+    const shareText = `Join Decatron360 - Nigeria's premier real estate platform!`;
+    const shareUrl = generateReferralLink(referralCode);
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Join Decatron360",
           text: shareText,
-          url: referralUrl,
+          url: shareUrl,
         });
       } catch (error) {
         console.error("Error sharing:", error);
@@ -260,7 +273,7 @@ const DashboardOverview = ({
                     <>
                       <Copy className="w-4 h-4 text-gray-500" />
                       <span className="text-sm font-medium text-gray-600">
-                        Copy
+                        Copy Link
                       </span>
                     </>
                   )}
