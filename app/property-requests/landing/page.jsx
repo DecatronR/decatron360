@@ -177,7 +177,7 @@ export default function PropertyRequestLanding() {
                 }`}
                 style={{ color: "#08253f", transitionDelay: "0.6s" }}
               >
-                Join hundreds of agents getting instant Email alerts for new
+                Join hundreds of agents getting instant email alerts for new
                 property requests in their area. Be the first to connect with
                 motivated clients and grow your business.
               </p>
@@ -226,7 +226,7 @@ export default function PropertyRequestLanding() {
               >
                 <div className="flex items-center gap-1">
                   <CheckCircle className="w-3 h-3 text-green-500" />
-                  21-day free trial
+                  30-days free trial
                 </div>
                 <div className="flex items-center gap-1">
                   <CheckCircle className="w-3 h-3 text-green-500" />
@@ -404,7 +404,7 @@ export default function PropertyRequestLanding() {
                 className="text-sm mb-6 opacity-80"
                 style={{ color: "#08253f" }}
               >
-                Try Property Request Alerts free for 21 days. Experience the
+                Try Property Request Alerts free for 30 days. Experience the
                 power of instant notifications with no commitment.
               </p>
 

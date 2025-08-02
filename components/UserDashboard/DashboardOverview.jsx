@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Home,
   Calendar,
@@ -9,7 +9,11 @@ import {
   DollarSign,
   MapPin,
   Clock,
+  Share2,
+  Copy,
+  Check,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const DashboardOverview = ({
   userData,
@@ -18,6 +22,9 @@ const DashboardOverview = ({
   userContracts,
   propertyRequests,
 }) => {
+  const [isCopied, setIsCopied] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const router = useRouter();
   const getMetricCards = () => {
     // Get upcoming inspections (scheduled for future dates)
     const upcomingInspections =
@@ -113,6 +120,37 @@ const DashboardOverview = ({
   const metricCards = getMetricCards();
   const recentActivities = getRecentActivity();
 
+  const handleCopyReferralCode = async () => {
+    const referralUrl = `${window.location.origin}?ref=${userData?.referralCode}`;
+    try {
+      await navigator.clipboard.writeText(referralUrl);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy referral code:", error);
+    }
+  };
+
+  const handleShareReferral = async () => {
+    const referralUrl = `${window.location.origin}?ref=${userData?.referralCode}`;
+    const shareText = `Join Decatron360 - Nigeria's premier real estate platform! Use my referral code: ${userData?.referralCode}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Join Decatron360",
+          text: shareText,
+          url: referralUrl,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      // Fallback to copying to clipboard
+      handleCopyReferralCode();
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -180,6 +218,81 @@ const DashboardOverview = ({
               <p className="text-gray-500">No recent activity</p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Airbnb-style Subtle Actions */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Account & Settings
+          </h3>
+        </div>
+
+        <div className="space-y-4">
+          {/* Referral Section - Airbnb Style */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                <Share2 className="w-5 h-5 text-primary-600" />
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">Invite friends</h4>
+                <p className="text-sm text-gray-600">
+                  Share Decatron360 and earn rewards
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="text-right">
+                <p className="text-xs text-gray-500">Your code</p>
+                <p className="text-sm font-mono font-medium text-gray-900">
+                  {userData?.referralCode || "Loading..."}
+                </p>
+              </div>
+              <button
+                onClick={handleCopyReferralCode}
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              >
+                {isCopied ? (
+                  <Check className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Copy className="w-4 h-4" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Subscription Section - Airbnb Style */}
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                <span className="text-emerald-600 font-bold">⭐</span>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-900">
+                  Special Agent Plan
+                </h4>
+                <p className="text-sm text-gray-600">
+                  Unlock premium features and tools
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="text-right">
+                <p className="text-xs text-gray-500">Current plan</p>
+                <p className="text-sm font-medium text-gray-900">
+                  {userData?.subscriptionTier || "Free"}
+                </p>
+              </div>
+              <button
+                onClick={() => router.push("/subscription/upgrade")}
+                className="px-4 py-2 bg-primary-500 text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors duration-200"
+              >
+                Upgrade
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
