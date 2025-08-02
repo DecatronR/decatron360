@@ -313,6 +313,23 @@ const Navbar = () => {
                       </div>
                     </div>
                     {/* Dropdown Menu Items */}
+                    {/* Dashboard Link for non-buyer users */}
+                    {[
+                      "agent",
+                      "owner",
+                      "caretaker",
+                      "property-manager",
+                    ].includes(user.role) && (
+                      <Link
+                        href="/user-dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        role="menuitem"
+                        tabIndex="-1"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                    )}
                     {(user.role === "buyer" ||
                       user.role === "agent" ||
                       user.role === "admin") && (

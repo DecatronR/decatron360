@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import UserProfilePhoto from "@/components/UserProfile/UserProfilePhoto";
 import UserVerificationStatus from "@/components/UserProfile/UserVerificationStatus";
 import UserAbout from "@/components/UserProfile/UserAbout";
@@ -14,6 +15,7 @@ import { fetchUserRatingAndReviews } from "utils/api/user/fetchUserRatingAndRevi
 import Spinner from "components/ui/Spinner";
 
 const UserProfilePage = () => {
+  const router = useRouter();
   const [userId, setUserId] = useState("");
   const [userData, setUserData] = useState(null);
   const [userProperties, setUserProperties] = useState([]);
@@ -85,6 +87,16 @@ const UserProfilePage = () => {
     };
     handleFetchUserRatingAndReviews();
   }, [userId]);
+
+  // Redirect non-buyer users to dashboard
+  useEffect(() => {
+    if (userData && !isLoading) {
+      const allowedRoles = ["agent", "owner", "caretaker", "property-manager"];
+      if (allowedRoles.includes(userData.role)) {
+        router.push("/user-dashboard");
+      }
+    }
+  }, [userData, isLoading, router]);
 
   if (isLoading) return <Spinner />;
 

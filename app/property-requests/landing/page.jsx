@@ -33,7 +33,7 @@ const features = [
   },
   {
     title: "Easy to Use",
-    desc: "Sign up in minutes and start receiving leads directly on your whatsapp.",
+    desc: "Sign up in minutes and start receiving leads directly to your email.",
     icon: Smartphone,
     color: "text-primary-600",
     bgColor: "bg-primary-50",
@@ -60,7 +60,7 @@ const testimonials = [
 
 const stats = [
   { label: "Active Agents", value: "150+", icon: Users },
-  { label: "Leads Generated", value: "1K+", icon: TrendingUp },
+  { label: "Leads Generated", value: "300+", icon: TrendingUp },
   { label: "Success Rate", value: "87%", icon: Zap },
 ];
 
@@ -177,7 +177,7 @@ export default function PropertyRequestLanding() {
                 }`}
                 style={{ color: "#08253f", transitionDelay: "0.6s" }}
               >
-                Join hundreds of agents getting instant WhatsApp alerts for new
+                Join hundreds of agents getting instant Email alerts for new
                 property requests in their area. Be the first to connect with
                 motivated clients and grow your business.
               </p>
