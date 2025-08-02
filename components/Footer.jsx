@@ -167,7 +167,7 @@ const Footer = () => {
                     Property Request
                   </a>
                 </li>
-                <li>
+                <li> 
                   <a
                     href="/resources"
                     className="text-gray-600 hover:text-primary-600 transition-colors duration-300 text-sm hover:translate-x-1 inline-block"
