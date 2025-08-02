@@ -281,8 +281,8 @@ const DashboardOverview = ({
         {/* Subscription Upgrade Card */}
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
-              <Star className="w-6 h-6 text-emerald-600" />
+            <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+              <Star className="w-6 h-6 text-green-600" />
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
@@ -302,19 +302,19 @@ const DashboardOverview = ({
 
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-sm text-gray-600">
                   Advanced property analytics
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-sm text-gray-600">
                   Priority client matching
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-sm text-gray-600">
                   Enhanced marketing tools
                 </span>
@@ -323,7 +323,7 @@ const DashboardOverview = ({
 
             <button
               onClick={() => router.push("/subscription/upgrade")}
-              className="w-full flex items-center justify-center space-x-2 bg-emerald-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-emerald-600 transition-colors duration-200"
+              className="w-full flex items-center justify-center space-x-2 bg-green-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
             >
               <span>Upgrade Now</span>
             </button>

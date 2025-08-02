@@ -11,6 +11,7 @@ import {
   Mail,
   Phone,
   Lock,
+  Gift,
 } from "lucide-react";
 import { fetchStates } from "@/utils/api/propertyListing/location/fetchStates";
 import { fetchListingTypes } from "@/utils/api/propertyListing/fetchListingTypes";
@@ -63,6 +64,7 @@ const initialForm = {
   role: "",
   password: "",
   confirmPassword: "",
+  referralCode: "",
   states: [],
   lgas: [],
   listingTypes: [],
@@ -82,6 +84,23 @@ function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [referralCodeFromUrl, setReferralCodeFromUrl] = useState("");
+  const [isReferralCodeEditable, setIsReferralCodeEditable] = useState(true);
+
+  // Handle URL parameters for referral code
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get("ref") || urlParams.get("referral");
+
+    if (referralCode) {
+      setReferralCodeFromUrl(referralCode);
+      setIsReferralCodeEditable(false);
+      setForm((prev) => ({
+        ...prev,
+        referralCode: referralCode,
+      }));
+    }
+  }, []);
 
   // Fetch initial data
   useEffect(() => {
@@ -248,6 +267,7 @@ function RegisterPage() {
           listingType: form.listingTypes,
           password: form.password,
           confirmpassword: form.confirmPassword,
+          referrer: form.referralCode || undefined, // Only include if not empty
         };
 
         const response = await PropertyRequestRegistration(registrationData);
@@ -289,6 +309,7 @@ function RegisterPage() {
           role: form.role,
           password: form.password,
           confirmpassword: form.confirmPassword,
+          referrer: form.referralCode || undefined, // Only include if not empty
         };
 
         const response = await axios.post(
@@ -576,6 +597,57 @@ function RegisterPage() {
                     <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
                       <p className="text-red-600 text-sm font-medium">
                         {errors.role}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Referral Code Field */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Referral Code{" "}
+                    <span className="text-gray-400 font-normal">
+                      (Optional)
+                    </span>
+                  </label>
+                  <div className="relative">
+                    <Gift className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type="text"
+                      name="referralCode"
+                      value={form.referralCode}
+                      onChange={handleChange}
+                      disabled={!isReferralCodeEditable}
+                      className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
+                        errors.referralCode
+                          ? "border-red-300 bg-red-50"
+                          : !isReferralCodeEditable
+                          ? "border-green-300 bg-green-50"
+                          : "border-gray-200"
+                      } ${!isReferralCodeEditable ? "cursor-not-allowed" : ""}`}
+                      placeholder={
+                        isReferralCodeEditable
+                          ? "Enter referral code (optional)"
+                          : "Referral code applied"
+                      }
+                    />
+                    {!isReferralCodeEditable && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                  {!isReferralCodeEditable && (
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-green-600 text-sm font-medium">
+                        Referral code applied from invite link
+                      </p>
+                    </div>
+                  )}
+                  {errors.referralCode && (
+                    <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-600 text-sm font-medium">
+                        {errors.referralCode}
                       </p>
                     </div>
                   )}
@@ -940,6 +1012,14 @@ function RegisterPage() {
                     <p>
                       <span className="font-medium">Role:</span> {form.role}
                     </p>
+                    {form.referralCode && (
+                      <p>
+                        <span className="font-medium">Referral Code:</span>{" "}
+                        <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
+                          {form.referralCode}
+                        </span>
+                      </p>
+                    )}
                     {BUSINESS_ROLES.includes(form.role) && (
                       <>
                         <p>
