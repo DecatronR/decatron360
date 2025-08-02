@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Home,
   Calendar,
@@ -9,7 +9,12 @@ import {
   DollarSign,
   MapPin,
   Clock,
+  Share2,
+  Copy,
+  Check,
+  Star,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const DashboardOverview = ({
   userData,
@@ -18,6 +23,9 @@ const DashboardOverview = ({
   userContracts,
   propertyRequests,
 }) => {
+  const [isCopied, setIsCopied] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
+  const router = useRouter();
   const getMetricCards = () => {
     // Get upcoming inspections (scheduled for future dates)
     const upcomingInspections =
@@ -113,6 +121,37 @@ const DashboardOverview = ({
   const metricCards = getMetricCards();
   const recentActivities = getRecentActivity();
 
+  const handleCopyReferralCode = async () => {
+    const referralUrl = `${window.location.origin}?ref=${userData?.referralCode}`;
+    try {
+      await navigator.clipboard.writeText(referralUrl);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy referral code:", error);
+    }
+  };
+
+  const handleShareReferral = async () => {
+    const referralUrl = `${window.location.origin}?ref=${userData?.referralCode}`;
+    const shareText = `Join Decatron360 - Nigeria's premier real estate platform! Use my referral code: ${userData?.referralCode}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Join Decatron360",
+          text: shareText,
+          url: referralUrl,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      // Fallback to copying to clipboard
+      handleCopyReferralCode();
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -180,6 +219,115 @@ const DashboardOverview = ({
               <p className="text-gray-500">No recent activity</p>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Grid Cards for Upgrades & Invites */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Referral Card */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center">
+              <Share2 className="w-6 h-6 text-primary-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Invite Friends
+              </h3>
+              <p className="text-sm text-gray-600">Share Decatron360</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-xs text-gray-500 mb-2">Your Referral Code</p>
+              <div className="flex items-center justify-between">
+                <p className="text-lg font-mono font-bold text-gray-900">
+                  {userData?.referralCode || "Loading..."}
+                </p>
+                <button
+                  onClick={handleCopyReferralCode}
+                  className="flex items-center space-x-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  {isCopied ? (
+                    <>
+                      <Check className="w-4 h-4 text-green-500" />
+                      <span className="text-sm font-medium text-green-600">
+                        Copied!
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-600">
+                        Copy
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={handleShareReferral}
+              className="w-full flex items-center justify-center space-x-2 bg-primary-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-primary-600 transition-colors duration-200"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>Share Decatron360</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Subscription Upgrade Card */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center">
+              <Star className="w-6 h-6 text-emerald-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Special Agent
+              </h3>
+              <p className="text-sm text-gray-600">Premium features</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-xs text-gray-500 mb-2">Current Plan</p>
+              <p className="text-lg font-bold text-gray-900">
+                {userData?.subscriptionTier || "Free Tier"}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">
+                  Advanced property analytics
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">
+                  Priority client matching
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                <span className="text-sm text-gray-600">
+                  Enhanced marketing tools
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => router.push("/subscription/upgrade")}
+              className="w-full flex items-center justify-center space-x-2 bg-emerald-500 text-white px-4 py-3 rounded-lg font-medium hover:bg-emerald-600 transition-colors duration-200"
+            >
+              <span>Upgrade Now</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
